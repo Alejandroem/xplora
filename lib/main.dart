@@ -2,9 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'domain/models/xplora_user.dart';
-import 'infrastructure/providers/xplorauser_providers.dart';
 import 'ui/home.dart';
+import 'ui/pages/categories.dart';
 import 'ui/pages/onboarding.dart';
 
 void main() {
@@ -32,6 +31,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const Home(),
         '/onboarding': (context) => const OnboardingPage(),
+        '/categories': (context) => const ChooseCategories(),
       },
     );
   }

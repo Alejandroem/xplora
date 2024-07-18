@@ -13,5 +13,14 @@ final hasFinishedOnboardingProvider = FutureProvider<bool>((ref) async {
 
   final hasFinishedOnboarding =
       await localStorageService.read(kHasFinishedOnboardingKey);
-  return hasFinishedOnboarding != null;
+  return hasFinishedOnboarding != null && hasFinishedOnboarding == 'true';
+});
+
+final hasSelectedInitialCategoriesProvider = FutureProvider<bool>((ref) async {
+  final localStorageService = ref.watch(localStorageProvider);
+
+  final hasSelectedInitialCategories =
+      await localStorageService.read(kHasSelectedInitialCategoriesKey);
+  return hasSelectedInitialCategories != null &&
+      hasSelectedInitialCategories == 'true';
 });

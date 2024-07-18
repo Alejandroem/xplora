@@ -93,7 +93,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         curve: Curves.ease,
                       );
                     },
-                    child: Text('Start'),
+                    child: const Text('Start'),
                   ),
                 ],
               ),
@@ -248,8 +248,22 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
                       final localStorage = ref.read(localStorageProvider);
                       await localStorage.save(
-                          kHasFinishedOnboardingKey, 'true');
-                      Navigator.of(context).pop();
+                        kHasFinishedOnboardingKey,
+                        'true',
+                      );
+
+                      final hasSelectedInitialCategories = await localStorage
+                          .read(kHasSelectedInitialCategoriesKey);
+
+                      if (hasSelectedInitialCategories == null) {
+                        if (context.mounted) {
+                          Navigator.of(context).pushNamed('/categories');
+                        }
+                      } else {
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      }
                     },
                     child: const Text('Let\'s Go!'),
                   ),

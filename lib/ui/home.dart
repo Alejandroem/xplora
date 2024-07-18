@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../infrastructure/constants.dart';
 import '../infrastructure/providers/local_storage_providers.dart';
+import 'pages/categories.dart';
 import 'pages/onboarding.dart';
 
 class Home extends ConsumerStatefulWidget {
@@ -32,6 +33,18 @@ class _HomeState extends ConsumerState<Home> {
                 builder: (_) => const OnboardingPage(),
               ),
             );
+          } else {
+            ref.watch(hasSelectedInitialCategoriesProvider).whenData(
+              (hasSelectedInitialCategories) {
+                if (!hasSelectedInitialCategories) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ChooseCategories(),
+                    ),
+                  );
+                }
+              },
+            );
           }
         },
       );
@@ -42,14 +55,18 @@ class _HomeState extends ConsumerState<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Home'),
+            const Text('Home'),
             ElevatedButton(
               onPressed: () {
                 ref.read(localStorageProvider).delete(
                       kHasFinishedOnboardingKey,
                     );
+
+                ref.read(localStorageProvider).delete(
+                      kHasSelectedInitialCategoriesKey,
+                    );
               },
-              child: const Text('Finish onboarding'),
+              child: const Text('Reset Onboarding'),
             ),
           ],
         ),

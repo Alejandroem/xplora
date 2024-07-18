@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:xplora/domain/services/crud_service.dart';
+import '../../domain/services/crud_service.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -41,8 +41,8 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
   Future<T> update(T entity, String id) async {
     final docRef = collection.doc(id);
     //TODO test this
-    log("entity: $entity");
-    log("entity as Map: ${entity as Map<String, dynamic>}");
+    log('entity: $entity');
+    log('entity as Map: ${entity as Map<String, dynamic>}');
     await docRef.update(entity as Map<String, dynamic>);
     final snapshot = await docRef.get();
     return snapshot.data()!;

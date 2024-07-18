@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:xplora/infrastructure/services/firebase_crud_service.dart';
+import 'firebase_crud_service.dart';
 
 import '../../domain/models/xplora_user.dart';
 import '../../domain/services/xplorauser_crud_service.dart';
