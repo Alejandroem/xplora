@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "441929013315",
+    "project_id": "xplra-1",
+    "storage_bucket": "xplra-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441929013315:android:d4dad027258cbb2fa21cf6",
+        "android_client_info": {
+          "package_name": "com.xplra.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSLbMKMPZfns0MkLMveGBkVHD5wZ8npEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
