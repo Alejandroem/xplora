@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../domain/models/xplora_profile.dart';
 import '../../infrastructure/constants.dart';
 import '../../infrastructure/providers/local_storage_providers.dart';
 import '../../infrastructure/providers/xplorauser_providers.dart';
@@ -21,13 +20,7 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> categories = [
-      '🍔 Eating Out',
-      '☕ Coffee Time',
-      '⚽ Playing Football',
-      // Add more categories here
-    ];
-
+   
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 500), () {
         setState(() {
