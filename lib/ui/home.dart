@@ -3,12 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../application/providers/navigation_providers.dart';
+import '../infrastructure/providers/auth_providers.dart';
 import '../infrastructure/providers/local_storage_providers.dart';
+import 'components/home_component.dart';
 import 'pages/categories.dart';
 import 'pages/onboarding.dart';
-import 'widgets/categories_chips.dart';
-import 'widgets/current_quest.dart';
-import 'widgets/quest_carousel.dart';
+import 'pages/qr_code_scann.dart';
 import 'widgets/xplora_app_bar.dart';
 import 'widgets/xplora_bottom_bar.dart';
 
@@ -56,39 +57,36 @@ class _HomeState extends ConsumerState<Home> {
 
     return Scaffold(
       appBar: const XplorAppBar(),
-      floatingActionButton: FloatingActionButton(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(32.0)),
-        ),
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const ChooseCategories(),
-            ),
-          );
+      floatingActionButton: StreamBuilder<bool>(
+        stream: ref.watch(authServiceProvider).isSignedIn,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null && snapshot.data!) {
+            return FloatingActionButton(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(32.0)),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const QRCodeScanPage(),
+                  ),
+                );
+              },
+              child: const Icon(Icons.qr_code),
+            );
+          } else {
+            return const SizedBox();
+          }
         },
-        child: const Icon(Icons.qr_code),
       ),
       bottomNavigationBar: const XploraBottomNavigationBar(),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const CurrentQuest(),
-              const QuestCarousel(),
-              const CategoriesChips(),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                height: 100.0,
-                width: MediaQuery.of(context).size.width,
-                child: const Placeholder(
-                  child: Text('Add space'),
-                ),
-              ),
-            ],
-          ),
-        ),
+      body: Builder(
+        builder: (context) {
+          if (ref.watch(bottomNavigationBarProvider) == 0) {
+            return const HomeComponent();
+          }
+          return const CircularProgressIndicator();
+        },
       ),
     );
   }

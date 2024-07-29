@@ -64,9 +64,9 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
                         Text(
                           'Current objective long explanation here wrapped lorem ipsum dolor sit amet, consectetur.',
                         ),
-                        const SizedBox(height: 20.0),
+                        SizedBox(height: 20.0),
                         Text(
-                          "Step 1 of 5",
+                          'Step 1 of 5',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,

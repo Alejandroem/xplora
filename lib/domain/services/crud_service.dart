@@ -1,4 +1,5 @@
 abstract class CrudService<T> {
+  Stream<T?> getStream(String id);
   Future<T> create(T entity);
   Future<T?> read(String id);
   Future<T> updateOrCreate(T entity, String id);
@@ -7,4 +8,3 @@ abstract class CrudService<T> {
   Future<void> delete(String id);
   Future<List<T>> list();
 }
-

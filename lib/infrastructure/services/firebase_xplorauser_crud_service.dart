@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_crud_service.dart';
 
 import '../../domain/models/xplora_user.dart';
-import '../../domain/services/xplorauser_crud_service.dart';
+import '../../domain/services/xplora_user_crud_service.dart';
 
 class FirebaseXplorauserCrudService extends FirebaseCrudService<XploraUser>
     implements XploraUserService {

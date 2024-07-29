@@ -34,13 +34,13 @@ class _QuestCarouselCardState extends ConsumerState<QuestCarouselCard> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: EdgeInsets.only(left: 6.0, right: 6.0),
+                    padding: const EdgeInsets.only(left: 6.0, right: 6.0),
                     decoration: BoxDecoration(
                       color: raisingBlack,
                       borderRadius: BorderRadius.circular(10),
@@ -62,13 +62,13 @@ class _QuestCarouselCardState extends ConsumerState<QuestCarouselCard> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Container(
-                        padding: EdgeInsets.only(left: 6.0, right: 6.0),
+                        padding: const EdgeInsets.only(left: 6.0, right: 6.0),
                         decoration: BoxDecoration(
                           color: raisingBlack,
                           borderRadius: BorderRadius.circular(10),

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../infrastructure/constants.dart';
 import '../../infrastructure/providers/local_storage_providers.dart';
 import '../../infrastructure/providers/xplorauser_providers.dart';
+import '../../theme.dart';
 
 class ChooseCategories extends ConsumerStatefulWidget {
   const ChooseCategories({super.key});
@@ -20,7 +21,6 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
 
   @override
   Widget build(BuildContext context) {
-   
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 500), () {
         setState(() {
@@ -38,9 +38,9 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
               'Choose Categories where you want to explore Quests',
               textAlign: TextAlign.center,
               style: GoogleFonts.lato(
-                textStyle: const TextStyle(
+                textStyle: TextStyle(
                   fontSize: 32,
-                  color: Colors.black,
+                  color: springBud,
                 ),
               ),
             ),
@@ -106,9 +106,9 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
               child: Text(
                 'Save Categories',
                 style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
+                  textStyle: TextStyle(
                     fontSize: 14,
-                    color: Colors.black,
+                    color: springBud,
                   ),
                 ),
               ),

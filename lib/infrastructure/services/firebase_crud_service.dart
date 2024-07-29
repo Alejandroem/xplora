@@ -10,6 +10,11 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
   FirebaseCrudService(this.collection);
 
   @override
+  Stream<T?> getStream(String id) {
+    return collection.doc(id).snapshots().map((snapshot) => snapshot.data());
+  }
+
+  @override
   Future<T> create(T entity) async {
     final docRef = await collection.add(entity);
     final snapshot = await docRef.get();
