@@ -8,6 +8,8 @@ part of 'quest_step.dart';
 
 _$QuestStepImpl _$$QuestStepImplFromJson(Map<String, dynamic> json) =>
     _$QuestStepImpl(
+      id: json['id'] as String?,
+      questId: json['questId'] as String,
       stepName: json['stepName'] as String,
       stepDescription: json['stepDescription'] as String,
       stepCode: json['stepCode'] as String,
@@ -17,6 +19,8 @@ _$QuestStepImpl _$$QuestStepImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$QuestStepImplToJson(_$QuestStepImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
+      'questId': instance.questId,
       'stepName': instance.stepName,
       'stepDescription': instance.stepDescription,
       'stepCode': instance.stepCode,

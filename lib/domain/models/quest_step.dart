@@ -6,6 +6,8 @@ part 'quest_step.g.dart';
 @freezed
 class QuestStep with _$QuestStep {
   const factory QuestStep({
+    required String? id,
+    required String questId,
     required String stepName,
     required String stepDescription,
     required String stepCode,

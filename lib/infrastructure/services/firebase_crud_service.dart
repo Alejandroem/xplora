@@ -18,7 +18,10 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
   Future<T> create(T entity) async {
     final docRef = await collection.add(entity);
     final snapshot = await docRef.get();
-    return snapshot.data()!;
+    final id = snapshot.id;
+    await docRef.update({'id': id});
+    final updatedSnapshot = await docRef.get();
+    return updatedSnapshot.data()!;
   }
 
   @override

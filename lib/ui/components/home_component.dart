@@ -21,10 +21,10 @@ class _HomeComponentState extends ConsumerState<HomeComponent> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            QuestAdd(),
             CurrentQuest(),
             QuestCarousel(),
             CategoriesChips(),
-            QuestAdd(),
           ],
         ),
       ),

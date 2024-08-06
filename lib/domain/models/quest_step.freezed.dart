@@ -20,6 +20,8 @@ QuestStep _$QuestStepFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$QuestStep {
+  String? get id => throw _privateConstructorUsedError;
+  String get questId => throw _privateConstructorUsedError;
   String get stepName => throw _privateConstructorUsedError;
   String get stepDescription => throw _privateConstructorUsedError;
   String get stepCode => throw _privateConstructorUsedError;
@@ -38,7 +40,9 @@ abstract class $QuestStepCopyWith<$Res> {
       _$QuestStepCopyWithImpl<$Res, QuestStep>;
   @useResult
   $Res call(
-      {String stepName,
+      {String? id,
+      String questId,
+      String stepName,
       String stepDescription,
       String stepCode,
       double stepLatitude,
@@ -58,6 +62,8 @@ class _$QuestStepCopyWithImpl<$Res, $Val extends QuestStep>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = freezed,
+    Object? questId = null,
     Object? stepName = null,
     Object? stepDescription = null,
     Object? stepCode = null,
@@ -65,6 +71,14 @@ class _$QuestStepCopyWithImpl<$Res, $Val extends QuestStep>
     Object? stepLongitude = null,
   }) {
     return _then(_value.copyWith(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      questId: null == questId
+          ? _value.questId
+          : questId // ignore: cast_nullable_to_non_nullable
+              as String,
       stepName: null == stepName
           ? _value.stepName
           : stepName // ignore: cast_nullable_to_non_nullable
@@ -98,7 +112,9 @@ abstract class _$$QuestStepImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String stepName,
+      {String? id,
+      String questId,
+      String stepName,
       String stepDescription,
       String stepCode,
       double stepLatitude,
@@ -116,6 +132,8 @@ class __$$QuestStepImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = freezed,
+    Object? questId = null,
     Object? stepName = null,
     Object? stepDescription = null,
     Object? stepCode = null,
@@ -123,6 +141,14 @@ class __$$QuestStepImplCopyWithImpl<$Res>
     Object? stepLongitude = null,
   }) {
     return _then(_$QuestStepImpl(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      questId: null == questId
+          ? _value.questId
+          : questId // ignore: cast_nullable_to_non_nullable
+              as String,
       stepName: null == stepName
           ? _value.stepName
           : stepName // ignore: cast_nullable_to_non_nullable
@@ -151,7 +177,9 @@ class __$$QuestStepImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$QuestStepImpl implements _QuestStep {
   const _$QuestStepImpl(
-      {required this.stepName,
+      {required this.id,
+      required this.questId,
+      required this.stepName,
       required this.stepDescription,
       required this.stepCode,
       required this.stepLatitude,
@@ -160,6 +188,10 @@ class _$QuestStepImpl implements _QuestStep {
   factory _$QuestStepImpl.fromJson(Map<String, dynamic> json) =>
       _$$QuestStepImplFromJson(json);
 
+  @override
+  final String? id;
+  @override
+  final String questId;
   @override
   final String stepName;
   @override
@@ -173,7 +205,7 @@ class _$QuestStepImpl implements _QuestStep {
 
   @override
   String toString() {
-    return 'QuestStep(stepName: $stepName, stepDescription: $stepDescription, stepCode: $stepCode, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude)';
+    return 'QuestStep(id: $id, questId: $questId, stepName: $stepName, stepDescription: $stepDescription, stepCode: $stepCode, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude)';
   }
 
   @override
@@ -181,6 +213,8 @@ class _$QuestStepImpl implements _QuestStep {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$QuestStepImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.questId, questId) || other.questId == questId) &&
             (identical(other.stepName, stepName) ||
                 other.stepName == stepName) &&
             (identical(other.stepDescription, stepDescription) ||
@@ -195,8 +229,8 @@ class _$QuestStepImpl implements _QuestStep {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, stepName, stepDescription,
-      stepCode, stepLatitude, stepLongitude);
+  int get hashCode => Object.hash(runtimeType, id, questId, stepName,
+      stepDescription, stepCode, stepLatitude, stepLongitude);
 
   @JsonKey(ignore: true)
   @override
@@ -214,7 +248,9 @@ class _$QuestStepImpl implements _QuestStep {
 
 abstract class _QuestStep implements QuestStep {
   const factory _QuestStep(
-      {required final String stepName,
+      {required final String? id,
+      required final String questId,
+      required final String stepName,
       required final String stepDescription,
       required final String stepCode,
       required final double stepLatitude,
@@ -223,6 +259,10 @@ abstract class _QuestStep implements QuestStep {
   factory _QuestStep.fromJson(Map<String, dynamic> json) =
       _$QuestStepImpl.fromJson;
 
+  @override
+  String? get id;
+  @override
+  String get questId;
   @override
   String get stepName;
   @override

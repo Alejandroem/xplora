@@ -21,6 +21,15 @@ class _XplorAppBarState extends ConsumerState<XplorAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      leading: IconButton(
+        icon: CircleAvatar(
+          backgroundColor: whiteSmoke,
+          radius: 16.0,
+          child: const Icon(Icons.person),
+        ),
+        onPressed: () {},
+      ),
+      titleSpacing: 8.0,
       title: ref.watch(profileStreamProvider).when(
             data: (profile) {
               if (profile == null) {
