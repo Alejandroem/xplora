@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/login_form.dart';
@@ -83,7 +85,12 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
         await profileService.create(xploraProfile);
       }
     } catch (e) {
-      state = state.copyWith(errors: [e.toString()]);
+      log(e.toString());
+      state = state.copyWith(
+        errors: ['Error logging in, please try again.'],
+        isLoading: false,
+      );
+      throw Exception('Error logging in, please try again.');
     }
     state = state.copyWith(isLoading: false);
   }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -75,11 +77,15 @@ void showBottomLoginCard(BuildContext context) {
                                     .touchedPassword &&
                                 !ref.watch(loginFormNotifierProvider).isLoading
                             ? () async {
-                                await ref
-                                    .read(loginFormNotifierProvider.notifier)
-                                    .login();
-                                if (context.mounted) {
-                                  Navigator.pop(context);
+                                try {
+                                  await ref
+                                      .read(loginFormNotifierProvider.notifier)
+                                      .login();
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                } catch (e) {
+                                  log(e.toString());
                                 }
                               }
                             : null,
