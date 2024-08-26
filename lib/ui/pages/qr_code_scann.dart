@@ -80,7 +80,7 @@ class _QRCodeScanPageState extends ConsumerState<QRCodeScanPage> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       setState(() {
-        log("QR Code: ${scanData.code}");
+        log('QR Code: ${scanData.code}');
         log(scanData.code?.toString() ?? 'No data');
         result = scanData;
       });

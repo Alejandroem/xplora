@@ -20,6 +20,7 @@ XploraProfile _$XploraProfileFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$XploraProfile {
+  String get userId => throw _privateConstructorUsedError;
   int get level => throw _privateConstructorUsedError;
   int get experience => throw _privateConstructorUsedError;
   List<String> get categories => throw _privateConstructorUsedError;
@@ -36,7 +37,8 @@ abstract class $XploraProfileCopyWith<$Res> {
           XploraProfile value, $Res Function(XploraProfile) then) =
       _$XploraProfileCopyWithImpl<$Res, XploraProfile>;
   @useResult
-  $Res call({int level, int experience, List<String> categories});
+  $Res call(
+      {String userId, int level, int experience, List<String> categories});
 }
 
 /// @nodoc
@@ -52,11 +54,16 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? userId = null,
     Object? level = null,
     Object? experience = null,
     Object? categories = null,
   }) {
     return _then(_value.copyWith(
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
       level: null == level
           ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
@@ -81,7 +88,8 @@ abstract class _$$XploraProfileImplCopyWith<$Res>
       __$$XploraProfileImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int level, int experience, List<String> categories});
+  $Res call(
+      {String userId, int level, int experience, List<String> categories});
 }
 
 /// @nodoc
@@ -95,11 +103,16 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? userId = null,
     Object? level = null,
     Object? experience = null,
     Object? categories = null,
   }) {
     return _then(_$XploraProfileImpl(
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
       level: null == level
           ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
@@ -120,7 +133,8 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$XploraProfileImpl implements _XploraProfile {
   const _$XploraProfileImpl(
-      {required this.level,
+      {required this.userId,
+      required this.level,
       required this.experience,
       required final List<String> categories})
       : _categories = categories;
@@ -128,6 +142,8 @@ class _$XploraProfileImpl implements _XploraProfile {
   factory _$XploraProfileImpl.fromJson(Map<String, dynamic> json) =>
       _$$XploraProfileImplFromJson(json);
 
+  @override
+  final String userId;
   @override
   final int level;
   @override
@@ -142,7 +158,7 @@ class _$XploraProfileImpl implements _XploraProfile {
 
   @override
   String toString() {
-    return 'XploraProfile(level: $level, experience: $experience, categories: $categories)';
+    return 'XploraProfile(userId: $userId, level: $level, experience: $experience, categories: $categories)';
   }
 
   @override
@@ -150,6 +166,7 @@ class _$XploraProfileImpl implements _XploraProfile {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$XploraProfileImpl &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.level, level) || other.level == level) &&
             (identical(other.experience, experience) ||
                 other.experience == experience) &&
@@ -159,7 +176,7 @@ class _$XploraProfileImpl implements _XploraProfile {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, level, experience,
+  int get hashCode => Object.hash(runtimeType, userId, level, experience,
       const DeepCollectionEquality().hash(_categories));
 
   @JsonKey(ignore: true)
@@ -178,13 +195,16 @@ class _$XploraProfileImpl implements _XploraProfile {
 
 abstract class _XploraProfile implements XploraProfile {
   const factory _XploraProfile(
-      {required final int level,
+      {required final String userId,
+      required final int level,
       required final int experience,
       required final List<String> categories}) = _$XploraProfileImpl;
 
   factory _XploraProfile.fromJson(Map<String, dynamic> json) =
       _$XploraProfileImpl.fromJson;
 
+  @override
+  String get userId;
   @override
   int get level;
   @override

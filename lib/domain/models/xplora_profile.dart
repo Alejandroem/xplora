@@ -6,6 +6,7 @@ part 'xplora_profile.g.dart'; // Add this line
 @freezed
 abstract class XploraProfile with _$XploraProfile {
   const factory XploraProfile({
+    required String userId,
     required int level,
     required int experience,
     required List<String> categories,

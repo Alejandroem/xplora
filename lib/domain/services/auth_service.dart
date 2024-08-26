@@ -2,6 +2,7 @@ import '../models/xplora_user.dart';
 
 abstract class AuthService {
   Stream<bool> get isSignedIn;
+  Stream<String?> getAuthUserStreamUserId();
   Future<XploraUser?> getAuthUser();
   Future<XploraUser> signInWithEmailAndPassword(
     String email,

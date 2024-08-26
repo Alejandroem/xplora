@@ -1,11 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/signup_form.dart';
+import '../../domain/models/xplora_profile.dart';
 import '../../domain/services/auth_service.dart';
+import '../../domain/services/xplora_profile_service.dart';
 
 class SignupFormNotifier extends StateNotifier<SignupForm> {
   AuthService authenticationService;
-  SignupFormNotifier(super.state, this.authenticationService);
+  XploraProfileService profileService;
+  SignupFormNotifier(
+      super.state, this.authenticationService, this.profileService);
 
   void setUsername(String username) {
     if (username.isEmpty) {
@@ -148,12 +152,24 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
     }
 
     try {
-      await authenticationService.signUpWithEmailAndPassword(
+      final user = await authenticationService.signUpWithEmailAndPassword(
         state.email,
         state.password,
         '${state.firstName} ${state.lastName}',
         state.username,
       );
+
+      final profiles = await profileService.readBy('userId', user.id!);
+      if (profiles.isEmpty) {
+        //Create empty profile
+        final xploraProfile = XploraProfile(
+          userId: user.id!,
+          level: 0,
+          experience: 0,
+          categories: [],
+        );
+        await profileService.create(xploraProfile);
+      }
     } catch (e) {
       state = state.copyWith(errors: [e.toString()]);
     }

@@ -4,6 +4,7 @@ import '../../application/notifiers/login_notifier.dart';
 import '../../application/notifiers/signup_notifier.dart';
 import '../../domain/models/login_form.dart';
 import '../../domain/models/signup_form.dart';
+import '../../domain/models/xplora_profile.dart';
 import '../../domain/services/auth_service.dart';
 import '../services/firebase_auth_service.dart';
 import 'xplorauser_providers.dart';
@@ -12,36 +13,101 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return FirebaseAuthService();
 });
 
-final profileStreamProvider = StreamProvider.autoDispose((ref) async* {
+final isAuthenticatedProvider = StreamProvider.autoDispose((ref) {
   final authService = ref.watch(authServiceProvider);
-  final user = await authService.getAuthUser();
-  final profileService = ref.watch(profileServiceProvider);
+  return authService.isSignedIn;
+});
+
+final currentAuthUserIdStreamProvider = StreamProvider.autoDispose((ref) {
+  final authService = ref.watch(authServiceProvider);
+  return authService.getAuthUserStreamUserId();
+});
+
+final createOrReadCurrentUserProfile = FutureProvider.autoDispose((ref) async {
+  final profileService = ref.read(profileServiceProvider);
+  final authenticationService = ref.read(authServiceProvider);
+  final user = await authenticationService.getAuthUser();
   if (user == null) {
-    yield null;
-  } else {
-    yield* profileService.getStream(user.id!);
+    return null;
   }
+
+  final profile = await profileService.readBy('userId', user.id!);
+  if (profile.isEmpty) {
+    return await profileService.create(
+      XploraProfile(
+        userId: user.id!,
+        level: 0,
+        experience: 0,
+        categories: [],
+      ),
+    );
+  } else {
+    return profile.first;
+  }
+});
+
+//provides an instance of XploraProfile based on the auth user
+final createOrReadProfileStreamProvider = StreamProvider.autoDispose((ref) {
+  final authService = ref.watch(authServiceProvider);
+  final profileService = ref.watch(profileServiceProvider);
+  return authService.getAuthUserStreamUserId().asyncMap((userId) {
+    if (userId != null) {
+      return profileService.streamByFilters(
+        [
+          {
+            'field': 'id',
+            'operator': '==',
+            'value': userId,
+          }
+        ],
+      );
+    }
+    return null;
+  });
+});
+
+final profileStreamProvider = StreamProvider.autoDispose((ref) {
+  final authService = ref.watch(authServiceProvider);
+  final profileService = ref.watch(profileServiceProvider);
+  return authService.getAuthUserStreamUserId().asyncMap((userId) {
+    if (userId != null) {
+      return profileService.streamByFilters(
+        [
+          {
+            'field': 'id',
+            'operator': '==',
+            'value': userId,
+          }
+        ],
+      );
+    }
+    return null;
+  });
 });
 
 final loginFormNotifierProvider =
     StateNotifierProvider<LoginFormNotifier, LoginForm>((ref) {
   final authService = ref.watch(authServiceProvider);
+  final profileService = ref.watch(profileServiceProvider);
   return LoginFormNotifier(
-      const LoginForm(
-        email: '',
-        touchedEmail: false,
-        password: '',
-        touchedPassword: false,
-        obscureText: true,
-        errors: [],
-        isLoading: false,
-      ),
-      authService);
+    const LoginForm(
+      email: '',
+      touchedEmail: false,
+      password: '',
+      touchedPassword: false,
+      obscureText: true,
+      errors: [],
+      isLoading: false,
+    ),
+    authService,
+    profileService,
+  );
 });
 
 final signupFormNotifierProvider =
     StateNotifierProvider<SignupFormNotifier, SignupForm>((ref) {
   final authService = ref.watch(authServiceProvider);
+  final profileService = ref.watch(profileServiceProvider);
   return SignupFormNotifier(
     const SignupForm(
       username: '',
@@ -60,5 +126,6 @@ final signupFormNotifierProvider =
       isLoading: false,
     ),
     authService,
+    profileService,
   );
 });

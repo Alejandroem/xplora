@@ -48,6 +48,8 @@ class FirebaseAuthService extends AuthService {
     CollectionReference collectionReference =
         FirebaseFirestore.instance.collection('users');
     await collectionReference.doc(userCredential.user!.uid).set({
+      'email': email,
+      'id': userCredential.user!.uid,
       'name': name,
       'username': username,
     });
@@ -84,5 +86,17 @@ class FirebaseAuthService extends AuthService {
       name: documentSnapshot['name'],
       username: documentSnapshot['username'],
     );
+  }
+
+  @override
+  Stream<String?> getAuthUserStreamUserId() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    return auth.authStateChanges().map((user) {
+      if (user == null) {
+        return null;
+      }
+
+      return user.uid;
+    });
   }
 }

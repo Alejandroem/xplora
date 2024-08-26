@@ -21,12 +21,16 @@ Quest _$QuestFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Quest {
   String? get id => throw _privateConstructorUsedError;
+  String? get userId => throw _privateConstructorUsedError;
+  bool? get isActive => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get shortDescription => throw _privateConstructorUsedError;
   String get longDescription => throw _privateConstructorUsedError;
+  String get imageUrl => throw _privateConstructorUsedError;
   double get experience => throw _privateConstructorUsedError;
   int get timeInSeconds => throw _privateConstructorUsedError;
   int get priceLevel => throw _privateConstructorUsedError;
+  List<QuestStep> get steps => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -40,12 +44,16 @@ abstract class $QuestCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
+      String? userId,
+      bool? isActive,
       String title,
       String shortDescription,
       String longDescription,
+      String imageUrl,
       double experience,
       int timeInSeconds,
-      int priceLevel});
+      int priceLevel,
+      List<QuestStep> steps});
 }
 
 /// @nodoc
@@ -62,18 +70,30 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
   @override
   $Res call({
     Object? id = freezed,
+    Object? userId = freezed,
+    Object? isActive = freezed,
     Object? title = null,
     Object? shortDescription = null,
     Object? longDescription = null,
+    Object? imageUrl = null,
     Object? experience = null,
     Object? timeInSeconds = null,
     Object? priceLevel = null,
+    Object? steps = null,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
+      userId: freezed == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isActive: freezed == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -85,6 +105,10 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
       longDescription: null == longDescription
           ? _value.longDescription
           : longDescription // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
       experience: null == experience
           ? _value.experience
@@ -98,6 +122,10 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
           ? _value.priceLevel
           : priceLevel // ignore: cast_nullable_to_non_nullable
               as int,
+      steps: null == steps
+          ? _value.steps
+          : steps // ignore: cast_nullable_to_non_nullable
+              as List<QuestStep>,
     ) as $Val);
   }
 }
@@ -111,12 +139,16 @@ abstract class _$$QuestImplCopyWith<$Res> implements $QuestCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
+      String? userId,
+      bool? isActive,
       String title,
       String shortDescription,
       String longDescription,
+      String imageUrl,
       double experience,
       int timeInSeconds,
-      int priceLevel});
+      int priceLevel,
+      List<QuestStep> steps});
 }
 
 /// @nodoc
@@ -131,18 +163,30 @@ class __$$QuestImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
+    Object? userId = freezed,
+    Object? isActive = freezed,
     Object? title = null,
     Object? shortDescription = null,
     Object? longDescription = null,
+    Object? imageUrl = null,
     Object? experience = null,
     Object? timeInSeconds = null,
     Object? priceLevel = null,
+    Object? steps = null,
   }) {
     return _then(_$QuestImpl(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
+      userId: freezed == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isActive: freezed == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -154,6 +198,10 @@ class __$$QuestImplCopyWithImpl<$Res>
       longDescription: null == longDescription
           ? _value.longDescription
           : longDescription // ignore: cast_nullable_to_non_nullable
+              as String,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
       experience: null == experience
           ? _value.experience
@@ -167,6 +215,10 @@ class __$$QuestImplCopyWithImpl<$Res>
           ? _value.priceLevel
           : priceLevel // ignore: cast_nullable_to_non_nullable
               as int,
+      steps: null == steps
+          ? _value._steps
+          : steps // ignore: cast_nullable_to_non_nullable
+              as List<QuestStep>,
     ));
   }
 }
@@ -176,12 +228,17 @@ class __$$QuestImplCopyWithImpl<$Res>
 class _$QuestImpl implements _Quest {
   const _$QuestImpl(
       {required this.id,
+      required this.userId,
+      required this.isActive,
       required this.title,
       required this.shortDescription,
       required this.longDescription,
+      required this.imageUrl,
       required this.experience,
       required this.timeInSeconds,
-      required this.priceLevel});
+      required this.priceLevel,
+      required final List<QuestStep> steps})
+      : _steps = steps;
 
   factory _$QuestImpl.fromJson(Map<String, dynamic> json) =>
       _$$QuestImplFromJson(json);
@@ -189,21 +246,34 @@ class _$QuestImpl implements _Quest {
   @override
   final String? id;
   @override
+  final String? userId;
+  @override
+  final bool? isActive;
+  @override
   final String title;
   @override
   final String shortDescription;
   @override
   final String longDescription;
   @override
+  final String imageUrl;
+  @override
   final double experience;
   @override
   final int timeInSeconds;
   @override
   final int priceLevel;
+  final List<QuestStep> _steps;
+  @override
+  List<QuestStep> get steps {
+    if (_steps is EqualUnmodifiableListView) return _steps;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_steps);
+  }
 
   @override
   String toString() {
-    return 'Quest(id: $id, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, experience: $experience, timeInSeconds: $timeInSeconds, priceLevel: $priceLevel)';
+    return 'Quest(id: $id, userId: $userId, isActive: $isActive, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, timeInSeconds: $timeInSeconds, priceLevel: $priceLevel, steps: $steps)';
   }
 
   @override
@@ -212,23 +282,40 @@ class _$QuestImpl implements _Quest {
         (other.runtimeType == runtimeType &&
             other is _$QuestImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.shortDescription, shortDescription) ||
                 other.shortDescription == shortDescription) &&
             (identical(other.longDescription, longDescription) ||
                 other.longDescription == longDescription) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl) &&
             (identical(other.experience, experience) ||
                 other.experience == experience) &&
             (identical(other.timeInSeconds, timeInSeconds) ||
                 other.timeInSeconds == timeInSeconds) &&
             (identical(other.priceLevel, priceLevel) ||
-                other.priceLevel == priceLevel));
+                other.priceLevel == priceLevel) &&
+            const DeepCollectionEquality().equals(other._steps, _steps));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, shortDescription,
-      longDescription, experience, timeInSeconds, priceLevel);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      userId,
+      isActive,
+      title,
+      shortDescription,
+      longDescription,
+      imageUrl,
+      experience,
+      timeInSeconds,
+      priceLevel,
+      const DeepCollectionEquality().hash(_steps));
 
   @JsonKey(ignore: true)
   @override
@@ -247,17 +334,25 @@ class _$QuestImpl implements _Quest {
 abstract class _Quest implements Quest {
   const factory _Quest(
       {required final String? id,
+      required final String? userId,
+      required final bool? isActive,
       required final String title,
       required final String shortDescription,
       required final String longDescription,
+      required final String imageUrl,
       required final double experience,
       required final int timeInSeconds,
-      required final int priceLevel}) = _$QuestImpl;
+      required final int priceLevel,
+      required final List<QuestStep> steps}) = _$QuestImpl;
 
   factory _Quest.fromJson(Map<String, dynamic> json) = _$QuestImpl.fromJson;
 
   @override
   String? get id;
+  @override
+  String? get userId;
+  @override
+  bool? get isActive;
   @override
   String get title;
   @override
@@ -265,11 +360,15 @@ abstract class _Quest implements Quest {
   @override
   String get longDescription;
   @override
+  String get imageUrl;
+  @override
   double get experience;
   @override
   int get timeInSeconds;
   @override
   int get priceLevel;
+  @override
+  List<QuestStep> get steps;
   @override
   @JsonKey(ignore: true)
   _$$QuestImplCopyWith<_$QuestImpl> get copyWith =>

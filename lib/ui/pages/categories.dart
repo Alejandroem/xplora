@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../infrastructure/constants.dart';
 import '../../infrastructure/providers/local_storage_providers.dart';
-import '../../infrastructure/providers/xplorauser_providers.dart';
 import '../../theme.dart';
 
 class ChooseCategories extends ConsumerStatefulWidget {
@@ -87,7 +86,7 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
             OutlinedButton(
               onPressed: () async {
                 final localStorage = ref.read(localStorageProvider);
-                final profileService = ref.read(profileServiceProvider);
+                //final profileService = ref.read(profileServiceProvider);
 
                 //TODO tie this to a user anonymous id
                 /* await profileService.create(

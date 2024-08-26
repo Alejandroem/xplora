@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../infrastructure/providers/auth_providers.dart';
 import '../../theme.dart';
 import '../dialogs/bottom_login_card.dart';
-import '../dialogs/bottom_signup_card.dart';
 
 class XplorAppBar extends ConsumerStatefulWidget
     implements PreferredSizeWidget {
@@ -30,55 +29,46 @@ class _XplorAppBarState extends ConsumerState<XplorAppBar> {
         onPressed: () {},
       ),
       titleSpacing: 8.0,
-      title: ref.watch(profileStreamProvider).when(
-            data: (profile) {
-              if (profile == null) {
+      title: ref.watch(isAuthenticatedProvider).when(
+            data: (isAuthenticated) {
+              if (isAuthenticated) {
+                return ref.watch(createOrReadCurrentUserProfile).when(
+                      data: (profile) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'LvL.${profile!.level}',
+                              style: TextStyle(
+                                fontSize: 11.0,
+                                color: springBud,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Exp.${profile.experience}',
+                              style: TextStyle(
+                                fontSize: 11.0,
+                                color: springBud,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                      loading: () => const Text('Loading...'),
+                      error: (error, stackTrace) {
+                        return const Text('Error');
+                      },
+                    );
+              } else {
                 return Text(
-                  'Xplora',
+                  'Xplra',
                   style: TextStyle(
                     color: springBud,
                   ),
                 );
               }
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      showBottomSignUpCard(context);
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: whiteSmoke,
-                      radius: 16.0,
-                      child: const Icon(Icons.person),
-                    ),
-                  ),
-                  Positioned(
-                    right: -35.0,
-                    top: 0.0,
-                    child: Text(
-                      'LvL.${profile.level}',
-                      style: TextStyle(
-                        fontSize: 11.0,
-                        color: springBud,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: -50.0,
-                    top: 15,
-                    child: Text(
-                      'Exp.${profile.experience}k',
-                      style: TextStyle(
-                        fontSize: 11.0,
-                        color: springBud,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              );
             },
             loading: () => const Text('Loading...'),
             error: (error, stackTrace) {
@@ -98,7 +88,7 @@ class _XplorAppBarState extends ConsumerState<XplorAppBar> {
               );
             } else {
               return IconButton(
-                icon: Icon(Icons.login),
+                icon: const Icon(Icons.login),
                 onPressed: () {
                   showBottomLoginCard(context);
                 },
