@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../infrastructure/constants.dart';
-import '../../infrastructure/providers/local_storage_providers.dart';
+import '../../application/providers/local_storage_providers.dart';
 import '../../theme.dart';
 
 class ChooseCategories extends ConsumerStatefulWidget {

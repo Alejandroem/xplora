@@ -18,13 +18,13 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.black),
         title: Row(
           children: [
             Text(
               widget.quest.title,
               style: const TextStyle(
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
             //experience
@@ -58,7 +58,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                     widget.quest.longDescription,
                     style: const TextStyle(
                       fontSize: 16,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -107,7 +107,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                                       step.stepName,
                                       style: const TextStyle(
                                         fontSize: 16,
-                                        color: Colors.white,
+                                        color: Colors.black,
                                       ),
                                     ),
                                     if (step.stepType == StepType.location)
@@ -140,7 +140,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                                   step.stepDescription,
                                   style: const TextStyle(
                                     fontSize: 14,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ],

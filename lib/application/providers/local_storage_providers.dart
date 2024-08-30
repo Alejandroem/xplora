@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/services/local_storage_service.dart';
-import '../constants.dart';
-import '../services/shared_preferences_local_storage_service.dart';
+import '../../infrastructure/constants.dart';
+import '../../infrastructure/services/shared_preferences_local_storage_service.dart';
 
 final localStorageProvider = Provider<LocalStorageService>(
   (ref) => SharedPreferencesLocalStorageService(),

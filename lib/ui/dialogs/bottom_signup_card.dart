@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../infrastructure/providers/auth_providers.dart';
+import '../../application/providers/auth_providers.dart';
 import 'bottom_login_card.dart';
 
 void showBottomSignUpCard(BuildContext context, {bool modal = true}) {

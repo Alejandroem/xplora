@@ -28,11 +28,10 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
             final index = entry.key;
             final category = entry.value;
             return Chip(
-              backgroundColor: raisingBlack,
               label: Text(
                 category,
                 style: TextStyle(
-                  color: springBud,
+                  color: raisingBlack,
                 ),
               ),
               onDeleted: () {

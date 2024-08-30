@@ -99,4 +99,11 @@ class FirebaseAuthService extends AuthService {
       return user.uid;
     });
   }
+
+  @override
+  Future<bool> isSignedInFuture() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    return user != null;
+  }
 }

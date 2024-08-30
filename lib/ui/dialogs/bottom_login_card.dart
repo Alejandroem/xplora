@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../infrastructure/providers/auth_providers.dart';
+import '../../application/providers/auth_providers.dart';
 import 'bottom_signup_card.dart';
 
 void showBottomLoginCard(BuildContext context) {

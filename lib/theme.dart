@@ -10,16 +10,16 @@ ThemeData getTheme() {
   return ThemeData(
     // Customize your theme properties
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: raisingBlack,
-      selectedItemColor: springBud,
-      unselectedItemColor: whiteSmoke,
+      //backgroundColor: raisingBlack,
+      selectedItemColor: raisingBlack,
+      unselectedItemColor: raisingBlack.withOpacity(0.5),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: raisingBlack,
+      //backgroundColor: raisingBlack,
       elevation: 0,
     ),
     primaryColor: majjoreleBlue,
-    scaffoldBackgroundColor: raisingBlack,
+    //scaffoldBackgroundColor: raisingBlack,
     secondaryHeaderColor: springBud,
     fontFamily: 'Jura',
     // Add more theme properties as needed

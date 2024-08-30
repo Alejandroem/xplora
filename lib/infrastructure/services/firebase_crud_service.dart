@@ -130,6 +130,9 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
         case 'in':
           query = query.where(field, whereIn: value);
           break;
+        case 'unset':
+          query = query.where(field, isNull: true);
+          break;
       }
     }
     return query;
@@ -144,9 +147,9 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
 
   @override
   Stream<List<T>?> streamByFilters(List<Map<String, dynamic>> filters) {
-    return getQueryFromFilters(filters)
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+    return getQueryFromFilters(filters).snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
   }
 
   @override

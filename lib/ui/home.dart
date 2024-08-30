@@ -3,16 +3,21 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../application/providers/adventure_providers.dart';
 import '../application/providers/navigation_providers.dart';
-import '../infrastructure/providers/auth_providers.dart';
-import '../infrastructure/providers/local_storage_providers.dart';
-import '../infrastructure/providers/quest_providers.dart';
+import '../domain/models/adventure.dart';
+import '../domain/models/quest.dart';
+import '../domain/models/quest_step.dart';
+import '../application/providers/auth_providers.dart';
+import '../application/providers/local_storage_providers.dart';
+import '../application/providers/quest_providers.dart';
 import 'pages/categories.dart';
 import 'pages/onboarding.dart';
 import 'widgets/categories_chips.dart';
 import 'widgets/current_quest.dart';
+import 'widgets/featured_adventure.dart';
 import 'widgets/quest_add.dart';
-import 'widgets/quest_carousel.dart';
+import 'widgets/adventures_carousel.dart';
 import 'widgets/xplora_app_bar.dart';
 import 'widgets/xplora_bottom_bar.dart';
 
@@ -24,6 +29,10 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
+  Quest? currentQuest;
+  QuestStep? currentStep;
+  Icon? currentIcon;
+
   @override
   void initState() {
     super.initState();
@@ -57,96 +66,74 @@ class _HomeState extends ConsumerState<Home> {
         },
       );
     });
+    final currentAuthUserId = ref.watch(currentAuthUserIdStreamProvider);
+    currentAuthUserId.whenData((userId) {
+      if (userId != null) {
+        ref.watch(currentQuestForUserProvider(userId)).whenData((quest) {
+          if (quest != null) {
+            setState(() {
+              currentQuest = quest;
+              currentStep = quest.steps.firstWhere(
+                (step) => step.completed == false,
+                orElse: () => quest.steps.last,
+              );
+              if (currentStep!.stepType == StepType.qr) {
+                currentIcon = const Icon(Icons.qr_code);
+              } else if (currentStep!.stepType == StepType.location) {
+                currentIcon = const Icon(Icons.location_on);
+              } else if (currentStep!.stepType == StepType.timeLocation) {
+                currentIcon = const Icon(Icons.hourglass_bottom);
+              }
+            });
+          }
+        });
+      }
+    });
 
     return Scaffold(
       appBar: const XplorAppBar(),
-      floatingActionButton: StreamBuilder<bool>(
-        stream: ref.watch(authServiceProvider).isSignedIn,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data != null && snapshot.data!) {
-            return FloatingActionButton(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(32.0)),
-              ),
-              onPressed: () async {
-                /* final questService = ref.watch(questCrudServiceProvider);
-                final questStepService =
-                    ref.watch(questStepCrudServiceProvider);
-                //create a quest with steps to test how it will look on the backend
-                const quest = Quest(
-                  id: null,
-                  userId: null,
-                  isActive: null,
-                  experience: 100,
-                  imageUrl: 'https://via.placeholder.com/150',
-                  title: 'Test Quest',
-                  shortDescription: 'Lorem ipsum dolor sit amet',
-                  longDescription:
-                      'Lorem ipsum dolor sit amet, c-onsectetur adipiscing elit.',
-                  priceLevel: 1,
-                  timeInSeconds: 3600,
-                  /* steps: [
-                    ,
-                  ], */
-                );
-                Quest newQuest = await questService.create(quest);
-                QuestStep step = QuestStep(
-                  id: null,
-                  completed: null,
-                  questId: newQuest.id!,
-                  stepName: 'step 1',
-                  stepCode: 'step1',
-                  stepDescription: 'step 1 description',
-                  stepLatitude: 0.0,
-                  stepLongitude: 0.0,
-                );
-
-                await questStepService.create(step); */
-
-                /* Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const QRCodeScanPage(),
-                  ),
-                ); */
-              },
-              child: const Icon(Icons.qr_code),
-            );
-          } else {
-            return const SizedBox();
-          }
-        },
-      ),
+      floatingActionButton: currentIcon != null
+          ? FloatingActionButton(
+              onPressed: () {},
+              child: currentIcon,
+            )
+          : null,
       bottomNavigationBar: const XploraBottomNavigationBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
             if (ref.watch(bottomNavigationBarProvider) == 0)
               Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const QuestAdd(),
-                  ref.watch(currentAuthUserIdStreamProvider).when(
-                      data: (userId) {
-                    if (userId == null) {
-                      return const SizedBox();
-                    }
-                    return ref.watch(currentQuestForUserProvider(userId!)).when(
-                        data: (quest) {
-                      if (quest != null) {
-                        return CurrentQuest(quest);
-                      } else {
-                        return const SizedBox();
+                  FutureBuilder(
+                    future: ref.watch(availableAdventuresProvider.future),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData &&
+                          snapshot.data != null &&
+                          snapshot.data!.isNotEmpty) {
+                        return FeaturedAdventure(
+                          snapshot.data!.first,
+                        );
                       }
-                    }, error: (Object error, StackTrace stackTrace) {
                       return const SizedBox();
-                    }, loading: () {
-                      return const SizedBox();
-                    });
-                  }, error: (Object error, StackTrace stackTrace) {
-                    return const SizedBox();
-                  }, loading: () {
-                    return const SizedBox();
-                  }),
-                  const QuestCarousel(),
+                    },
+                  ),
+                  const NearestAdventures(),
+                  SizedBox(
+                    height: 200,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Spacer(),
+                        Expanded(
+                          child: CurrentQuest(
+                            Quest.demo(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const CategoriesChips(),
                 ],
               )

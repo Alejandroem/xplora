@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../infrastructure/providers/auth_providers.dart';
+import '../../application/providers/auth_providers.dart';
 import '../../theme.dart';
 import '../dialogs/bottom_login_card.dart';
 
@@ -41,7 +41,7 @@ class _XplorAppBarState extends ConsumerState<XplorAppBar> {
                               'LvL.${profile!.level}',
                               style: TextStyle(
                                 fontSize: 11.0,
-                                color: springBud,
+                                color: raisingBlack,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -49,7 +49,7 @@ class _XplorAppBarState extends ConsumerState<XplorAppBar> {
                               'Exp.${profile.experience}',
                               style: TextStyle(
                                 fontSize: 11.0,
-                                color: springBud,
+                                color: raisingBlack,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
