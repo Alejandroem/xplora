@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../application/providers/adventure_providers.dart';
 import '../application/providers/navigation_providers.dart';
-import '../domain/models/adventure.dart';
 import '../domain/models/quest.dart';
 import '../domain/models/quest_step.dart';
 import '../application/providers/auth_providers.dart';
@@ -16,7 +15,6 @@ import 'pages/onboarding.dart';
 import 'widgets/categories_chips.dart';
 import 'widgets/current_quest.dart';
 import 'widgets/featured_adventure.dart';
-import 'widgets/quest_add.dart';
 import 'widgets/adventures_carousel.dart';
 import 'widgets/xplora_app_bar.dart';
 import 'widgets/xplora_bottom_bar.dart';
@@ -41,6 +39,9 @@ class _HomeState extends ConsumerState<Home> {
 
   @override
   Widget build(BuildContext context) {
+    //Initialize the timers.
+    ref.watch(adventureInProgressTrackerProvider);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(hasFinishedOnboardingProvider).whenData(
         (hasFinishedOnboarding) {
@@ -125,7 +126,7 @@ class _HomeState extends ConsumerState<Home> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Spacer(),
+                        const Spacer(),
                         Expanded(
                           child: CurrentQuest(
                             Quest.demo(),

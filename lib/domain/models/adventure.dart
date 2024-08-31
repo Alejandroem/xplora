@@ -8,6 +8,8 @@ class Adventure with _$Adventure {
   const factory Adventure({
     required String? id,
     required String? userId, //Only set if a user already got through it
+    required String?
+        adventureId, //Only set if a user already got through it as it should be the old adventure id
     required String title,
     required String shortDescription,
     required String longDescription,
@@ -23,6 +25,7 @@ class Adventure with _$Adventure {
   factory Adventure.demo() => const Adventure(
         id: '1',
         userId: '1',
+        adventureId: '1',
         title: 'The Great Adventure',
         shortDescription: 'A short description',
         longDescription: 'A long description',

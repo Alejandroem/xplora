@@ -26,12 +26,20 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-            child: Text(
-              'Nearest Adventures',
-              style: TextStyle(
-                fontSize: 20,
-                color: raisingBlack,
-              ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.location_on,
+                  color: raisingBlack,
+                ),
+                Text(
+                  'Near you',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: raisingBlack,
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(

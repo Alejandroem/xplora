@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../domain/models/adventure.dart';
 
@@ -34,7 +33,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
               left: 10,
               child: Text(
                 'Exp. ${widget.adventure.experience.toStringAsFixed(2)}',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
@@ -50,7 +49,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                   children: [
                     Text(
                       widget.adventure.title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.w900,

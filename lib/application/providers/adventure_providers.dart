@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/adventure.dart';
+import '../../domain/models/adventure_in_progress.dart';
 import '../../domain/services/adventure_crud_service.dart';
 import '../../infrastructure/services/firebase_adventure_crud_service.dart';
+import '../notifiers/adventure_in_progress.dart';
 import 'auth_providers.dart';
 
 final adventuresCrudServiceProvider = Provider<AdventureCrudService>((ref) {
@@ -31,7 +33,7 @@ final availableAdventuresProvider =
     FutureProvider<List<Adventure>?>((ref) async {
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
 
-  final allAdventures = await adventureCrudService.readByFilters([
+  List<Adventure>? allAdventures = await adventureCrudService.readByFilters([
     {
       'field': 'userId',
       'operator': 'unset',
@@ -42,9 +44,21 @@ final availableAdventuresProvider =
       allAdventures.isNotEmpty &&
       userAdventures != null &&
       userAdventures.isNotEmpty) {
-    return allAdventures
-        .where((a) => userAdventures.indexWhere((b) => b.id! == a.id!) != -1)
-        .toList();
+    allAdventures.removeWhere(
+      (a) =>
+          userAdventures.indexWhere(
+            (userAdventure) => userAdventure.adventureId == a.id,
+          ) !=
+          -1,
+    );
   }
   return allAdventures;
+});
+
+final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
+    AdventureInProgressNotifier, AdventureInProgress?>((ref) {
+  final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
+  final authService = ref.watch(authServiceProvider);
+
+  return AdventureInProgressNotifier(adventureCrudService, authService);
 });

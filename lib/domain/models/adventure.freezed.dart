@@ -23,6 +23,8 @@ mixin _$Adventure {
   String? get id => throw _privateConstructorUsedError;
   String? get userId =>
       throw _privateConstructorUsedError; //Only set if a user already got through it
+  String? get adventureId =>
+      throw _privateConstructorUsedError; //Only set if a user already got through it as it should be the old adventure id
   String get title => throw _privateConstructorUsedError;
   String get shortDescription => throw _privateConstructorUsedError;
   String get longDescription => throw _privateConstructorUsedError;
@@ -45,6 +47,7 @@ abstract class $AdventureCopyWith<$Res> {
   $Res call(
       {String? id,
       String? userId,
+      String? adventureId,
       String title,
       String shortDescription,
       String longDescription,
@@ -69,6 +72,7 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
   $Res call({
     Object? id = freezed,
     Object? userId = freezed,
+    Object? adventureId = freezed,
     Object? title = null,
     Object? shortDescription = null,
     Object? longDescription = null,
@@ -85,6 +89,10 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      adventureId: freezed == adventureId
+          ? _value.adventureId
+          : adventureId // ignore: cast_nullable_to_non_nullable
               as String?,
       title: null == title
           ? _value.title
@@ -129,6 +137,7 @@ abstract class _$$AdventureImplCopyWith<$Res>
   $Res call(
       {String? id,
       String? userId,
+      String? adventureId,
       String title,
       String shortDescription,
       String longDescription,
@@ -151,6 +160,7 @@ class __$$AdventureImplCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? userId = freezed,
+    Object? adventureId = freezed,
     Object? title = null,
     Object? shortDescription = null,
     Object? longDescription = null,
@@ -167,6 +177,10 @@ class __$$AdventureImplCopyWithImpl<$Res>
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      adventureId: freezed == adventureId
+          ? _value.adventureId
+          : adventureId // ignore: cast_nullable_to_non_nullable
               as String?,
       title: null == title
           ? _value.title
@@ -206,6 +220,7 @@ class _$AdventureImpl implements _Adventure {
   const _$AdventureImpl(
       {required this.id,
       required this.userId,
+      required this.adventureId,
       required this.title,
       required this.shortDescription,
       required this.longDescription,
@@ -223,6 +238,9 @@ class _$AdventureImpl implements _Adventure {
   final String? userId;
 //Only set if a user already got through it
   @override
+  final String? adventureId;
+//Only set if a user already got through it as it should be the old adventure id
+  @override
   final String title;
   @override
   final String shortDescription;
@@ -239,7 +257,7 @@ class _$AdventureImpl implements _Adventure {
 
   @override
   String toString() {
-    return 'Adventure(id: $id, userId: $userId, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, latitude: $latitude, longitude: $longitude)';
+    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -249,6 +267,8 @@ class _$AdventureImpl implements _Adventure {
             other is _$AdventureImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.adventureId, adventureId) ||
+                other.adventureId == adventureId) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.shortDescription, shortDescription) ||
                 other.shortDescription == shortDescription) &&
@@ -270,6 +290,7 @@ class _$AdventureImpl implements _Adventure {
       runtimeType,
       id,
       userId,
+      adventureId,
       title,
       shortDescription,
       longDescription,
@@ -296,6 +317,7 @@ abstract class _Adventure implements Adventure {
   const factory _Adventure(
       {required final String? id,
       required final String? userId,
+      required final String? adventureId,
       required final String title,
       required final String shortDescription,
       required final String longDescription,
@@ -312,6 +334,8 @@ abstract class _Adventure implements Adventure {
   @override
   String? get userId;
   @override //Only set if a user already got through it
+  String? get adventureId;
+  @override //Only set if a user already got through it as it should be the old adventure id
   String get title;
   @override
   String get shortDescription;

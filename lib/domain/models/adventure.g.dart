@@ -10,6 +10,7 @@ _$AdventureImpl _$$AdventureImplFromJson(Map<String, dynamic> json) =>
     _$AdventureImpl(
       id: json['id'] as String?,
       userId: json['userId'] as String?,
+      adventureId: json['adventureId'] as String?,
       title: json['title'] as String,
       shortDescription: json['shortDescription'] as String,
       longDescription: json['longDescription'] as String,
@@ -23,6 +24,7 @@ Map<String, dynamic> _$$AdventureImplToJson(_$AdventureImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'userId': instance.userId,
+      'adventureId': instance.adventureId,
       'title': instance.title,
       'shortDescription': instance.shortDescription,
       'longDescription': instance.longDescription,

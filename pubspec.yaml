@@ -26,6 +26,8 @@ dependencies:
   qr_code_scanner: ^1.0.1
   firebase_auth: ^5.1.2
   url_launcher: ^6.3.0
+  location: ^7.0.0
+  geolocator: ^10.0.0
 
 
 

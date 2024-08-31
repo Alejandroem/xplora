@@ -14,7 +14,7 @@ ThemeData getTheme() {
       selectedItemColor: raisingBlack,
       unselectedItemColor: raisingBlack.withOpacity(0.5),
     ),
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       //backgroundColor: raisingBlack,
       elevation: 0,
     ),

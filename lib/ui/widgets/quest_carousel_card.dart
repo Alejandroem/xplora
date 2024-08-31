@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/adventure.dart';
-import '../../domain/models/quest.dart';
 import '../../theme.dart';
-import '../pages/quest_detail.dart';
 
 class AdventuresCarouselCard extends ConsumerStatefulWidget {
   final Adventure adventure;
