@@ -10,6 +10,7 @@ class AdventureInProgress with _$AdventureInProgress {
   const factory AdventureInProgress({
     required Adventure adventure,
     required DateTime enteredPlaceAt,
+    required int completeness,
   }) = _AdventureInProgress;
 
   factory AdventureInProgress.fromJson(Map<String, dynamic> json) =>

@@ -163,6 +163,7 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
       if (profiles.isEmpty) {
         //Create empty profile
         final xploraProfile = XploraProfile(
+          id: null,
           userId: user.id!,
           level: 0,
           experience: 0,

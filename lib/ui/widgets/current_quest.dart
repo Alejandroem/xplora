@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
+import '../../application/providers/adventure_providers.dart';
 import '../../domain/models/quest.dart';
 import '../pages/quest_detail.dart';
 
 class CurrentQuest extends ConsumerStatefulWidget {
-  final Quest quest;
-  const CurrentQuest(this.quest, {super.key});
+  const CurrentQuest({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _CurrentQuestState();
@@ -16,13 +16,17 @@ class CurrentQuest extends ConsumerStatefulWidget {
 class _CurrentQuestState extends ConsumerState<CurrentQuest> {
   @override
   Widget build(BuildContext context) {
+    final questInProgress = ref.watch(adventureInProgressTrackerProvider);
+    if (questInProgress == null) {
+      return const SizedBox.shrink();
+    }
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(
+        /* Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => QuestDetail(widget.quest),
           ),
-        );
+        ); */
       },
       child: Container(
         padding: const EdgeInsets.all(8.0),
@@ -42,20 +46,21 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        widget.quest.title,
+                        questInProgress.adventure.title,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        widget.quest.shortDescription,
+                        questInProgress.adventure.shortDescription,
                         style: const TextStyle(
                           fontSize: 14,
                         ),
                       ),
                       const SizedBox(height: 20.0),
-                      Text(
+                      // TODO: Used for quest with steps
+                      /* Text(
                         'Step ${widget.quest.steps.indexWhere(
                               (element) {
                                 return element.completed == false;
@@ -65,7 +70,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
+                      ), */
                     ],
                   ),
                 ),
@@ -81,7 +86,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
                 child: LinearPercentIndicator(
                   padding: const EdgeInsets.all(0),
                   lineHeight: 14.0,
-                  percent: 0.5,
+                  percent: questInProgress.completeness / 100,
                   backgroundColor: Colors.grey,
                   progressColor: Colors.blue,
                 ),

@@ -11,6 +11,7 @@ _$AdventureInProgressImpl _$$AdventureInProgressImplFromJson(
     _$AdventureInProgressImpl(
       adventure: Adventure.fromJson(json['adventure'] as Map<String, dynamic>),
       enteredPlaceAt: DateTime.parse(json['enteredPlaceAt'] as String),
+      completeness: (json['completeness'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$AdventureInProgressImplToJson(
@@ -18,4 +19,5 @@ Map<String, dynamic> _$$AdventureInProgressImplToJson(
     <String, dynamic>{
       'adventure': instance.adventure,
       'enteredPlaceAt': instance.enteredPlaceAt.toIso8601String(),
+      'completeness': instance.completeness,
     };

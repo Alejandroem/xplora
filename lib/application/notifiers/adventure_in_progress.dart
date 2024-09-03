@@ -11,6 +11,7 @@ import '../../domain/models/adventure_in_progress.dart';
 import '../../domain/models/xplora_user.dart';
 import '../../domain/services/adventure_crud_service.dart';
 import '../../domain/services/auth_service.dart';
+import '../../domain/services/xplora_profile_service.dart';
 
 class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
   final int _timeAtPlaceCheckerInterval = kDebugMode ? 10 : 60;
@@ -19,10 +20,12 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
 
   final AdventureCrudService _adventureCrudService;
   final AuthService _authService;
+  final XploraProfileService _xploraProfileService;
 
   AdventureInProgressNotifier(
     this._adventureCrudService,
     this._authService,
+    this._xploraProfileService,
   ) : super(null) {
     _timeAtPlaceChecker = Timer.periodic(
       Duration(seconds: _timeAtPlaceCheckerInterval),
@@ -54,6 +57,34 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
         _adventureCrudService.create(adventure);
         log('Adventure has been saved');
         clearAdventureInProgress();
+
+        //update user profile experience
+        final userProfile = await _xploraProfileService.readByFilters([
+          {
+            'field': 'userId',
+            'operator': '==',
+            'value': user.id,
+          },
+        ]);
+
+        if (userProfile != null && userProfile.isNotEmpty) {
+          final userExperience = userProfile.first.experience;
+          final updatedExperience =
+              userExperience + adventure.experience.toInt();
+          await _xploraProfileService.update(
+            userProfile.first.copyWith(
+              experience: updatedExperience.ceil(),
+            ),
+            userProfile.first.id!,
+          );
+          log('User experience has been updated');
+        }
+      } else {
+        log('User has not been at the place for more than $_timeAtPlaceCheckerDuration minutes');
+        int completeness =
+            (timeAtPlace.inSeconds / (_timeAtPlaceCheckerDuration * 60) * 100)
+                .toInt();
+        state = state!.copyWith(completeness: completeness);
       }
     } else {
       //lets get the list of all adventures
@@ -124,6 +155,7 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
     state = AdventureInProgress(
       adventure: adventure,
       enteredPlaceAt: DateTime.now(),
+      completeness: 0,
     );
   }
 

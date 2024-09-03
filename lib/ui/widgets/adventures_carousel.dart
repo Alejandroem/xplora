@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/providers/adventure_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/quest.dart';
 import '../../application/providers/quest_providers.dart';
@@ -81,16 +82,26 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                     ),
                   );
                 }
-                return ListView(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  children: List.generate(5, (index) => Adventure.demo())
-                      .map(
-                        (adventure) => AdventuresCarouselCard(
-                          adventure,
-                        ),
-                      )
-                      .toList(),
+                return FutureBuilder(
+                  future: ref.watch(nearbyAdventuresProvider.future),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData &&
+                        snapshot.data != null &&
+                        snapshot.data!.isNotEmpty) {
+                      return ListView(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        children: (snapshot.data as List<Adventure>)
+                            .map(
+                              (adventure) => AdventuresCarouselCard(
+                                adventure,
+                              ),
+                            )
+                            .toList(),
+                      );
+                    }
+                    return const SizedBox();
+                  },
                 );
                 /* return ListView(
                     shrinkWrap: true,

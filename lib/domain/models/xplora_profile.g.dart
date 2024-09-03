@@ -8,6 +8,7 @@ part of 'xplora_profile.dart';
 
 _$XploraProfileImpl _$$XploraProfileImplFromJson(Map<String, dynamic> json) =>
     _$XploraProfileImpl(
+      id: json['id'] as String?,
       userId: json['userId'] as String,
       level: (json['level'] as num).toInt(),
       experience: (json['experience'] as num).toInt(),
@@ -18,6 +19,7 @@ _$XploraProfileImpl _$$XploraProfileImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$XploraProfileImplToJson(_$XploraProfileImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'userId': instance.userId,
       'level': instance.level,
       'experience': instance.experience,

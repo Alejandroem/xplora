@@ -93,52 +93,46 @@ class _HomeState extends ConsumerState<Home> {
 
     return Scaffold(
       appBar: const XplorAppBar(),
-      floatingActionButton: currentIcon != null
-          ? FloatingActionButton(
-              onPressed: () {},
-              child: currentIcon,
-            )
-          : null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          
+        },
+        child: Icon(Icons.add),
+      ),
       bottomNavigationBar: const XploraBottomNavigationBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            if (ref.watch(bottomNavigationBarProvider) == 0)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FutureBuilder(
-                    future: ref.watch(availableAdventuresProvider.future),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData &&
-                          snapshot.data != null &&
-                          snapshot.data!.isNotEmpty) {
-                        return FeaturedAdventure(
-                          snapshot.data!.first,
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
-                  const NearestAdventures(),
-                  SizedBox(
-                    height: 200,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Spacer(),
-                        Expanded(
-                          child: CurrentQuest(
-                            Quest.demo(),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.refresh(availableAdventuresProvider);
+          ref.refresh(nearbyAdventuresProvider);
+          ref.refresh(createOrReadCurrentUserProfile);
+          setState(() {});
+        },
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              if (ref.watch(bottomNavigationBarProvider) == 0)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: const [
+                    FeaturedAdventure(),
+                    NearestAdventures(),
+                    SizedBox(
+                      height: 200,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Spacer(),
+                          Expanded(
+                            child: CurrentQuest(),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const CategoriesChips(),
-                ],
-              )
-          ],
+                    CategoriesChips(),
+                  ],
+                )
+            ],
+          ),
         ),
       ),
     );

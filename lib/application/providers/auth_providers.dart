@@ -18,7 +18,6 @@ final isAuthenticatedProvider = StreamProvider.autoDispose((ref) {
   return authService.isSignedIn;
 });
 
-
 final currentAuthUserIdStreamProvider = StreamProvider.autoDispose((ref) {
   final authService = ref.watch(authServiceProvider);
   return authService.getAuthUserStreamUserId();
@@ -32,10 +31,11 @@ final createOrReadCurrentUserProfile = FutureProvider.autoDispose((ref) async {
     return null;
   }
 
-  final profile = await profileService.readBy('id', user.id!);
+  final profile = await profileService.readBy('userId', user.id!);
   if (profile.isEmpty) {
     return await profileService.create(
       XploraProfile(
+        id: null,
         userId: user.id!,
         level: 0,
         experience: 0,
@@ -46,7 +46,6 @@ final createOrReadCurrentUserProfile = FutureProvider.autoDispose((ref) async {
     return profile.first;
   }
 });
-
 
 //provides an instance of XploraProfile based on the auth user
 final createOrReadProfileStreamProvider = StreamProvider.autoDispose((ref) {

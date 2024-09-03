@@ -10,6 +10,7 @@ class Adventure with _$Adventure {
     required String? userId, //Only set if a user already got through it
     required String?
         adventureId, //Only set if a user already got through it as it should be the old adventure id
+    required bool? featured, 
     required String title,
     required String shortDescription,
     required String longDescription,
@@ -27,6 +28,7 @@ class Adventure with _$Adventure {
         userId: '1',
         adventureId: '1',
         title: 'The Great Adventure',
+        featured: true,
         shortDescription: 'A short description',
         longDescription: 'A long description',
         imageUrl: 'https://placehold.co/600x400.png',

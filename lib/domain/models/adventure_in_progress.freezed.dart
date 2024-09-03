@@ -22,6 +22,7 @@ AdventureInProgress _$AdventureInProgressFromJson(Map<String, dynamic> json) {
 mixin _$AdventureInProgress {
   Adventure get adventure => throw _privateConstructorUsedError;
   DateTime get enteredPlaceAt => throw _privateConstructorUsedError;
+  int get completeness => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -35,7 +36,7 @@ abstract class $AdventureInProgressCopyWith<$Res> {
           AdventureInProgress value, $Res Function(AdventureInProgress) then) =
       _$AdventureInProgressCopyWithImpl<$Res, AdventureInProgress>;
   @useResult
-  $Res call({Adventure adventure, DateTime enteredPlaceAt});
+  $Res call({Adventure adventure, DateTime enteredPlaceAt, int completeness});
 
   $AdventureCopyWith<$Res> get adventure;
 }
@@ -55,6 +56,7 @@ class _$AdventureInProgressCopyWithImpl<$Res, $Val extends AdventureInProgress>
   $Res call({
     Object? adventure = null,
     Object? enteredPlaceAt = null,
+    Object? completeness = null,
   }) {
     return _then(_value.copyWith(
       adventure: null == adventure
@@ -65,6 +67,10 @@ class _$AdventureInProgressCopyWithImpl<$Res, $Val extends AdventureInProgress>
           ? _value.enteredPlaceAt
           : enteredPlaceAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      completeness: null == completeness
+          ? _value.completeness
+          : completeness // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 
@@ -85,7 +91,7 @@ abstract class _$$AdventureInProgressImplCopyWith<$Res>
       __$$AdventureInProgressImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Adventure adventure, DateTime enteredPlaceAt});
+  $Res call({Adventure adventure, DateTime enteredPlaceAt, int completeness});
 
   @override
   $AdventureCopyWith<$Res> get adventure;
@@ -104,6 +110,7 @@ class __$$AdventureInProgressImplCopyWithImpl<$Res>
   $Res call({
     Object? adventure = null,
     Object? enteredPlaceAt = null,
+    Object? completeness = null,
   }) {
     return _then(_$AdventureInProgressImpl(
       adventure: null == adventure
@@ -114,6 +121,10 @@ class __$$AdventureInProgressImplCopyWithImpl<$Res>
           ? _value.enteredPlaceAt
           : enteredPlaceAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      completeness: null == completeness
+          ? _value.completeness
+          : completeness // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -122,7 +133,9 @@ class __$$AdventureInProgressImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$AdventureInProgressImpl implements _AdventureInProgress {
   const _$AdventureInProgressImpl(
-      {required this.adventure, required this.enteredPlaceAt});
+      {required this.adventure,
+      required this.enteredPlaceAt,
+      required this.completeness});
 
   factory _$AdventureInProgressImpl.fromJson(Map<String, dynamic> json) =>
       _$$AdventureInProgressImplFromJson(json);
@@ -131,10 +144,12 @@ class _$AdventureInProgressImpl implements _AdventureInProgress {
   final Adventure adventure;
   @override
   final DateTime enteredPlaceAt;
+  @override
+  final int completeness;
 
   @override
   String toString() {
-    return 'AdventureInProgress(adventure: $adventure, enteredPlaceAt: $enteredPlaceAt)';
+    return 'AdventureInProgress(adventure: $adventure, enteredPlaceAt: $enteredPlaceAt, completeness: $completeness)';
   }
 
   @override
@@ -145,12 +160,15 @@ class _$AdventureInProgressImpl implements _AdventureInProgress {
             (identical(other.adventure, adventure) ||
                 other.adventure == adventure) &&
             (identical(other.enteredPlaceAt, enteredPlaceAt) ||
-                other.enteredPlaceAt == enteredPlaceAt));
+                other.enteredPlaceAt == enteredPlaceAt) &&
+            (identical(other.completeness, completeness) ||
+                other.completeness == completeness));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, adventure, enteredPlaceAt);
+  int get hashCode =>
+      Object.hash(runtimeType, adventure, enteredPlaceAt, completeness);
 
   @JsonKey(ignore: true)
   @override
@@ -170,7 +188,8 @@ class _$AdventureInProgressImpl implements _AdventureInProgress {
 abstract class _AdventureInProgress implements AdventureInProgress {
   const factory _AdventureInProgress(
       {required final Adventure adventure,
-      required final DateTime enteredPlaceAt}) = _$AdventureInProgressImpl;
+      required final DateTime enteredPlaceAt,
+      required final int completeness}) = _$AdventureInProgressImpl;
 
   factory _AdventureInProgress.fromJson(Map<String, dynamic> json) =
       _$AdventureInProgressImpl.fromJson;
@@ -179,6 +198,8 @@ abstract class _AdventureInProgress implements AdventureInProgress {
   Adventure get adventure;
   @override
   DateTime get enteredPlaceAt;
+  @override
+  int get completeness;
   @override
   @JsonKey(ignore: true)
   _$$AdventureInProgressImplCopyWith<_$AdventureInProgressImpl> get copyWith =>
