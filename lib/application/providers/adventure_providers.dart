@@ -169,6 +169,7 @@ final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
         adventure.latitude,
         adventure.longitude,
       );
+      return true;
       return distance <= 30;
     },
   ).toList();
@@ -184,4 +185,8 @@ final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
   }
 
   return nearbyAdventures;
+});
+
+final selectedCategoriesProvider = StateProvider<List<String>>((ref) {
+  return [];
 });

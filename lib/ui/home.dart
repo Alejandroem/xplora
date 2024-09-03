@@ -94,9 +94,7 @@ class _HomeState extends ConsumerState<Home> {
     return Scaffold(
       appBar: const XplorAppBar(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          
-        },
+        onPressed: () async {},
         child: Icon(Icons.add),
       ),
       bottomNavigationBar: const XploraBottomNavigationBar(),
@@ -116,6 +114,7 @@ class _HomeState extends ConsumerState<Home> {
                   children: const [
                     FeaturedAdventure(),
                     NearestAdventures(),
+                    CategoriesChips(),
                     SizedBox(
                       height: 200,
                       child: Row(
@@ -128,7 +127,6 @@ class _HomeState extends ConsumerState<Home> {
                         ],
                       ),
                     ),
-                    CategoriesChips(),
                   ],
                 )
             ],
