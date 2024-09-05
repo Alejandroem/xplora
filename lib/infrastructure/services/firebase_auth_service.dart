@@ -18,6 +18,19 @@ class FirebaseAuthService extends AuthService {
         FirebaseFirestore.instance.collection('users');
     DocumentSnapshot documentSnapshot =
         await collectionReference.doc(userCredential.user!.uid).get();
+
+    if (documentSnapshot.exists == false) {
+      collectionReference.doc(userCredential.user!.uid).set({
+        'email': email,
+        'id': userCredential.user!.uid,
+        'name': '',
+        'username': '',
+      });
+    }
+
+    documentSnapshot =
+        await collectionReference.doc(userCredential.user!.uid).get();
+
     return XploraUser(
       id: userCredential.user!.uid,
       email: userCredential.user!.email!,
@@ -80,6 +93,7 @@ class FirebaseAuthService extends AuthService {
         FirebaseFirestore.instance.collection('users');
     DocumentSnapshot documentSnapshot =
         await collectionReference.doc(user.uid).get();
+
     return XploraUser(
       id: user.uid,
       email: user.email!,
