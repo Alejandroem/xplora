@@ -93,10 +93,6 @@ class _HomeState extends ConsumerState<Home> {
 
     return Scaffold(
       appBar: const XplorAppBar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {},
-        child: Icon(Icons.add),
-      ),
       bottomNavigationBar: const XploraBottomNavigationBar(),
       body: RefreshIndicator(
         onRefresh: () async {
