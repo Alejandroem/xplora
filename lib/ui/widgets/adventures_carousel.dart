@@ -34,7 +34,7 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                   color: raisingBlack,
                 ),
                 Text(
-                  'Near you',
+                  'Nearest Adventures',
                   style: TextStyle(
                     fontSize: 20,
                     color: raisingBlack,

@@ -16,6 +16,7 @@ import 'widgets/categories_chips.dart';
 import 'widgets/current_quest.dart';
 import 'widgets/featured_adventure.dart';
 import 'widgets/adventures_carousel.dart';
+import 'widgets/quest_list.dart';
 import 'widgets/xplora_app_bar.dart';
 import 'widgets/xplora_bottom_bar.dart';
 
@@ -96,18 +97,18 @@ class _HomeState extends ConsumerState<Home> {
       bottomNavigationBar: const XploraBottomNavigationBar(),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.refresh(availableAdventuresProvider);
-          ref.refresh(nearbyAdventuresProvider);
-          ref.refresh(createOrReadCurrentUserProfile);
+          ref.invalidate(availableAdventuresProvider);
+          ref.invalidate(nearbyAdventuresProvider);
+          ref.invalidate(createOrReadCurrentUserProfile);
           setState(() {});
         },
         child: SingleChildScrollView(
           child: Column(
             children: [
               if (ref.watch(bottomNavigationBarProvider) == 0)
-                Column(
+                const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     FeaturedAdventure(),
                     NearestAdventures(),
                     CategoriesChips(),
@@ -116,7 +117,9 @@ class _HomeState extends ConsumerState<Home> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Spacer(),
+                          Expanded(
+                            child: QuestList(),
+                          ),
                           Expanded(
                             child: CurrentQuest(),
                           ),

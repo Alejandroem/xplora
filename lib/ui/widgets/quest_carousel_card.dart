@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/adventure.dart';
 import '../../theme.dart';
+import '../pages/adventure_detail.dart';
 
 class AdventuresCarouselCard extends ConsumerStatefulWidget {
   final Adventure adventure;
@@ -18,11 +19,11 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        /* Navigator.of(context).push(
+        Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => QuestDetail(widget.adventure),
+            builder: (_) => AdventureDetail('carousel', widget.adventure),
           ),
-        ); */
+        );
       },
       child: Padding(
         padding: const EdgeInsets.all(4.0),
@@ -34,11 +35,14 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
           width: 150,
           child: Stack(
             children: [
-              Image.network(
-                widget.adventure.imageUrl,
-                height: 200,
-                width: 150,
-                fit: BoxFit.cover,
+              Hero(
+                tag: 'adventure-image-${widget.adventure.id}-carousel',
+                child: Image.network(
+                  widget.adventure.imageUrl,
+                  height: 200,
+                  width: 150,
+                  fit: BoxFit.cover,
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -46,12 +50,15 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.adventure.title,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: raisingBlack,
+                    Hero(
+                      tag: 'adventure-title-${widget.adventure.id}-carousel',
+                      child: Text(
+                        widget.adventure.title,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: raisingBlack,
+                        ),
                       ),
                     ),
                     Text(

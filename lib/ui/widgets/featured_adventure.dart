@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../application/providers/adventure_providers.dart';
-import '../../domain/models/adventure.dart';
+import '../pages/adventure_detail.dart';
 
 class FeaturedAdventure extends ConsumerStatefulWidget {
   const FeaturedAdventure({super.key});
@@ -36,72 +36,89 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                   },
                 ),
                 items: data!.map((adventure) {
-                  return Card(
-                    clipBehavior: Clip.hardEdge,
-                    child: Stack(
-                      children: [
-                        Image.network(
-                          adventure.imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 160,
+                  return InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AdventureDetail('featured', adventure),
                         ),
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          child: Text(
-                            'Exp. ${adventure!.experience.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w900,
+                      );
+                    },
+                    child: Card(
+                      clipBehavior: Clip.hardEdge,
+                      child: Stack(
+                        children: [
+                          Hero(
+                            tag: 'adventure-image-${adventure.id}-featured',
+                            child: Image.network(
+                              adventure.imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 160,
                             ),
                           ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Text(
-                                  adventure.title,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w900,
+                          Positioned(
+                            top: 10,
+                            left: 10,
+                            child: Text(
+                              'Exp. ${adventure!.experience.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Hero(
+                                    tag:
+                                        'adventure-title-${adventure.id}-featured',
+                                    child: Text(
+                                      adventure.title,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          right: 10,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.map,
-                              color: Colors.white,
+                          Positioned(
+                            top: 0,
+                            right: 10,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.map,
+                                color: Colors.white,
+                              ),
+                              onPressed: () async {
+                                final uri = Uri(
+                                    scheme: 'google.navigation',
+                                    // host: '"0,0"',  {here we can put host}
+                                    queryParameters: {
+                                      'q':
+                                          '${adventure!.latitude}, ${adventure!.longitude}'
+                                    });
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri);
+                                } else {
+                                  debugPrint('An error occurred');
+                                }
+                              },
                             ),
-                            onPressed: () async {
-                              final uri = Uri(
-                                  scheme: 'google.navigation',
-                                  // host: '"0,0"',  {here we can put host}
-                                  queryParameters: {
-                                    'q':
-                                        '${adventure!.latitude}, ${adventure!.longitude}'
-                                  });
-                              if (await canLaunchUrl(uri)) {
-                                await launchUrl(uri);
-                              } else {
-                                debugPrint('An error occurred');
-                              }
-                            },
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   );
                 }).toList(),
