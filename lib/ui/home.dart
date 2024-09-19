@@ -106,7 +106,7 @@ class _HomeState extends ConsumerState<Home> {
           child: Column(
             children: [
               if (ref.watch(bottomNavigationBarProvider) == 0)
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     FeaturedAdventure(),
@@ -118,7 +118,31 @@ class _HomeState extends ConsumerState<Home> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(
-                            child: QuestList(),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => Scaffold(
+                                      appBar: AppBar(
+                                        title: const Text('Quest List'),
+                                      ),
+                                      body: const Hero(
+                                        tag: 'quest-list',
+                                        child: QuestList(
+                                          isHero: true,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Hero(
+                                tag: 'quest-list',
+                                child: QuestList(
+                                  isHero: false,
+                                ),
+                              ),
+                            ),
                           ),
                           Expanded(
                             child: CurrentQuest(),
