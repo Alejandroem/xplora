@@ -7,16 +7,12 @@ import '../application/providers/adventure_providers.dart';
 import '../application/providers/navigation_providers.dart';
 import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
-//import '../application/providers/quest_providers.dart';
 import '../application/providers/quest_providers.dart';
+import 'components/feed_components.dart';
+import 'components/notification_components.dart';
 import 'components/search_components.dart';
 import 'pages/categories.dart';
 import 'pages/onboarding.dart';
-import 'widgets/categories_chips.dart';
-import 'widgets/current_quest.dart';
-import 'widgets/featured_adventure.dart';
-import 'widgets/adventures_carousel.dart';
-import 'widgets/quest_list.dart';
 import 'widgets/xplora_app_bar.dart';
 import 'widgets/xplora_bottom_bar.dart';
 
@@ -108,54 +104,11 @@ class _HomeState extends ConsumerState<Home> {
           child: Column(
             children: [
               if (ref.watch(bottomNavigationBarProvider) == 0)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const FeaturedAdventure(),
-                    const NearestAdventures(),
-                    const CategoriesChips(),
-                    SizedBox(
-                      height: 200,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => Scaffold(
-                                      appBar: AppBar(
-                                        title: const Text('Quest List'),
-                                      ),
-                                      body: const Hero(
-                                        tag: 'quest-list',
-                                        child: QuestList(
-                                          isHero: true,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: const Hero(
-                                tag: 'quest-list',
-                                child: QuestList(
-                                  isHero: false,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const Expanded(
-                            child: CurrentQuest(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                const FeedComponents(),
               if (ref.watch(bottomNavigationBarProvider) == 1)
                 const SearchComponents(),
+              if (ref.watch(bottomNavigationBarProvider) == 2)
+                const NotificationComponents(),
             ],
           ),
         ),

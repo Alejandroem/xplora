@@ -20,14 +20,50 @@ class _XplorAppBarState extends ConsumerState<XplorAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      leading: IconButton(
-        icon: CircleAvatar(
-          backgroundColor: whiteSmoke,
-          radius: 16.0,
-          child: const Icon(Icons.person),
-        ),
-        onPressed: () {},
-      ),
+      leading: ref.watch(isAuthenticatedProvider).when(data: (isAuthenticated) {
+        if (isAuthenticated) {
+          IconButton(
+            icon: CircleAvatar(
+              backgroundColor: whiteSmoke,
+              radius: 16.0,
+              child: const Icon(Icons.person),
+            ),
+            onPressed: () {},
+          );
+        }
+        return SizedBox(
+          width: 16,
+          height: 16,
+          child: const Image(
+            image: AssetImage('assets/png/xplora-logo.png'),
+            width: 16.0,
+            height: 16.0,
+            fit: BoxFit.contain,
+          ),
+        );
+      }, error: (Object error, StackTrace stackTrace) {
+        return SizedBox(
+          width: 16,
+          height: 16,
+          child: const Image(
+            image: AssetImage('assets/png/xplora-logo.png'),
+            width: 16.0,
+            height: 16.0,
+            fit: BoxFit.contain,
+          ),
+        );
+      }, loading: () {
+        return SizedBox(
+          width: 16,
+          height: 16,
+          child: const Image(
+            image: AssetImage('assets/png/xplora-logo.png'),
+            width: 16.0,
+            height: 16.0,
+            fit: BoxFit.contain,
+          ),
+        );
+      }),
       titleSpacing: 8.0,
       title: ref.watch(isAuthenticatedProvider).when(
             data: (isAuthenticated) {
@@ -65,7 +101,7 @@ class _XplorAppBarState extends ConsumerState<XplorAppBar> {
                 return Text(
                   'Xplra',
                   style: TextStyle(
-                    color: springBud,
+                    color: raisingBlack,
                   ),
                 );
               }

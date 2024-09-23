@@ -85,3 +85,28 @@ final nearbyQuestProvider = FutureProvider<List<Quest>?>((ref) async {
     ...userPreviousQuest,
   ];
 });
+
+final userPreviousQuestProvider = FutureProvider<List<Quest>>((ref) async {
+  final questCrudService = ref.watch(questCrudServiceProvider);
+  final authService = ref.watch(authServiceProvider);
+
+  if (!await authService.isSignedInFuture()) {
+    return [];
+  }
+
+  final user = await authService.getAuthUser();
+  if (user == null) {
+    return [];
+  }
+
+  List<Quest> userPreviousQuest = await questCrudService.readByFilters([
+        {
+          'field': 'userId',
+          'operator': '==',
+          'value': user.id,
+        },
+      ]) ??
+      [];
+
+  return userPreviousQuest;
+});

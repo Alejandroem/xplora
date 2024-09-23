@@ -193,3 +193,26 @@ final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
 final selectedCategoriesProvider = StateProvider<List<String>>((ref) {
   return [];
 });
+
+final userPreviousAdventuresProvider =
+    FutureProvider<List<Adventure>?>((ref) async {
+  final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
+  final authService = ref.watch(authServiceProvider);
+
+  if (!await authService.isSignedInFuture()) {
+    return null;
+  }
+
+  final user = await authService.getAuthUser();
+  if (user == null) {
+    return null;
+  }
+
+  return adventureCrudService.readByFilters([
+    {
+      'field': 'userId',
+      'operator': '==',
+      'value': user.id,
+    },
+  ]);
+});
