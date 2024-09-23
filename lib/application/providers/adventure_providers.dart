@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
@@ -106,42 +107,6 @@ final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
 
-  Location location = Location();
-
-  bool serviceEnabled;
-  PermissionStatus permissionGranted;
-
-  serviceEnabled = await location.serviceEnabled();
-  if (!serviceEnabled) {
-    serviceEnabled = await location.requestService();
-    if (!serviceEnabled) {
-      return null;
-    }
-  }
-
-  permissionGranted = await location.hasPermission();
-  if (permissionGranted == PermissionStatus.denied) {
-    permissionGranted = await location.requestPermission();
-    if (permissionGranted != PermissionStatus.granted) {
-      return null;
-    }
-  }
-
-  final userLocation = await location.getLocation();
-
-  if (userLocation.latitude == null || userLocation.longitude == null) {
-    return null;
-  }
-
-  if (!await authService.isSignedInFuture()) {
-    return null;
-  }
-
-  final user = await authService.getAuthUser();
-  if (user == null) {
-    return null;
-  }
-
   final allAvailableAdventures = await adventureCrudService.readByFilters([
     {
       'field': 'userId',
@@ -151,6 +116,42 @@ final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
 
   if (allAvailableAdventures == null || allAvailableAdventures.isEmpty) {
     return null;
+  }
+
+  Location location = Location();
+
+  bool serviceEnabled;
+  PermissionStatus permissionGranted;
+
+  serviceEnabled = await location.serviceEnabled();
+  if (!serviceEnabled) {
+    serviceEnabled = await location.requestService();
+    if (!serviceEnabled) {
+      return allAvailableAdventures;
+    }
+  }
+
+  permissionGranted = await location.hasPermission();
+  if (permissionGranted == PermissionStatus.denied) {
+    permissionGranted = await location.requestPermission();
+    if (permissionGranted != PermissionStatus.granted) {
+      return allAvailableAdventures;
+    }
+  }
+
+  final userLocation = await location.getLocation();
+
+  if (userLocation.latitude == null || userLocation.longitude == null) {
+    return allAvailableAdventures;
+  }
+
+  if (!await authService.isSignedInFuture()) {
+    return allAvailableAdventures;
+  }
+
+  final user = await authService.getAuthUser();
+  if (user == null) {
+    return allAvailableAdventures;
   }
 
   final userPreviousAdventures = await adventureCrudService.readByFilters([
@@ -169,7 +170,9 @@ final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
         adventure.latitude,
         adventure.longitude,
       );
-      return true;
+      if (kDebugMode) {
+        return true;
+      }
       return distance <= 30;
     },
   ).toList();

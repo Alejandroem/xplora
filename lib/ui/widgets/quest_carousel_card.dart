@@ -21,7 +21,7 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => AdventureDetail('carousel', widget.adventure),
+            builder: (context) => AdventureDetail('carousel', widget.adventure),
           ),
         );
       },

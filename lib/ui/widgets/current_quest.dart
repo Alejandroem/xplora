@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../application/providers/adventure_providers.dart';
-import '../../domain/models/quest.dart';
-import '../pages/quest_detail.dart';
 
 class CurrentQuest extends ConsumerStatefulWidget {
   const CurrentQuest({super.key});

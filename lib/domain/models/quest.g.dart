@@ -9,30 +9,38 @@ part of 'quest.dart';
 _$QuestImpl _$$QuestImplFromJson(Map<String, dynamic> json) => _$QuestImpl(
       id: json['id'] as String?,
       userId: json['userId'] as String?,
-      isActive: json['isActive'] as bool?,
+      questId: json['questId'] as String?,
       title: json['title'] as String,
       shortDescription: json['shortDescription'] as String,
       longDescription: json['longDescription'] as String,
       imageUrl: json['imageUrl'] as String,
       experience: (json['experience'] as num).toDouble(),
-      timeInSeconds: (json['timeInSeconds'] as num).toInt(),
-      priceLevel: (json['priceLevel'] as num).toInt(),
-      steps: (json['steps'] as List<dynamic>)
-          .map((e) => QuestStep.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      stepType: $enumDecode(_$QuestTypeEnumMap, json['stepType']),
+      timeInSeconds: (json['timeInSeconds'] as num?)?.toInt(),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      stepCode: json['stepCode'] as String?,
     );
 
 Map<String, dynamic> _$$QuestImplToJson(_$QuestImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'userId': instance.userId,
-      'isActive': instance.isActive,
+      'questId': instance.questId,
       'title': instance.title,
       'shortDescription': instance.shortDescription,
       'longDescription': instance.longDescription,
       'imageUrl': instance.imageUrl,
       'experience': instance.experience,
+      'stepType': _$QuestTypeEnumMap[instance.stepType]!,
       'timeInSeconds': instance.timeInSeconds,
-      'priceLevel': instance.priceLevel,
-      'steps': instance.steps,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'stepCode': instance.stepCode,
     };
+
+const _$QuestTypeEnumMap = {
+  QuestType.location: 'location',
+  QuestType.timeLocation: 'timeLocation',
+  QuestType.qr: 'qr',
+};

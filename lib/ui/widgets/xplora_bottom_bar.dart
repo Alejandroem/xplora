@@ -15,22 +15,35 @@ class _BottomNavigationBarState
     extends ConsumerState<XploraBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
+    final currentIndex = ref.watch(bottomNavigationBarProvider);
+    final isIndexZero = currentIndex == 1;
+
     return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
+      backgroundColor: isIndexZero ? Colors.black : Colors.white,
+      items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
+          icon: Icon(
+            Icons.home,
+            color: isIndexZero ? Colors.white : Colors.black,
+          ),
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.search),
+          icon: Icon(
+            Icons.search,
+            color: isIndexZero ? Colors.white : Colors.black,
+          ),
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.notifications),
+          icon: Icon(
+            Icons.notifications,
+            color: isIndexZero ? Colors.white : Colors.black,
+          ),
           label: '',
         ),
       ],
-      currentIndex: ref.watch(bottomNavigationBarProvider),
+      currentIndex: currentIndex,
       onTap: (index) {
         ref.read(bottomNavigationBarProvider.notifier).state = index;
       },

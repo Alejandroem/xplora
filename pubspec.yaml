@@ -1,12 +1,12 @@
 name: xplora
 description: "A new Flutter project."
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: ">=3.4.3 <4.0.0"
 
 dependencies:
   flutter:
@@ -30,8 +30,6 @@ dependencies:
   geolocator: ^10.0.0
   carousel_slider: ^5.0.0
 
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -43,13 +41,15 @@ dev_dependencies:
   riverpod_generator: ^2.4.0
   custom_lint: ^0.6.4
   riverpod_lint: ^2.3.10
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.1
 
 flutter:
-
   uses-material-design: true
 
   assets:
-  - assets/svg/
+    - assets/svg/
+    - assets/png/
 
   fonts:
     - family: Jura
@@ -64,4 +64,16 @@ flutter:
           weight: 300
         - asset: assets/fonts/Jura-SemiBold.ttf
           weight: 600
-  
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/png/xplora-logo.png" # Your icon image path
+  adaptive_icon_background: "#ffffff" # Background for Android adaptive icon
+
+flutter_native_splash:
+  color: "#ffffff" # Background color of splash screen
+  image: assets/png/xplora-logo.png # Your splash image
+  android: true
+  ios: true
+  fullscreen: true # Optional, hides the status bar on splash screen

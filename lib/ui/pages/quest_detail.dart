@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/quest.dart';
-import '../../domain/models/quest_step.dart';
 import '../../theme.dart';
 
 class QuestDetail extends ConsumerStatefulWidget {
@@ -70,85 +69,82 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
                 children: [
-                  ...widget.quest.steps.map(
-                    (step) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.20,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Container(
-                                  height: 160,
-                                  width: 4,
-                                  color: majjoreleBlue,
-                                ),
-                                Icon(
-                                  step.completed ?? false
-                                      ? Icons.check_circle
-                                      : Icons.circle,
-                                  color: springBud,
-                                ),
-                              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.20,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              height: 160,
+                              width: 4,
+                              color: majjoreleBlue,
                             ),
-                          ),
-                          SizedBox(
-                            height: 160,
-                            width: MediaQuery.of(context).size.width * 0.80,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Icon(
+                              widget.quest.userId != null
+                                  ? Icons.check_circle
+                                  : Icons.circle,
+                              color: springBud,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 160,
+                        width: MediaQuery.of(context).size.width * 0.80,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      step.stepName,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    if (step.stepType == StepType.location)
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.map,
-                                          color: springBud,
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                    if (step.stepType == StepType.qr)
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.qr_code,
-                                          color: springBud,
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                    if (step.stepType == StepType.timeLocation)
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.hourglass_bottom,
-                                          color: springBud,
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                  ],
-                                ),
                                 Text(
-                                  step.stepDescription,
+                                  widget.quest.shortDescription,
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     color: Colors.black,
                                   ),
                                 ),
+                                if (widget.quest.stepType == QuestType.location)
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.map,
+                                      color: springBud,
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                if (widget.quest.stepType == QuestType.qr)
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.qr_code,
+                                      color: springBud,
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                if (widget.quest.stepType ==
+                                    QuestType.timeLocation)
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.hourglass_bottom,
+                                      color: springBud,
+                                    ),
+                                    onPressed: () {},
+                                  ),
                               ],
                             ),
-                          )
-                        ],
-                      );
-                    },
+                            Text(
+                              widget.quest.longDescription,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 ],
               ),

@@ -62,7 +62,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                             top: 10,
                             left: 10,
                             child: Text(
-                              'Exp. ${adventure!.experience.toStringAsFixed(2)}',
+                              'Exp. ${adventure.experience.toStringAsFixed(2)}',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
@@ -107,7 +107,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                                     // host: '"0,0"',  {here we can put host}
                                     queryParameters: {
                                       'q':
-                                          '${adventure!.latitude}, ${adventure!.longitude}'
+                                          '${adventure.latitude}, ${adventure.longitude}'
                                     });
                                 if (await canLaunchUrl(uri)) {
                                   await launchUrl(uri);
@@ -132,7 +132,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                       width: 6.0,
                       height: 6.0,
                       margin:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: (Theme.of(context).brightness ==

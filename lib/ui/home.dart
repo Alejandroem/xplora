@@ -5,11 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../application/providers/adventure_providers.dart';
 import '../application/providers/navigation_providers.dart';
-import '../domain/models/quest.dart';
-import '../domain/models/quest_step.dart';
 import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
+//import '../application/providers/quest_providers.dart';
 import '../application/providers/quest_providers.dart';
+import 'components/search_components.dart';
 import 'pages/categories.dart';
 import 'pages/onboarding.dart';
 import 'widgets/categories_chips.dart';
@@ -28,8 +28,6 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
-  Quest? currentQuest;
-  QuestStep? currentStep;
   Icon? currentIcon;
 
   @override
@@ -68,37 +66,41 @@ class _HomeState extends ConsumerState<Home> {
         },
       );
     });
-    final currentAuthUserId = ref.watch(currentAuthUserIdStreamProvider);
-    currentAuthUserId.whenData((userId) {
-      if (userId != null) {
-        ref.watch(currentQuestForUserProvider(userId)).whenData((quest) {
-          if (quest != null) {
-            setState(() {
-              currentQuest = quest;
-              currentStep = quest.steps.firstWhere(
-                (step) => step.completed == false,
-                orElse: () => quest.steps.last,
-              );
-              if (currentStep!.stepType == StepType.qr) {
-                currentIcon = const Icon(Icons.qr_code);
-              } else if (currentStep!.stepType == StepType.location) {
-                currentIcon = const Icon(Icons.location_on);
-              } else if (currentStep!.stepType == StepType.timeLocation) {
-                currentIcon = const Icon(Icons.hourglass_bottom);
-              }
-            });
-          }
-        });
-      }
-    });
 
     return Scaffold(
-      appBar: const XplorAppBar(),
+      appBar: ref.watch(bottomNavigationBarProvider) == 0
+          ? const XplorAppBar()
+          : null,
       bottomNavigationBar: const XploraBottomNavigationBar(),
+      /*floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          //final questProvider = ref.read(questCrudServiceProvider);
+
+           await questProvider.create(
+            const Quest(
+              id: null,
+              userId: null,
+              title: 'Test QR',
+              shortDescription: 'Test Quest Short Description',
+              longDescription: 'Test Quest Long Description',
+              imageUrl: 'https://picsum.photos/200/300',
+              experience: 100,
+              stepType: QuestType.qr,
+              timeInSeconds: 0,
+              stepLatitude: 18.470412,
+              stepLongitude: -66.123672,
+              stepCode: '123456',
+            ),
+          ); 
+        },
+        child: const Icon(Icons.add),
+      ),
+      */
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(availableAdventuresProvider);
           ref.invalidate(nearbyAdventuresProvider);
+          ref.invalidate(nearbyQuestProvider);
           ref.invalidate(createOrReadCurrentUserProfile);
           setState(() {});
         },
@@ -109,9 +111,9 @@ class _HomeState extends ConsumerState<Home> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    FeaturedAdventure(),
-                    NearestAdventures(),
-                    CategoriesChips(),
+                    const FeaturedAdventure(),
+                    const NearestAdventures(),
+                    const CategoriesChips(),
                     SizedBox(
                       height: 200,
                       child: Row(
@@ -136,7 +138,7 @@ class _HomeState extends ConsumerState<Home> {
                                   ),
                                 );
                               },
-                              child: Hero(
+                              child: const Hero(
                                 tag: 'quest-list',
                                 child: QuestList(
                                   isHero: false,
@@ -144,14 +146,16 @@ class _HomeState extends ConsumerState<Home> {
                               ),
                             ),
                           ),
-                          Expanded(
+                          const Expanded(
                             child: CurrentQuest(),
                           ),
                         ],
                       ),
                     ),
                   ],
-                )
+                ),
+              if (ref.watch(bottomNavigationBarProvider) == 1)
+                const SearchComponents(),
             ],
           ),
         ),

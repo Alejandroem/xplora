@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../domain/models/adventure.dart';
-import '../../domain/models/quest.dart';
-import '../../application/providers/quest_providers.dart';
 import '../../theme.dart';
 import 'quest_carousel_card.dart';
 
@@ -18,8 +16,6 @@ class NearestAdventures extends ConsumerStatefulWidget {
 class _QuestCarouselState extends ConsumerState<NearestAdventures> {
   @override
   Widget build(BuildContext context) {
-    final questervice = ref.watch(questCrudServiceProvider);
-
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -45,75 +41,25 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
           ),
           SizedBox(
             height: 200,
-            child: StreamBuilder(
-              stream: questervice.streamByFilters([
-                {
-                  'field': 'isActive',
-                  'operator': '==',
-                  'value': false,
-                },
-              ]),
+            child: FutureBuilder(
+              future: ref.watch(nearbyAdventuresProvider.future),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: LinearProgressIndicator(),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return const Center(
-                    child: Text(
-                      'An error occurred',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.red,
-                      ),
-                    ),
-                  );
-                }
-                if (snapshot.data == null ||
-                    (snapshot.data as List<Quest>).isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No quests found...',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: springBud,
-                      ),
-                    ),
-                  );
-                }
-                return FutureBuilder(
-                  future: ref.watch(nearbyAdventuresProvider.future),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData &&
-                        snapshot.data != null &&
-                        snapshot.data!.isNotEmpty) {
-                      return ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: (snapshot.data as List<Adventure>)
-                            .map(
-                              (adventure) => AdventuresCarouselCard(
-                                adventure,
-                              ),
-                            )
-                            .toList(),
-                      );
-                    }
-                    return const SizedBox();
-                  },
-                );
-                /* return ListView(
+                if (snapshot.hasData &&
+                    snapshot.data != null &&
+                    snapshot.data!.isNotEmpty) {
+                  return ListView(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
-                    children: (snapshot.data as List<Quest>)
+                    children: (snapshot.data as List<Adventure>)
                         .map(
-                          (quest) => QuestCarouselCard(
-                            quest,
+                          (adventure) => AdventuresCarouselCard(
+                            adventure,
                           ),
                         )
                         .toList(),
-                  ); */
+                  );
+                }
+                return const SizedBox();
               },
             ),
           ),
