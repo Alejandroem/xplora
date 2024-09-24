@@ -68,12 +68,12 @@ flutter:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/png/xplora-logo.png" # Your icon image path
+  image_path: "assets/png/xplora-logo-solid.png" # Your icon image path
   adaptive_icon_background: "#ffffff" # Background for Android adaptive icon
 
 flutter_native_splash:
   color: "#ffffff" # Background color of splash screen
-  image: assets/png/xplora-logo.png # Your splash image
+  image: assets/png/xplora-logo-solid.png # Your splash image
   android: true
   ios: true
   fullscreen: true # Optional, hides the status bar on splash screen
