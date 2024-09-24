@@ -51,10 +51,8 @@
 		<false/>
 		<key>NSCameraUsageDescription</key>
 		<string>This app requires camera access to allow users to scan qr codes of quests.</string>
-
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>This app requires location access to provide personalized quests or adventures services based on the user’s location.</string>
-
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 		<string>This app requires location access to award quests or adventures based on location.</string>
 
