@@ -70,6 +70,7 @@ flutter_icons:
   ios: true
   image_path: "assets/png/xplora-logo-solid.png" # Your icon image path
   adaptive_icon_background: "#ffffff" # Background for Android adaptive icon
+  remove_alpha_ios: true # Remove alpha from iOS icons
 
 flutter_native_splash:
   color: "#ffffff" # Background color of splash screen
