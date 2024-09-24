@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBSLbMKMPZfns0MkLMveGBkVHD5wZ8npEw',
-    appId: '1:441929013315:android:d4dad027258cbb2fa21cf6',
+    appId: '1:441929013315:android:d0bd79839d18eaf7a21cf6',
     messagingSenderId: '441929013315',
     projectId: 'xplra-1',
     storageBucket: 'xplra-1.appspot.com',
@@ -60,11 +60,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD0gazYL_5ODAextQ9eKUo_iLBUWgTDeyA',
-    appId: '1:441929013315:ios:78903518c7986f87a21cf6',
+    appId: '1:441929013315:ios:139bafaa78db17f9a21cf6',
     messagingSenderId: '441929013315',
     projectId: 'xplra-1',
     storageBucket: 'xplra-1.appspot.com',
-    iosBundleId: 'com.example.xplora',
+    iosBundleId: 'com.xplra.mobile',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

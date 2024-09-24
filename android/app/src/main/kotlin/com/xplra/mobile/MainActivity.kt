@@ -1,4 +1,4 @@
-package com.xplra.app
+package com.xplra.mobile
 
 import io.flutter.embedding.android.FlutterActivity
 
