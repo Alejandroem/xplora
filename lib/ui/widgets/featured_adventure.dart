@@ -1,8 +1,6 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import '../../application/providers/adventure_providers.dart';
 import '../pages/adventure_detail.dart';
 
@@ -15,149 +13,111 @@ class FeaturedAdventure extends ConsumerStatefulWidget {
 }
 
 class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
-  int _current = 0;
-  final CarouselSliderController _controller = CarouselSliderController();
+  int _currentImageIndex = 0;
+  late Timer _timer;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _startSlideshow();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startSlideshow() {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      setState(() {
+        _currentImageIndex = (_currentImageIndex + 1) % 3; // Update image index
+        _pageController.animateToPage(
+          _currentImageIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ref.watch(featuredAdventuresProvider).when(
-      data: (data) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              CarouselSlider(
-                carouselController: _controller,
-                options: CarouselOptions(
-                  height: 160,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _current = index;
-                    });
-                  },
-                ),
-                items: data!.map((adventure) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AdventureDetail('featured', adventure),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      clipBehavior: Clip.hardEdge,
-                      child: Stack(
-                        children: [
-                          Hero(
-                            tag: 'adventure-image-${adventure.id}-featured',
-                            child: Image.network(
-                              adventure.imageUrl,
+          data: (data) {
+            if (data == null || data.isEmpty) {
+              return const Center(
+                  child: Text('No featured adventures available'));
+            }
+
+            // Display only the first adventure
+            final adventure = data.first;
+            final images = [
+              'https://picsum.photos/400/300?random=3',
+              'https://picsum.photos/400/300?random=4',
+              'https://picsum.photos/400/300?random=5'
+            ];
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AdventureDetail('featured', adventure),
+                    ),
+                  );
+                },
+                child: Card(
+                  clipBehavior: Clip.hardEdge,
+                  child: Stack(
+                    children: [
+                      // Slideshow using PageView
+                      SizedBox(
+                        height: 160,
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: images.length,
+                          itemBuilder: (context, index) {
+                            return Image.network(
+                              images[index],
                               fit: BoxFit.cover,
                               width: double.infinity,
-                              height: 160,
-                            ),
-                          ),
-                          Positioned(
-                            top: 10,
-                            left: 10,
-                            child: Text(
-                              'Exp. ${adventure.experience.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Hero(
-                                    tag:
-                                        'adventure-title-${adventure.id}-featured',
-                                    child: Text(
-                                      adventure.title,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 10,
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.map,
-                                color: Colors.white,
-                              ),
-                              onPressed: () async {
-                                final uri = Uri(
-                                    scheme: 'google.navigation',
-                                    // host: '"0,0"',  {here we can put host}
-                                    queryParameters: {
-                                      'q':
-                                          '${adventure.latitude}, ${adventure.longitude}'
-                                    });
-                                if (await canLaunchUrl(uri)) {
-                                  await launchUrl(uri);
-                                } else {
-                                  debugPrint('An error occurred');
-                                }
-                              },
-                            ),
-                          )
-                        ],
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                      //centered text with background saying promote your event here
+                      Positioned(
+                        top: 60,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          color: Colors.black.withOpacity(0.5),
+                          padding: const EdgeInsets.all(10),
+                          child: const Text(
+                            'Promote your event here',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: data.asMap().entries.map((entry) {
-                  return GestureDetector(
-                    onTap: () => _controller.animateToPage(entry.key),
-                    child: Container(
-                      width: 6.0,
-                      height: 6.0,
-                      margin:
-                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: (Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black)
-                              .withOpacity(_current == entry.key ? 0.9 : 0.4)),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) =>
+              const Center(child: Text('An error occurred')),
         );
-      },
-      loading: () {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-      error: (error, stackTrace) {
-        return const Center(
-          child: Text('An error occurred'),
-        );
-      },
-    );
   }
 }

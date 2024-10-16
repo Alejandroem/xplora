@@ -22,12 +22,13 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
             child: Row(
               children: [
                 Icon(
                   Icons.location_on,
                   color: raisingBlack,
+                  size: 20,
                 ),
                 Text(
                   'Nearest Adventures',

@@ -68,25 +68,8 @@ final featuredAdventuresProvider =
       'field': 'featured',
       'operator': '==',
       'value': true,
-    },
-    {
-      'field': 'userId',
-      'operator': 'unset',
-    },
+    }
   ]);
-  final userAdventures = await ref.watch(userAdventuresProvider.future);
-  if (allAdventures != null &&
-      allAdventures.isNotEmpty &&
-      userAdventures != null &&
-      userAdventures.isNotEmpty) {
-    allAdventures.removeWhere(
-      (a) =>
-          userAdventures.indexWhere(
-            (userAdventure) => userAdventure.adventureId == a.id,
-          ) !=
-          -1,
-    );
-  }
   return allAdventures;
 });
 

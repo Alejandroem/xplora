@@ -38,6 +38,8 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
               Hero(
                 tag: 'adventure-image-${widget.adventure.id}-carousel',
                 child: Image.network(
+                  color: Colors.white.withOpacity(0.4),
+                  colorBlendMode: BlendMode.lighten,
                   widget.adventure.imageUrl,
                   height: 200,
                   width: 150,

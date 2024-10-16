@@ -27,7 +27,7 @@ class _NotificationComponentsState
           return const SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 48),
+                SizedBox(height: 48),
                 Center(
                   child: Text(
                     'No previous awards.',
@@ -36,7 +36,7 @@ class _NotificationComponentsState
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Center(
                   child: Text(
                     'Visit new places to get awards.',
@@ -46,7 +46,7 @@ class _NotificationComponentsState
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Icon(
                   Icons.sentiment_dissatisfied,
                   size: 100,
