@@ -8,6 +8,7 @@ import '../application/providers/navigation_providers.dart';
 import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
 import '../application/providers/quest_providers.dart';
+import '../application/providers/search_providers.dart';
 import 'components/feed_components.dart';
 import 'components/notification_components.dart';
 import 'components/search_components.dart';
@@ -95,9 +96,11 @@ class _HomeState extends ConsumerState<Home> {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(availableAdventuresProvider);
-          ref.invalidate(nearbyAdventuresProvider);
-          ref.invalidate(nearbyQuestProvider);
           ref.invalidate(createOrReadCurrentUserProfile);
+          //ref.invalidate(nearbyAdventuresProvider);
+          //ref.invalidate(nearbyQuestProvider);
+
+          //ref.invalidate(searchItemsProvider);
           setState(() {});
         },
         child: SingleChildScrollView(

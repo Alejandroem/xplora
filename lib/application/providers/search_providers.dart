@@ -5,7 +5,8 @@ import 'quest_providers.dart';
 
 import 'dart:math';
 
-final searchItemsProvider = FutureProvider<List<dynamic>>((ref) async {
+final searchItemsProvider =
+    FutureProvider.autoDispose<List<dynamic>>((ref) async {
   final nearbyAdventures = await ref.watch(nearbyAdventuresProvider.future);
   final nearbyQuest = await ref.watch(nearbyQuestProvider.future);
 
