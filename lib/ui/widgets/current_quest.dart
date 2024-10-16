@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../application/providers/adventure_providers.dart';
@@ -16,7 +17,26 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
   Widget build(BuildContext context) {
     final questInProgress = ref.watch(adventureInProgressTrackerProvider);
     if (questInProgress == null) {
-      return const SizedBox.shrink();
+      return Container(
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Card(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              "assets/svg/ollie-logo.svg",
+              height: 60,
+              fit: BoxFit.contain,
+            ),
+            Text("TripAdvisor AI", style: TextStyle(fontSize: 20)),
+            Text("Cooming Soon", style: TextStyle(fontSize: 14)),
+          ],
+        )),
+      );
     }
     return InkWell(
       onTap: () {
