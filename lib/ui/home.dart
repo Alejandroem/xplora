@@ -37,6 +37,7 @@ class _HomeState extends ConsumerState<Home> {
   Widget build(BuildContext context) {
     //Initialize the timers.
     ref.watch(adventureInProgressTrackerProvider);
+    ref.watch(questInProgressTrackerProvider);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(hasFinishedOnboardingProvider).whenData(

@@ -2,8 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:location/location.dart';
 
 import '../../domain/models/quest.dart';
+import '../../domain/models/quest_in_progress.dart';
 import '../../domain/services/xplora_quest_crud_service.dart';
 import '../../infrastructure/services/firebase_xplora_quest_crud_service.dart';
+import '../notifiers/quest_validator_notifier.dart';
 import 'auth_providers.dart';
 
 final questCrudServiceProvider = Provider<XploraQuestCrudService>((ref) {
@@ -109,4 +111,12 @@ final userPreviousQuestProvider = FutureProvider<List<Quest>>((ref) async {
       [];
 
   return userPreviousQuest;
+});
+
+final questInProgressTrackerProvider =
+    StateNotifierProvider<QuestValidatorNotifier, QuestInProgress?>((ref) {
+  return QuestValidatorNotifier(
+    ref.watch(questCrudServiceProvider),
+    ref.watch(authServiceProvider),
+  );
 });
