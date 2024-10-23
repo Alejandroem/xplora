@@ -34,8 +34,12 @@ mixin _$Adventure {
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
 
+  /// Serializes this Adventure to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Adventure
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $AdventureCopyWith<Adventure> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -69,6 +73,8 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Adventure
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -163,6 +169,8 @@ class __$$AdventureImplCopyWithImpl<$Res>
       _$AdventureImpl _value, $Res Function(_$AdventureImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Adventure
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -302,7 +310,7 @@ class _$AdventureImpl implements _Adventure {
                 other.longitude == longitude));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -318,7 +326,9 @@ class _$AdventureImpl implements _Adventure {
       latitude,
       longitude);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Adventure
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$AdventureImplCopyWith<_$AdventureImpl> get copyWith =>
@@ -352,10 +362,11 @@ abstract class _Adventure implements Adventure {
   @override
   String? get id;
   @override
-  String? get userId;
-  @override //Only set if a user already got through it
-  String? get adventureId;
-  @override //Only set if a user already got through it as it should be the old adventure id
+  String? get userId; //Only set if a user already got through it
+  @override
+  String?
+      get adventureId; //Only set if a user already got through it as it should be the old adventure id
+  @override
   bool? get featured;
   @override
   String get title;
@@ -371,8 +382,11 @@ abstract class _Adventure implements Adventure {
   double get latitude;
   @override
   double get longitude;
+
+  /// Create a copy of Adventure
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AdventureImplCopyWith<_$AdventureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

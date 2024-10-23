@@ -28,8 +28,12 @@ mixin _$LoginForm {
   List<String> get errors => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
 
+  /// Serializes this LoginForm to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of LoginForm
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $LoginFormCopyWith<LoginForm> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -59,6 +63,8 @@ class _$LoginFormCopyWithImpl<$Res, $Val extends LoginForm>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of LoginForm
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -129,6 +135,8 @@ class __$$LoginFormImplCopyWithImpl<$Res>
       _$LoginFormImpl _value, $Res Function(_$LoginFormImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of LoginForm
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -234,7 +242,7 @@ class _$LoginFormImpl implements _LoginForm {
                 other.isLoading == isLoading));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -246,7 +254,9 @@ class _$LoginFormImpl implements _LoginForm {
       const DeepCollectionEquality().hash(_errors),
       isLoading);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LoginForm
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$LoginFormImplCopyWith<_$LoginFormImpl> get copyWith =>
@@ -287,8 +297,11 @@ abstract class _LoginForm implements LoginForm {
   List<String> get errors;
   @override
   bool get isLoading;
+
+  /// Create a copy of LoginForm
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LoginFormImplCopyWith<_$LoginFormImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

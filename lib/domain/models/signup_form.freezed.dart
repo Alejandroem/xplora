@@ -35,8 +35,12 @@ mixin _$SignupForm {
   List<String> get errors => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
 
+  /// Serializes this SignupForm to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of SignupForm
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SignupFormCopyWith<SignupForm> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -74,6 +78,8 @@ class _$SignupFormCopyWithImpl<$Res, $Val extends SignupForm>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SignupForm
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -186,6 +192,8 @@ class __$$SignupFormImplCopyWithImpl<$Res>
       _$SignupFormImpl _value, $Res Function(_$SignupFormImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SignupForm
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -361,7 +369,7 @@ class _$SignupFormImpl implements _SignupForm {
                 other.isLoading == isLoading));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -380,7 +388,9 @@ class _$SignupFormImpl implements _SignupForm {
       const DeepCollectionEquality().hash(_errors),
       isLoading);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SignupForm
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SignupFormImplCopyWith<_$SignupFormImpl> get copyWith =>
@@ -442,8 +452,11 @@ abstract class _SignupForm implements SignupForm {
   List<String> get errors;
   @override
   bool get isLoading;
+
+  /// Create a copy of SignupForm
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SignupFormImplCopyWith<_$SignupFormImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
