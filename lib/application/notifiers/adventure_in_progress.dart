@@ -14,7 +14,7 @@ import '../../domain/services/auth_service.dart';
 import '../../domain/services/xplora_profile_service.dart';
 
 class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
-  final int _checkInterval = 10; // Update completeness every 10 seconds
+  final int _checkInterval = 30; // Update completeness every 10 seconds
   final int _leaveThreshold = kDebugMode
       ? 10
       : 600; // Time outside before clearing (10 sec debug, 10 min prod)

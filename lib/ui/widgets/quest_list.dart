@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/quest_providers.dart';
 import '../../domain/models/quest.dart';
+import '../../domain/models/quest_in_progress.dart';
 import '../../theme.dart';
 
 class QuestList extends ConsumerStatefulWidget {
@@ -23,21 +25,35 @@ class _QuestListState extends ConsumerState<QuestList> {
   Quest? scannedQuest;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  bool _isBlinking = false;
+  Timer? _blinkTimer;
 
   @override
-  void reassemble() {
-    super.reassemble();
-    if (Platform.isAndroid) {
-      controller?.pauseCamera();
-    }
-    controller?.resumeCamera();
+  void initState() {
+    super.initState();
+    _startBlinking();
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    _blinkTimer?.cancel();
+    super.dispose();
+  }
+
+  // Start blinking effect for in-progress quests
+  void _startBlinking() {
+    _blinkTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      setState(() {
+        _isBlinking = !_isBlinking;
+      });
+    });
   }
 
   Future<void> _onQRViewCreated(QRViewController controller) async {
     this.controller = controller;
 
     await for (final scanData in controller.scannedDataStream) {
-      // Handle the QR scan result here
       log('QR Code scanned: ${scanData.code}');
 
       if (scanData.code != null &&
@@ -46,34 +62,31 @@ class _QuestListState extends ConsumerState<QuestList> {
         final questCrudService = ref.watch(questCrudServiceProvider);
         final authService = ref.watch(authServiceProvider);
 
-        // Await for the user to be fetched
         final user = await authService.getAuthUser();
 
         if (user != null) {
-          // Create a new quest with the userId
+          // Award the quest by updating the userId and refreshing the list
           await questCrudService.create(scannedQuest!.copyWith(
             questId: scannedQuest!.id,
             userId: user.id,
           ));
+
+          // Refresh the nearby quest provider to reflect the awarded quest
+          ref.refresh(nearbyQuestProvider);
         }
 
-        // Pause the camera after quest creation
         controller.pauseCamera();
       } else {
-        // Pause the camera if the code does not match
         controller.pauseCamera();
       }
     }
   }
 
   @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final questInProgress = ref.watch(questInProgressTrackerProvider);
+    //invalidate nearbyQuestProvider when quetInProgressBecomesNull
+
     return ref.watch(nearbyQuestProvider).when(
       data: (data) {
         return Container(
@@ -88,16 +101,10 @@ class _QuestListState extends ConsumerState<QuestList> {
                   padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.flag,
-                        color: raisingBlack,
-                      ),
+                      Icon(Icons.flag, color: raisingBlack),
                       Text(
                         'Quest',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: raisingBlack,
-                        ),
+                        style: TextStyle(fontSize: 20, color: raisingBlack),
                       ),
                     ],
                   ),
@@ -113,11 +120,9 @@ class _QuestListState extends ConsumerState<QuestList> {
                   child: Card(
                     shape: widget.isHero
                         ? RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0),
-                          )
+                            borderRadius: BorderRadius.circular(0))
                         : RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+                            borderRadius: BorderRadius.circular(4)),
                     clipBehavior: Clip.hardEdge,
                     margin: const EdgeInsets.all(0),
                     child: ListView.builder(
@@ -128,12 +133,21 @@ class _QuestListState extends ConsumerState<QuestList> {
                         if (data == null) {
                           return const SizedBox();
                         }
+
                         Quest quest = data[index];
+
+                        // Determine if the quest is the one currently in progress
+                        final isBlinkingQuest = questInProgress != null &&
+                            questInProgress.quest.id == quest.id;
+                        final questColor = isBlinkingQuest && _isBlinking
+                            ? Colors.yellow.withOpacity(0.5)
+                            : (index.isEven
+                                ? Colors.grey.shade100
+                                : Colors.white);
+
                         return Container(
                           decoration: BoxDecoration(
-                            color: index.isEven
-                                ? Colors.grey.shade100
-                                : Colors.white,
+                            color: questColor,
                           ),
                           child: InkWell(
                             onTap: () {
@@ -165,23 +179,13 @@ class _QuestListState extends ConsumerState<QuestList> {
                                     ),
                                   ),
                                   if (quest.stepType == QuestType.location)
-                                    Icon(
-                                      Icons.map,
-                                      color: raisingBlack,
-                                    ),
+                                    Icon(Icons.map, color: raisingBlack),
                                   if (quest.stepType == QuestType.qr)
-                                    Icon(
-                                      Icons.qr_code,
-                                      color: raisingBlack,
-                                    ),
+                                    Icon(Icons.qr_code, color: raisingBlack),
                                   if (quest.stepType == QuestType.timeLocation)
-                                    Icon(
-                                      Icons.hourglass_bottom,
-                                      color: raisingBlack,
-                                    ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
+                                    Icon(Icons.hourglass_bottom,
+                                        color: raisingBlack),
+                                  const SizedBox(width: 8),
                                   Container(
                                     width: 1,
                                     color: Colors.grey,
@@ -211,14 +215,10 @@ class _QuestListState extends ConsumerState<QuestList> {
         );
       },
       error: (Object error, StackTrace stackTrace) {
-        return Text(
-          'Error: $error',
-        );
+        return Text('Error: $error');
       },
       loading: () {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }

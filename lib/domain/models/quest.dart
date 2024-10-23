@@ -23,8 +23,8 @@ class Quest with _$Quest {
     required double experience,
     required QuestType stepType,
     required int? timeInSeconds,
-    required double? latitude,
-    required double? longitude,
+    required double? stepLatitude,
+    required double? stepLongitude,
     required String? stepCode,
   }) = _Quest;
 

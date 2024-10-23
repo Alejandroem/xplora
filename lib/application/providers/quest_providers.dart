@@ -63,28 +63,22 @@ final nearbyQuestProvider = FutureProvider<List<Quest>?>((ref) async {
     return allAvailableQuests;
   }
 
-  List<Quest> userPreviousQuest = await questCrudService.readByFilters([
-        {
-          'field': 'userId',
-          'operator': '==',
-          'value': user.id,
-        },
-      ]) ??
-      [];
+  List<Quest>? userPreviousQuest = await questCrudService.readByFilters([
+    {
+      'field': 'userId',
+      'operator': '==',
+      'value': user.id,
+    },
+  ]);
 
-  if (userPreviousQuest.isNotEmpty) {
-    allAvailableQuests.removeWhere(
-      (quest) =>
-          userPreviousQuest.indexWhere(
-            (userQuest) => userQuest.id == quest.id,
-          ) !=
-          -1,
-    );
+  if (userPreviousQuest != null && userPreviousQuest.isNotEmpty) {
+    allAvailableQuests.removeWhere((quest) =>
+        userPreviousQuest.any((userQuest) => userQuest.questId == quest.id));
   }
 
   return [
     ...allAvailableQuests,
-    ...userPreviousQuest,
+    ...?userPreviousQuest,
   ];
 });
 
@@ -116,6 +110,7 @@ final userPreviousQuestProvider = FutureProvider<List<Quest>>((ref) async {
 final questInProgressTrackerProvider =
     StateNotifierProvider<QuestValidatorNotifier, QuestInProgress?>((ref) {
   return QuestValidatorNotifier(
+    ref,
     ref.watch(questCrudServiceProvider),
     ref.watch(authServiceProvider),
   );

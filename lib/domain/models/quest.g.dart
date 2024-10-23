@@ -17,8 +17,8 @@ _$QuestImpl _$$QuestImplFromJson(Map<String, dynamic> json) => _$QuestImpl(
       experience: (json['experience'] as num).toDouble(),
       stepType: $enumDecode(_$QuestTypeEnumMap, json['stepType']),
       timeInSeconds: (json['timeInSeconds'] as num?)?.toInt(),
-      latitude: (json['latitude'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
+      stepLatitude: (json['stepLatitude'] as num?)?.toDouble(),
+      stepLongitude: (json['stepLongitude'] as num?)?.toDouble(),
       stepCode: json['stepCode'] as String?,
     );
 
@@ -34,8 +34,8 @@ Map<String, dynamic> _$$QuestImplToJson(_$QuestImpl instance) =>
       'experience': instance.experience,
       'stepType': _$QuestTypeEnumMap[instance.stepType]!,
       'timeInSeconds': instance.timeInSeconds,
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
+      'stepLatitude': instance.stepLatitude,
+      'stepLongitude': instance.stepLongitude,
       'stepCode': instance.stepCode,
     };
 
