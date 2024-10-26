@@ -123,6 +123,10 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
     ]);
 
     final user = await _authService.getAuthUser();
+    if (user == null) {
+      log('User not authenticated. Skipping quest check.');
+      return;
+    }
     final currentUserPreviousQuests =
         await _xploraQuestCrudService.readByFilters([
       {

@@ -100,77 +100,80 @@ final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
   if (allAvailableAdventures == null || allAvailableAdventures.isEmpty) {
     return null;
   }
+  try {
+    Location location = Location();
 
-  Location location = Location();
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
 
-  bool serviceEnabled;
-  PermissionStatus permissionGranted;
-
-  serviceEnabled = await location.serviceEnabled();
-  if (!serviceEnabled) {
-    serviceEnabled = await location.requestService();
+    serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
-      return allAvailableAdventures;
-    }
-  }
-
-  permissionGranted = await location.hasPermission();
-  if (permissionGranted == PermissionStatus.denied) {
-    permissionGranted = await location.requestPermission();
-    if (permissionGranted != PermissionStatus.granted) {
-      return allAvailableAdventures;
-    }
-  }
-
-  final userLocation = await location.getLocation();
-
-  if (userLocation.latitude == null || userLocation.longitude == null) {
-    return allAvailableAdventures;
-  }
-
-  if (!await authService.isSignedInFuture()) {
-    return allAvailableAdventures;
-  }
-
-  final user = await authService.getAuthUser();
-  if (user == null) {
-    return allAvailableAdventures;
-  }
-
-  final userPreviousAdventures = await adventureCrudService.readByFilters([
-    {
-      'field': 'userId',
-      'operator': '==',
-      'value': user.id,
-    },
-  ]);
-
-  List<Adventure> nearbyAdventures = allAvailableAdventures.where(
-    (adventure) {
-      final distance = Geolocator.distanceBetween(
-        userLocation.latitude!,
-        userLocation.longitude!,
-        adventure.latitude,
-        adventure.longitude,
-      );
-      if (kDebugMode) {
-        return true;
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return allAvailableAdventures;
       }
-      return distance <= 30;
-    },
-  ).toList();
+    }
 
-  if (userPreviousAdventures != null && userPreviousAdventures.isNotEmpty) {
-    nearbyAdventures.removeWhere(
-      (adventure) =>
-          userPreviousAdventures.indexWhere(
-            (userAdventure) => userAdventure.adventureId == adventure.id,
-          ) !=
-          -1,
-    );
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return allAvailableAdventures;
+      }
+    }
+
+    final userLocation = await location.getLocation();
+
+    if (userLocation.latitude == null || userLocation.longitude == null) {
+      return allAvailableAdventures;
+    }
+
+    if (!await authService.isSignedInFuture()) {
+      return allAvailableAdventures;
+    }
+
+    final user = await authService.getAuthUser();
+    if (user == null) {
+      return allAvailableAdventures;
+    }
+
+    final userPreviousAdventures = await adventureCrudService.readByFilters([
+      {
+        'field': 'userId',
+        'operator': '==',
+        'value': user.id,
+      },
+    ]);
+
+    List<Adventure> nearbyAdventures = allAvailableAdventures.where(
+      (adventure) {
+        final distance = Geolocator.distanceBetween(
+          userLocation.latitude!,
+          userLocation.longitude!,
+          adventure.latitude,
+          adventure.longitude,
+        );
+        if (kDebugMode) {
+          return true;
+        }
+        return distance <= 30;
+      },
+    ).toList();
+
+    if (userPreviousAdventures != null && userPreviousAdventures.isNotEmpty) {
+      nearbyAdventures.removeWhere(
+        (adventure) =>
+            userPreviousAdventures.indexWhere(
+              (userAdventure) => userAdventure.adventureId == adventure.id,
+            ) !=
+            -1,
+      );
+    }
+
+    return nearbyAdventures;
+  } catch (e) {
+    return allAvailableAdventures;
   }
-
-  return nearbyAdventures;
 });
 
 final selectedCategoriesProvider = StateProvider<List<String>>((ref) {
