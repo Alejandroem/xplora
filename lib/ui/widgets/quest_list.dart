@@ -72,7 +72,7 @@ class _QuestListState extends ConsumerState<QuestList> {
           ));
 
           // Refresh the nearby quest provider to reflect the awarded quest
-          ref.refresh(nearbyQuestProvider);
+          //ref.refresh(nearbyQuestProvider);
         }
 
         controller.pauseCamera();

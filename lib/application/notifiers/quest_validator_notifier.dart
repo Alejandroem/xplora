@@ -197,7 +197,7 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
     );
     await _xploraQuestCrudService.create(userQuest);
     //we need to update the nearbyQuestProvider
-    ref.refresh(nearbyQuestProvider);
+    //ref.refresh(nearbyQuestProvider);
     clearQuestInProgress();
   }
 

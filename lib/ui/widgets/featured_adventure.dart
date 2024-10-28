@@ -35,11 +35,15 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       setState(() {
         _currentImageIndex = (_currentImageIndex + 1) % 3; // Update image index
-        _pageController.animateToPage(
-          _currentImageIndex,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
+        try {
+          _pageController.animateToPage(
+            _currentImageIndex,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        } catch (e) {
+          print(e);
+        }
       });
     });
   }

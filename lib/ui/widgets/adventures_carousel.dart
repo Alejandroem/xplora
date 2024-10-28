@@ -42,27 +42,26 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
           ),
           SizedBox(
             height: 200,
-            child: FutureBuilder(
-              future: ref.watch(nearbyAdventuresProvider.future),
-              builder: (context, snapshot) {
-                if (snapshot.hasData &&
-                    snapshot.data != null &&
-                    snapshot.data!.isNotEmpty) {
-                  return ListView(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    children: (snapshot.data as List<Adventure>)
-                        .map(
-                          (adventure) => AdventuresCarouselCard(
-                            adventure,
-                          ),
-                        )
-                        .toList(),
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
+            child: ref.watch(nearbyAdventuresProvider).when(
+                  data: (adventures) {
+                    if (adventures.isNotEmpty) {
+                      return ListView(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        children: adventures
+                            .map((adventure) =>
+                                AdventuresCarouselCard(adventure))
+                            .toList(),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
+                  loading: () {
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                  error: (error, stack) => Center(child: Text('Error: $error')),
+                ),
           ),
         ],
       ),

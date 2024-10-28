@@ -86,67 +86,79 @@ final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
   );
 });
 
-final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
+final nearbyAdventuresProvider =
+    StreamProvider.autoDispose<List<Adventure>>((ref) async* {
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
 
-  final allAvailableAdventures = await adventureCrudService.readByFilters([
+  // Stream all available adventures that are not associated with any user
+  final allAvailableAdventures = adventureCrudService.streamByFilters([
     {
       'field': 'userId',
       'operator': 'unset',
     }
   ]);
 
-  if (allAvailableAdventures == null || allAvailableAdventures.isEmpty) {
-    return null;
-  }
-  try {
-    Location location = Location();
+  // Listen to available adventures stream
+  await for (final adventures in allAvailableAdventures) {
+    if (adventures == null || adventures.isEmpty) {
+      yield [];
+      continue;
+    }
 
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
+    try {
+      // Check if the user is signed in early to reduce unnecessary processing
+      final isSignedIn = await authService.isSignedInFuture();
+      if (!isSignedIn) {
+        yield adventures;
+        continue;
+      }
 
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
+      final user = await authService.getAuthUser();
+      if (user == null) {
+        yield adventures;
+        continue;
+      }
+
+      final location = Location();
+
+      // Check if location services are enabled
+      bool serviceEnabled =
+          await location.serviceEnabled() || await location.requestService();
       if (!serviceEnabled) {
-        return allAvailableAdventures;
+        yield adventures;
+        continue;
       }
-    }
 
-    permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
+      // Request location permissions if not already granted
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+      }
       if (permissionGranted != PermissionStatus.granted) {
-        return allAvailableAdventures;
+        yield adventures;
+        continue;
       }
-    }
 
-    final userLocation = await location.getLocation();
+      // Get current user location
+      final userLocation = await location.getLocation();
+      if (userLocation.latitude == null || userLocation.longitude == null) {
+        yield adventures;
+        continue;
+      }
 
-    if (userLocation.latitude == null || userLocation.longitude == null) {
-      return allAvailableAdventures;
-    }
+      // Fetch user's previous adventures
+      final userPreviousAdventures =
+          await adventureCrudService.streamByFilters([
+        {
+          'field': 'userId',
+          'operator': '==',
+          'value': user.id,
+        },
+      ]).first;
 
-    if (!await authService.isSignedInFuture()) {
-      return allAvailableAdventures;
-    }
-
-    final user = await authService.getAuthUser();
-    if (user == null) {
-      return allAvailableAdventures;
-    }
-
-    final userPreviousAdventures = await adventureCrudService.readByFilters([
-      {
-        'field': 'userId',
-        'operator': '==',
-        'value': user.id,
-      },
-    ]);
-
-    List<Adventure> nearbyAdventures = allAvailableAdventures.where(
-      (adventure) {
+      // Filter nearby adventures within 30 meters
+      List<Adventure> nearbyAdventures = adventures.where((adventure) {
         final distance = Geolocator.distanceBetween(
           userLocation.latitude!,
           userLocation.longitude!,
@@ -157,22 +169,23 @@ final nearbyAdventuresProvider = FutureProvider<List<Adventure>?>((ref) async {
           return true;
         }
         return distance <= 30;
-      },
-    ).toList();
+      }).toList();
 
-    if (userPreviousAdventures != null && userPreviousAdventures.isNotEmpty) {
-      nearbyAdventures.removeWhere(
-        (adventure) =>
-            userPreviousAdventures.indexWhere(
-              (userAdventure) => userAdventure.adventureId == adventure.id,
-            ) !=
-            -1,
-      );
+      // Remove any adventures the user has previously done
+      if (userPreviousAdventures != null && userPreviousAdventures.isNotEmpty) {
+        nearbyAdventures.removeWhere(
+          (adventure) => userPreviousAdventures.any(
+            (userAdventure) => userAdventure.adventureId == adventure.id,
+          ),
+        );
+      }
+
+      yield nearbyAdventures;
+    } catch (e, stackTrace) {
+      // Log the error and stack trace for easier debugging
+      debugPrint('Error in nearbyAdventuresProvider: $e\n$stackTrace');
+      yield adventures;
     }
-
-    return nearbyAdventures;
-  } catch (e) {
-    return allAvailableAdventures;
   }
 });
 
