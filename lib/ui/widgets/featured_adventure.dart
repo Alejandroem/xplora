@@ -59,11 +59,6 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
 
             // Display only the first adventure
             final adventure = data.first;
-            final images = [
-              'https://picsum.photos/400/300?random=3',
-              'https://picsum.photos/400/300?random=4',
-              'https://picsum.photos/400/300?random=5'
-            ];
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -76,46 +71,47 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                     ),
                   );
                 },
-                child: Card(
-                  clipBehavior: Clip.hardEdge,
-                  child: Stack(
-                    children: [
-                      // Slideshow using PageView
-                      SizedBox(
-                        height: 160,
-                        child: PageView.builder(
-                          controller: _pageController,
-                          itemCount: images.length,
-                          itemBuilder: (context, index) {
-                            return Image.network(
-                              images[index],
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            );
-                          },
-                        ),
-                      ),
-                      //centered text with background saying promote your event here
-                      Positioned(
-                        top: 60,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          color: Colors.black.withOpacity(0.5),
-                          padding: const EdgeInsets.all(10),
-                          child: const Text(
-                            'Promote your event here',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
+                child: adventure.featuredImages == null
+                    ? SizedBox.shrink()
+                    : Card(
+                        clipBehavior: Clip.hardEdge,
+                        child: Stack(
+                          children: [
+                            SizedBox(
+                              height: 160,
+                              child: PageView.builder(
+                                controller: _pageController,
+                                itemCount: adventure.featuredImages!.length,
+                                itemBuilder: (context, index) {
+                                  return Image.network(
+                                    adventure.featuredImages![index],
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  );
+                                },
+                              ),
                             ),
-                          ),
+                            //centered text with background saying promote your event here
+                            Positioned(
+                              top: 60,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                color: Colors.black.withOpacity(0.5),
+                                padding: const EdgeInsets.all(10),
+                                child: const Text(
+                                  'Promote your event here',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
               ),
             );
           },

@@ -16,6 +16,9 @@ _$AdventureImpl _$$AdventureImplFromJson(Map<String, dynamic> json) =>
       shortDescription: json['shortDescription'] as String,
       longDescription: json['longDescription'] as String,
       imageUrl: json['imageUrl'] as String,
+      featuredImages: (json['featuredImages'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       experience: (json['experience'] as num).toDouble(),
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
@@ -31,6 +34,7 @@ Map<String, dynamic> _$$AdventureImplToJson(_$AdventureImpl instance) =>
       'shortDescription': instance.shortDescription,
       'longDescription': instance.longDescription,
       'imageUrl': instance.imageUrl,
+      'featuredImages': instance.featuredImages,
       'experience': instance.experience,
       'latitude': instance.latitude,
       'longitude': instance.longitude,

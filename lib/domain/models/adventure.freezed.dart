@@ -30,6 +30,7 @@ mixin _$Adventure {
   String get shortDescription => throw _privateConstructorUsedError;
   String get longDescription => throw _privateConstructorUsedError;
   String get imageUrl => throw _privateConstructorUsedError;
+  List<String>? get featuredImages => throw _privateConstructorUsedError;
   double get experience => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
@@ -58,6 +59,7 @@ abstract class $AdventureCopyWith<$Res> {
       String shortDescription,
       String longDescription,
       String imageUrl,
+      List<String>? featuredImages,
       double experience,
       double latitude,
       double longitude});
@@ -86,6 +88,7 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
     Object? shortDescription = null,
     Object? longDescription = null,
     Object? imageUrl = null,
+    Object? featuredImages = freezed,
     Object? experience = null,
     Object? latitude = null,
     Object? longitude = null,
@@ -123,6 +126,10 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
+      featuredImages: freezed == featuredImages
+          ? _value.featuredImages
+          : featuredImages // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
       experience: null == experience
           ? _value.experience
           : experience // ignore: cast_nullable_to_non_nullable
@@ -156,6 +163,7 @@ abstract class _$$AdventureImplCopyWith<$Res>
       String shortDescription,
       String longDescription,
       String imageUrl,
+      List<String>? featuredImages,
       double experience,
       double latitude,
       double longitude});
@@ -182,6 +190,7 @@ class __$$AdventureImplCopyWithImpl<$Res>
     Object? shortDescription = null,
     Object? longDescription = null,
     Object? imageUrl = null,
+    Object? featuredImages = freezed,
     Object? experience = null,
     Object? latitude = null,
     Object? longitude = null,
@@ -219,6 +228,10 @@ class __$$AdventureImplCopyWithImpl<$Res>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
+      featuredImages: freezed == featuredImages
+          ? _value._featuredImages
+          : featuredImages // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
       experience: null == experience
           ? _value.experience
           : experience // ignore: cast_nullable_to_non_nullable
@@ -247,9 +260,11 @@ class _$AdventureImpl implements _Adventure {
       required this.shortDescription,
       required this.longDescription,
       required this.imageUrl,
+      required final List<String>? featuredImages,
       required this.experience,
       required this.latitude,
-      required this.longitude});
+      required this.longitude})
+      : _featuredImages = featuredImages;
 
   factory _$AdventureImpl.fromJson(Map<String, dynamic> json) =>
       _$$AdventureImplFromJson(json);
@@ -272,6 +287,16 @@ class _$AdventureImpl implements _Adventure {
   final String longDescription;
   @override
   final String imageUrl;
+  final List<String>? _featuredImages;
+  @override
+  List<String>? get featuredImages {
+    final value = _featuredImages;
+    if (value == null) return null;
+    if (_featuredImages is EqualUnmodifiableListView) return _featuredImages;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   @override
   final double experience;
   @override
@@ -281,7 +306,7 @@ class _$AdventureImpl implements _Adventure {
 
   @override
   String toString() {
-    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, featured: $featured, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, latitude: $latitude, longitude: $longitude)';
+    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, featured: $featured, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, featuredImages: $featuredImages, experience: $experience, latitude: $latitude, longitude: $longitude)';
   }
 
   @override
@@ -302,6 +327,8 @@ class _$AdventureImpl implements _Adventure {
                 other.longDescription == longDescription) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
+            const DeepCollectionEquality()
+                .equals(other._featuredImages, _featuredImages) &&
             (identical(other.experience, experience) ||
                 other.experience == experience) &&
             (identical(other.latitude, latitude) ||
@@ -322,6 +349,7 @@ class _$AdventureImpl implements _Adventure {
       shortDescription,
       longDescription,
       imageUrl,
+      const DeepCollectionEquality().hash(_featuredImages),
       experience,
       latitude,
       longitude);
@@ -352,6 +380,7 @@ abstract class _Adventure implements Adventure {
       required final String shortDescription,
       required final String longDescription,
       required final String imageUrl,
+      required final List<String>? featuredImages,
       required final double experience,
       required final double latitude,
       required final double longitude}) = _$AdventureImpl;
@@ -376,6 +405,8 @@ abstract class _Adventure implements Adventure {
   String get longDescription;
   @override
   String get imageUrl;
+  @override
+  List<String>? get featuredImages;
   @override
   double get experience;
   @override
