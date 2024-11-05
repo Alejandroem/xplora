@@ -21,4 +21,4 @@ final List<String> categories = [
 ];
 
 const kScheme = 'xplra';
-
+const kHost = 'xplra.com';

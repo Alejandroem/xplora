@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/adventure_providers.dart';
@@ -42,7 +43,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
             curve: Curves.easeInOut,
           );
         } catch (e) {
-          log(e);
+          log(e.toString());
         }
       });
     });

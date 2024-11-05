@@ -30,12 +30,10 @@ final nearbyQuestProvider =
 
   await for (final allAvailableQuests in allAvailableQuestsStream) {
     if (allAvailableQuests == null || allAvailableQuests.isEmpty) {
-      yield [];
-      continue;
+      continue; // Skip yield if no quests are available
     }
 
     try {
-      // Ensure location services are enabled
       bool serviceEnabled =
           await location.serviceEnabled() || await location.requestService();
       if (!serviceEnabled) {
@@ -43,7 +41,6 @@ final nearbyQuestProvider =
         continue;
       }
 
-      // Request location permissions if needed
       PermissionStatus permissionGranted = await location.hasPermission();
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await location.requestPermission();
@@ -53,14 +50,12 @@ final nearbyQuestProvider =
         continue;
       }
 
-      // Get current user location
       final userLocation = await location.getLocation();
       if (userLocation.latitude == null || userLocation.longitude == null) {
         yield allAvailableQuests;
         continue;
       }
 
-      // Check if the user is signed in
       final isSignedIn = await authService.isSignedInFuture();
       if (!isSignedIn) {
         yield allAvailableQuests;
@@ -73,7 +68,6 @@ final nearbyQuestProvider =
         continue;
       }
 
-      // Fetch user's previous quests
       final userPreviousQuests = await questCrudService.readByFilters([
             {
               'field': 'userId',
@@ -83,18 +77,22 @@ final nearbyQuestProvider =
           ]) ??
           [];
 
-      // Remove any quests the user has previously done
       List<Quest> filteredQuests = List.from(allAvailableQuests);
       if (userPreviousQuests.isNotEmpty) {
         filteredQuests.removeWhere((quest) => userPreviousQuests
             .any((userQuest) => userQuest.questId == quest.id));
       }
 
-      yield filteredQuests;
+      // Only yield if filteredQuests is non-empty
+      if (filteredQuests.isNotEmpty) {
+        yield filteredQuests;
+      }
     } catch (e, stackTrace) {
-      // Log the error for debugging
       log('Error in nearbyQuestProvider: $e\n$stackTrace');
-      yield allAvailableQuests;
+      // Yield allAvailableQuests only if it's non-empty
+      if (allAvailableQuests.isNotEmpty) {
+        yield allAvailableQuests;
+      }
     }
   }
 });

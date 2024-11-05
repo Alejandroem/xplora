@@ -1,20 +1,37 @@
+import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'adventure_providers.dart';
 import 'quest_providers.dart';
 
-import 'dart:math';
-
 final searchItemsProvider =
-    FutureProvider.autoDispose<List<dynamic>>((ref) async {
-  final nearbyAdventures = await ref.watch(nearbyAdventuresProvider.future);
-  final nearbyQuest = await ref.watch(nearbyQuestProvider.future);
+    StreamProvider.autoDispose<List<dynamic>>((ref) async* {
+  final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
+  final questCrudService = ref.watch(questCrudServiceProvider);
 
-  // Assuming both nearbyAdventures and nearbyQuest are lists
-  final mixedResults = [...(nearbyAdventures), ...(nearbyQuest)];
+  // Stream all adventures where userId is unset
+  final allAvailableAdventuresStream = adventureCrudService.streamByFilters([
+    {
+      'field': 'userId',
+      'operator': 'unset',
+    }
+  ]);
 
-  // Shuffle the mixed results to get them in random order
-  mixedResults.shuffle(Random());
+  // Stream all quests where userId is unset
+  final allAvailableQuestsStream = questCrudService.streamByFilters([
+    {
+      'field': 'userId',
+      'operator': 'unset',
+    }
+  ]);
 
-  return mixedResults;
+  // Combine the streams and emit a mixed list of adventures and quests
+  await for (final availableAdventures in allAvailableAdventuresStream) {
+    final availableQuests = await allAvailableQuestsStream.first;
+
+    // Combine adventures and quests
+    final mixedResults = [...?availableAdventures, ...?availableQuests];
+    mixedResults.shuffle(Random()); // Shuffle for random order
+    yield mixedResults;
+  }
 });

@@ -36,7 +36,7 @@ class _HomeState extends ConsumerState<Home> {
 
     deepLinkService.codeStream.listen((code) {
       if (code != null) {
-        log("Deep link received with code: $code");
+        log('Deep link received with code: $code');
         // Add logic here to handle the code
         // Example: Navigate to a specific page based on the code
         _handleDeepLinkCode(code);

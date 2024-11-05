@@ -102,12 +102,10 @@ final nearbyAdventuresProvider =
   // Listen to available adventures stream
   await for (final adventures in allAvailableAdventures) {
     if (adventures == null || adventures.isEmpty) {
-      yield [];
-      continue;
+      continue; // Skip yielding if the list is empty
     }
 
     try {
-      // Check if the user is signed in early to reduce unnecessary processing
       final isSignedIn = await authService.isSignedInFuture();
       if (!isSignedIn) {
         yield adventures;
@@ -121,8 +119,6 @@ final nearbyAdventuresProvider =
       }
 
       final location = Location();
-
-      // Check if location services are enabled
       bool serviceEnabled =
           await location.serviceEnabled() || await location.requestService();
       if (!serviceEnabled) {
@@ -130,7 +126,6 @@ final nearbyAdventuresProvider =
         continue;
       }
 
-      // Request location permissions if not already granted
       PermissionStatus permissionGranted = await location.hasPermission();
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await location.requestPermission();
@@ -140,24 +135,20 @@ final nearbyAdventuresProvider =
         continue;
       }
 
-      // Get current user location
       final userLocation = await location.getLocation();
       if (userLocation.latitude == null || userLocation.longitude == null) {
         yield adventures;
         continue;
       }
 
-      // Fetch user's previous adventures
-      final userPreviousAdventures =
-          await adventureCrudService.streamByFilters([
+      final userPreviousAdventures = await adventureCrudService.readByFilters([
         {
           'field': 'userId',
           'operator': '==',
           'value': user.id,
         },
-      ]).first;
+      ]);
 
-      // Filter nearby adventures within 30 meters
       List<Adventure> nearbyAdventures = adventures.where((adventure) {
         final distance = Geolocator.distanceBetween(
           userLocation.latitude!,
@@ -171,7 +162,6 @@ final nearbyAdventuresProvider =
         return distance <= 30;
       }).toList();
 
-      // Remove any adventures the user has previously done
       if (userPreviousAdventures != null && userPreviousAdventures.isNotEmpty) {
         nearbyAdventures.removeWhere(
           (adventure) => userPreviousAdventures.any(
@@ -180,11 +170,12 @@ final nearbyAdventuresProvider =
         );
       }
 
-      yield nearbyAdventures;
+      if (nearbyAdventures.isNotEmpty) {
+        yield nearbyAdventures;
+      }
     } catch (e, stackTrace) {
-      // Log the error and stack trace for easier debugging
       debugPrint('Error in nearbyAdventuresProvider: $e\n$stackTrace');
-      yield adventures;
+      yield adventures; // Only yield if adventures is non-empty
     }
   }
 });
