@@ -10,7 +10,6 @@ import '../../domain/models/quest_in_progress.dart';
 import '../../domain/models/xplora_user.dart';
 import '../../domain/services/auth_service.dart';
 import '../../domain/services/xplora_quest_crud_service.dart';
-import '../providers/quest_providers.dart';
 
 class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
   final int _checkInterval = 10; // Update completeness every 10 seconds
@@ -132,7 +131,7 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
       {
         'field': 'userId',
         'operator': '==',
-        'value': user!.id,
+        'value': user.id,
       },
     ]);
 

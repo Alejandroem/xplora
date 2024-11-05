@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/quest_providers.dart';
 import '../../domain/models/quest.dart';
-import '../../domain/models/quest_in_progress.dart';
 import '../../theme.dart';
 
 class QuestList extends ConsumerStatefulWidget {
@@ -43,7 +41,7 @@ class _QuestListState extends ConsumerState<QuestList> {
 
   // Start blinking effect for in-progress quests
   void _startBlinking() {
-    _blinkTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+    _blinkTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
         _isBlinking = !_isBlinking;
       });
@@ -127,13 +125,9 @@ class _QuestListState extends ConsumerState<QuestList> {
                     margin: const EdgeInsets.all(0),
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: (data ?? []).length,
+                      itemCount: (data).length,
                       itemExtent: widget.isHero ? 50 : 27,
                       itemBuilder: (context, index) {
-                        if (data == null) {
-                          return const SizedBox();
-                        }
-
                         Quest quest = data[index];
 
                         // Determine if the quest is the one currently in progress

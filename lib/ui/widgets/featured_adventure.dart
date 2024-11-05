@@ -42,7 +42,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
             curve: Curves.easeInOut,
           );
         } catch (e) {
-          print(e);
+          log(e);
         }
       });
     });
@@ -72,7 +72,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                   );
                 },
                 child: adventure.featuredImages == null
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : Card(
                         clipBehavior: Clip.hardEdge,
                         child: Stack(

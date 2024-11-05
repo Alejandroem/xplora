@@ -19,3 +19,6 @@ final List<String> categories = [
   'Nightlife',
   'Car meets',
 ];
+
+const kScheme = 'xplra';
+

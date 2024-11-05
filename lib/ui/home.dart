@@ -1,14 +1,13 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../application/providers/adventure_providers.dart';
+import '../application/providers/deep_links_providers.dart';
 import '../application/providers/navigation_providers.dart';
 import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
 import '../application/providers/quest_providers.dart';
-import '../application/providers/search_providers.dart';
 import 'components/feed_components.dart';
 import 'components/notification_components.dart';
 import 'components/search_components.dart';
@@ -31,11 +30,30 @@ class _HomeState extends ConsumerState<Home> {
   void initState() {
     super.initState();
     log('Home: initState');
+
+    // Access the deepLinkServiceProvider and listen for deep link events
+    final deepLinkService = ref.read(deepLinkServiceProvider);
+
+    deepLinkService.codeStream.listen((code) {
+      if (code != null) {
+        log("Deep link received with code: $code");
+        // Add logic here to handle the code
+        // Example: Navigate to a specific page based on the code
+        _handleDeepLinkCode(code);
+      }
+    });
+  }
+
+  void _handleDeepLinkCode(String code) {
+    // Example handling logic, you can adjust based on your requirements
+    // Navigate to a different page or handle specific actions
+    if (code == "specificCode") {
+      //TODO: QR code handling logic
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    //Initialize the timers.
     ref.watch(adventureInProgressTrackerProvider);
     ref.watch(questInProgressTrackerProvider);
 
@@ -70,38 +88,10 @@ class _HomeState extends ConsumerState<Home> {
           ? const XplorAppBar()
           : null,
       bottomNavigationBar: const XploraBottomNavigationBar(),
-      /*floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          //final questProvider = ref.read(questCrudServiceProvider);
-
-           await questProvider.create(
-            const Quest(
-              id: null,
-              userId: null,
-              title: 'Test QR',
-              shortDescription: 'Test Quest Short Description',
-              longDescription: 'Test Quest Long Description',
-              imageUrl: 'https://picsum.photos/200/300',
-              experience: 100,
-              stepType: QuestType.qr,
-              timeInSeconds: 0,
-              stepLatitude: 18.470412,
-              stepLongitude: -66.123672,
-              stepCode: '123456',
-            ),
-          ); 
-        },
-        child: const Icon(Icons.add),
-      ),
-      */
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(availableAdventuresProvider);
           ref.invalidate(createOrReadCurrentUserProfile);
-          //ref.invalidate(nearbyAdventuresProvider);
-          //ref.invalidate(nearbyQuestProvider);
-
-          //ref.invalidate(searchItemsProvider);
           setState(() {});
         },
         child: SingleChildScrollView(

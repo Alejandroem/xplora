@@ -11,7 +11,7 @@ final searchItemsProvider =
   final nearbyQuest = await ref.watch(nearbyQuestProvider.future);
 
   // Assuming both nearbyAdventures and nearbyQuest are lists
-  final mixedResults = [...(nearbyAdventures ?? []), ...(nearbyQuest ?? [])];
+  final mixedResults = [...(nearbyAdventures), ...(nearbyQuest)];
 
   // Shuffle the mixed results to get them in random order
   mixedResults.shuffle(Random());

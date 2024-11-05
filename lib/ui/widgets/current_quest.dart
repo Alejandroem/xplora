@@ -28,12 +28,12 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(
-              "assets/svg/ollie-logo.svg",
+              'assets/svg/ollie-logo.svg',
               height: 60,
               fit: BoxFit.contain,
             ),
-            Text("TripAdvisor AI", style: TextStyle(fontSize: 20)),
-            Text("Cooming Soon", style: TextStyle(fontSize: 14)),
+            const Text('TripAdvisor AI', style: TextStyle(fontSize: 20)),
+            const Text('Cooming Soon', style: TextStyle(fontSize: 14)),
           ],
         )),
       );
