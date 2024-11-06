@@ -15,7 +15,10 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-
 flutter pub get
 flutter pub run flutter pub run flutter_launcher_icons
 flutter pub run flutter_native_splash:create
+
+### This is the schema url for qr codes
+
+xplra://xplra.com/121212
