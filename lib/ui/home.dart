@@ -44,11 +44,51 @@ class _HomeState extends ConsumerState<Home> {
     });
   }
 
-  void _handleDeepLinkCode(String code) {
-    // Example handling logic, you can adjust based on your requirements
-    // Navigate to a different page or handle specific actions
-    if (code == "specificCode") {
-      //TODO: QR code handling logic
+  Future<void> _handleDeepLinkCode(String code) async {
+    final questCrudService = ref.watch(questCrudServiceProvider);
+    final authService = ref.watch(authServiceProvider);
+    final user = await authService.getAuthUser();
+
+    if (user != null) {
+      final quest = await questCrudService.readByFilters(
+        [
+          {
+            'field': 'stepCode',
+            'operator': '==',
+            'value': code,
+          },
+          {
+            'field': 'userId',
+            'operator': 'unset',
+          }
+        ],
+      );
+      final userHasThisQuest = await questCrudService.readByFilters(
+        [
+          {
+            'field': 'userId',
+            'operator': '==',
+            'value': user.id,
+          },
+          {
+            'field': 'stepCode',
+            'operator': '==',
+            'value': code,
+          }
+        ],
+      );
+      // Check if the user has already completed this quest
+      if (userHasThisQuest != null && userHasThisQuest.isNotEmpty) {
+        return;
+      }
+      // Award the quest by updating the userId and refreshing the list
+      if (quest != null && quest.isNotEmpty && quest.first.stepCode == code) {
+        await questCrudService.create(quest.first.copyWith(
+          id: null,
+          questId: quest.first.id,
+          userId: user.id,
+        ));
+      }
     }
   }
 
