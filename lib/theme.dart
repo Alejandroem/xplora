@@ -25,3 +25,22 @@ ThemeData getTheme() {
     // Add more theme properties as needed
   );
 }
+
+ThemeData getDarkTheme() {
+  return ThemeData(
+    brightness: Brightness.dark,
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: raisingBlack,
+      selectedItemColor: springBud,
+      unselectedItemColor: whiteSmoke.withOpacity(0.5),
+    ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: raisingBlack,
+      elevation: 0,
+    ),
+    primaryColor: majjoreleBlue,
+    scaffoldBackgroundColor: raisingBlack,
+    secondaryHeaderColor: springBud,
+    fontFamily: 'Jura',
+  );
+}

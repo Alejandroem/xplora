@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:location/location.dart';
 
+import 'application/providers/settings_providers.dart';
 import 'theme.dart';
 import 'ui/home.dart';
 import 'ui/pages/categories.dart';
@@ -52,10 +53,11 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settingsProvider = ref.watch(settingsStateNotifierProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: getTheme(),
+      theme: settingsProvider['isDarkMode'] ? getDarkTheme() : getTheme(),
       routes: {
         '/': (context) => const Home(),
         '/onboarding': (context) => const OnboardingPage(),

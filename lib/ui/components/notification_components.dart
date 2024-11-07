@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/notifications_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/quest.dart';
+import '../pages/settings_page.dart';
 
 class NotificationComponents extends ConsumerStatefulWidget {
   const NotificationComponents({super.key});
@@ -18,13 +19,30 @@ class _NotificationComponentsState
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
+      child: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: DefaultTabController(
           length: 2, // Two tabs: Adventures and Quests
           child: Scaffold(
             appBar: AppBar(
-              title: const Text('Notifications'),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+              title: const Row(
+                children: [
+                  Text('Notifications'),
+                ],
+              ),
               bottom: const TabBar(
                 tabs: [
                   Tab(text: 'Adventures'),

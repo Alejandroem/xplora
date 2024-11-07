@@ -16,4 +16,6 @@ abstract class AuthService {
     String username,
   );
   Future<void> signOut();
+
+  Future<void> deleteAccount();
 }

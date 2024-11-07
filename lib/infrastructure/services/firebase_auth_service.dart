@@ -120,4 +120,13 @@ class FirebaseAuthService extends AuthService {
     User? user = auth.currentUser;
     return user != null;
   }
+
+  @override
+  Future<void> deleteAccount() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if (user != null) {
+      await user.delete();
+    }
+  }
 }

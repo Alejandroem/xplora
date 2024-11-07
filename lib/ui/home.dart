@@ -92,6 +92,13 @@ class _HomeState extends ConsumerState<Home> {
     }
   }
 
+  PreferredSizeWidget? getAppBar() {
+    if (ref.watch(bottomNavigationBarProvider) == 0) {
+      return const XplorAppBar();
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.watch(adventureInProgressTrackerProvider);
@@ -124,9 +131,7 @@ class _HomeState extends ConsumerState<Home> {
     });
 
     return Scaffold(
-      appBar: ref.watch(bottomNavigationBarProvider) == 0
-          ? const XplorAppBar()
-          : null,
+      appBar: getAppBar(),
       bottomNavigationBar: const XploraBottomNavigationBar(),
       body: RefreshIndicator(
         onRefresh: () async {
