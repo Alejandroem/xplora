@@ -4,7 +4,11 @@ import '../../domain/services/local_storage_service.dart';
 import 'local_storage_providers.dart';
 
 class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
-  SettingsStateNotifier(this.localStorageService) : super(<String, bool>{}) {
+  SettingsStateNotifier(this.localStorageService)
+      : super(<String, bool>{
+          'isDarkMode': false,
+          'isNotificationsEnabled': false,
+        }) {
     _init();
   }
 

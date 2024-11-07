@@ -8,6 +8,7 @@ import '../application/providers/navigation_providers.dart';
 import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
 import '../application/providers/quest_providers.dart';
+import 'components/bookmark_components.dart';
 import 'components/feed_components.dart';
 import 'components/notification_components.dart';
 import 'components/search_components.dart';
@@ -93,7 +94,7 @@ class _HomeState extends ConsumerState<Home> {
   }
 
   PreferredSizeWidget? getAppBar() {
-    if (ref.watch(bottomNavigationBarProvider) == 0) {
+    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home) {
       return const XplorAppBar();
     }
     return null;
@@ -142,11 +143,16 @@ class _HomeState extends ConsumerState<Home> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              if (ref.watch(bottomNavigationBarProvider) == 0)
+              if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
                 const FeedComponents(),
-              if (ref.watch(bottomNavigationBarProvider) == 1)
+              if (ref.watch(bottomNavigationBarProvider) ==
+                  NavigationItem.search)
                 const SearchComponents(),
-              if (ref.watch(bottomNavigationBarProvider) == 2)
+              if (ref.watch(bottomNavigationBarProvider) ==
+                  NavigationItem.bookmarks)
+                const BoomarkComponents(),
+              if (ref.watch(bottomNavigationBarProvider) ==
+                  NavigationItem.notifications)
                 const NotificationComponents(),
             ],
           ),

@@ -16,7 +16,7 @@ class TermsAndConditionsPage extends StatelessWidget {
           children: [
             const Text(
               'XPLRA App - Terms and Conditions',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             const Text(

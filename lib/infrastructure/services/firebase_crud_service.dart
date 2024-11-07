@@ -121,7 +121,7 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
       final operatorString = filter['operator'];
       final value = filter['value'];
       switch (operatorString) {
-        case '==':
+        case  '==':
           query = query.where(field, isEqualTo: value);
           break;
         case '!=':

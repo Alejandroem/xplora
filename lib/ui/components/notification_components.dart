@@ -64,7 +64,7 @@ class _NotificationComponentsState
 }
 
 class AdventuresList extends ConsumerWidget {
-  const AdventuresList({Key? key}) : super(key: key);
+  const AdventuresList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -97,7 +97,7 @@ class AdventuresList extends ConsumerWidget {
 }
 
 class QuestsList extends ConsumerWidget {
-  const QuestsList({Key? key}) : super(key: key);
+  const QuestsList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -133,7 +133,7 @@ class QuestsList extends ConsumerWidget {
 class AdventureCard extends StatelessWidget {
   final Adventure adventure;
 
-  const AdventureCard({required this.adventure, Key? key}) : super(key: key);
+  const AdventureCard({required this.adventure, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +214,7 @@ class AdventureCard extends StatelessWidget {
 class QuestCard extends StatelessWidget {
   final Quest quest;
 
-  const QuestCard({required this.quest, Key? key}) : super(key: key);
+  const QuestCard({required this.quest, super.key});
 
   @override
   Widget build(BuildContext context) {

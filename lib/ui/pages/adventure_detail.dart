@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/providers/auth_providers.dart';
+import '../../application/providers/boomark_providers.dart';
 import '../../domain/models/adventure.dart';
+import '../../domain/models/bookmark.dart';
 
 class AdventureDetail extends ConsumerStatefulWidget {
   final String source;
@@ -24,6 +27,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
   late Animation<double> _firstFadeAnimation;
   late Animation<double> _secondFadeAnimation;
   late Animation<double> _thirdFadeAnimation;
+  bool creatingBookmark = false;
 
   @override
   void initState() {
@@ -132,13 +136,90 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Hero(
-            tag: 'adventure-image-${widget.adventure.id}-${widget.source}',
-            child: Image.network(
-              widget.adventure.imageUrl,
-              height: 200,
-              fit: BoxFit.cover,
-            ),
+          Stack(
+            fit: StackFit.passthrough,
+            children: [
+              Hero(
+                tag: 'adventure-image-${widget.adventure.id}-${widget.source}',
+                child: Image.network(
+                  widget.adventure.imageUrl,
+                  height: 200,
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+              Positioned(
+                top: 25,
+                left: 10,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              //boomark icon
+              ref
+                  .watch(adventureBookmarkProvider(
+                    widget.adventure.id!,
+                  ))
+                  .when(
+                    data: (bookmarks) {
+                      final bookmark = bookmarks != null && bookmarks.isNotEmpty
+                          ? bookmarks.first
+                          : null;
+                      return Positioned(
+                        top: 25,
+                        right: 10,
+                        child: IconButton(
+                          icon: Icon(
+                            bookmark != null
+                                ? Icons.bookmark
+                                : Icons.bookmark_border,
+                            color: Colors.white,
+                          ),
+                          onPressed: creatingBookmark
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    creatingBookmark = true;
+                                  });
+                                  final bookmarkCrudService =
+                                      ref.read(boomarkCrudServiceProvider);
+                                  final authService =
+                                      ref.read(authServiceProvider);
+                                  final user = await authService.getAuthUser();
+                                  if (user == null) {
+                                    return;
+                                  }
+                                  if (bookmark == null) {
+                                    await bookmarkCrudService.create(
+                                      Bookmark(
+                                        id: null,
+                                        type: BookmarkType.adventure,
+                                        entityId: widget.adventure.id!,
+                                        userId: user.id!,
+                                      ),
+                                    );
+                                  } else {
+                                    bookmarkCrudService.delete(bookmark.id!);
+                                  }
+                                  ref.invalidate(adventureBookmarkProvider(
+                                    widget.adventure.id!,
+                                  ));
+                                  setState(() {
+                                    creatingBookmark = false;
+                                  });
+                                },
+                        ),
+                      );
+                    },
+                    loading: () => const SizedBox(),
+                    error: (error, stack) => const SizedBox(),
+                  ),
+            ],
           ),
           // Slide and Fade for title
           SlideTransition(

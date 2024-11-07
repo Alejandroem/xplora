@@ -16,36 +16,50 @@ class _BottomNavigationBarState
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(bottomNavigationBarProvider);
-    final isIndexZero = currentIndex == 1;
 
     return BottomNavigationBar(
-      backgroundColor: isIndexZero ? Colors.black : Colors.white,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(
             Icons.home,
-            color: isIndexZero ? Colors.white : Colors.black,
+            color: currentIndex == NavigationItem.home
+                ? Colors.grey
+                : Colors.black,
           ),
           label: '',
         ),
         BottomNavigationBarItem(
           icon: Icon(
             Icons.search,
-            color: isIndexZero ? Colors.white : Colors.black,
+            color: currentIndex == NavigationItem.search
+                ? Colors.grey
+                : Colors.black,
+          ),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.bookmark,
+            color: currentIndex == NavigationItem.bookmarks
+                ? Colors.grey
+                : Colors.black,
           ),
           label: '',
         ),
         BottomNavigationBarItem(
           icon: Icon(
             Icons.notifications,
-            color: isIndexZero ? Colors.white : Colors.black,
+            color: currentIndex == NavigationItem.notifications
+                ? Colors.grey
+                : Colors.black,
           ),
           label: '',
         ),
       ],
-      currentIndex: currentIndex,
+      currentIndex: currentIndex.index,
       onTap: (index) {
-        ref.read(bottomNavigationBarProvider.notifier).state = index;
+        ref.read(bottomNavigationBarProvider.notifier).state =
+            NavigationItem.values[index];
       },
     );
   }

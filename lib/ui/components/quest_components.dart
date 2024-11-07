@@ -39,10 +39,13 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                   ),
                 );
               },
-              child: const Hero(
-                tag: 'quest-list',
-                child: QuestList(
-                  isHero: false,
+              child: const AbsorbPointer(
+                absorbing: true,
+                child: Hero(
+                  tag: 'quest-list',
+                  child: QuestList(
+                    isHero: false,
+                  ),
                 ),
               ),
             ),

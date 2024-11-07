@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -72,7 +74,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 await launchUrl(url, mode: LaunchMode.externalApplication);
               } else {
                 // Handle the error here, e.g., show a snackbar or dialog
-                print("Could not launch $url");
+                log('Could not launch $url');
               }
             },
           ),

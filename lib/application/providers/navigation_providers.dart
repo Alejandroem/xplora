@@ -1,3 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final bottomNavigationBarProvider = StateProvider<int>((ref) => 0);
+enum NavigationItem { home, search, bookmarks, notifications }
+
+final bottomNavigationBarProvider = StateProvider<NavigationItem>((ref) {
+  return NavigationItem.home;
+});
