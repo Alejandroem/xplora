@@ -38,12 +38,10 @@ class _BottomNavigationBarState
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(
-            Icons.bookmark,
-            color: currentIndex == NavigationItem.bookmarks
-                ? Colors.grey
-                : Colors.black,
-          ),
+          icon: Icon(Icons.bookmark,
+              color: currentIndex == NavigationItem.bookmarks
+                  ? Colors.black
+                  : Colors.grey),
           label: '',
         ),
         BottomNavigationBarItem(

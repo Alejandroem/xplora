@@ -10,7 +10,7 @@ final boomarkCrudServiceProvider = Provider<BookmarkCrudService>((ref) {
 });
 
 final currentUserBoomarksStreamProvider =
-    StreamProvider<List<Bookmark>?>((ref) {
+    StreamProvider.autoDispose<List<Bookmark>?>((ref) {
   final boomarkService = ref.watch(boomarkCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
 

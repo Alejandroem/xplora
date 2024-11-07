@@ -134,28 +134,20 @@ class _HomeState extends ConsumerState<Home> {
     return Scaffold(
       appBar: getAppBar(),
       bottomNavigationBar: const XploraBottomNavigationBar(),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(availableAdventuresProvider);
-          ref.invalidate(createOrReadCurrentUserProfile);
-          setState(() {});
-        },
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
-                const FeedComponents(),
-              if (ref.watch(bottomNavigationBarProvider) ==
-                  NavigationItem.search)
-                const SearchComponents(),
-              if (ref.watch(bottomNavigationBarProvider) ==
-                  NavigationItem.bookmarks)
-                const BoomarkComponents(),
-              if (ref.watch(bottomNavigationBarProvider) ==
-                  NavigationItem.notifications)
-                const NotificationComponents(),
-            ],
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
+              const FeedComponents(),
+            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.search)
+              const SearchComponents(),
+            if (ref.watch(bottomNavigationBarProvider) ==
+                NavigationItem.bookmarks)
+              const BoomarkComponents(),
+            if (ref.watch(bottomNavigationBarProvider) ==
+                NavigationItem.notifications)
+              const NotificationComponents(),
+          ],
         ),
       ),
     );

@@ -14,8 +14,7 @@ final questCrudServiceProvider = Provider<XploraQuestCrudService>((ref) {
   return FirebaseXploraQuestCrudService();
 });
 
-final nearbyQuestProvider =
-    StreamProvider.autoDispose<List<Quest>>((ref) async* {
+final nearbyQuestProvider = StreamProvider<List<Quest>>((ref) async* {
   final questCrudService = ref.watch(questCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
   final location = Location();

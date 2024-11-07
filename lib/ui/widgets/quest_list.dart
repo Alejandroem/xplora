@@ -83,7 +83,6 @@ class _QuestListState extends ConsumerState<QuestList> {
   @override
   Widget build(BuildContext context) {
     final questInProgress = ref.watch(questInProgressTrackerProvider);
-    //invalidate nearbyQuestProvider when quetInProgressBecomesNull
 
     return ref.watch(nearbyQuestProvider).when(
       data: (data) {

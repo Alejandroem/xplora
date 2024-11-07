@@ -87,7 +87,7 @@ final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
 });
 
 final nearbyAdventuresProvider =
-    StreamProvider.autoDispose<List<Adventure>>((ref) async* {
+    StreamProvider<List<Adventure>>((ref) async* {
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
 
