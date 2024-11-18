@@ -39,12 +39,20 @@ class LocationNotifier extends StateNotifier<LocationState> {
   }
 
   Future<void> getCurrentLocation() async {
-    state = LocationState(isLoading: true);
     try {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: geolocator.LocationAccuracy.high,
       );
-      state = LocationState(position: position);
+      if (state.position == null ||
+          Geolocator.distanceBetween(
+                state.position!.latitude,
+                state.position!.longitude,
+                position.latitude,
+                position.longitude,
+              ) >=
+              3) {
+        state = LocationState(position: position);
+      }
     } catch (e) {
       state = LocationState();
     }

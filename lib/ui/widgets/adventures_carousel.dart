@@ -37,7 +37,7 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                     color: raisingBlack,
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 DropdownButton<int>(
                   value: ref.watch(minimumDistanceProvider),
                   items: const [

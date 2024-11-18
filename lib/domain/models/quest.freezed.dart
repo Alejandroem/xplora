@@ -23,6 +23,7 @@ mixin _$Quest {
   String? get id => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
   String? get questId => throw _privateConstructorUsedError;
+  String? get category => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get shortDescription => throw _privateConstructorUsedError;
   String get longDescription => throw _privateConstructorUsedError;
@@ -53,6 +54,7 @@ abstract class $QuestCopyWith<$Res> {
       {String? id,
       String? userId,
       String? questId,
+      String? category,
       String title,
       String shortDescription,
       String longDescription,
@@ -84,6 +86,7 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
     Object? id = freezed,
     Object? userId = freezed,
     Object? questId = freezed,
+    Object? category = freezed,
     Object? title = null,
     Object? shortDescription = null,
     Object? longDescription = null,
@@ -108,6 +111,10 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
       questId: freezed == questId
           ? _value.questId
           : questId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      category: freezed == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
               as String?,
       title: null == title
           ? _value.title
@@ -168,6 +175,7 @@ abstract class _$$QuestImplCopyWith<$Res> implements $QuestCopyWith<$Res> {
       {String? id,
       String? userId,
       String? questId,
+      String? category,
       String title,
       String shortDescription,
       String longDescription,
@@ -197,6 +205,7 @@ class __$$QuestImplCopyWithImpl<$Res>
     Object? id = freezed,
     Object? userId = freezed,
     Object? questId = freezed,
+    Object? category = freezed,
     Object? title = null,
     Object? shortDescription = null,
     Object? longDescription = null,
@@ -221,6 +230,10 @@ class __$$QuestImplCopyWithImpl<$Res>
       questId: freezed == questId
           ? _value.questId
           : questId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      category: freezed == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
               as String?,
       title: null == title
           ? _value.title
@@ -277,6 +290,7 @@ class _$QuestImpl implements _Quest {
       {required this.id,
       required this.userId,
       required this.questId,
+      required this.category,
       required this.title,
       required this.shortDescription,
       required this.longDescription,
@@ -298,6 +312,8 @@ class _$QuestImpl implements _Quest {
   final String? userId;
   @override
   final String? questId;
+  @override
+  final String? category;
   @override
   final String title;
   @override
@@ -323,7 +339,7 @@ class _$QuestImpl implements _Quest {
 
   @override
   String toString() {
-    return 'Quest(id: $id, userId: $userId, questId: $questId, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, stepType: $stepType, timeInSeconds: $timeInSeconds, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude, stepCode: $stepCode, hasNotified: $hasNotified)';
+    return 'Quest(id: $id, userId: $userId, questId: $questId, category: $category, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, stepType: $stepType, timeInSeconds: $timeInSeconds, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude, stepCode: $stepCode, hasNotified: $hasNotified)';
   }
 
   @override
@@ -334,6 +350,8 @@ class _$QuestImpl implements _Quest {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.questId, questId) || other.questId == questId) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.shortDescription, shortDescription) ||
                 other.shortDescription == shortDescription) &&
@@ -364,6 +382,7 @@ class _$QuestImpl implements _Quest {
       id,
       userId,
       questId,
+      category,
       title,
       shortDescription,
       longDescription,
@@ -397,6 +416,7 @@ abstract class _Quest implements Quest {
       {required final String? id,
       required final String? userId,
       required final String? questId,
+      required final String? category,
       required final String title,
       required final String shortDescription,
       required final String longDescription,
@@ -417,6 +437,8 @@ abstract class _Quest implements Quest {
   String? get userId;
   @override
   String? get questId;
+  @override
+  String? get category;
   @override
   String get title;
   @override

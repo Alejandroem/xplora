@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-
 part 'quest.freezed.dart';
 part 'quest.g.dart';
 
@@ -16,6 +15,7 @@ class Quest with _$Quest {
     required String? id,
     required String? userId,
     required String? questId,
+    required String? category,
     required String title,
     required String shortDescription,
     required String longDescription,

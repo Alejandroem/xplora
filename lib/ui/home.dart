@@ -211,9 +211,6 @@ class _HomeState extends ConsumerState<Home> {
             if (ref.watch(bottomNavigationBarProvider) == NavigationItem.search)
               const SearchComponents(),
             if (ref.watch(bottomNavigationBarProvider) ==
-                NavigationItem.bookmarks)
-              const BoomarkComponents(),
-            if (ref.watch(bottomNavigationBarProvider) ==
                 NavigationItem.notifications)
               const NotificationComponents(),
           ],

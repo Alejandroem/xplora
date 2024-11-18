@@ -10,6 +10,7 @@ class Adventure with _$Adventure {
     required String? userId, //Only set if a user already got through it
     required String?
         adventureId, //Only set if a user already got through it as it should be the old adventure id
+    required String? category,
     required bool? featured,
     required String title,
     required String shortDescription,
