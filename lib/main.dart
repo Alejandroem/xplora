@@ -56,7 +56,7 @@ class MyApp extends ConsumerWidget {
     final settingsProvider = ref.watch(settingsStateNotifierProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Xplra',
       theme: settingsProvider['isDarkMode'] ? getDarkTheme() : getTheme(),
       routes: {
         '/': (context) => const Home(),

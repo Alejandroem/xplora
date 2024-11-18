@@ -33,6 +33,7 @@ mixin _$Quest {
   double? get stepLatitude => throw _privateConstructorUsedError;
   double? get stepLongitude => throw _privateConstructorUsedError;
   String? get stepCode => throw _privateConstructorUsedError;
+  bool? get hasNotified => throw _privateConstructorUsedError;
 
   /// Serializes this Quest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -61,7 +62,8 @@ abstract class $QuestCopyWith<$Res> {
       int? timeInSeconds,
       double? stepLatitude,
       double? stepLongitude,
-      String? stepCode});
+      String? stepCode,
+      bool? hasNotified});
 }
 
 /// @nodoc
@@ -92,6 +94,7 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
     Object? stepLatitude = freezed,
     Object? stepLongitude = freezed,
     Object? stepCode = freezed,
+    Object? hasNotified = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -146,6 +149,10 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
           ? _value.stepCode
           : stepCode // ignore: cast_nullable_to_non_nullable
               as String?,
+      hasNotified: freezed == hasNotified
+          ? _value.hasNotified
+          : hasNotified // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ) as $Val);
   }
 }
@@ -170,7 +177,8 @@ abstract class _$$QuestImplCopyWith<$Res> implements $QuestCopyWith<$Res> {
       int? timeInSeconds,
       double? stepLatitude,
       double? stepLongitude,
-      String? stepCode});
+      String? stepCode,
+      bool? hasNotified});
 }
 
 /// @nodoc
@@ -199,6 +207,7 @@ class __$$QuestImplCopyWithImpl<$Res>
     Object? stepLatitude = freezed,
     Object? stepLongitude = freezed,
     Object? stepCode = freezed,
+    Object? hasNotified = freezed,
   }) {
     return _then(_$QuestImpl(
       id: freezed == id
@@ -253,6 +262,10 @@ class __$$QuestImplCopyWithImpl<$Res>
           ? _value.stepCode
           : stepCode // ignore: cast_nullable_to_non_nullable
               as String?,
+      hasNotified: freezed == hasNotified
+          ? _value.hasNotified
+          : hasNotified // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -273,7 +286,8 @@ class _$QuestImpl implements _Quest {
       required this.timeInSeconds,
       required this.stepLatitude,
       required this.stepLongitude,
-      required this.stepCode});
+      required this.stepCode,
+      required this.hasNotified});
 
   factory _$QuestImpl.fromJson(Map<String, dynamic> json) =>
       _$$QuestImplFromJson(json);
@@ -304,10 +318,12 @@ class _$QuestImpl implements _Quest {
   final double? stepLongitude;
   @override
   final String? stepCode;
+  @override
+  final bool? hasNotified;
 
   @override
   String toString() {
-    return 'Quest(id: $id, userId: $userId, questId: $questId, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, stepType: $stepType, timeInSeconds: $timeInSeconds, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude, stepCode: $stepCode)';
+    return 'Quest(id: $id, userId: $userId, questId: $questId, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, stepType: $stepType, timeInSeconds: $timeInSeconds, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude, stepCode: $stepCode, hasNotified: $hasNotified)';
   }
 
   @override
@@ -336,7 +352,9 @@ class _$QuestImpl implements _Quest {
             (identical(other.stepLongitude, stepLongitude) ||
                 other.stepLongitude == stepLongitude) &&
             (identical(other.stepCode, stepCode) ||
-                other.stepCode == stepCode));
+                other.stepCode == stepCode) &&
+            (identical(other.hasNotified, hasNotified) ||
+                other.hasNotified == hasNotified));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -355,7 +373,8 @@ class _$QuestImpl implements _Quest {
       timeInSeconds,
       stepLatitude,
       stepLongitude,
-      stepCode);
+      stepCode,
+      hasNotified);
 
   /// Create a copy of Quest
   /// with the given fields replaced by the non-null parameter values.
@@ -387,7 +406,8 @@ abstract class _Quest implements Quest {
       required final int? timeInSeconds,
       required final double? stepLatitude,
       required final double? stepLongitude,
-      required final String? stepCode}) = _$QuestImpl;
+      required final String? stepCode,
+      required final bool? hasNotified}) = _$QuestImpl;
 
   factory _Quest.fromJson(Map<String, dynamic> json) = _$QuestImpl.fromJson;
 
@@ -417,6 +437,8 @@ abstract class _Quest implements Quest {
   double? get stepLongitude;
   @override
   String? get stepCode;
+  @override
+  bool? get hasNotified;
 
   /// Create a copy of Quest
   /// with the given fields replaced by the non-null parameter values.

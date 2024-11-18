@@ -26,6 +26,7 @@ class Quest with _$Quest {
     required double? stepLatitude,
     required double? stepLongitude,
     required String? stepCode,
+    required bool? hasNotified,
   }) = _Quest;
 
   factory Quest.fromJson(Map<String, dynamic> json) => _$QuestFromJson(json);

@@ -34,6 +34,7 @@ mixin _$Adventure {
   double get experience => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
+  bool? get hasNotified => throw _privateConstructorUsedError;
 
   /// Serializes this Adventure to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -62,7 +63,8 @@ abstract class $AdventureCopyWith<$Res> {
       List<String>? featuredImages,
       double experience,
       double latitude,
-      double longitude});
+      double longitude,
+      bool? hasNotified});
 }
 
 /// @nodoc
@@ -92,6 +94,7 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
     Object? experience = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? hasNotified = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -142,6 +145,10 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      hasNotified: freezed == hasNotified
+          ? _value.hasNotified
+          : hasNotified // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ) as $Val);
   }
 }
@@ -166,7 +173,8 @@ abstract class _$$AdventureImplCopyWith<$Res>
       List<String>? featuredImages,
       double experience,
       double latitude,
-      double longitude});
+      double longitude,
+      bool? hasNotified});
 }
 
 /// @nodoc
@@ -194,6 +202,7 @@ class __$$AdventureImplCopyWithImpl<$Res>
     Object? experience = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? hasNotified = freezed,
   }) {
     return _then(_$AdventureImpl(
       id: freezed == id
@@ -244,6 +253,10 @@ class __$$AdventureImplCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      hasNotified: freezed == hasNotified
+          ? _value.hasNotified
+          : hasNotified // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -263,7 +276,8 @@ class _$AdventureImpl implements _Adventure {
       required final List<String>? featuredImages,
       required this.experience,
       required this.latitude,
-      required this.longitude})
+      required this.longitude,
+      required this.hasNotified})
       : _featuredImages = featuredImages;
 
   factory _$AdventureImpl.fromJson(Map<String, dynamic> json) =>
@@ -303,10 +317,12 @@ class _$AdventureImpl implements _Adventure {
   final double latitude;
   @override
   final double longitude;
+  @override
+  final bool? hasNotified;
 
   @override
   String toString() {
-    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, featured: $featured, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, featuredImages: $featuredImages, experience: $experience, latitude: $latitude, longitude: $longitude)';
+    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, featured: $featured, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, featuredImages: $featuredImages, experience: $experience, latitude: $latitude, longitude: $longitude, hasNotified: $hasNotified)';
   }
 
   @override
@@ -334,7 +350,9 @@ class _$AdventureImpl implements _Adventure {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.longitude == longitude) &&
+            (identical(other.hasNotified, hasNotified) ||
+                other.hasNotified == hasNotified));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -352,7 +370,8 @@ class _$AdventureImpl implements _Adventure {
       const DeepCollectionEquality().hash(_featuredImages),
       experience,
       latitude,
-      longitude);
+      longitude,
+      hasNotified);
 
   /// Create a copy of Adventure
   /// with the given fields replaced by the non-null parameter values.
@@ -383,7 +402,8 @@ abstract class _Adventure implements Adventure {
       required final List<String>? featuredImages,
       required final double experience,
       required final double latitude,
-      required final double longitude}) = _$AdventureImpl;
+      required final double longitude,
+      required final bool? hasNotified}) = _$AdventureImpl;
 
   factory _Adventure.fromJson(Map<String, dynamic> json) =
       _$AdventureImpl.fromJson;
@@ -413,6 +433,8 @@ abstract class _Adventure implements Adventure {
   double get latitude;
   @override
   double get longitude;
+  @override
+  bool? get hasNotified;
 
   /// Create a copy of Adventure
   /// with the given fields replaced by the non-null parameter values.

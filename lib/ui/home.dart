@@ -7,9 +7,11 @@ import '../application/providers/deep_links_providers.dart';
 import '../application/providers/navigation_providers.dart';
 import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
+import '../application/providers/notifications_providers.dart';
 import '../application/providers/quest_providers.dart';
 import 'components/bookmark_components.dart';
 import 'components/feed_components.dart';
+import 'components/notification_adventure_card.dart';
 import 'components/notification_components.dart';
 import 'components/search_components.dart';
 import 'pages/categories.dart';
@@ -25,6 +27,7 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
+  bool showNotification = false;
   Icon? currentIcon;
 
   @override
@@ -104,6 +107,62 @@ class _HomeState extends ConsumerState<Home> {
   Widget build(BuildContext context) {
     ref.watch(adventureInProgressTrackerProvider);
     ref.watch(questInProgressTrackerProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.watch(userPreviousAdventuresProviderStream).whenData((adventures) {
+        if (adventures != null) {
+          for (final adventure in adventures) {
+            if ((adventure.hasNotified ?? false) == false &&
+                !showNotification) {
+              setState(() {
+                showNotification = true;
+              });
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: Colors.transparent,
+                    contentPadding: const EdgeInsets.all(0),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AdventureCard(adventure: adventure),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () async {
+                          final adventuresService = ref.read(
+                            adventuresCrudServiceProvider,
+                          );
+                          await adventuresService.update(
+                            adventure.copyWith(
+                              hasNotified: true,
+                            ),
+                            adventure.id!,
+                          );
+                          setState(() {
+                            showNotification = false;
+                          });
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: const Text(
+                          'Close',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          }
+        }
+      });
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(hasFinishedOnboardingProvider).whenData(
