@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:location/location.dart';
 
 import '../../domain/models/quest.dart';
 import '../../domain/models/quest_in_progress.dart';
@@ -9,6 +8,7 @@ import '../../domain/services/xplora_quest_crud_service.dart';
 import '../../infrastructure/services/firebase_xplora_quest_crud_service.dart';
 import '../notifiers/quest_validator_notifier.dart';
 import 'auth_providers.dart';
+import 'location_providers.dart';
 
 final questCrudServiceProvider = Provider<XploraQuestCrudService>((ref) {
   return FirebaseXploraQuestCrudService();
@@ -17,7 +17,6 @@ final questCrudServiceProvider = Provider<XploraQuestCrudService>((ref) {
 final nearbyQuestProvider = StreamProvider<List<Quest>>((ref) async* {
   final questCrudService = ref.watch(questCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
-  final location = Location();
 
   // Stream all available quests that are not associated with any user
   final allAvailableQuestsStream = questCrudService.streamByFilters([
@@ -33,24 +32,8 @@ final nearbyQuestProvider = StreamProvider<List<Quest>>((ref) async* {
     }
 
     try {
-      bool serviceEnabled =
-          await location.serviceEnabled() || await location.requestService();
-      if (!serviceEnabled) {
-        yield allAvailableQuests;
-        continue;
-      }
-
-      PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-      }
-      if (permissionGranted != PermissionStatus.granted) {
-        yield allAvailableQuests;
-        continue;
-      }
-
-      final userLocation = await location.getLocation();
-      if (userLocation.latitude == null || userLocation.longitude == null) {
+      final userLocation = ref.watch(locationProvider);
+      if (userLocation.isLoading || userLocation.position == null) {
         yield allAvailableQuests;
         continue;
       }

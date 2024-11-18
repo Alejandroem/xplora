@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/adventure_providers.dart';
+import '../../application/providers/location_providers.dart';
 import '../../theme.dart';
 import 'quest_carousel_card.dart';
 
@@ -36,6 +37,20 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                     color: raisingBlack,
                   ),
                 ),
+                Spacer(),
+                DropdownButton<int>(
+                  value: ref.watch(minimumDistanceProvider),
+                  items: const [
+                    DropdownMenuItem(value: 1000, child: Text('1 km')),
+                    DropdownMenuItem(value: 5000, child: Text('5 km')),
+                    DropdownMenuItem(value: 10000, child: Text('10 km')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      ref.read(minimumDistanceProvider.notifier).state = value;
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -53,7 +68,9 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                             .toList(),
                       );
                     } else {
-                      return const SizedBox();
+                      return const Center(
+                        child: Text('No adventures found nearby'),
+                      );
                     }
                   },
                   loading: () {

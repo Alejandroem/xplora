@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:location/location.dart';
 
 import '../../domain/models/adventure.dart';
 import '../../domain/models/adventure_in_progress.dart';
@@ -9,6 +8,7 @@ import '../../domain/services/adventure_crud_service.dart';
 import '../../infrastructure/services/firebase_adventure_crud_service.dart';
 import '../notifiers/adventure_in_progress.dart';
 import 'auth_providers.dart';
+import 'location_providers.dart';
 import 'xplorauser_providers.dart';
 
 final adventuresCrudServiceProvider = Provider<AdventureCrudService>((ref) {
@@ -86,10 +86,10 @@ final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
   );
 });
 
-final nearbyAdventuresProvider =
-    StreamProvider<List<Adventure>>((ref) async* {
+final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
+  final minimumDistance = ref.watch(minimumDistanceProvider);
 
   // Stream all available adventures that are not associated with any user
   final allAvailableAdventures = adventureCrudService.streamByFilters([
@@ -118,26 +118,9 @@ final nearbyAdventuresProvider =
         continue;
       }
 
-      final location = Location();
-      bool serviceEnabled =
-          await location.serviceEnabled() || await location.requestService();
-      if (!serviceEnabled) {
-        yield adventures;
-        continue;
-      }
-
-      PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-      }
-      if (permissionGranted != PermissionStatus.granted) {
-        yield adventures;
-        continue;
-      }
-
-      final userLocation = await location.getLocation();
-      if (userLocation.latitude == null || userLocation.longitude == null) {
-        yield adventures;
+      final userLocation = ref.watch(locationProvider);
+      if (userLocation.isLoading || userLocation.position == null) {
+        [];
         continue;
       }
 
@@ -151,16 +134,33 @@ final nearbyAdventuresProvider =
 
       List<Adventure> nearbyAdventures = adventures.where((adventure) {
         final distance = Geolocator.distanceBetween(
-          userLocation.latitude!,
-          userLocation.longitude!,
+          userLocation.position!.latitude,
+          userLocation.position!.longitude,
           adventure.latitude,
           adventure.longitude,
         );
-        if (kDebugMode) {
+        /* if (kDebugMode) {
           return true;
-        }
-        return distance <= 30;
+        } */
+        return distance <= minimumDistance;
       }).toList();
+
+      //sort adventures by distance
+      nearbyAdventures.sort((a, b) {
+        final distanceA = Geolocator.distanceBetween(
+          userLocation.position!.latitude,
+          userLocation.position!.longitude,
+          a.latitude,
+          a.longitude,
+        );
+        final distanceB = Geolocator.distanceBetween(
+          userLocation.position!.latitude,
+          userLocation.position!.longitude,
+          b.latitude,
+          b.longitude,
+        );
+        return distanceA.compareTo(distanceB);
+      });
 
       if (userPreviousAdventures != null && userPreviousAdventures.isNotEmpty) {
         nearbyAdventures.removeWhere(
@@ -172,6 +172,8 @@ final nearbyAdventuresProvider =
 
       if (nearbyAdventures.isNotEmpty) {
         yield nearbyAdventures;
+      } else {
+        yield [];
       }
     } catch (e, stackTrace) {
       debugPrint('Error in nearbyAdventuresProvider: $e\n$stackTrace');

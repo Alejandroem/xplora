@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../application/providers/adventure_providers.dart';
 import '../application/providers/deep_links_providers.dart';
@@ -35,6 +36,8 @@ class _HomeState extends ConsumerState<Home> {
     super.initState();
     log('Home: initState');
 
+    requestLocationPermissions();
+
     // Access the deepLinkServiceProvider and listen for deep link events
     final deepLinkService = ref.read(deepLinkServiceProvider);
 
@@ -46,6 +49,13 @@ class _HomeState extends ConsumerState<Home> {
         _handleDeepLinkCode(code);
       }
     });
+  }
+
+  Future<void> requestLocationPermissions() async {
+    var status = await Permission.location.status;
+    if (status.isDenied) {
+      await Permission.location.request();
+    }
   }
 
   Future<void> _handleDeepLinkCode(String code) async {
