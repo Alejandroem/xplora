@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/xplorauser_providers.dart';
 import '../../domain/models/xplora_profile.dart';
 import '../components/bookmark_components.dart';
+import 'settings_page.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   final XploraProfile profileParam;
@@ -28,6 +29,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(
