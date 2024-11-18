@@ -40,6 +40,8 @@ final createOrReadCurrentUserProfile = FutureProvider.autoDispose((ref) async {
         level: 0,
         experience: 0,
         categories: [],
+        avatarUrl: '',
+        username: '',
       ),
     );
   } else {

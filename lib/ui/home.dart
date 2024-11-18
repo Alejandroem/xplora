@@ -10,7 +10,6 @@ import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
 import '../application/providers/notifications_providers.dart';
 import '../application/providers/quest_providers.dart';
-import 'components/bookmark_components.dart';
 import 'components/feed_components.dart';
 import 'components/notification_adventure_card.dart';
 import 'components/notification_components.dart';

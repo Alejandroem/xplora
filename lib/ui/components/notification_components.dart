@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/notifications_providers.dart';
-import '../../domain/models/adventure.dart';
-import '../../domain/models/quest.dart';
 import '../pages/settings_page.dart';
 import 'notification_adventure_card.dart';
 import 'notification_quest_card.dart';

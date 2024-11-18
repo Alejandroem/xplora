@@ -66,7 +66,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.location_on,
                       color: Colors.white,
                       size: 20,
@@ -74,7 +74,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                     const SizedBox(width: 5),
                     DropdownButton<int>(
                       dropdownColor: Colors.black,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                       value: minimumDistance,
@@ -106,6 +106,24 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                             ),
                           ),
                         ),
+                        DropdownMenuItem(
+                          value: 20000,
+                          child: Text(
+                            '20 km',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 50000,
+                          child: Text(
+                            '50 km',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ],
                       onChanged: (value) {
                         if (value != null) {
@@ -117,7 +135,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                     ),
                     const SizedBox(width: 5),
                     //categories
-                    Icon(
+                    const Icon(
                       Icons.category_outlined,
                       color: Colors.white,
                       size: 20,
@@ -125,7 +143,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                     const SizedBox(width: 5),
                     DropdownButton<String>(
                       dropdownColor: Colors.black,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                       value: selectedCategory,
@@ -137,7 +155,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                           value: category,
                           child: Text(
                             category,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                             ),
                           ),
@@ -152,7 +170,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                       },
                     ),
                     const SizedBox(width: 5),
-                    Icon(
+                    const Icon(
                       Icons.filter_list,
                       color: Colors.white,
                       size: 20,
@@ -161,7 +179,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                     const SizedBox(width: 5),
                     DropdownButton<String>(
                       dropdownColor: Colors.black,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                       value: selectedType,
@@ -174,7 +192,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                           value: type,
                           child: Text(
                             type,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                             ),
                           ),

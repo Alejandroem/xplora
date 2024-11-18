@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../theme.dart';
 import '../dialogs/bottom_login_card.dart';
+import '../pages/profile_page.dart';
 
 class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const XplorAppBar({super.key});
@@ -19,16 +20,50 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
       data: (isAuthenticated) {
         return AppBar(
           leading: isAuthenticated
-              ? IconButton(
-                  icon: CircleAvatar(
-                    backgroundColor: whiteSmoke,
-                    radius: 16.0,
-                    child: const Icon(
-                      Icons.person,
+              ? ref.watch(createOrReadCurrentUserProfile).when(
+                    data: (profile) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(profile),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: whiteSmoke,
+                          radius: 16.0,
+                          child: profile!.avatarUrl != null
+                              ? ClipOval(
+                                  child: Image.network(
+                                    profile.avatarUrl!,
+                                    width: 32.0,
+                                    height: 32.0,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.person,
+                                ),
+                        ),
+                      );
+                    },
+                    loading: () => CircleAvatar(
+                      backgroundColor: whiteSmoke,
+                      radius: 16.0,
+                      child: const Icon(
+                        Icons.person,
+                      ),
                     ),
-                  ),
-                  onPressed: () {},
-                )
+                    error: (error, stackTrace) => CircleAvatar(
+                      backgroundColor: whiteSmoke,
+                      radius: 16.0,
+                      child: const Icon(
+                        Icons.person,
+                      ),
+                    ),
+                  )
               : const SizedBox.shrink(),
           titleSpacing: 8.0,
           centerTitle: !isAuthenticated,

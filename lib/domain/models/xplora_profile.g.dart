@@ -15,6 +15,8 @@ _$XploraProfileImpl _$$XploraProfileImplFromJson(Map<String, dynamic> json) =>
       categories: (json['categories'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
+      avatarUrl: json['avatarUrl'] as String?,
+      username: json['username'] as String?,
     );
 
 Map<String, dynamic> _$$XploraProfileImplToJson(_$XploraProfileImpl instance) =>
@@ -24,4 +26,6 @@ Map<String, dynamic> _$$XploraProfileImplToJson(_$XploraProfileImpl instance) =>
       'level': instance.level,
       'experience': instance.experience,
       'categories': instance.categories,
+      'avatarUrl': instance.avatarUrl,
+      'username': instance.username,
     };

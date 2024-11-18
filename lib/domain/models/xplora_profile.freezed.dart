@@ -25,6 +25,8 @@ mixin _$XploraProfile {
   int get level => throw _privateConstructorUsedError;
   int get experience => throw _privateConstructorUsedError;
   List<String> get categories => throw _privateConstructorUsedError;
+  String? get avatarUrl => throw _privateConstructorUsedError;
+  String? get username => throw _privateConstructorUsedError;
 
   /// Serializes this XploraProfile to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,7 +49,9 @@ abstract class $XploraProfileCopyWith<$Res> {
       String userId,
       int level,
       int experience,
-      List<String> categories});
+      List<String> categories,
+      String? avatarUrl,
+      String? username});
 }
 
 /// @nodoc
@@ -70,6 +74,8 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
     Object? level = null,
     Object? experience = null,
     Object? categories = null,
+    Object? avatarUrl = freezed,
+    Object? username = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -92,6 +98,14 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
           ? _value.categories
           : categories // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      avatarUrl: freezed == avatarUrl
+          ? _value.avatarUrl
+          : avatarUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      username: freezed == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -109,7 +123,9 @@ abstract class _$$XploraProfileImplCopyWith<$Res>
       String userId,
       int level,
       int experience,
-      List<String> categories});
+      List<String> categories,
+      String? avatarUrl,
+      String? username});
 }
 
 /// @nodoc
@@ -130,6 +146,8 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
     Object? level = null,
     Object? experience = null,
     Object? categories = null,
+    Object? avatarUrl = freezed,
+    Object? username = freezed,
   }) {
     return _then(_$XploraProfileImpl(
       id: freezed == id
@@ -152,6 +170,14 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
           ? _value._categories
           : categories // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      avatarUrl: freezed == avatarUrl
+          ? _value.avatarUrl
+          : avatarUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      username: freezed == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -164,7 +190,9 @@ class _$XploraProfileImpl implements _XploraProfile {
       required this.userId,
       required this.level,
       required this.experience,
-      required final List<String> categories})
+      required final List<String> categories,
+      required this.avatarUrl,
+      required this.username})
       : _categories = categories;
 
   factory _$XploraProfileImpl.fromJson(Map<String, dynamic> json) =>
@@ -187,8 +215,13 @@ class _$XploraProfileImpl implements _XploraProfile {
   }
 
   @override
+  final String? avatarUrl;
+  @override
+  final String? username;
+
+  @override
   String toString() {
-    return 'XploraProfile(id: $id, userId: $userId, level: $level, experience: $experience, categories: $categories)';
+    return 'XploraProfile(id: $id, userId: $userId, level: $level, experience: $experience, categories: $categories, avatarUrl: $avatarUrl, username: $username)';
   }
 
   @override
@@ -202,13 +235,17 @@ class _$XploraProfileImpl implements _XploraProfile {
             (identical(other.experience, experience) ||
                 other.experience == experience) &&
             const DeepCollectionEquality()
-                .equals(other._categories, _categories));
+                .equals(other._categories, _categories) &&
+            (identical(other.avatarUrl, avatarUrl) ||
+                other.avatarUrl == avatarUrl) &&
+            (identical(other.username, username) ||
+                other.username == username));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, userId, level, experience,
-      const DeepCollectionEquality().hash(_categories));
+      const DeepCollectionEquality().hash(_categories), avatarUrl, username);
 
   /// Create a copy of XploraProfile
   /// with the given fields replaced by the non-null parameter values.
@@ -232,7 +269,9 @@ abstract class _XploraProfile implements XploraProfile {
       required final String userId,
       required final int level,
       required final int experience,
-      required final List<String> categories}) = _$XploraProfileImpl;
+      required final List<String> categories,
+      required final String? avatarUrl,
+      required final String? username}) = _$XploraProfileImpl;
 
   factory _XploraProfile.fromJson(Map<String, dynamic> json) =
       _$XploraProfileImpl.fromJson;
@@ -247,6 +286,10 @@ abstract class _XploraProfile implements XploraProfile {
   int get experience;
   @override
   List<String> get categories;
+  @override
+  String? get avatarUrl;
+  @override
+  String? get username;
 
   /// Create a copy of XploraProfile
   /// with the given fields replaced by the non-null parameter values.

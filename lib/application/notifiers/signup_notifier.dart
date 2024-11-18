@@ -168,6 +168,8 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
           level: 0,
           experience: 0,
           categories: [],
+          avatarUrl: '',
+          username: '',
         );
         await profileService.create(xploraProfile);
       }
