@@ -124,10 +124,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ],
             ),
             const SizedBox(height: 10.0),
-            Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: const Row(
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Icon(Icons.emoji_events),
@@ -155,10 +155,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             color: Colors.blue,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Column(
+                          child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: const <Widget>[
+                            children: <Widget>[
                               Icon(
                                 Icons.emoji_events,
                                 size: 35.0,
@@ -188,10 +188,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             color: Colors.blue,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Column(
+                          child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: const <Widget>[
+                            children: <Widget>[
                               Icon(
                                 Icons.emoji_events,
                                 size: 35.0,
@@ -221,10 +221,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             color: Colors.blue,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Column(
+                          child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: const <Widget>[
+                            children: <Widget>[
                               Icon(
                                 Icons.emoji_events,
                                 size: 35.0,
@@ -254,10 +254,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             color: Colors.blue,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Column(
+                          child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: const <Widget>[
+                            children: <Widget>[
                               Icon(
                                 Icons.emoji_events,
                                 size: 35.0,
@@ -279,12 +279,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
               ),
             ),
-            Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: const <Widget>[
+                children: <Widget>[
                   Icon(Icons.bookmark),
                   SizedBox(width: 10.0),
                   Text('Bookmarks'),

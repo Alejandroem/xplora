@@ -18,9 +18,6 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
   final int _leaveThreshold = kDebugMode
       ? 10
       : 600; // Time outside before clearing (10 sec debug, 10 min prod)
-  final int _awardThreshold = kDebugMode
-      ? 60
-      : 600; // Time inside to award adventure (1 min debug, 10 min prod)
 
   Timer? _locationCheckTimer;
   Timer? _leaveAreaTimer;
@@ -84,11 +81,13 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
         _updateCompleteness(); // Update completeness every 10 seconds
 
         // Check if the adventure should be awarded
-        if (_awardAdventureTimer == null) {
+        if (_awardAdventureTimer == null &&
+            state?.adventure.timeInSeconds != null) {
           log('User is at the location, starting award timer');
+          int awardThreshold = state!.adventure.timeInSeconds!;
           _awardAdventureTimer =
-              Timer(Duration(seconds: _awardThreshold), () async {
-            log('User has stayed for more than $_awardThreshold seconds, awarding adventure');
+              Timer(Duration(seconds: awardThreshold), () async {
+            log('User has stayed for more than $awardThreshold seconds, awarding adventure');
             await _awardAdventure();
           });
         }
@@ -163,8 +162,9 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
     if (state != null) {
       final timeSpent =
           DateTime.now().difference(state!.enteredPlaceAt).inSeconds;
+      final awardThreshold = state!.adventure.timeInSeconds;
       final completenessPercentage =
-          (timeSpent / _awardThreshold * 100).toInt();
+          (timeSpent / awardThreshold! * 100).toInt();
 
       // Ensure completeness is capped at 100
       final updatedCompleteness =
@@ -227,8 +227,9 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
     _awardAdventureTimer = null;
 
     // Start the timer for awarding the adventure
-    _awardAdventureTimer = Timer(Duration(seconds: _awardThreshold), () async {
-      log('User has stayed for more than $_awardThreshold seconds, awarding adventure');
+    _awardAdventureTimer =
+        Timer(Duration(seconds: adventure.timeInSeconds!), () async {
+      log('User has stayed for more than ${adventure.timeInSeconds} seconds, awarding adventure');
       await _awardAdventure();
     });
   }

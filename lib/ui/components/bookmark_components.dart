@@ -28,9 +28,9 @@ class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
         child: ref.watch(currentUserBoomarksStreamProvider).when(
               data: (bookmarks) {
                 if (bookmarks == null || bookmarks.isEmpty) {
-                  return Column(
+                  return const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         'You have no bookmarks yet.',
                         textAlign: TextAlign.center,

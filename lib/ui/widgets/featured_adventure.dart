@@ -92,24 +92,6 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                                 },
                               ),
                             ),
-                            //centered text with background saying promote your event here
-                            Positioned(
-                              top: 60,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                color: Colors.black.withOpacity(0.5),
-                                padding: const EdgeInsets.all(10),
-                                child: const Text(
-                                  'Promote your event here',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),

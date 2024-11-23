@@ -21,6 +21,7 @@ class Adventure with _$Adventure {
     required double latitude,
     required double longitude,
     required bool? hasNotified,
+    required int? timeInSeconds,
   }) = _Adventure;
 
   factory Adventure.fromJson(Map<String, dynamic> json) =>

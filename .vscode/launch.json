@@ -9,17 +9,5 @@
             "request": "launch",
             "type": "dart"
         },
-        {
-            "name": "xplora (profile mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "xplora (release mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        }
     ]
 }

@@ -59,18 +59,16 @@ final availableAdventuresProvider =
   return allAdventures;
 });
 
-final featuredAdventuresProvider =
-    FutureProvider<List<Adventure>?>((ref) async {
+final featuredAdventuresProvider = StreamProvider<List<Adventure>?>((ref) {
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
 
-  List<Adventure>? allAdventures = await adventureCrudService.readByFilters([
+  return adventureCrudService.streamByFilters([
     {
       'field': 'featured',
       'operator': '==',
       'value': true,
     }
   ]);
-  return allAdventures;
 });
 
 final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
