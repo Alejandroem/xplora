@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/location_providers.dart';
+import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import 'quest_carousel_card.dart';
 
@@ -38,7 +39,7 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                   ),
                 ),
                 const Spacer(),
-                DropdownButton<int>(
+                /* DropdownButton<int>(
                   value: ref.watch(minimumDistanceProvider),
                   items: const [
                     DropdownMenuItem(value: 1000, child: Text('1 km')),
@@ -50,7 +51,7 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                       ref.read(minimumDistanceProvider.notifier).state = value;
                     }
                   },
-                ),
+                ), */
               ],
             ),
           ),
@@ -62,10 +63,85 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                       return ListView(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
-                        children: adventures
-                            .map((adventure) =>
-                                AdventuresCarouselCard(adventure))
-                            .toList(),
+                        children: [
+                          ...adventures.map(
+                            (adventure) => AdventuresCarouselCard(
+                              adventure,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              ref
+                                  .read(bottomNavigationBarProvider.notifier)
+                                  .state = NavigationItem.search;
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.search,
+                                        color: raisingBlack,
+                                        size: 40,
+                                      ),
+                                      Text(
+                                        "See more",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w900,
+                                          color: raisingBlack,
+                                        ),
+                                      ),
+                                      /* Text(
+                                        widget.adventure.shortDescription,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: raisingBlack,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.only(
+                                                left: 6.0, right: 6.0),
+                                            decoration: BoxDecoration(
+                                              color: raisingBlack,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Text(
+                                              '${widget.adventure.experience.toStringAsFixed(2)} exp',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: springBud,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ), */
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       );
                     } else {
                       return const Center(

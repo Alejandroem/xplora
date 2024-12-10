@@ -33,6 +33,7 @@ mixin _$Quest {
   int? get timeInSeconds => throw _privateConstructorUsedError;
   double? get stepLatitude => throw _privateConstructorUsedError;
   double? get stepLongitude => throw _privateConstructorUsedError;
+  int? get distance => throw _privateConstructorUsedError;
   String? get stepCode => throw _privateConstructorUsedError;
   bool? get hasNotified => throw _privateConstructorUsedError;
 
@@ -64,6 +65,7 @@ abstract class $QuestCopyWith<$Res> {
       int? timeInSeconds,
       double? stepLatitude,
       double? stepLongitude,
+      int? distance,
       String? stepCode,
       bool? hasNotified});
 }
@@ -96,6 +98,7 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
     Object? timeInSeconds = freezed,
     Object? stepLatitude = freezed,
     Object? stepLongitude = freezed,
+    Object? distance = freezed,
     Object? stepCode = freezed,
     Object? hasNotified = freezed,
   }) {
@@ -152,6 +155,10 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
           ? _value.stepLongitude
           : stepLongitude // ignore: cast_nullable_to_non_nullable
               as double?,
+      distance: freezed == distance
+          ? _value.distance
+          : distance // ignore: cast_nullable_to_non_nullable
+              as int?,
       stepCode: freezed == stepCode
           ? _value.stepCode
           : stepCode // ignore: cast_nullable_to_non_nullable
@@ -185,6 +192,7 @@ abstract class _$$QuestImplCopyWith<$Res> implements $QuestCopyWith<$Res> {
       int? timeInSeconds,
       double? stepLatitude,
       double? stepLongitude,
+      int? distance,
       String? stepCode,
       bool? hasNotified});
 }
@@ -215,6 +223,7 @@ class __$$QuestImplCopyWithImpl<$Res>
     Object? timeInSeconds = freezed,
     Object? stepLatitude = freezed,
     Object? stepLongitude = freezed,
+    Object? distance = freezed,
     Object? stepCode = freezed,
     Object? hasNotified = freezed,
   }) {
@@ -271,6 +280,10 @@ class __$$QuestImplCopyWithImpl<$Res>
           ? _value.stepLongitude
           : stepLongitude // ignore: cast_nullable_to_non_nullable
               as double?,
+      distance: freezed == distance
+          ? _value.distance
+          : distance // ignore: cast_nullable_to_non_nullable
+              as int?,
       stepCode: freezed == stepCode
           ? _value.stepCode
           : stepCode // ignore: cast_nullable_to_non_nullable
@@ -300,6 +313,7 @@ class _$QuestImpl implements _Quest {
       required this.timeInSeconds,
       required this.stepLatitude,
       required this.stepLongitude,
+      required this.distance,
       required this.stepCode,
       required this.hasNotified});
 
@@ -333,13 +347,15 @@ class _$QuestImpl implements _Quest {
   @override
   final double? stepLongitude;
   @override
+  final int? distance;
+  @override
   final String? stepCode;
   @override
   final bool? hasNotified;
 
   @override
   String toString() {
-    return 'Quest(id: $id, userId: $userId, questId: $questId, category: $category, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, stepType: $stepType, timeInSeconds: $timeInSeconds, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude, stepCode: $stepCode, hasNotified: $hasNotified)';
+    return 'Quest(id: $id, userId: $userId, questId: $questId, category: $category, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, stepType: $stepType, timeInSeconds: $timeInSeconds, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude, distance: $distance, stepCode: $stepCode, hasNotified: $hasNotified)';
   }
 
   @override
@@ -369,6 +385,8 @@ class _$QuestImpl implements _Quest {
                 other.stepLatitude == stepLatitude) &&
             (identical(other.stepLongitude, stepLongitude) ||
                 other.stepLongitude == stepLongitude) &&
+            (identical(other.distance, distance) ||
+                other.distance == distance) &&
             (identical(other.stepCode, stepCode) ||
                 other.stepCode == stepCode) &&
             (identical(other.hasNotified, hasNotified) ||
@@ -392,6 +410,7 @@ class _$QuestImpl implements _Quest {
       timeInSeconds,
       stepLatitude,
       stepLongitude,
+      distance,
       stepCode,
       hasNotified);
 
@@ -426,6 +445,7 @@ abstract class _Quest implements Quest {
       required final int? timeInSeconds,
       required final double? stepLatitude,
       required final double? stepLongitude,
+      required final int? distance,
       required final String? stepCode,
       required final bool? hasNotified}) = _$QuestImpl;
 
@@ -457,6 +477,8 @@ abstract class _Quest implements Quest {
   double? get stepLatitude;
   @override
   double? get stepLongitude;
+  @override
+  int? get distance;
   @override
   String? get stepCode;
   @override

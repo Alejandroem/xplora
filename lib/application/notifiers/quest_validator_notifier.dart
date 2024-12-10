@@ -14,7 +14,6 @@ import '../../domain/services/xplora_quest_crud_service.dart';
 class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
   final int _checkInterval = 10; // Update completeness every 10 seconds
   final int _locationThreshold = 30; // Time in seconds for location quests
-  final int _radiusThreshold = 50; // 50 meters for location quests
 
   Timer? _locationCheckTimer;
   Timer? _locationStayTimer;
@@ -69,7 +68,8 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
   }
 
   void _handleLocationQuest(double distance) {
-    if (distance > _radiusThreshold) {
+    final radiusThreshold = state!.quest.distance ?? 30.0;
+    if (distance > radiusThreshold) {
       log('User is outside the quest area. Resetting state.');
       clearQuestInProgress();
       return;
@@ -89,7 +89,8 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
   }
 
   void _handleTimeLocationQuest(double distance) {
-    if (distance > _radiusThreshold) {
+    final radiusThreshold = state!.quest.distance ?? 30.0;
+    if (distance > radiusThreshold) {
       log('User has left the quest area for a time-location quest. Clearing timer.');
       clearQuestInProgress();
       return;
@@ -162,7 +163,7 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
           quest.stepLatitude!,
           quest.stepLongitude!,
         );
-        return distance <= _radiusThreshold;
+        return distance <= (quest.distance ?? 30);
       },
     ).toList();
 

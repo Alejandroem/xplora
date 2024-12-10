@@ -24,6 +24,7 @@ _$AdventureImpl _$$AdventureImplFromJson(Map<String, dynamic> json) =>
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       hasNotified: json['hasNotified'] as bool?,
+      distance: (json['distance'] as num?)?.toInt(),
       timeInSeconds: (json['timeInSeconds'] as num?)?.toInt(),
     );
 
@@ -43,5 +44,6 @@ Map<String, dynamic> _$$AdventureImplToJson(_$AdventureImpl instance) =>
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'hasNotified': instance.hasNotified,
+      'distance': instance.distance,
       'timeInSeconds': instance.timeInSeconds,
     };

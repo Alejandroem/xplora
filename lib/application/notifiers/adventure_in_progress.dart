@@ -65,7 +65,7 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
         state!.adventure.longitude,
       );
 
-      if (distance > 30) {
+      if (distance > (state!.adventure.distance ?? 30)) {
         // User has left the place, start the leave timer
         if (_leaveAreaTimer == null) {
           log('User has left the area, starting leave timer');
@@ -124,7 +124,7 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
           adventure.latitude,
           adventure.longitude,
         );
-        return distance <= 30;
+        return distance <= (adventure.distance ?? 30);
       },
     ).toList();
 

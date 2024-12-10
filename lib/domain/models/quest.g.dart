@@ -20,6 +20,7 @@ _$QuestImpl _$$QuestImplFromJson(Map<String, dynamic> json) => _$QuestImpl(
       timeInSeconds: (json['timeInSeconds'] as num?)?.toInt(),
       stepLatitude: (json['stepLatitude'] as num?)?.toDouble(),
       stepLongitude: (json['stepLongitude'] as num?)?.toDouble(),
+      distance: (json['distance'] as num?)?.toInt(),
       stepCode: json['stepCode'] as String?,
       hasNotified: json['hasNotified'] as bool?,
     );
@@ -39,6 +40,7 @@ Map<String, dynamic> _$$QuestImplToJson(_$QuestImpl instance) =>
       'timeInSeconds': instance.timeInSeconds,
       'stepLatitude': instance.stepLatitude,
       'stepLongitude': instance.stepLongitude,
+      'distance': instance.distance,
       'stepCode': instance.stepCode,
       'hasNotified': instance.hasNotified,
     };

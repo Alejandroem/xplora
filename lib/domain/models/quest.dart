@@ -25,6 +25,7 @@ class Quest with _$Quest {
     required int? timeInSeconds,
     required double? stepLatitude,
     required double? stepLongitude,
+    required int? distance,
     required String? stepCode,
     required bool? hasNotified,
   }) = _Quest;

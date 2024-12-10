@@ -87,7 +87,6 @@ final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
 final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
-  final minimumDistance = ref.watch(minimumDistanceProvider);
 
   // Stream all available adventures that are not associated with any user
   final allAvailableAdventures = adventureCrudService.streamByFilters([
@@ -130,18 +129,7 @@ final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
         },
       ]);
 
-      List<Adventure> nearbyAdventures = adventures.where((adventure) {
-        final distance = Geolocator.distanceBetween(
-          userLocation.position!.latitude,
-          userLocation.position!.longitude,
-          adventure.latitude,
-          adventure.longitude,
-        );
-        /* if (kDebugMode) {
-          return true;
-        } */
-        return distance <= minimumDistance;
-      }).toList();
+      List<Adventure> nearbyAdventures = adventures;
 
       //sort adventures by distance
       nearbyAdventures.sort((a, b) {

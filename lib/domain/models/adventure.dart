@@ -20,6 +20,7 @@ class Adventure with _$Adventure {
     required double experience,
     required double latitude,
     required double longitude,
+    required int? distance,
     required bool? hasNotified,
     required int? timeInSeconds,
   }) = _Adventure;
