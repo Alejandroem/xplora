@@ -5,10 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 
+import '../../domain/models/achievement.dart';
 import '../../domain/models/quest.dart';
 import '../../domain/models/quest_in_progress.dart';
 import '../../domain/models/xplora_user.dart';
+import '../../domain/services/achievements_crud_service.dart';
 import '../../domain/services/auth_service.dart';
+import '../../domain/services/xplora_profile_service.dart';
 import '../../domain/services/xplora_quest_crud_service.dart';
 
 class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
@@ -19,12 +22,16 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
   Timer? _locationStayTimer;
 
   final XploraQuestCrudService _xploraQuestCrudService;
+  final XploraProfileService _xploraProfileService;
+  final AchievementsCrudService _achievementsCrudService;
   final AuthService _authService;
   Ref ref;
 
   QuestValidatorNotifier(
     this.ref,
     this._xploraQuestCrudService,
+    this._xploraProfileService,
+    this._achievementsCrudService,
     this._authService,
   ) : super(null) {
     _locationCheckTimer = Timer.periodic(
@@ -80,7 +87,7 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
       _locationStayTimer =
           Timer(Duration(seconds: _locationThreshold), () async {
         log('User has stayed in the location for $_locationThreshold seconds. Quest is completed.');
-        await _completeQuest();
+        await _awardQuest();
         //refresh nearbyQuestProvider
       });
     }
@@ -100,7 +107,7 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
       final timeRemaining = state!.quest.timeInSeconds! - state!.timeInArea!;
       if (timeRemaining <= 0) {
         log('User has completed the time-location quest.');
-        _completeQuest();
+        _awardQuest();
       } else {
         state =
             state!.copyWith(timeInArea: state!.timeInArea! + _checkInterval);
@@ -186,7 +193,7 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
     _locationStayTimer?.cancel(); // Reset location stay timer if any
   }
 
-  Future<void> _completeQuest() async {
+  Future<void> _awardQuest() async {
     XploraUser? user = await _authService.getAuthUser();
     log('Completing quest: ${state!.quest.title}');
     // Mark quest as completed and store in the database
@@ -196,8 +203,75 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
       questId: state!.quest.id,
     );
     await _xploraQuestCrudService.create(userQuest);
-    //we need to update the nearbyQuestProvider
-    //ref.refresh(nearbyQuestProvider);
+
+    // Update user profile with experience points
+    final userProfile = await _xploraProfileService.readByFilters([
+      {
+        'field': 'userId',
+        'operator': '==',
+        'value': user.id,
+      },
+    ]);
+
+    if (userProfile != null && userProfile.isNotEmpty) {
+      final userExperience = userProfile.first.experience;
+      final updatedExperience =
+          userExperience + state!.quest.experience.toInt();
+      await _xploraProfileService.update(
+        userProfile.first.copyWith(
+          experience: updatedExperience.ceil(),
+        ),
+        userProfile.first.id!,
+      );
+      log('User experience updated to: $updatedExperience');
+
+      //get all achievements with no userID
+      final allAchievements = await _achievementsCrudService.readByFilters([
+        {
+          'field': 'userId',
+          'operator': 'unset',
+        },
+      ]);
+
+      //first check achievements with a trigger quest and whose triggerValue belongs to the current id of the quest
+      //if not check then the experience and level achievements
+      if (allAchievements != null && allAchievements.isNotEmpty) {
+        final questAchievements = allAchievements.where((achievement) {
+          return achievement.trigger == Trigger.quest &&
+              achievement.triggerValue == state!.quest.id;
+        }).toList();
+
+        final experienceAchievements = allAchievements.where((achievement) {
+          return achievement.trigger == Trigger.experience &&
+              int.parse(achievement.triggerValue) <= updatedExperience;
+        }).toList();
+
+        final levelAchievements = allAchievements.where((achievement) {
+          return achievement.trigger == Trigger.level &&
+              int.parse(achievement.triggerValue) <=
+                  userProfile.first.level; //check if the level is updated
+        }).toList();
+
+        final achievementsToAward = [
+          ...questAchievements,
+          ...experienceAchievements,
+          ...levelAchievements,
+        ];
+
+        if (achievementsToAward.isNotEmpty) {
+          for (final achievement in achievementsToAward) {
+            await _achievementsCrudService.create(
+              achievement.copyWith(
+                userId: user.id,
+                dateAchieved: DateTime.now(),
+              ),
+            );
+            log('Achievement awarded: ${achievement.title}');
+          }
+        }
+      }
+    }
+
     clearQuestInProgress();
   }
 

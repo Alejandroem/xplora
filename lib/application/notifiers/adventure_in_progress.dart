@@ -6,9 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 
+import '../../domain/models/achievement.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/adventure_in_progress.dart';
 import '../../domain/models/xplora_user.dart';
+import '../../domain/services/achievements_crud_service.dart';
 import '../../domain/services/adventure_crud_service.dart';
 import '../../domain/services/auth_service.dart';
 import '../../domain/services/xplora_profile_service.dart';
@@ -26,11 +28,13 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
   final AdventureCrudService _adventureCrudService;
   final AuthService _authService;
   final XploraProfileService _xploraProfileService;
+  final AchievementsCrudService _achievementsCrudService;
 
   AdventureInProgressNotifier(
     this._adventureCrudService,
     this._authService,
     this._xploraProfileService,
+    this._achievementsCrudService,
   ) : super(null) {
     _locationCheckTimer = Timer.periodic(
       Duration(
@@ -208,6 +212,52 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
         userProfile.first.id!,
       );
       log('User experience updated to: $updatedExperience');
+
+      //get all achievements with no userID
+      final allAchievements = await _achievementsCrudService.readByFilters([
+        {
+          'field': 'userId',
+          'operator': 'unset',
+        },
+      ]);
+
+      //first check achievements with a trigger quest and whose triggerValue belongs to the current id of the quest
+      //if not check then the experience and level achievements
+      if (allAchievements != null && allAchievements.isNotEmpty) {
+        final questAchievements = allAchievements.where((achievement) {
+          return achievement.trigger == Trigger.adventure &&
+              achievement.triggerValue == state!.adventure.id;
+        }).toList();
+
+        final experienceAchievements = allAchievements.where((achievement) {
+          return achievement.trigger == Trigger.experience &&
+              int.parse(achievement.triggerValue) <= updatedExperience;
+        }).toList();
+
+        final levelAchievements = allAchievements.where((achievement) {
+          return achievement.trigger == Trigger.level &&
+              int.parse(achievement.triggerValue) <=
+                  userProfile.first.level; //check if the level is updated
+        }).toList();
+
+        final achievementsToAward = [
+          ...questAchievements,
+          ...experienceAchievements,
+          ...levelAchievements,
+        ];
+
+        if (achievementsToAward.isNotEmpty) {
+          for (final achievement in achievementsToAward) {
+            await _achievementsCrudService.create(
+              achievement.copyWith(
+                userId: user.id,
+                dateAchieved: DateTime.now(),
+              ),
+            );
+            log('Achievement awarded: ${achievement.title}');
+          }
+        }
+      }
     }
 
     clearAdventureInProgress(); // Adventure awarded, clear progress

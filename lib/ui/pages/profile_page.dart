@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/providers/achievements_providers.dart';
 import '../../application/providers/xplorauser_providers.dart';
 import '../../domain/models/xplora_profile.dart';
 import '../components/bookmark_components.dart';
@@ -17,6 +18,11 @@ class ProfilePage extends ConsumerStatefulWidget {
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   late XploraProfile profile;
   bool editingUsername = false;
+
+  final Map<String, IconData> iconsMap = {
+    'achievement1': Icons.star,
+    'achievement2': Icons.emoji_events,
+  };
 
   @override
   void initState() {
@@ -142,140 +148,56 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Card(
-                      child: Container(
-                        width: 100.0,
-                        height: 100.0,
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Icon(
-                                Icons.emoji_events,
-                                size: 35.0,
-                                color: Colors.white,
-                              ),
-                              SizedBox(height: 10.0),
-                              Text(
-                                'Name',
-                                style: TextStyle(
-                                  color: Colors.white,
+                  children: ref.watch(currentUserAchievementsProvider).when(
+                        data: (achievements) {
+                          return achievements!
+                              .map(
+                                (achievement) => Card(
+                                  child: Container(
+                                    width: 100.0,
+                                    height: 100.0,
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: 80,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Icon(
+                                            iconsMap[achievement.icon] ??
+                                                Icons.emoji_events,
+                                            size: 35.0,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(height: 10.0),
+                                          Text(
+                                            achievement.name,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
+                              )
+                              .toList();
+                        },
+                        loading: () => const <Widget>[
+                          CircularProgressIndicator(),
+                        ],
+                        error: (_, __) => const <Widget>[
+                          CircularProgressIndicator(),
+                        ],
                       ),
-                    ),
-                    Card(
-                      child: Container(
-                        width: 100.0,
-                        height: 100.0,
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Icon(
-                                Icons.emoji_events,
-                                size: 35.0,
-                                color: Colors.white,
-                              ),
-                              SizedBox(height: 10.0),
-                              Text(
-                                'Name',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: Container(
-                        width: 100.0,
-                        height: 100.0,
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Icon(
-                                Icons.emoji_events,
-                                size: 35.0,
-                                color: Colors.white,
-                              ),
-                              SizedBox(height: 10.0),
-                              Text(
-                                'Name',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: Container(
-                        width: 100.0,
-                        height: 100.0,
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Icon(
-                                Icons.emoji_events,
-                                size: 35.0,
-                                color: Colors.white,
-                              ),
-                              SizedBox(height: 10.0),
-                              Text(
-                                'Name',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),

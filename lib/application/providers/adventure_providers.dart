@@ -7,6 +7,7 @@ import '../../domain/models/adventure_in_progress.dart';
 import '../../domain/services/adventure_crud_service.dart';
 import '../../infrastructure/services/firebase_adventure_crud_service.dart';
 import '../notifiers/adventure_in_progress.dart';
+import 'achievements_providers.dart';
 import 'auth_providers.dart';
 import 'location_providers.dart';
 import 'xplorauser_providers.dart';
@@ -76,11 +77,13 @@ final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
   final authService = ref.watch(authServiceProvider);
   final profileService = ref.watch(profileServiceProvider);
+  final achievementsService = ref.watch(achievementsServiceProvider);
 
   return AdventureInProgressNotifier(
     adventureCrudService,
     authService,
     profileService,
+    achievementsService,
   );
 });
 

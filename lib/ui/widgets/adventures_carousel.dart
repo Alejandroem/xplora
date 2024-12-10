@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/adventure_providers.dart';
-import '../../application/providers/location_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import 'quest_carousel_card.dart';

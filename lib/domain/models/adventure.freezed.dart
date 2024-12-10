@@ -35,8 +35,8 @@ mixin _$Adventure {
   double get experience => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
-  bool? get hasNotified => throw _privateConstructorUsedError;
   int? get distance => throw _privateConstructorUsedError;
+  bool? get hasNotified => throw _privateConstructorUsedError;
   int? get timeInSeconds => throw _privateConstructorUsedError;
 
   /// Serializes this Adventure to a JSON map.
@@ -68,8 +68,8 @@ abstract class $AdventureCopyWith<$Res> {
       double experience,
       double latitude,
       double longitude,
-      bool? hasNotified,
       int? distance,
+      bool? hasNotified,
       int? timeInSeconds});
 }
 
@@ -101,8 +101,8 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
     Object? experience = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? hasNotified = freezed,
     Object? distance = freezed,
+    Object? hasNotified = freezed,
     Object? timeInSeconds = freezed,
   }) {
     return _then(_value.copyWith(
@@ -158,14 +158,14 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      hasNotified: freezed == hasNotified
-          ? _value.hasNotified
-          : hasNotified // ignore: cast_nullable_to_non_nullable
-              as bool?,
       distance: freezed == distance
           ? _value.distance
           : distance // ignore: cast_nullable_to_non_nullable
               as int?,
+      hasNotified: freezed == hasNotified
+          ? _value.hasNotified
+          : hasNotified // ignore: cast_nullable_to_non_nullable
+              as bool?,
       timeInSeconds: freezed == timeInSeconds
           ? _value.timeInSeconds
           : timeInSeconds // ignore: cast_nullable_to_non_nullable
@@ -196,8 +196,8 @@ abstract class _$$AdventureImplCopyWith<$Res>
       double experience,
       double latitude,
       double longitude,
-      bool? hasNotified,
       int? distance,
+      bool? hasNotified,
       int? timeInSeconds});
 }
 
@@ -227,8 +227,8 @@ class __$$AdventureImplCopyWithImpl<$Res>
     Object? experience = null,
     Object? latitude = null,
     Object? longitude = null,
-    Object? hasNotified = freezed,
     Object? distance = freezed,
+    Object? hasNotified = freezed,
     Object? timeInSeconds = freezed,
   }) {
     return _then(_$AdventureImpl(
@@ -284,14 +284,14 @@ class __$$AdventureImplCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
-      hasNotified: freezed == hasNotified
-          ? _value.hasNotified
-          : hasNotified // ignore: cast_nullable_to_non_nullable
-              as bool?,
       distance: freezed == distance
           ? _value.distance
           : distance // ignore: cast_nullable_to_non_nullable
               as int?,
+      hasNotified: freezed == hasNotified
+          ? _value.hasNotified
+          : hasNotified // ignore: cast_nullable_to_non_nullable
+              as bool?,
       timeInSeconds: freezed == timeInSeconds
           ? _value.timeInSeconds
           : timeInSeconds // ignore: cast_nullable_to_non_nullable
@@ -317,8 +317,8 @@ class _$AdventureImpl implements _Adventure {
       required this.experience,
       required this.latitude,
       required this.longitude,
-      required this.hasNotified,
       required this.distance,
+      required this.hasNotified,
       required this.timeInSeconds})
       : _featuredImages = featuredImages;
 
@@ -362,15 +362,15 @@ class _$AdventureImpl implements _Adventure {
   @override
   final double longitude;
   @override
-  final bool? hasNotified;
-  @override
   final int? distance;
+  @override
+  final bool? hasNotified;
   @override
   final int? timeInSeconds;
 
   @override
   String toString() {
-    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, category: $category, featured: $featured, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, featuredImages: $featuredImages, experience: $experience, latitude: $latitude, longitude: $longitude, hasNotified: $hasNotified, distance: $distance, timeInSeconds: $timeInSeconds)';
+    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, category: $category, featured: $featured, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, featuredImages: $featuredImages, experience: $experience, latitude: $latitude, longitude: $longitude, distance: $distance, hasNotified: $hasNotified, timeInSeconds: $timeInSeconds)';
   }
 
   @override
@@ -401,10 +401,10 @@ class _$AdventureImpl implements _Adventure {
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
-            (identical(other.hasNotified, hasNotified) ||
-                other.hasNotified == hasNotified) &&
             (identical(other.distance, distance) ||
                 other.distance == distance) &&
+            (identical(other.hasNotified, hasNotified) ||
+                other.hasNotified == hasNotified) &&
             (identical(other.timeInSeconds, timeInSeconds) ||
                 other.timeInSeconds == timeInSeconds));
   }
@@ -426,8 +426,8 @@ class _$AdventureImpl implements _Adventure {
       experience,
       latitude,
       longitude,
-      hasNotified,
       distance,
+      hasNotified,
       timeInSeconds);
 
   /// Create a copy of Adventure
@@ -461,8 +461,8 @@ abstract class _Adventure implements Adventure {
       required final double experience,
       required final double latitude,
       required final double longitude,
-      required final bool? hasNotified,
       required final int? distance,
+      required final bool? hasNotified,
       required final int? timeInSeconds}) = _$AdventureImpl;
 
   factory _Adventure.fromJson(Map<String, dynamic> json) =
@@ -496,9 +496,9 @@ abstract class _Adventure implements Adventure {
   @override
   double get longitude;
   @override
-  bool? get hasNotified;
-  @override
   int? get distance;
+  @override
+  bool? get hasNotified;
   @override
   int? get timeInSeconds;
 

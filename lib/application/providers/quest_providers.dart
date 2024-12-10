@@ -7,8 +7,10 @@ import '../../domain/models/quest_in_progress.dart';
 import '../../domain/services/xplora_quest_crud_service.dart';
 import '../../infrastructure/services/firebase_xplora_quest_crud_service.dart';
 import '../notifiers/quest_validator_notifier.dart';
+import 'achievements_providers.dart';
 import 'auth_providers.dart';
 import 'location_providers.dart';
+import 'xplorauser_providers.dart';
 
 final questCrudServiceProvider = Provider<XploraQuestCrudService>((ref) {
   return FirebaseXploraQuestCrudService();
@@ -109,6 +111,8 @@ final questInProgressTrackerProvider =
   return QuestValidatorNotifier(
     ref,
     ref.watch(questCrudServiceProvider),
+    ref.watch(profileServiceProvider),
+    ref.watch(achievementsServiceProvider),
     ref.watch(authServiceProvider),
   );
 });
