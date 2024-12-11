@@ -90,7 +90,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             const SizedBox(height: 10.0),
             CircleAvatar(
               radius: 50.0,
-              child: profile.avatarUrl != null
+              child: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
                   ? ClipOval(
                       child: Image.network(
                         profile.avatarUrl!,
@@ -150,8 +150,23 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: ref.watch(currentUserAchievementsProvider).when(
                         data: (achievements) {
+                          if (achievements.isEmpty) {
+                            return [
+                              Container(
+                                padding: const EdgeInsets.all(8.0),
+                                height: 100.0,
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('No achievements yet!'),
+                                    Icon(Icons.emoji_events),
+                                  ],
+                                ),
+                              ),
+                            ];
+                          }
                           return achievements!
-                              .map(
+                              .map<Widget>(
                                 (achievement) => Card(
                                   child: Container(
                                     width: 100.0,
@@ -191,10 +206,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                               )
                               .toList();
                         },
-                        loading: () => const <Widget>[
+                        loading: () => const [
                           CircularProgressIndicator(),
                         ],
-                        error: (_, __) => const <Widget>[
+                        error: (_, __) => const [
                           CircularProgressIndicator(),
                         ],
                       ),
