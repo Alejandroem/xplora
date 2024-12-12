@@ -95,7 +95,7 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
                                         size: 40,
                                       ),
                                       Text(
-                                        "See more",
+                                        'See more',
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w900,

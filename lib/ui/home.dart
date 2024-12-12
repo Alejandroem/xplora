@@ -101,6 +101,28 @@ class _HomeState extends ConsumerState<Home> {
           questId: quest.first.id,
           userId: user.id,
         ));
+        if (context.mounted) {
+          if (mounted) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Quest Awarded!'),
+                  content: const Text(
+                      'You have been awarded a new quest!\nCheck your notifications to see your new quest.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Close'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        }
       }
     }
   }
