@@ -23,6 +23,10 @@ _$QuestImpl _$$QuestImplFromJson(Map<String, dynamic> json) => _$QuestImpl(
       distance: (json['distance'] as num?)?.toInt(),
       stepCode: json['stepCode'] as String?,
       hasNotified: json['hasNotified'] as bool?,
+      completedAt: json['completedAt'] == null
+          ? null
+          : DateTime.parse(json['completedAt'] as String),
+      hoursToCompleteAgain: (json['hoursToCompleteAgain'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$QuestImplToJson(_$QuestImpl instance) =>
@@ -43,6 +47,8 @@ Map<String, dynamic> _$$QuestImplToJson(_$QuestImpl instance) =>
       'distance': instance.distance,
       'stepCode': instance.stepCode,
       'hasNotified': instance.hasNotified,
+      'completedAt': instance.completedAt?.toIso8601String(),
+      'hoursToCompleteAgain': instance.hoursToCompleteAgain,
     };
 
 const _$QuestTypeEnumMap = {

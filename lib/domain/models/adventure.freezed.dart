@@ -38,6 +38,8 @@ mixin _$Adventure {
   int? get distance => throw _privateConstructorUsedError;
   bool? get hasNotified => throw _privateConstructorUsedError;
   int? get timeInSeconds => throw _privateConstructorUsedError;
+  DateTime? get completedAt => throw _privateConstructorUsedError;
+  int? get hoursToCompleteAgain => throw _privateConstructorUsedError;
 
   /// Serializes this Adventure to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -70,7 +72,9 @@ abstract class $AdventureCopyWith<$Res> {
       double longitude,
       int? distance,
       bool? hasNotified,
-      int? timeInSeconds});
+      int? timeInSeconds,
+      DateTime? completedAt,
+      int? hoursToCompleteAgain});
 }
 
 /// @nodoc
@@ -104,6 +108,8 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
     Object? distance = freezed,
     Object? hasNotified = freezed,
     Object? timeInSeconds = freezed,
+    Object? completedAt = freezed,
+    Object? hoursToCompleteAgain = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -170,6 +176,14 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
           ? _value.timeInSeconds
           : timeInSeconds // ignore: cast_nullable_to_non_nullable
               as int?,
+      completedAt: freezed == completedAt
+          ? _value.completedAt
+          : completedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      hoursToCompleteAgain: freezed == hoursToCompleteAgain
+          ? _value.hoursToCompleteAgain
+          : hoursToCompleteAgain // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 }
@@ -198,7 +212,9 @@ abstract class _$$AdventureImplCopyWith<$Res>
       double longitude,
       int? distance,
       bool? hasNotified,
-      int? timeInSeconds});
+      int? timeInSeconds,
+      DateTime? completedAt,
+      int? hoursToCompleteAgain});
 }
 
 /// @nodoc
@@ -230,6 +246,8 @@ class __$$AdventureImplCopyWithImpl<$Res>
     Object? distance = freezed,
     Object? hasNotified = freezed,
     Object? timeInSeconds = freezed,
+    Object? completedAt = freezed,
+    Object? hoursToCompleteAgain = freezed,
   }) {
     return _then(_$AdventureImpl(
       id: freezed == id
@@ -296,6 +314,14 @@ class __$$AdventureImplCopyWithImpl<$Res>
           ? _value.timeInSeconds
           : timeInSeconds // ignore: cast_nullable_to_non_nullable
               as int?,
+      completedAt: freezed == completedAt
+          ? _value.completedAt
+          : completedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      hoursToCompleteAgain: freezed == hoursToCompleteAgain
+          ? _value.hoursToCompleteAgain
+          : hoursToCompleteAgain // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -319,7 +345,9 @@ class _$AdventureImpl implements _Adventure {
       required this.longitude,
       required this.distance,
       required this.hasNotified,
-      required this.timeInSeconds})
+      required this.timeInSeconds,
+      required this.completedAt,
+      required this.hoursToCompleteAgain})
       : _featuredImages = featuredImages;
 
   factory _$AdventureImpl.fromJson(Map<String, dynamic> json) =>
@@ -367,10 +395,14 @@ class _$AdventureImpl implements _Adventure {
   final bool? hasNotified;
   @override
   final int? timeInSeconds;
+  @override
+  final DateTime? completedAt;
+  @override
+  final int? hoursToCompleteAgain;
 
   @override
   String toString() {
-    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, category: $category, featured: $featured, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, featuredImages: $featuredImages, experience: $experience, latitude: $latitude, longitude: $longitude, distance: $distance, hasNotified: $hasNotified, timeInSeconds: $timeInSeconds)';
+    return 'Adventure(id: $id, userId: $userId, adventureId: $adventureId, category: $category, featured: $featured, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, featuredImages: $featuredImages, experience: $experience, latitude: $latitude, longitude: $longitude, distance: $distance, hasNotified: $hasNotified, timeInSeconds: $timeInSeconds, completedAt: $completedAt, hoursToCompleteAgain: $hoursToCompleteAgain)';
   }
 
   @override
@@ -406,7 +438,11 @@ class _$AdventureImpl implements _Adventure {
             (identical(other.hasNotified, hasNotified) ||
                 other.hasNotified == hasNotified) &&
             (identical(other.timeInSeconds, timeInSeconds) ||
-                other.timeInSeconds == timeInSeconds));
+                other.timeInSeconds == timeInSeconds) &&
+            (identical(other.completedAt, completedAt) ||
+                other.completedAt == completedAt) &&
+            (identical(other.hoursToCompleteAgain, hoursToCompleteAgain) ||
+                other.hoursToCompleteAgain == hoursToCompleteAgain));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -428,7 +464,9 @@ class _$AdventureImpl implements _Adventure {
       longitude,
       distance,
       hasNotified,
-      timeInSeconds);
+      timeInSeconds,
+      completedAt,
+      hoursToCompleteAgain);
 
   /// Create a copy of Adventure
   /// with the given fields replaced by the non-null parameter values.
@@ -463,7 +501,9 @@ abstract class _Adventure implements Adventure {
       required final double longitude,
       required final int? distance,
       required final bool? hasNotified,
-      required final int? timeInSeconds}) = _$AdventureImpl;
+      required final int? timeInSeconds,
+      required final DateTime? completedAt,
+      required final int? hoursToCompleteAgain}) = _$AdventureImpl;
 
   factory _Adventure.fromJson(Map<String, dynamic> json) =
       _$AdventureImpl.fromJson;
@@ -501,6 +541,10 @@ abstract class _Adventure implements Adventure {
   bool? get hasNotified;
   @override
   int? get timeInSeconds;
+  @override
+  DateTime? get completedAt;
+  @override
+  int? get hoursToCompleteAgain;
 
   /// Create a copy of Adventure
   /// with the given fields replaced by the non-null parameter values.

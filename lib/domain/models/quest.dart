@@ -28,6 +28,8 @@ class Quest with _$Quest {
     required int? distance,
     required String? stepCode,
     required bool? hasNotified,
+    required DateTime? completedAt,
+    required int? hoursToCompleteAgain,
   }) = _Quest;
 
   factory Quest.fromJson(Map<String, dynamic> json) => _$QuestFromJson(json);

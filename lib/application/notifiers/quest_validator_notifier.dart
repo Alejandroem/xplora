@@ -156,11 +156,22 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
         }
         if (currentUserPreviousQuests != null &&
             currentUserPreviousQuests.isNotEmpty &&
-            currentUserPreviousQuests
-                    .indexWhere((userQuest) => userQuest.id == quest.id) !=
+            currentUserPreviousQuests.indexWhere((userQuest) {
+                  if (userQuest.id == quest.id &&
+                          userQuest.completedAt == null ||
+                      quest.hoursToCompleteAgain == null &&
+                          DateTime.now()
+                                  .difference(userQuest.completedAt!)
+                                  .inHours <
+                              quest.hoursToCompleteAgain!) {
+                    return false;
+                  }
+                  return true;
+                }) !=
                 -1) {
           return false;
         }
+
         log('Checking quest: ${quest.title}');
         log('Quest location: ${quest.stepLatitude}, ${quest.stepLongitude}');
         log('User location: ${userLocation.latitude}, ${userLocation.longitude}');

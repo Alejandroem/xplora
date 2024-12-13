@@ -36,6 +36,8 @@ mixin _$Quest {
   int? get distance => throw _privateConstructorUsedError;
   String? get stepCode => throw _privateConstructorUsedError;
   bool? get hasNotified => throw _privateConstructorUsedError;
+  DateTime? get completedAt => throw _privateConstructorUsedError;
+  int? get hoursToCompleteAgain => throw _privateConstructorUsedError;
 
   /// Serializes this Quest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -67,7 +69,9 @@ abstract class $QuestCopyWith<$Res> {
       double? stepLongitude,
       int? distance,
       String? stepCode,
-      bool? hasNotified});
+      bool? hasNotified,
+      DateTime? completedAt,
+      int? hoursToCompleteAgain});
 }
 
 /// @nodoc
@@ -101,6 +105,8 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
     Object? distance = freezed,
     Object? stepCode = freezed,
     Object? hasNotified = freezed,
+    Object? completedAt = freezed,
+    Object? hoursToCompleteAgain = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -167,6 +173,14 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
           ? _value.hasNotified
           : hasNotified // ignore: cast_nullable_to_non_nullable
               as bool?,
+      completedAt: freezed == completedAt
+          ? _value.completedAt
+          : completedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      hoursToCompleteAgain: freezed == hoursToCompleteAgain
+          ? _value.hoursToCompleteAgain
+          : hoursToCompleteAgain // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 }
@@ -194,7 +208,9 @@ abstract class _$$QuestImplCopyWith<$Res> implements $QuestCopyWith<$Res> {
       double? stepLongitude,
       int? distance,
       String? stepCode,
-      bool? hasNotified});
+      bool? hasNotified,
+      DateTime? completedAt,
+      int? hoursToCompleteAgain});
 }
 
 /// @nodoc
@@ -226,6 +242,8 @@ class __$$QuestImplCopyWithImpl<$Res>
     Object? distance = freezed,
     Object? stepCode = freezed,
     Object? hasNotified = freezed,
+    Object? completedAt = freezed,
+    Object? hoursToCompleteAgain = freezed,
   }) {
     return _then(_$QuestImpl(
       id: freezed == id
@@ -292,6 +310,14 @@ class __$$QuestImplCopyWithImpl<$Res>
           ? _value.hasNotified
           : hasNotified // ignore: cast_nullable_to_non_nullable
               as bool?,
+      completedAt: freezed == completedAt
+          ? _value.completedAt
+          : completedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      hoursToCompleteAgain: freezed == hoursToCompleteAgain
+          ? _value.hoursToCompleteAgain
+          : hoursToCompleteAgain // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -315,7 +341,9 @@ class _$QuestImpl implements _Quest {
       required this.stepLongitude,
       required this.distance,
       required this.stepCode,
-      required this.hasNotified});
+      required this.hasNotified,
+      required this.completedAt,
+      required this.hoursToCompleteAgain});
 
   factory _$QuestImpl.fromJson(Map<String, dynamic> json) =>
       _$$QuestImplFromJson(json);
@@ -352,10 +380,14 @@ class _$QuestImpl implements _Quest {
   final String? stepCode;
   @override
   final bool? hasNotified;
+  @override
+  final DateTime? completedAt;
+  @override
+  final int? hoursToCompleteAgain;
 
   @override
   String toString() {
-    return 'Quest(id: $id, userId: $userId, questId: $questId, category: $category, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, stepType: $stepType, timeInSeconds: $timeInSeconds, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude, distance: $distance, stepCode: $stepCode, hasNotified: $hasNotified)';
+    return 'Quest(id: $id, userId: $userId, questId: $questId, category: $category, title: $title, shortDescription: $shortDescription, longDescription: $longDescription, imageUrl: $imageUrl, experience: $experience, stepType: $stepType, timeInSeconds: $timeInSeconds, stepLatitude: $stepLatitude, stepLongitude: $stepLongitude, distance: $distance, stepCode: $stepCode, hasNotified: $hasNotified, completedAt: $completedAt, hoursToCompleteAgain: $hoursToCompleteAgain)';
   }
 
   @override
@@ -390,7 +422,11 @@ class _$QuestImpl implements _Quest {
             (identical(other.stepCode, stepCode) ||
                 other.stepCode == stepCode) &&
             (identical(other.hasNotified, hasNotified) ||
-                other.hasNotified == hasNotified));
+                other.hasNotified == hasNotified) &&
+            (identical(other.completedAt, completedAt) ||
+                other.completedAt == completedAt) &&
+            (identical(other.hoursToCompleteAgain, hoursToCompleteAgain) ||
+                other.hoursToCompleteAgain == hoursToCompleteAgain));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -412,7 +448,9 @@ class _$QuestImpl implements _Quest {
       stepLongitude,
       distance,
       stepCode,
-      hasNotified);
+      hasNotified,
+      completedAt,
+      hoursToCompleteAgain);
 
   /// Create a copy of Quest
   /// with the given fields replaced by the non-null parameter values.
@@ -447,7 +485,9 @@ abstract class _Quest implements Quest {
       required final double? stepLongitude,
       required final int? distance,
       required final String? stepCode,
-      required final bool? hasNotified}) = _$QuestImpl;
+      required final bool? hasNotified,
+      required final DateTime? completedAt,
+      required final int? hoursToCompleteAgain}) = _$QuestImpl;
 
   factory _Quest.fromJson(Map<String, dynamic> json) = _$QuestImpl.fromJson;
 
@@ -483,6 +523,10 @@ abstract class _Quest implements Quest {
   String? get stepCode;
   @override
   bool? get hasNotified;
+  @override
+  DateTime? get completedAt;
+  @override
+  int? get hoursToCompleteAgain;
 
   /// Create a copy of Quest
   /// with the given fields replaced by the non-null parameter values.

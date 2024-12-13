@@ -26,6 +26,10 @@ _$AdventureImpl _$$AdventureImplFromJson(Map<String, dynamic> json) =>
       distance: (json['distance'] as num?)?.toInt(),
       hasNotified: json['hasNotified'] as bool?,
       timeInSeconds: (json['timeInSeconds'] as num?)?.toInt(),
+      completedAt: json['completedAt'] == null
+          ? null
+          : DateTime.parse(json['completedAt'] as String),
+      hoursToCompleteAgain: (json['hoursToCompleteAgain'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$AdventureImplToJson(_$AdventureImpl instance) =>
@@ -46,4 +50,6 @@ Map<String, dynamic> _$$AdventureImplToJson(_$AdventureImpl instance) =>
       'distance': instance.distance,
       'hasNotified': instance.hasNotified,
       'timeInSeconds': instance.timeInSeconds,
+      'completedAt': instance.completedAt?.toIso8601String(),
+      'hoursToCompleteAgain': instance.hoursToCompleteAgain,
     };

@@ -23,6 +23,8 @@ class Adventure with _$Adventure {
     required int? distance,
     required bool? hasNotified,
     required int? timeInSeconds,
+    required DateTime? completedAt,
+    required int? hoursToCompleteAgain,
   }) = _Adventure;
 
   factory Adventure.fromJson(Map<String, dynamic> json) =>
