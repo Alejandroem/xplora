@@ -154,7 +154,20 @@ final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
       if (userPreviousAdventures != null && userPreviousAdventures.isNotEmpty) {
         nearbyAdventures.removeWhere(
           (adventure) => userPreviousAdventures.any(
-            (userAdventure) => userAdventure.adventureId == adventure.id,
+            (userAdventure) {
+              if (userAdventure.adventureId != adventure.id) {
+                return false;
+              }
+              if (userAdventure.completedAt == null &&
+                  userAdventure.hoursToCompleteAgain == null) {
+                return true;
+              }
+              final completedAt = userAdventure.completedAt!;
+              final hoursToComplete = userAdventure.hoursToCompleteAgain!;
+              final expirationTime =
+                  completedAt.add(Duration(hours: hoursToComplete));
+              return DateTime.now().isBefore(expirationTime);
+            },
           ),
         );
       }

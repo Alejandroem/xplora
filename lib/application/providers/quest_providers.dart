@@ -63,8 +63,22 @@ final nearbyQuestProvider = StreamProvider<List<Quest>>((ref) async* {
 
       List<Quest> filteredQuests = List.from(allAvailableQuests);
       if (userPreviousQuests.isNotEmpty) {
-        filteredQuests.removeWhere((quest) => userPreviousQuests
-            .any((userQuest) => userQuest.questId == quest.id));
+        filteredQuests.removeWhere((quest) {
+          return userPreviousQuests.any((userQuest) {
+            if (userQuest.questId == quest.id) {
+              final completedAt = userQuest.completedAt;
+              final hoursToCompleteAgain = quest.hoursToCompleteAgain;
+              if (completedAt != null && hoursToCompleteAgain != null) {
+                final now = DateTime.now();
+                final retakeAvailableAt =
+                    completedAt.add(Duration(hours: hoursToCompleteAgain));
+                return now.isBefore(retakeAvailableAt);
+              }
+              return true;
+            }
+            return false;
+          });
+        });
       }
 
       // Only yield if filteredQuests is non-empty
