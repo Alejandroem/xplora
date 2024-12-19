@@ -122,12 +122,11 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
 
   Future<void> _findAndStartNearbyQuest(LocationData userLocation) async {
     log('Checking for nearby quests...');
-    final allAvailableQuests = await _xploraQuestCrudService.readByFilters([
-      {
-        'field': 'userId',
-        'operator': 'unset',
-      },
-    ]);
+    var allAvailableQuests = await _xploraQuestCrudService.readByFilters([]);
+
+    allAvailableQuests?.removeWhere(
+      (quest) => quest.userId != null && quest.userId != '',
+    );
 
     final user = await _authService.getAuthUser();
     if (user == null) {
@@ -237,12 +236,11 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
       log('User experience updated to: $updatedExperience');
 
       //get all achievements with no userID
-      final allAchievements = await _achievementsCrudService.readByFilters([
-        {
-          'field': 'userId',
-          'operator': 'unset',
-        },
-      ]);
+      var allAchievements = await _achievementsCrudService.readByFilters([]);
+
+      allAchievements?.removeWhere(
+        (achievement) => achievement.userId != null && achievement.userId != '',
+      );
 
       //first check achievements with a trigger quest and whose triggerValue belongs to the current id of the quest
       //if not check then the experience and level achievements

@@ -21,17 +21,17 @@ final nearbyQuestProvider = StreamProvider<List<Quest>>((ref) async* {
   final authService = ref.watch(authServiceProvider);
 
   // Stream all available quests that are not associated with any user
-  final allAvailableQuestsStream = questCrudService.streamByFilters([
-    {
-      'field': 'userId',
-      'operator': 'unset',
-    }
-  ]);
+  var allAvailableQuestsStream = questCrudService.streamByFilters([]);
 
   await for (final allAvailableQuests in allAvailableQuestsStream) {
     if (allAvailableQuests == null || allAvailableQuests.isEmpty) {
       continue; // Skip yield if no quests are available
     }
+
+    // Remove quests that are already assigned to users
+    allAvailableQuests.removeWhere(
+      (quest) => quest.userId != null && quest.userId != '',
+    );
 
     try {
       final userLocation = ref.watch(locationProvider);

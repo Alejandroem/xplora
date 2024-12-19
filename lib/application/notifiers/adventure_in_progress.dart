@@ -107,12 +107,11 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
       XploraUser user, LocationData userLocation) async {
     // Get all available adventures
     List<Adventure>? allAvailableAdventures =
-        await _adventureCrudService.readByFilters([
-      {
-        'field': 'userId',
-        'operator': 'unset',
-      },
-    ]);
+        await _adventureCrudService.readByFilters([]);
+
+    allAvailableAdventures?.removeWhere(
+      (adventure) => adventure.userId != null && adventure.userId != '',
+    );
 
     if (allAvailableAdventures == null || allAvailableAdventures.isEmpty) {
       log('No available adventures found');
@@ -222,12 +221,11 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
       log('User experience updated to: $updatedExperience');
 
       //get all achievements with no userID
-      final allAchievements = await _achievementsCrudService.readByFilters([
-        {
-          'field': 'userId',
-          'operator': 'unset',
-        },
-      ]);
+      var allAchievements = await _achievementsCrudService.readByFilters([]);
+
+      allAchievements?.removeWhere(
+        (achievement) => achievement.userId != null && achievement.userId != '',
+      );
 
       //first check achievements with a trigger quest and whose triggerValue belongs to the current id of the quest
       //if not check then the experience and level achievements

@@ -38,12 +38,12 @@ final availableAdventuresProvider =
     FutureProvider<List<Adventure>?>((ref) async {
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
 
-  List<Adventure>? allAdventures = await adventureCrudService.readByFilters([
-    {
-      'field': 'userId',
-      'operator': 'unset',
-    }
-  ]);
+  List<Adventure>? allAdventures = await adventureCrudService.readByFilters([]);
+
+  allAdventures?.removeWhere(
+    (adventure) => adventure.userId != null && adventure.userId != '',
+  );
+  
   final userAdventures = await ref.watch(userAdventuresProvider.future);
   if (allAdventures != null &&
       allAdventures.isNotEmpty &&
@@ -92,12 +92,7 @@ final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
   final authService = ref.watch(authServiceProvider);
 
   // Stream all available adventures that are not associated with any user
-  final allAvailableAdventures = adventureCrudService.streamByFilters([
-    {
-      'field': 'userId',
-      'operator': 'unset',
-    }
-  ]);
+  final allAvailableAdventures = adventureCrudService.streamByFilters([]);
 
   // Listen to available adventures stream
   await for (final adventures in allAvailableAdventures) {
@@ -133,6 +128,11 @@ final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
       ]);
 
       List<Adventure> nearbyAdventures = adventures;
+
+      //remove those who have the userId set, except empty strings
+      nearbyAdventures.removeWhere(
+        (adventure) => adventure.userId != null && adventure.userId != '',
+      );
 
       //sort adventures by distance
       nearbyAdventures.sort((a, b) {

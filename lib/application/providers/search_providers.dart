@@ -9,25 +9,22 @@ final searchItemsProvider =
   final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
   final questCrudService = ref.watch(questCrudServiceProvider);
 
-  // Stream all adventures where userId is unset
-  final allAvailableAdventuresStream = adventureCrudService.streamByFilters([
-    {
-      'field': 'userId',
-      'operator': 'unset',
-    }
-  ]);
+  
+  var allAvailableAdventuresStream = adventureCrudService.streamByFilters([]);
 
-  // Stream all quests where userId is unset
-  final allAvailableQuestsStream = questCrudService.streamByFilters([
-    {
-      'field': 'userId',
-      'operator': 'unset',
-    }
-  ]);
+  
+  var allAvailableQuestsStream = questCrudService.streamByFilters([]);
 
   // Combine the streams and emit a mixed list of adventures and quests
   await for (final availableAdventures in allAvailableAdventuresStream) {
     final availableQuests = await allAvailableQuestsStream.first;
+
+    availableAdventures?.removeWhere(
+      (adventure) => adventure.userId != null && adventure.userId != '',
+    );
+    availableQuests?.removeWhere(
+      (quest) => quest.userId != null && quest.userId != '',
+    );
 
     // Combine adventures and quests
     final mixedResults = [...?availableAdventures, ...?availableQuests];

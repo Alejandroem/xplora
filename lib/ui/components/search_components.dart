@@ -27,7 +27,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
 
   @override
   Widget build(BuildContext context) {
-    final nearbyAdventures = ref.watch(searchItemsProvider);
+    final nearbyItems = ref.watch(searchItemsProvider);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 56, 0, 60),
@@ -264,7 +264,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
             ),
           ),
           Expanded(
-            child: nearbyAdventures.when(
+            child: nearbyItems.when(
               data: (data) {
                 var filteredData = data.where((element) {
                   var query = _searchQuery.toLowerCase();

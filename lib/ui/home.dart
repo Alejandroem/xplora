@@ -58,6 +58,12 @@ class _HomeState extends ConsumerState<Home> {
   }
 
   Future<void> _handleDeepLinkCode(String code) async {
+    //Code should have the schema xplora://quest?code=123 get the code
+    var questCode = code;
+    if (code.startsWith('quest?code=')) {
+      questCode = code.substring(11);
+    }
+
     final questCrudService = ref.watch(questCrudServiceProvider);
     final authService = ref.watch(authServiceProvider);
     final user = await authService.getAuthUser();
@@ -68,7 +74,7 @@ class _HomeState extends ConsumerState<Home> {
           {
             'field': 'stepCode',
             'operator': '==',
-            'value': code,
+            'value': questCode,
           },
           {
             'field': 'userId',
@@ -86,7 +92,7 @@ class _HomeState extends ConsumerState<Home> {
           {
             'field': 'stepCode',
             'operator': '==',
-            'value': code,
+            'value': questCode,
           }
         ],
       );
@@ -95,7 +101,9 @@ class _HomeState extends ConsumerState<Home> {
         return;
       }
       // Award the quest by updating the userId and refreshing the list
-      if (quest != null && quest.isNotEmpty && quest.first.stepCode == code) {
+      if (quest != null &&
+          quest.isNotEmpty &&
+          quest.first.stepCode == questCode) {
         await questCrudService.create(quest.first.copyWith(
           id: null,
           questId: quest.first.id,

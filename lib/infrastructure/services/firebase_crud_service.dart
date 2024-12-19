@@ -114,14 +114,14 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
   }
 
   Query<T> getQueryFromFilters(List<Map<String, dynamic>> filters) {
-    var query = collection.where('id', isNotEqualTo: null);
+    var query = collection as Query<T>;
 
     for (final filter in filters) {
       final field = filter['field'];
       final operatorString = filter['operator'];
       final value = filter['value'];
       switch (operatorString) {
-        case  '==':
+        case '==':
           query = query.where(field, isEqualTo: value);
           break;
         case '!=':
@@ -147,9 +147,9 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
 
   @override
   Stream<List<T>?> streamByFilters(List<Map<String, dynamic>> filters) {
-    return getQueryFromFilters(filters).snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => doc.data()).toList();
-    });
+    return getQueryFromFilters(filters).snapshots().map(
+          (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
+        );
   }
 
   @override
