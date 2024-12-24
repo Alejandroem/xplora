@@ -43,7 +43,7 @@ final availableAdventuresProvider =
   allAdventures?.removeWhere(
     (adventure) => adventure.userId != null && adventure.userId != '',
   );
-  
+
   final userAdventures = await ref.watch(userAdventuresProvider.future);
   if (allAdventures != null &&
       allAdventures.isNotEmpty &&
@@ -184,8 +184,8 @@ final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
   }
 });
 
-final selectedCategoriesProvider = StateProvider<List<String>>((ref) {
-  return [];
+final selectedCategoriesProvider = StateProvider<String>((ref) {
+  return '';
 });
 
 final userPreviousAdventuresProvider =

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/category_providers.dart';
-import '../../infrastructure/constants.dart';
+import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 
 class CategoriesChips extends ConsumerStatefulWidget {
@@ -19,7 +19,7 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedCategories = ref.watch(selectedCategoriesProvider);
+    final selectedCategory = ref.watch(selectedCategoriesProvider);
 
     return ref.watch(allCategories).when(
           data: (categories) {
@@ -55,48 +55,48 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: firstHalfCategories.map((category) {
-                        final isSelected =
-                            selectedCategories.contains(category.id);
+                        final isSelected = selectedCategory == category.id;
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: ChoiceChip(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(64),
-                            ),
-                            showCheckmark: false,
-                            selected: isSelected,
-                            onSelected: (bool selected) {
-                              // Update the selected categories based on the user's selection
-                              final updatedCategories =
-                                  List<String>.from(selectedCategories);
-                              if (selected) {
-                                updatedCategories.add(category.id);
-                              } else {
-                                updatedCategories.remove(category.id);
-                              }
-                              ref
-                                  .read(selectedCategoriesProvider.notifier)
-                                  .state = updatedCategories;
-                            },
-                            backgroundColor:
-                                isSelected ? raisingBlack : Colors.white,
-                            label: Row(
-                              children: [
-                                Image.network(
-                                  category.imageUrl,
-                                  height: 20,
-                                  width: 20,
-                                ),
-                                const SizedBox(width: 4.0),
-                                Text(
-                                  category.name,
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : raisingBlack,
+                          child: Hero(
+                            tag: category.id,
+                            child: ChoiceChip(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(64),
+                              ),
+                              showCheckmark: false,
+                              selected: isSelected,
+                              onSelected: (bool selected) {
+                                // Update the selected categories based on the user's selection
+                                ref
+                                    .read(selectedCategoriesProvider.notifier)
+                                    .state = selected ? category.id : '';
+
+                                //change to search page
+                                ref
+                                    .watch(bottomNavigationBarProvider.notifier)
+                                    .state = NavigationItem.search;
+                              },
+                              backgroundColor:
+                                  isSelected ? raisingBlack : Colors.white,
+                              label: Row(
+                                children: [
+                                  Image.network(
+                                    category.imageUrl,
+                                    height: 20,
+                                    width: 20,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 4.0),
+                                  Text(
+                                    category.name,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : raisingBlack,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -110,48 +110,47 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: secondHalfCategories.map((category) {
-                        final isSelected =
-                            selectedCategories.contains(category.id);
+                        final isSelected = selectedCategory == category.id;
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: ChoiceChip(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(64),
-                            ),
-                            showCheckmark: false,
-                            selected: isSelected,
-                            onSelected: (bool selected) {
-                              // Update the selected categories based on the user's selection
-                              final updatedCategories =
-                                  List<String>.from(selectedCategories);
-                              if (selected) {
-                                updatedCategories.add(category.id);
-                              } else {
-                                updatedCategories.remove(category.id);
-                              }
-                              ref
-                                  .read(selectedCategoriesProvider.notifier)
-                                  .state = updatedCategories;
-                            },
-                            backgroundColor:
-                                isSelected ? raisingBlack : Colors.white,
-                            label: Row(
-                              children: [
-                                Image.network(
-                                  category.imageUrl,
-                                  height: 20,
-                                  width: 20,
-                                ),
-                                const SizedBox(width: 4.0),
-                                Text(
-                                  category.name,
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : raisingBlack,
+                          child: Hero(
+                            tag: category.id,
+                            child: ChoiceChip(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(64),
+                              ),
+                              showCheckmark: false,
+                              selected: isSelected,
+                              onSelected: (bool selected) {
+                                // Update the selected categories based on the user's selection
+                                ref
+                                    .read(selectedCategoriesProvider.notifier)
+                                    .state = selected ? category.id : '';
+
+                                ref
+                                    .watch(bottomNavigationBarProvider.notifier)
+                                    .state = NavigationItem.search;
+                              },
+                              backgroundColor:
+                                  isSelected ? raisingBlack : Colors.white,
+                              label: Row(
+                                children: [
+                                  Image.network(
+                                    category.imageUrl,
+                                    height: 20,
+                                    width: 20,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 4.0),
+                                  Text(
+                                    category.name,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : raisingBlack,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/category_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../application/providers/search_providers.dart';
 import '../../domain/models/adventure.dart';
-import '../../domain/models/category.dart';
 import '../../domain/models/quest.dart';
 import '../../theme.dart';
 
@@ -20,6 +19,8 @@ class SearchComponents extends ConsumerStatefulWidget {
 }
 
 class _SearchComponentsState extends ConsumerState<SearchComponents> {
+  late ScrollController _scrollController;
+
   String selectedType = 'All';
   String selectedCategory = 'All';
   String _searchQuery = '';
@@ -27,11 +28,44 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   bool filtersVisible = false;
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      scrollToCategory(ref.watch(selectedCategoriesProvider));
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void scrollToCategory(String categoryId) {
+    ref.watch(allCategories).whenData(
+      (categories) {
+        final index =
+            categories.indexWhere((element) => element.id == categoryId);
+        const itemWidth = 88.0; // width (80) + margin (8)
+        final offset = index * itemWidth;
+        _scrollController.animateTo(
+          offset,
+          duration: const Duration(
+            milliseconds: 300,
+          ),
+          curve: Curves.easeInOut,
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final nearbyItems = ref.watch(searchItemsProvider);
 
     return Container(
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height - kBottomNavigationBarHeight,
       color: raisingBlack,
       child: SafeArea(
         child: Column(
@@ -90,38 +124,68 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                   SizedBox(
                     height: 70,
                     child: SingleChildScrollView(
+                      controller: _scrollController,
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: ref.watch(allCategories).when(
                               data: (categories) {
-                                return categories.map(
-                                  (category) {
-                                    return Container(
-                                      margin: const EdgeInsets.only(right: 8),
-                                      width: 80,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.white,
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Image.network(
-                                            category.imageUrl,
-                                            height: 24,
-                                            width: 24,
-                                            fit: BoxFit.cover,
+                                return categories.asMap().entries.map(
+                                  (entry) {
+                                    final category = entry.value;
+                                    return Hero(
+                                      tag: category.id,
+                                      child: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(
+                                                selectedCategoriesProvider
+                                                    .notifier,
+                                              )
+                                              .state = category.id;
+                                        },
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 8),
+                                          width: 80,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: ref.watch(
+                                                        selectedCategoriesProvider) ==
+                                                    category.id
+                                                ? Colors.grey[600]
+                                                : Colors.grey[200],
                                           ),
-                                          Text(
-                                            category.name,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 12,
-                                            ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Image.network(
+                                                category.imageUrl,
+                                                height: 24,
+                                                width: 24,
+                                                fit: BoxFit.cover,
+                                                color: ref.watch(
+                                                            selectedCategoriesProvider) ==
+                                                        category.id
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                              Text(
+                                                category.name,
+                                                style: TextStyle(
+                                                  color: ref.watch(
+                                                              selectedCategoriesProvider) ==
+                                                          category.id
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
+                                        ),
                                       ),
                                     );
                                   },
@@ -279,44 +343,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                 size: 20,
                               ),
                               const SizedBox(width: 5),
-                              /* ref.watch(allCategories).when(
-                                    data: (categories) {
-                                      return DropdownButton<String>(
-                                        dropdownColor: Colors.black,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        value: selectedCategory,
-                                        items: [
-                                          'All',
-                                          ...categories,
-                                        ].map((category) {
-                                          return DropdownMenuItem(
-                                            value: category,
-                                            child: Text(
-                                              category,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            setState(() {
-                                              selectedCategory = value;
-                                            });
-                                          }
-                                        },
-                                      );
-                                    },
-                                    loading: () =>
-                                        const CircularProgressIndicator(),
-                                    error:
-                                        (Object error, StackTrace stackTrace) {
-                                      return Text('Error: $error');
-                                    },
-                                  ), */
                             ],
                           ),
                         ],
@@ -532,7 +558,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                 ),
               ),
             ),
-            const SizedBox(height: kBottomNavigationBarHeight),
           ],
         ),
       ),
