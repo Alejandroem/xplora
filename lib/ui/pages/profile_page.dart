@@ -126,7 +126,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               children: <Widget>[
                 const Icon(Icons.star),
                 const SizedBox(width: 10.0),
-                Text('Experience ${profile.experience}'),
+                Text('XP ${profile.experience}'),
               ],
             ),
             const SizedBox(height: 10.0),

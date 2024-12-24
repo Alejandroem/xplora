@@ -73,9 +73,13 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                                     .state = selected ? category.id : '';
 
                                 //change to search page
-                                ref
-                                    .watch(bottomNavigationBarProvider.notifier)
-                                    .state = NavigationItem.search;
+                                if (selected) {
+                                  //change to search page
+                                  ref
+                                      .watch(
+                                          bottomNavigationBarProvider.notifier)
+                                      .state = NavigationItem.search;
+                                }
                               },
                               backgroundColor:
                                   isSelected ? raisingBlack : Colors.white,
@@ -127,9 +131,13 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                                     .read(selectedCategoriesProvider.notifier)
                                     .state = selected ? category.id : '';
 
-                                ref
-                                    .watch(bottomNavigationBarProvider.notifier)
-                                    .state = NavigationItem.search;
+                                if (selected) {
+                                  //change to search page
+                                  ref
+                                      .watch(
+                                          bottomNavigationBarProvider.notifier)
+                                      .state = NavigationItem.search;
+                                }
                               },
                               backgroundColor:
                                   isSelected ? raisingBlack : Colors.white,

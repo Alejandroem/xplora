@@ -24,7 +24,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   late ScrollController _scrollController;
 
   String selectedType = 'All';
-  String selectedCategory = 'All';
   String _searchQuery = '';
   int minimumDistance = 500000;
   bool filtersVisible = false;
@@ -139,12 +138,19 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                       tag: category.id,
                                       child: InkWell(
                                         onTap: () {
-                                          ref
-                                              .read(
-                                                selectedCategoriesProvider
-                                                    .notifier,
-                                              )
-                                              .state = category.id;
+                                          if (ref.read(
+                                                  selectedCategoriesProvider) ==
+                                              category.id) {
+                                            ref
+                                                .read(selectedCategoriesProvider
+                                                    .notifier)
+                                                .state = '';
+                                          } else {
+                                            ref
+                                                .read(selectedCategoriesProvider
+                                                    .notifier)
+                                                .state = category.id;
+                                          }
                                         },
                                         child: Container(
                                           margin:
@@ -401,7 +407,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                   }).toList();
 
                   //filter by category
-                  if (selectedCategory != 'All') {
+                  final selectedCategory =
+                      ref.watch(selectedCategoriesProvider);
+                  if (selectedCategory.isNotEmpty) {
                     filteredData = filteredData.where((element) {
                       if (element is Adventure && element.category != null) {
                         return element.category == selectedCategory;

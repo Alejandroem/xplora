@@ -83,7 +83,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                             ),
                           ),
                           Text(
-                            'Exp.${profile.experience}',
+                            'XP.${profile.experience}',
                             style: TextStyle(
                               fontSize: 11.0,
                               color: raisingBlack,
