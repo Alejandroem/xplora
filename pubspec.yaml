@@ -20,7 +20,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
   shared_preferences: ^2.2.3
-  flutter_svg: ^2.0.10+1
+  flutter_svg: ^2.0.16
   google_fonts: ^6.2.1
   percent_indicator: ^4.2.3
   qr_code_scanner: ^1.0.1

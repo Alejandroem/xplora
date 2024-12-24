@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../application/providers/category_providers.dart';
 import '../../infrastructure/constants.dart';
 import '../../application/providers/local_storage_providers.dart';
 import '../../theme.dart';
@@ -44,44 +45,51 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
               ),
             ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: categories.asMap().entries.map((entry) {
-                final index = entry.key;
-                final category = entry.value;
-                return AnimatedOpacity(
-                  opacity: chipOpacity,
-                  duration: Duration(milliseconds: index * 500),
-                  curve: Curves.easeIn,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (selectedCategories.contains(category)) {
-                          selectedCategories.remove(category);
-                        } else {
-                          selectedCategories.add(category);
-                        }
-                      });
-                    },
-                    child: Chip(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32),
-                        side: BorderSide(
-                          color: selectedCategories.contains(category)
-                              ? Colors.white
-                              : Colors.blue.shade100,
-                        ),
-                      ),
-                      label: Text(category),
-                      backgroundColor: selectedCategories.contains(category)
-                          ? Colors.blue
-                          : Colors.white,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
+            ref.watch(allCategories).when(
+                  data: (categories) {
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: categories.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final category = entry.value;
+                        return AnimatedOpacity(
+                          opacity: chipOpacity,
+                          duration: Duration(milliseconds: index * 500),
+                          curve: Curves.easeIn,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (selectedCategories.contains(category.id)) {
+                                  selectedCategories.remove(category.id);
+                                } else {
+                                  selectedCategories.add(category.id);
+                                }
+                              });
+                            },
+                            child: Chip(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(32),
+                                side: BorderSide(
+                                  color: selectedCategories.contains(category.id)
+                                      ? Colors.white
+                                      : Colors.blue.shade100,
+                                ),
+                              ),
+                              label: Text(category.name),
+                              backgroundColor:
+                                  selectedCategories.contains(category.id)
+                                      ? Colors.blue
+                                      : Colors.white,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                  loading: () => const CircularProgressIndicator(),
+                  error: (error, _) => Text('Error: $error'),
+                ),
             const SizedBox(height: 16),
             OutlinedButton(
               onPressed: () async {

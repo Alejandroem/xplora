@@ -7,7 +7,11 @@
         {
             "name": "xplora",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "-d",
+                "SM A546E"
+            ]
         },
     ]
 }
