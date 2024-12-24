@@ -9,6 +9,8 @@ import '../../application/providers/search_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/quest.dart';
 import '../../theme.dart';
+import '../pages/adventure_detail.dart';
+import '../widgets/quest_list.dart';
 
 class SearchComponents extends ConsumerStatefulWidget {
   const SearchComponents({super.key});
@@ -462,49 +464,65 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
 
                       //if quest
                       if (item is Quest) {
-                        return Card(
-                          color: Colors.grey[800],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: ListTile(
-                            trailing: Builder(builder: (builder) {
-                              if (item.stepType == QuestType.location) {
-                                return const Icon(
-                                  Icons.location_on,
-                                  color: Colors.white,
-                                  size: 40,
-                                );
-                              }
-
-                              if (item.stepType == QuestType.timeLocation) {
-                                return const Icon(
-                                  Icons.timer,
-                                  color: Colors.white,
-                                  size: 40,
-                                );
-                              }
-
-                              if (item.stepType == QuestType.qr) {
-                                return const Icon(
-                                  Icons.text_fields,
-                                  color: Colors.white,
-                                  size: 40,
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            }),
-                            title: Text(
-                              item.title,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => Scaffold(
+                                  appBar: AppBar(
+                                    title: const Text('Quest List'),
+                                  ),
+                                  body: const QuestList(
+                                    isHero: true,
+                                  ),
+                                ),
                               ),
+                            );
+                          },
+                          child: Card(
+                            color: Colors.grey[800],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            subtitle: Text(
-                              "Quest",
-                              style: const TextStyle(
-                                color: Colors.white70,
+                            child: ListTile(
+                              trailing: Builder(builder: (builder) {
+                                if (item.stepType == QuestType.location) {
+                                  return const Icon(
+                                    Icons.location_on,
+                                    color: Colors.white,
+                                    size: 40,
+                                  );
+                                }
+
+                                if (item.stepType == QuestType.timeLocation) {
+                                  return const Icon(
+                                    Icons.timer,
+                                    color: Colors.white,
+                                    size: 40,
+                                  );
+                                }
+
+                                if (item.stepType == QuestType.qr) {
+                                  return const Icon(
+                                    Icons.text_fields,
+                                    color: Colors.white,
+                                    size: 40,
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              }),
+                              title: Text(
+                                item.title,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                "Quest",
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                ),
                               ),
                             ),
                           ),
@@ -512,36 +530,48 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                       }
 
                       if (item is Adventure) {
-                        return Card(
-                          clipBehavior: Clip.hardEdge,
-                          color: Colors.grey[800],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            children: [
-                              Image.network(
-                                item.imageUrl,
-                                fit: BoxFit.cover,
-                                height: 200,
-                                width: double.infinity,
-                              ),
-                              ListTile(
-                                title: Text(
-                                  item.title,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  "Adventure",
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                  ),
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => AdventureDetail(
+                                  'other',
+                                  item,
                                 ),
                               ),
-                            ],
+                            );
+                          },
+                          child: Card(
+                            clipBehavior: Clip.hardEdge,
+                            color: Colors.grey[800],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: [
+                                Image.network(
+                                  item.imageUrl,
+                                  fit: BoxFit.cover,
+                                  height: 200,
+                                  width: double.infinity,
+                                ),
+                                ListTile(
+                                  title: Text(
+                                    item.title,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    "Adventure",
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }
