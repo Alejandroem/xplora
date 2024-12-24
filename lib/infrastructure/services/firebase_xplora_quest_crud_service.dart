@@ -10,7 +10,7 @@ class FirebaseXploraQuestCrudService extends FirebaseCrudService<Quest>
       : super(
           FirebaseFirestore.instance.collection('quests').withConverter<Quest>(
                 fromFirestore: (snapshot, _) =>
-                    Quest.fromJson(snapshot.data()!),
+                    Quest.fromJson({...snapshot.data()!, 'id': snapshot.id}),
                 toFirestore: (profile, _) => profile.toJson(),
               ),
         );

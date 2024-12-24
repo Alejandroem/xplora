@@ -58,3 +58,38 @@ final userPreviousQuestProviderStream =
   ]);
 });
 
+final userPreviousActivitiesProviderStream =
+    StreamProvider.autoDispose<List<dynamic>>((ref) async* {
+  final adventures =
+      await ref.watch(userPreviousAdventuresProviderStream.future) ?? [];
+  final quests = await ref.watch(userPreviousQuestProviderStream.future) ?? [];
+
+  final combined = [...adventures, ...quests];
+  combined.sort(
+    (a, b) {
+      if (a is Adventure && b is Quest) {
+        return (b.completedAt ?? DateTime(0)).compareTo(
+          a.completedAt ?? DateTime(0),
+        );
+      }
+      if (a is Quest && b is Adventure) {
+        return (b.completedAt ?? DateTime(0)).compareTo(
+          a.completedAt ?? DateTime(0),
+        );
+      }
+      if (a is Quest && b is Quest) {
+        return (b.completedAt ?? DateTime(0)).compareTo(
+          a.completedAt ?? DateTime(0),
+        );
+      }
+      if (a is Adventure && b is Adventure) {
+        return (b.completedAt ?? DateTime(0)).compareTo(
+          a.completedAt ?? DateTime(0),
+        );
+      }
+      return 0;
+    },
+  );
+
+  yield combined;
+});

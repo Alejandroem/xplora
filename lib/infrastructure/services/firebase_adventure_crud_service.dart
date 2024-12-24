@@ -11,8 +11,8 @@ class FirebaseAdventureCrudService extends FirebaseCrudService<Adventure>
           FirebaseFirestore.instance
               .collection('adventures')
               .withConverter<Adventure>(
-                fromFirestore: (snapshot, _) =>
-                    Adventure.fromJson(snapshot.data()!),
+                fromFirestore: (snapshot, _) => Adventure.fromJson(
+                    {...snapshot.data()!, 'id': snapshot.id}),
                 toFirestore: (entity, _) => entity.toJson(),
               ),
         );
