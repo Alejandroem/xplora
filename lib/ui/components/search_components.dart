@@ -4,12 +4,14 @@ import 'package:geolocator/geolocator.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/category_providers.dart';
+import '../../application/providers/filters_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../application/providers/search_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/quest.dart';
 import '../../theme.dart';
 import '../pages/adventure_detail.dart';
+import '../pages/filters_page.dart';
 import '../widgets/quest_list.dart';
 
 class SearchComponents extends ConsumerStatefulWidget {
@@ -21,13 +23,8 @@ class SearchComponents extends ConsumerStatefulWidget {
 }
 
 class _SearchComponentsState extends ConsumerState<SearchComponents> {
-  late ScrollController _scrollController;
-
-  String selectedType = 'All';
   String _searchQuery = '';
-  int minimumDistance = 500000;
-  bool filtersVisible = false;
-
+  late ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
@@ -113,9 +110,11 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            setState(() {
-                              filtersVisible = !filtersVisible;
-                            });
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const FiltersPage(),
+                              ),
+                            );
                           },
                         ),
                       ],
@@ -208,154 +207,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                       ),
                     ),
                   ),
-                  if (filtersVisible)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.filter_list,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              //Quest Adventure of all selector
-                              const SizedBox(width: 25),
-                              DropdownButton<String>(
-                                dropdownColor: Colors.black,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                                value: selectedType,
-                                items: [
-                                  'All',
-                                  'Adventure',
-                                  'Quest',
-                                ].map((type) {
-                                  return DropdownMenuItem(
-                                    value: type,
-                                    child: Text(
-                                      type,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      selectedType = value;
-                                    });
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const Icon(
-                                Icons.location_on,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 5),
-                              DropdownButton<int>(
-                                dropdownColor: Colors.black,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                                value: minimumDistance,
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: 1000,
-                                    child: Text(
-                                      '1 km',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 5000,
-                                    child: Text(
-                                      '5 km',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 10000,
-                                    child: Text(
-                                      '10 km',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 20000,
-                                    child: Text(
-                                      '20 km',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 50000,
-                                    child: Text(
-                                      '50 km',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 100000,
-                                    child: Text(
-                                      '100 km',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  //500
-                                  DropdownMenuItem(
-                                    value: 500000,
-                                    child: Text(
-                                      '500 km',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      minimumDistance = value;
-                                    });
-                                  }
-                                },
-                              ),
-                              const SizedBox(width: 5),
-                              //categories
-                              const Icon(
-                                Icons.category_outlined,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 5),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
                 ],
               ),
             ),
@@ -363,6 +214,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
             Expanded(
               child: nearbyItems.when(
                 data: (data) {
+                  final filters = ref.watch(filtersStateProvider);
                   var filteredData = data.where((element) {
                     var query = _searchQuery.toLowerCase();
                     if (element is Adventure) {
@@ -393,7 +245,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                               location.position!.longitude,
                               element.latitude,
                               element.longitude) <=
-                          minimumDistance;
+                          filters.minimumDistance;
                     } else if (element is Quest) {
                       return Geolocator.distanceBetween(
                             location.position!.latitude,
@@ -401,7 +253,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                             element.stepLatitude!,
                             element.stepLongitude!,
                           ) <=
-                          minimumDistance;
+                          filters.minimumDistance;
                     }
                     return false;
                   }).toList();
@@ -421,11 +273,13 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                   }
 
                   //filter by type
-                  if (selectedType != 'All') {
+                  if (filters.selectedType != 'All') {
                     filteredData = filteredData.where((element) {
-                      if (element is Adventure && selectedType == 'Adventure') {
+                      if (element is Adventure &&
+                          filters.selectedType == 'Adventure') {
                         return true;
-                      } else if (element is Quest && selectedType == 'Quest') {
+                      } else if (element is Quest &&
+                          filters.selectedType == 'Quest') {
                         return true;
                       }
                       return false;
