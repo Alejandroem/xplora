@@ -104,18 +104,45 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                           ),
                         ),
                         //icon to toggle filters
-                        IconButton(
-                          icon: const Icon(
-                            Icons.filter_list,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const FiltersPage(),
+                        Stack(
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.filter_list,
+                                color: Colors.white,
                               ),
-                            );
-                          },
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const FiltersPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                            if (ref
+                                        .watch(filtersStateProvider.notifier)
+                                        .state
+                                        .selectedType !=
+                                    'All' ||
+                                ref
+                                        .watch(filtersStateProvider.notifier)
+                                        .state
+                                        .minimumDistance !=
+                                    500000 ||
+                                ref.watch(selectedCategoriesProvider) != '')
+                              Positioned(
+                                right: 8,
+                                top: 8,
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),
@@ -133,6 +160,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                 return categories.asMap().entries.map(
                                   (entry) {
                                     final category = entry.value;
+                                    if (category.name == 'All') {
+                                      return const SizedBox.shrink();
+                                    }
                                     return Hero(
                                       tag: category.id,
                                       child: InkWell(

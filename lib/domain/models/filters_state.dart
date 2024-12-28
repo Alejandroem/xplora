@@ -13,4 +13,5 @@ class FiltersState with _$FiltersState {
 
   factory FiltersState.fromJson(Map<String, dynamic> json) =>
       _$FiltersStateFromJson(json);
+      
 }

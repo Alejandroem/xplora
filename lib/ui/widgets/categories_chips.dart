@@ -56,6 +56,9 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                     child: Row(
                       children: firstHalfCategories.map((category) {
                         final isSelected = selectedCategory == category.id;
+                        if (category.name == 'All') {
+                          return Container();
+                        }
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: Hero(
