@@ -8,6 +8,7 @@ import '../application/providers/deep_links_providers.dart';
 import '../application/providers/navigation_providers.dart';
 import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
+import '../application/providers/notifications_provider.dart';
 import '../application/providers/notifications_providers.dart';
 import '../application/providers/quest_providers.dart';
 import 'components/feed_components.dart';
@@ -144,6 +145,12 @@ class _HomeState extends ConsumerState<Home> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(currentAuthUserIdStreamProvider, (previous, next) {
+      if (next.value != null) {
+        ref.watch(notificationsServiceProvider).saveToken(next.value!);
+      }
+    });
+
     ref.watch(adventureInProgressTrackerProvider);
     ref.watch(questInProgressTrackerProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {

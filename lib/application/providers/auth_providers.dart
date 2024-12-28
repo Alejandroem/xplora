@@ -15,6 +15,7 @@ final authServiceProvider = Provider<AuthService>((ref) {
 
 final isAuthenticatedProvider = StreamProvider.autoDispose((ref) {
   final authService = ref.watch(authServiceProvider);
+
   return authService.isSignedIn;
 });
 
