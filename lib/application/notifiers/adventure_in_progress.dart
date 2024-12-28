@@ -145,19 +145,20 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
     if (userPreviousAdventures != null && userPreviousAdventures.isNotEmpty) {
       log('Filtering out completed adventures that have been awared and have not passed the hoursToCompleteAgain');
       nearbyAdventures = nearbyAdventures.where((adventure) {
-        return userPreviousAdventures.indexWhere((userAdventure) {
-              if (userAdventure.adventureId == adventure.id &&
-                      userAdventure.completedAt == null ||
-                  adventure.hoursToCompleteAgain == null &&
-                      DateTime.now()
-                              .difference(userAdventure.completedAt!)
-                              .inHours <
-                          adventure.hoursToCompleteAgain!) {
-                return false;
-              }
-              return true;
-            }) ==
-            -1;
+        final completedAdventureIndex = userPreviousAdventures.indexWhere(
+          (userAdventure) => userAdventure.id == adventure.id,
+        );
+
+        if (completedAdventureIndex == -1) return true;
+
+        final completedAdventure =
+            userPreviousAdventures[completedAdventureIndex];
+        if (completedAdventure.completedAt == null) return true;
+        if (adventure.hoursToCompleteAgain == null) return false;
+
+        final hoursSinceCompletion =
+            DateTime.now().difference(completedAdventure.completedAt!).inHours;
+        return hoursSinceCompletion >= adventure.hoursToCompleteAgain!;
       }).toList();
     }
 
