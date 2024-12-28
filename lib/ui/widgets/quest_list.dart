@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/quest_providers.dart';
 import '../../domain/models/quest.dart';
@@ -143,9 +144,16 @@ class _QuestListState extends ConsumerState<QuestList> {
                             color: questColor,
                           ),
                           child: InkWell(
-                            onTap: () {
+                            onTap: () async {
                               if (quest.stepType == QuestType.location) {
-                                // Handle location quest
+                                //url launcher to the location
+                                final url = Uri.parse(
+                                    'https://www.google.com/maps/search/?api=1&query=${widget.isHero ? quest.stepLatitude : 37.7749},${widget.isHero ? quest.stepLongitude : -122.4194}');
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                } else {
+                                  throw 'Could not launch $url';
+                                }
                               } else if (quest.stepType == QuestType.qr) {
                                 setState(() {
                                   scannedQuest = quest;
@@ -153,7 +161,14 @@ class _QuestListState extends ConsumerState<QuestList> {
                                 _showQRScannerDialog(context, quest);
                               } else if (quest.stepType ==
                                   QuestType.timeLocation) {
-                                // Handle time-location quest
+                                //url launcher to the location
+                                final url = Uri.parse(
+                                    'https://www.google.com/maps/search/?api=1&query=${widget.isHero ? quest.stepLatitude : 37.7749},${widget.isHero ? quest.stepLongitude : -122.4194}');
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                } else {
+                                  throw 'Could not launch $url';
+                                }
                               }
                             },
                             child: Padding(
@@ -172,7 +187,10 @@ class _QuestListState extends ConsumerState<QuestList> {
                                     ),
                                   ),
                                   if (quest.stepType == QuestType.location)
-                                    Icon(Icons.map, color: raisingBlack),
+                                    Icon(
+                                      Icons.map,
+                                      color: raisingBlack,
+                                    ),
                                   if (quest.stepType == QuestType.qr)
                                     Icon(Icons.qr_code, color: raisingBlack),
                                   if (quest.stepType == QuestType.timeLocation)

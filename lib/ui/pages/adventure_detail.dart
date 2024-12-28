@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/boomark_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/bookmark.dart';
+import '../../theme.dart';
 
 class AdventureDetail extends ConsumerStatefulWidget {
   final String source;
@@ -268,10 +270,41 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                    'Exp. ${widget.adventure.experience.toStringAsFixed(2)}'),
+                    'Xp. ${widget.adventure.experience.toStringAsFixed(2)}'),
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
+            child: OutlinedButton(
+              onPressed: () async {
+                //url launcher to the location
+                final url = Uri.parse(
+                    'https://www.google.com/maps/search/?api=1&query=${widget.adventure.latitude},${widget.adventure.longitude}');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.map,
+                    color: raisingBlack,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "Open in Google Maps",
+                    style: TextStyle(
+                      color: raisingBlack,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
