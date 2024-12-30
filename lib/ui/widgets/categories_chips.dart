@@ -68,7 +68,7 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                                 borderRadius: BorderRadius.circular(64),
                               ),
                               showCheckmark: false,
-                              selected: isSelected,
+                              selected: false,
                               onSelected: (bool selected) {
                                 // Update the selected categories based on the user's selection
                                 ref
@@ -84,8 +84,7 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                                       .state = NavigationItem.search;
                                 }
                               },
-                              backgroundColor:
-                                  isSelected ? raisingBlack : Colors.white,
+                              backgroundColor: Colors.white,
                               label: Row(
                                 children: [
                                   Image.network(
@@ -97,9 +96,7 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                                   Text(
                                     category.name,
                                     style: TextStyle(
-                                      color: isSelected
-                                          ? Colors.white
-                                          : raisingBlack,
+                                      color : raisingBlack,
                                     ),
                                   ),
                                 ],
