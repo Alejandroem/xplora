@@ -20,7 +20,9 @@ class SettingsPage extends ConsumerStatefulWidget {
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    final settingsProvider = ref.watch(settingsStateNotifierProvider);
+    final settingsProviderState = ref.watch(
+      settingsStateNotifierProvider,
+    );
     final settingsProviderNotifier = ref.watch(
       settingsStateNotifierProvider.notifier,
     );
@@ -32,14 +34,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         children: [
           SwitchListTile(
             title: const Text('Dark Mode'),
-            value: settingsProvider['isDarkMode'],
+            value: settingsProviderState
+                        .indexWhere((setting) => setting.key == 'isDarkMode') >=
+                    0
+                ? settingsProviderState[settingsProviderState
+                        .indexWhere((setting) => setting.key == 'isDarkMode')]
+                    .value as bool
+                : false,
             onChanged: (bool value) {
               settingsProviderNotifier.toggleDarkMode();
             },
           ),
           SwitchListTile(
             title: const Text('Notifications'),
-            value: settingsProvider['isNotificationsEnabled'],
+            value: settingsProviderState.indexWhere(
+                        (setting) => setting.key == 'isNotificationsEnabled') >=
+                    0
+                ? settingsProviderState[settingsProviderState
+                        .indexWhere((setting) => setting.key == 'isNotificationsEnabled')]
+                    .value as bool
+                : false,
             onChanged: (bool value) {
               settingsProviderNotifier.toggleNotifications();
             },

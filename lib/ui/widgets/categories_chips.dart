@@ -55,7 +55,6 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: firstHalfCategories.map((category) {
-                        final isSelected = selectedCategory == category.id;
                         if (category.name == 'All') {
                           return Container();
                         }

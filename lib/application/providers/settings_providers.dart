@@ -1,70 +1,167 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/services/local_storage_service.dart';
-import 'local_storage_providers.dart';
+import '../../domain/models/setting.dart';
+import '../../domain/services/auth_service.dart';
+import '../../domain/services/settings_crud_service.dart';
+import '../../infrastructure/services/firebase_settings_crud_service.dart';
+import 'auth_providers.dart';
 
-class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
-  SettingsStateNotifier(this.localStorageService)
-      : super(<String, bool>{
-          'isDarkMode': false,
-          'isNotificationsEnabled': false,
-        }) {
+const _kIsDarkMode = 'isDarkMode';
+const _kIsNotificationsEnabled = 'isNotificationsEnabled';
+
+class SettingsStateNotifier extends StateNotifier<List<Setting>> {
+  SettingsStateNotifier(
+    this.settingsCrudService,
+    this.authService,
+  ) : super([]) {
     _init();
   }
 
-  final LocalStorageService localStorageService;
+  final SettingsCrudService settingsCrudService;
+  final AuthService authService;
 
   void _init() async {
-    final isDarkMode = bool.tryParse(
-      await localStorageService.read(
-            'isDarkMode',
-          ) ??
-          'false',
-    );
-    final isNotificationsEnabled = bool.tryParse(
-      await localStorageService.read(
-            'isNotificationsEnabled',
-          ) ??
-          'false',
+    final user = await authService.getAuthUser();
+
+    if (user == null) {
+      return;
+    }
+
+    final settings = await settingsCrudService.readByFilters([
+      {
+        'field': 'userId',
+        'operator': '==',
+        'value': user.id!,
+      }
+    ]);
+
+    state = settings ?? [];
+  }
+
+  bool isDarkMode() {
+    final darkModeIndex = state.indexWhere(
+      (setting) => setting.key == _kIsDarkMode,
     );
 
-    state = {
-      'isDarkMode': isDarkMode,
-      'isNotificationsEnabled': isNotificationsEnabled,
-      DateTime.now().toIso8601String(): DateTime.now().toIso8601String(),
-    };
+    if (darkModeIndex == -1) {
+      return false;
+    }
+
+    return state[darkModeIndex].value as bool;
+  }
+
+  bool isNotificationsEnabled() {
+    final notificationsIndex = state.indexWhere(
+      (setting) => setting.key == _kIsNotificationsEnabled,
+    );
+
+    if (notificationsIndex == -1) {
+      return false;
+    }
+
+    return state[notificationsIndex].value as bool;
   }
 
   void toggleDarkMode() async {
-    final currentDarkMode = state['isDarkMode'] as bool;
-    await localStorageService.save(
-      'isDarkMode',
-      (!currentDarkMode).toString(),
+    final darkModeIndex = state.indexWhere(
+      (setting) => setting.key == _kIsDarkMode,
     );
-    state = {
-      ...state,
-      'isDarkMode': !currentDarkMode,
-      DateTime.now().toIso8601String(): DateTime.now().toIso8601String(),
-    };
+
+    if (darkModeIndex == -1) {
+      // Create new setting if it doesn't exist
+      final user = await authService.getAuthUser();
+      if (user == null) return;
+
+      final newSetting = Setting(
+        key: _kIsDarkMode,
+        value: true,
+        userId: user.id!,
+        variableType: 'bool',
+        updatedAt: DateTime.now(),
+        id: null,
+      );
+
+      final created = await settingsCrudService.create(newSetting);
+      if (created == null) return;
+
+      state = [...state, created];
+      return;
+    }
+
+    final currentDarkMode = state[darkModeIndex];
+
+    await settingsCrudService.update(
+      currentDarkMode.copyWith(
+        value: !(currentDarkMode.value as bool),
+      ),
+      currentDarkMode.id!,
+    );
+
+    state = [
+      ...state.sublist(0, darkModeIndex),
+      currentDarkMode.copyWith(
+        value: !(currentDarkMode.value as bool),
+      ),
+      ...state.sublist(darkModeIndex + 1),
+    ];
   }
 
   void toggleNotifications() async {
-    final currentNotificationsEnabled = state['isNotificationsEnabled'] as bool;
-    await localStorageService.save(
-      'isNotificationsEnabled',
-      (!currentNotificationsEnabled).toString(),
+    final notificationsIndex = state.indexWhere(
+      (setting) => setting.key == _kIsNotificationsEnabled,
     );
-    state = {
-      ...state,
-      'isNotificationsEnabled': !currentNotificationsEnabled,
-      DateTime.now().toIso8601String(): DateTime.now().toIso8601String(),
-    };
+    if (notificationsIndex == -1) {
+      // Create new setting if it doesn't exist
+      final user = await authService.getAuthUser();
+      if (user == null) return;
+
+      final newSetting = Setting(
+        key: _kIsNotificationsEnabled,
+        value: true,
+        userId: user.id!,
+        variableType: 'bool',
+        updatedAt: DateTime.now(),
+        id: null,
+      );
+
+      final created = await settingsCrudService.create(newSetting);
+      if (created == null) return;
+
+      state = [...state, created];
+      return;
+    }
+
+    final currentNotifications = state[notificationsIndex];
+
+    await settingsCrudService.update(
+      currentNotifications.copyWith(
+        value: !(currentNotifications.value as bool),
+      ),
+      currentNotifications.id!,
+    );
+
+    state = [
+      ...state.sublist(0, notificationsIndex),
+      currentNotifications.copyWith(
+        value: !(currentNotifications.value as bool),
+      ),
+      ...state.sublist(notificationsIndex + 1),
+    ];
   }
 }
 
 final settingsStateNotifierProvider =
-    StateNotifierProvider<SettingsStateNotifier, Map<String, dynamic>>(
-  (ref) => SettingsStateNotifier(
-    ref.read(localStorageProvider),
-  ),
+    StateNotifierProvider<SettingsStateNotifier, List<Setting>>((ref) {
+  return SettingsStateNotifier(
+    ref.read(
+      settingsCrudServiceProvider,
+    ),
+    ref.read(
+      authServiceProvider,
+    ),
+  );
+});
+
+final settingsCrudServiceProvider = Provider<SettingsCrudService>(
+  (ref) => FirebaseSettingsCrudService(),
 );
