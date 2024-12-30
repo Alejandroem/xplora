@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_providers.dart';
+import '../../domain/models/xplora_profile.dart';
 import '../../theme.dart';
 import '../dialogs/bottom_login_card.dart';
 import '../pages/profile_page.dart';
@@ -75,7 +76,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'LvL.${profile!.level}',
+                            'LvL.${profile!.profileLevel()}',
                             style: TextStyle(
                               fontSize: 11.0,
                               color: raisingBlack,

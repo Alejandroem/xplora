@@ -296,7 +296,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    "Open in Google Maps",
+                    'Open in Google Maps',
                     style: TextStyle(
                       color: raisingBlack,
                     ),

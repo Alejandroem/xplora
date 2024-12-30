@@ -165,7 +165,6 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
         final xploraProfile = XploraProfile(
           id: null,
           userId: user.id!,
-          level: 0,
           experience: 0,
           categories: [],
           avatarUrl: '',

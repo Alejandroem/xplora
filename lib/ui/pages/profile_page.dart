@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/achievements_providers.dart';
 import '../../application/providers/xplorauser_providers.dart';
 import '../../domain/models/xplora_profile.dart';
+import '../../theme.dart';
 import '../components/bookmark_components.dart';
 import 'settings_page.dart';
 
@@ -18,6 +19,9 @@ class ProfilePage extends ConsumerStatefulWidget {
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   late XploraProfile profile;
   bool editingUsername = false;
+  final _usernameController = TextEditingController();
+  bool _isChecking = false;
+  bool _isUnique = true;
 
   final Map<String, IconData> iconsMap = {
     'achievement1': Icons.star,
@@ -28,6 +32,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   void initState() {
     super.initState();
     profile = widget.profileParam;
+
+    _usernameController.text = profile.username ?? '';
   }
 
   @override
@@ -56,35 +62,119 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             editingUsername
                 ? SizedBox(
                     width: 200.0,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                      ),
-                      onSubmitted: (value) async {
-                        final profileService = ref.read(profileServiceProvider);
-                        final updatedProfile = await profileService.update(
-                          profile.copyWith(username: value),
-                          profile.id!,
-                        );
-                        setState(() {
-                          profile = updatedProfile;
-                          editingUsername = false;
-                        });
-                      },
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              labelText: 'Username',
+                            ),
+                            onChanged: (value) async {
+                              setState(() {
+                                _isChecking = true;
+                                _isUnique = value.isNotEmpty;
+                              });
+
+                              if (value.isEmpty) {
+                                setState(() {
+                                  _isChecking = false;
+                                });
+                                return;
+                              }
+
+                              final profileService =
+                                  ref.read(profileServiceProvider);
+
+                              final existingUsers =
+                                  await profileService.readByFilters([
+                                {
+                                  'field': 'username',
+                                  'operator': '==',
+                                  'value': value,
+                                }
+                              ]);
+                              final isUnique = existingUsers?.isEmpty ?? true;
+
+                              setState(() {
+                                _isChecking = false;
+                                _isUnique = isUnique;
+                              });
+                            },
+                            onSubmitted: (value) async {
+                              if (_isUnique) {
+                                final profileService =
+                                    ref.read(profileServiceProvider);
+                                final updatedProfile =
+                                    await profileService.update(
+                                  profile.copyWith(
+                                    username: _usernameController.text,
+                                  ),
+                                  profile.id!,
+                                );
+                                setState(() {
+                                  profile = updatedProfile;
+                                  editingUsername = false;
+                                });
+                              }
+                            },
+                            controller: _usernameController,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        _isChecking
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : IconButton(
+                                icon: Icon(
+                                  _isUnique ? Icons.check_circle : Icons.error,
+                                  color: _isUnique ? Colors.green : Colors.red,
+                                ),
+                                onPressed: _isUnique
+                                    ? () async {
+                                        final profileService =
+                                            ref.read(profileServiceProvider);
+                                        final updatedProfile =
+                                            await profileService.update(
+                                          profile.copyWith(
+                                            username: _usernameController.text,
+                                          ),
+                                          profile.id!,
+                                        );
+                                        setState(() {
+                                          profile = updatedProfile;
+                                          editingUsername = false;
+                                        });
+                                      }
+                                    : null,
+                              ),
+                      ],
                     ),
                   )
-                : GestureDetector(
+                : InkWell(
                     onTap: () {
                       setState(() {
                         editingUsername = true;
                       });
                     },
-                    child: Text(
-                      profile.username ?? 'Username',
-                      style: const TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          (profile.username ?? '').isNotEmpty
+                              ? profile.username!
+                              : 'Pick Username',
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 10.0),
+                        const Icon(Icons.edit),
+                      ],
                     ),
                   ),
             const SizedBox(height: 10.0),
@@ -104,7 +194,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       size: 50.0,
                     ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 2.0),
             TextButton(
               onPressed: () {
                 // Add logic to update the profile
@@ -117,8 +207,48 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               children: <Widget>[
                 const Icon(Icons.stars),
                 const SizedBox(width: 10.0),
-                Text('Level ${profile.level}'),
+                Text('Level ${profile.profileLevel()}'),
               ],
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 25,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: raisingBlack,
+                ),
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Stack(
+                children: [
+                  FractionallySizedBox(
+                    widthFactor: profile.experienceProgress(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: majjoreleBlue,
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      '${profile.experience} / ${profile.experienceForNextLevel()} XP',
+                      style: TextStyle(
+                        color: raisingBlack,
+                        fontWeight: FontWeight.w700,
+                        shadows: [
+                          Shadow(
+                            offset: const Offset(1.0, 1.0),
+                            blurRadius: 3.0,
+                            color: Colors.white.withOpacity(0.5),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 10.0),
             Row(

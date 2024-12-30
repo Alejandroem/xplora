@@ -9,6 +9,7 @@ import 'package:location/location.dart';
 import '../../domain/models/achievement.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/adventure_in_progress.dart';
+import '../../domain/models/xplora_profile.dart';
 import '../../domain/models/xplora_user.dart';
 import '../../domain/services/achievements_crud_service.dart';
 import '../../domain/services/adventure_crud_service.dart';
@@ -244,7 +245,8 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
         final levelAchievements = allAchievements.where((achievement) {
           return achievement.trigger == Trigger.level &&
               int.parse(achievement.triggerValue) <=
-                  userProfile.first.level; //check if the level is updated
+                  userProfile.first
+                      .profileLevel(); //check if the level is updated
         }).toList();
 
         final achievementsToAward = [

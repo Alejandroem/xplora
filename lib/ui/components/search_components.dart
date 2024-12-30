@@ -29,7 +29,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       scrollToCategory(ref.watch(selectedCategoriesProvider));
     });
   }
@@ -410,9 +410,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              subtitle: Text(
-                                "Quest",
-                                style: const TextStyle(
+                              subtitle: const Text(
+                                'Quest',
+                                style: TextStyle(
                                   color: Colors.white70,
                                 ),
                               ),
@@ -455,9 +455,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  subtitle: Text(
-                                    "Adventure",
-                                    style: const TextStyle(
+                                  subtitle: const Text(
+                                    'Adventure',
+                                    style: TextStyle(
                                       color: Colors.white70,
                                     ),
                                   ),

@@ -22,7 +22,6 @@ XploraProfile _$XploraProfileFromJson(Map<String, dynamic> json) {
 mixin _$XploraProfile {
   String? get id => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
-  int get level => throw _privateConstructorUsedError;
   int get experience => throw _privateConstructorUsedError;
   List<String> get categories => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
@@ -47,7 +46,6 @@ abstract class $XploraProfileCopyWith<$Res> {
   $Res call(
       {String? id,
       String userId,
-      int level,
       int experience,
       List<String> categories,
       String? avatarUrl,
@@ -71,7 +69,6 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
   $Res call({
     Object? id = freezed,
     Object? userId = null,
-    Object? level = null,
     Object? experience = null,
     Object? categories = null,
     Object? avatarUrl = freezed,
@@ -86,10 +83,6 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
-      level: null == level
-          ? _value.level
-          : level // ignore: cast_nullable_to_non_nullable
-              as int,
       experience: null == experience
           ? _value.experience
           : experience // ignore: cast_nullable_to_non_nullable
@@ -121,7 +114,6 @@ abstract class _$$XploraProfileImplCopyWith<$Res>
   $Res call(
       {String? id,
       String userId,
-      int level,
       int experience,
       List<String> categories,
       String? avatarUrl,
@@ -143,7 +135,6 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? userId = null,
-    Object? level = null,
     Object? experience = null,
     Object? categories = null,
     Object? avatarUrl = freezed,
@@ -158,10 +149,6 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
-      level: null == level
-          ? _value.level
-          : level // ignore: cast_nullable_to_non_nullable
-              as int,
       experience: null == experience
           ? _value.experience
           : experience // ignore: cast_nullable_to_non_nullable
@@ -188,7 +175,6 @@ class _$XploraProfileImpl implements _XploraProfile {
   const _$XploraProfileImpl(
       {required this.id,
       required this.userId,
-      required this.level,
       required this.experience,
       required final List<String> categories,
       required this.avatarUrl,
@@ -202,8 +188,6 @@ class _$XploraProfileImpl implements _XploraProfile {
   final String? id;
   @override
   final String userId;
-  @override
-  final int level;
   @override
   final int experience;
   final List<String> _categories;
@@ -221,7 +205,7 @@ class _$XploraProfileImpl implements _XploraProfile {
 
   @override
   String toString() {
-    return 'XploraProfile(id: $id, userId: $userId, level: $level, experience: $experience, categories: $categories, avatarUrl: $avatarUrl, username: $username)';
+    return 'XploraProfile(id: $id, userId: $userId, experience: $experience, categories: $categories, avatarUrl: $avatarUrl, username: $username)';
   }
 
   @override
@@ -231,7 +215,6 @@ class _$XploraProfileImpl implements _XploraProfile {
             other is _$XploraProfileImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.level, level) || other.level == level) &&
             (identical(other.experience, experience) ||
                 other.experience == experience) &&
             const DeepCollectionEquality()
@@ -244,7 +227,7 @@ class _$XploraProfileImpl implements _XploraProfile {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, userId, level, experience,
+  int get hashCode => Object.hash(runtimeType, id, userId, experience,
       const DeepCollectionEquality().hash(_categories), avatarUrl, username);
 
   /// Create a copy of XploraProfile
@@ -267,7 +250,6 @@ abstract class _XploraProfile implements XploraProfile {
   const factory _XploraProfile(
       {required final String? id,
       required final String userId,
-      required final int level,
       required final int experience,
       required final List<String> categories,
       required final String? avatarUrl,
@@ -280,8 +262,6 @@ abstract class _XploraProfile implements XploraProfile {
   String? get id;
   @override
   String get userId;
-  @override
-  int get level;
   @override
   int get experience;
   @override

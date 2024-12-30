@@ -33,10 +33,10 @@ class FiltersPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
+                const Row(
                   children: [
                     Text(
-                      "What do you want to explore?",
+                      'What do you want to explore?',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -132,10 +132,10 @@ class FiltersPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-                Row(
+                const Row(
                   children: [
                     Text(
-                      "How far do you want to travel?",
+                      'How far do you want to travel?',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -187,8 +187,8 @@ class FiltersPage extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Which category interests you?",
+                    const Text(
+                      'Which category interests you?',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -225,7 +225,7 @@ class FiltersPage extends ConsumerWidget {
                                             : Colors.grey,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text('All'),
+                                      const Text('All'),
                                     ],
                                   ),
                                   backgroundColor: raisingBlack,
@@ -274,7 +274,7 @@ class FiltersPage extends ConsumerWidget {
                                       }
                                     },
                                   );
-                                }).toList(),
+                                }),
                               ],
                             );
                           },
