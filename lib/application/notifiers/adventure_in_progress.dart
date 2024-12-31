@@ -147,7 +147,7 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
       log('Filtering out completed adventures that have been awared and have not passed the hoursToCompleteAgain');
       nearbyAdventures = nearbyAdventures.where((adventure) {
         final completedAdventureIndex = userPreviousAdventures.indexWhere(
-          (userAdventure) => userAdventure.id == adventure.id,
+          (userAdventure) => userAdventure.adventureId == adventure.id,
         );
 
         if (completedAdventureIndex == -1) return true;
@@ -157,9 +157,11 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
         if (completedAdventure.completedAt == null) return true;
         if (adventure.hoursToCompleteAgain == null) return false;
 
-        final hoursSinceCompletion =
-            DateTime.now().difference(completedAdventure.completedAt!).inHours;
-        return hoursSinceCompletion >= adventure.hoursToCompleteAgain!;
+        final now = DateTime.now();
+        final retakeAvailableAt = completedAdventure.completedAt!
+            .add(Duration(hours: adventure.hoursToCompleteAgain!));
+
+        return now.isAfter(retakeAvailableAt);
       }).toList();
     }
 
@@ -198,6 +200,7 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
     final adventure = state!.adventure.copyWith(
       userId: user.id,
       adventureId: state!.adventure.id,
+      completedAt: DateTime.now(),
     );
     await _adventureCrudService.create(adventure);
     log('Adventure has been awarded to user: ${user.id}');

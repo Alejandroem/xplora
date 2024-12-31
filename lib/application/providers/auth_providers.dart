@@ -108,6 +108,7 @@ final signupFormNotifierProvider =
       lastName: '',
       touchedLastName: false,
       isLoading: false,
+      isUsernameUnique: false,
     ),
     authService,
     profileService,

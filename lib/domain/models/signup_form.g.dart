@@ -23,6 +23,7 @@ _$SignupFormImpl _$$SignupFormImplFromJson(Map<String, dynamic> json) =>
       errors:
           (json['errors'] as List<dynamic>).map((e) => e as String).toList(),
       isLoading: json['isLoading'] as bool,
+      isUsernameUnique: json['isUsernameUnique'] as bool,
     );
 
 Map<String, dynamic> _$$SignupFormImplToJson(_$SignupFormImpl instance) =>
@@ -41,4 +42,5 @@ Map<String, dynamic> _$$SignupFormImplToJson(_$SignupFormImpl instance) =>
       'touchedLastName': instance.touchedLastName,
       'errors': instance.errors,
       'isLoading': instance.isLoading,
+      'isUsernameUnique': instance.isUsernameUnique,
     };

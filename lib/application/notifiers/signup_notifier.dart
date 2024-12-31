@@ -177,4 +177,8 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
     }
     state = state.copyWith(isLoading: false);
   }
+
+  void setUsernameUnique(bool isUnique) {
+    state = state.copyWith(isUsernameUnique: isUnique);
+  }
 }

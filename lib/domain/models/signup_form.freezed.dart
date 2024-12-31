@@ -34,6 +34,7 @@ mixin _$SignupForm {
   bool get touchedLastName => throw _privateConstructorUsedError;
   List<String> get errors => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
+  bool get isUsernameUnique => throw _privateConstructorUsedError;
 
   /// Serializes this SignupForm to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -65,7 +66,8 @@ abstract class $SignupFormCopyWith<$Res> {
       String lastName,
       bool touchedLastName,
       List<String> errors,
-      bool isLoading});
+      bool isLoading,
+      bool isUsernameUnique});
 }
 
 /// @nodoc
@@ -97,6 +99,7 @@ class _$SignupFormCopyWithImpl<$Res, $Val extends SignupForm>
     Object? touchedLastName = null,
     Object? errors = null,
     Object? isLoading = null,
+    Object? isUsernameUnique = null,
   }) {
     return _then(_value.copyWith(
       username: null == username
@@ -155,6 +158,10 @@ class _$SignupFormCopyWithImpl<$Res, $Val extends SignupForm>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      isUsernameUnique: null == isUsernameUnique
+          ? _value.isUsernameUnique
+          : isUsernameUnique // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -181,7 +188,8 @@ abstract class _$$SignupFormImplCopyWith<$Res>
       String lastName,
       bool touchedLastName,
       List<String> errors,
-      bool isLoading});
+      bool isLoading,
+      bool isUsernameUnique});
 }
 
 /// @nodoc
@@ -211,6 +219,7 @@ class __$$SignupFormImplCopyWithImpl<$Res>
     Object? touchedLastName = null,
     Object? errors = null,
     Object? isLoading = null,
+    Object? isUsernameUnique = null,
   }) {
     return _then(_$SignupFormImpl(
       username: null == username
@@ -269,6 +278,10 @@ class __$$SignupFormImplCopyWithImpl<$Res>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      isUsernameUnique: null == isUsernameUnique
+          ? _value.isUsernameUnique
+          : isUsernameUnique // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -290,7 +303,8 @@ class _$SignupFormImpl implements _SignupForm {
       required this.lastName,
       required this.touchedLastName,
       required final List<String> errors,
-      required this.isLoading})
+      required this.isLoading,
+      required this.isUsernameUnique})
       : _errors = errors;
 
   factory _$SignupFormImpl.fromJson(Map<String, dynamic> json) =>
@@ -330,10 +344,12 @@ class _$SignupFormImpl implements _SignupForm {
 
   @override
   final bool isLoading;
+  @override
+  final bool isUsernameUnique;
 
   @override
   String toString() {
-    return 'SignupForm(username: $username, touchedUsername: $touchedUsername, email: $email, touchedEmail: $touchedEmail, password: $password, touchedPassword: $touchedPassword, confirmPassword: $confirmPassword, touchedConfirmPassword: $touchedConfirmPassword, firstName: $firstName, touchedFirstName: $touchedFirstName, lastName: $lastName, touchedLastName: $touchedLastName, errors: $errors, isLoading: $isLoading)';
+    return 'SignupForm(username: $username, touchedUsername: $touchedUsername, email: $email, touchedEmail: $touchedEmail, password: $password, touchedPassword: $touchedPassword, confirmPassword: $confirmPassword, touchedConfirmPassword: $touchedConfirmPassword, firstName: $firstName, touchedFirstName: $touchedFirstName, lastName: $lastName, touchedLastName: $touchedLastName, errors: $errors, isLoading: $isLoading, isUsernameUnique: $isUsernameUnique)';
   }
 
   @override
@@ -366,7 +382,9 @@ class _$SignupFormImpl implements _SignupForm {
                 other.touchedLastName == touchedLastName) &&
             const DeepCollectionEquality().equals(other._errors, _errors) &&
             (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading));
+                other.isLoading == isLoading) &&
+            (identical(other.isUsernameUnique, isUsernameUnique) ||
+                other.isUsernameUnique == isUsernameUnique));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -386,7 +404,8 @@ class _$SignupFormImpl implements _SignupForm {
       lastName,
       touchedLastName,
       const DeepCollectionEquality().hash(_errors),
-      isLoading);
+      isLoading,
+      isUsernameUnique);
 
   /// Create a copy of SignupForm
   /// with the given fields replaced by the non-null parameter values.
@@ -419,7 +438,8 @@ abstract class _SignupForm implements SignupForm {
       required final String lastName,
       required final bool touchedLastName,
       required final List<String> errors,
-      required final bool isLoading}) = _$SignupFormImpl;
+      required final bool isLoading,
+      required final bool isUsernameUnique}) = _$SignupFormImpl;
 
   factory _SignupForm.fromJson(Map<String, dynamic> json) =
       _$SignupFormImpl.fromJson;
@@ -452,6 +472,8 @@ abstract class _SignupForm implements SignupForm {
   List<String> get errors;
   @override
   bool get isLoading;
+  @override
+  bool get isUsernameUnique;
 
   /// Create a copy of SignupForm
   /// with the given fields replaced by the non-null parameter values.

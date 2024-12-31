@@ -20,6 +20,7 @@ abstract class SignupForm with _$SignupForm {
     required bool touchedLastName,
     required List<String> errors,
     required bool isLoading,
+    required bool isUsernameUnique,
   }) = _SignupForm;
 
   factory SignupForm.fromJson(Map<String, dynamic> json) =>
