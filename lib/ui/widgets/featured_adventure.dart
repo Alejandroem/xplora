@@ -58,43 +58,59 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                   child: Text('No featured adventures available'));
             }
 
-            // Display only the first adventure
-            final adventure = data.first;
+            /* // Display only the first adventure
+            final adventure = data.first; */
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          AdventureDetail('featured', adventure),
+            return SizedBox(
+              height: 200,
+              width: double.infinity,
+              child: PageView.builder(
+                onPageChanged: (index) => _currentImageIndex = index,
+                controller: _pageController,
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AdventureDetail('featured', data[index]),
+                          ),
+                        );
+                      },
+                      child: data[index].featuredImages == null
+                          ? const SizedBox.shrink()
+                          : Card(
+                              clipBehavior: Clip.hardEdge,
+                              child: Stack(
+                                children: [
+                                  SizedBox(
+                                    height: 160,
+                                    child: Image.network(
+                                      data[index].featuredImages![0],
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Center(
+                                          child: Icon(
+                                            Icons.image_not_supported,
+                                            size: 50,
+                                            color: Colors.grey,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                     ),
                   );
                 },
-                child: adventure.featuredImages == null
-                    ? const SizedBox.shrink()
-                    : Card(
-                        clipBehavior: Clip.hardEdge,
-                        child: Stack(
-                          children: [
-                            SizedBox(
-                              height: 160,
-                              child: PageView.builder(
-                                controller: _pageController,
-                                itemCount: adventure.featuredImages!.length,
-                                itemBuilder: (context, index) {
-                                  return Image.network(
-                                    adventure.featuredImages![index],
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
               ),
             );
           },

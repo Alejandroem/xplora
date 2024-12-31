@@ -233,7 +233,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                   Center(
                     child: Text(
-                      '${profile.experience} / ${profile.experienceForNextLevel()} XP',
+                      '${profile.getExperienceForLevel()} / ${profile.experienceForNextLevel()} XP',
                       style: TextStyle(
                         color: raisingBlack,
                         fontWeight: FontWeight.w700,

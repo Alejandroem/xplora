@@ -19,28 +19,28 @@ abstract class XploraProfile with _$XploraProfile {
 }
 
 extension XploraProfileXP on XploraProfile {
-  int xpToLevelUp(int currentLevel) {
-    int baseXp = 100;
-    int increment = 300;
+  int xpToLevelUp(int level) {
+    const int baseXP = 100; // Starting XP required for level 1
+    const int increment = 300; // XP increment factor
     double multiplier;
 
-    if (currentLevel < 9) {
-      multiplier = 1.0;
-    } else if (currentLevel < 18) {
-      multiplier = 2.0;
-    } else if (currentLevel < 27) {
-      multiplier = 2.5;
-    } else if (currentLevel < 36) {
-      multiplier = 3.0;
-    } else if (currentLevel < 45) {
-      multiplier = 3.5;
-    } else {
+    // Determine the multiplier based on the level
+    if (level >= 45) {
       multiplier = 4.0;
+    } else if (level >= 36) {
+      multiplier = 3.5;
+    } else if (level >= 27) {
+      multiplier = 3.0;
+    } else if (level >= 18) {
+      multiplier = 2.5;
+    } else if (level >= 9) {
+      multiplier = 2.0;
+    } else {
+      multiplier = 1.0;
     }
 
-    int requiredXp =
-        baseXp + ((3 * currentLevel) * increment * multiplier).toInt();
-    return requiredXp;
+    // Calculate XP to level up
+    return baseXP + ((level ~/ 3) * increment * multiplier).toInt();
   }
 
   int xpToNextLevel(int totalXp) {
@@ -52,7 +52,9 @@ extension XploraProfileXP on XploraProfile {
 
   int determineLevel(int totalXp) {
     int currentLevel = 1;
-    while (totalXp >= xpToLevelUp(currentLevel)) {
+    int remainingXp = totalXp;
+    while (remainingXp >= xpToLevelUp(currentLevel)) {
+      remainingXp -= xpToLevelUp(currentLevel);
       currentLevel += 1;
     }
     return currentLevel;
@@ -71,16 +73,38 @@ extension XploraProfileXP on XploraProfile {
 
   double experienceProgress() {
     int currentLevel = determineLevel(experience);
-    int previousLevelXP = currentLevel > 1 ? xpToLevelUp(currentLevel - 1) : 0;
-    int currentLevelXP = xpToLevelUp(currentLevel);
-    int xpInCurrentLevel = experience - previousLevelXP;
-    int totalXPNeededForLevel = currentLevelXP - previousLevelXP;
-    return xpInCurrentLevel / totalXPNeededForLevel;
+    int accumulatedXP = 0;
+
+    // Calculate total XP for all previous levels
+    for (int i = 1; i < currentLevel; i++) {
+      accumulatedXP += xpToLevelUp(i);
+    }
+
+    // Calculate progress in current level
+    int xpInCurrentLevel = experience - accumulatedXP;
+    int xpNeededForCurrentLevel = xpToLevelUp(currentLevel);
+
+    return xpInCurrentLevel / xpNeededForCurrentLevel;
   }
 
   int experienceForNextLevel() {
     int currentLevel = determineLevel(experience);
     int requiredXpForNextLevel = xpToLevelUp(currentLevel);
     return requiredXpForNextLevel;
+  }
+
+  int getExperienceForLevel() {
+    //experience that the user has for the current level
+    int currentLevel = determineLevel(experience);
+    int accumulatedXP = 0;
+
+    // Calculate total XP for all previous levels
+    for (int i = 1; i < currentLevel; i++) {
+      accumulatedXP += xpToLevelUp(i);
+    }
+
+    // Calculate progress in current level
+    int xpInCurrentLevel = experience - accumulatedXP;
+    return xpInCurrentLevel;
   }
 }
