@@ -134,7 +134,12 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   ],
                 ),
           actions: <Widget>[
-            StreamBuilder<bool>(
+            Container(
+              padding: const EdgeInsets.only(right: 16.0),
+              width: 48.0,
+              child: const SizedBox.shrink(),
+            ),
+            /* StreamBuilder<bool>(
               stream: ref.read(authServiceProvider).isSignedIn,
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data == true) {
@@ -153,7 +158,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   );
                 }
               },
-            ),
+            ), */
           ],
         );
       },
