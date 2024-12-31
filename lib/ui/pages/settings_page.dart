@@ -50,12 +50,25 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             value: settingsProviderState.indexWhere(
                         (setting) => setting.key == 'isNotificationsEnabled') >=
                     0
-                ? settingsProviderState[settingsProviderState
-                        .indexWhere((setting) => setting.key == 'isNotificationsEnabled')]
+                ? settingsProviderState[settingsProviderState.indexWhere(
+                        (setting) => setting.key == 'isNotificationsEnabled')]
                     .value as bool
                 : false,
             onChanged: (bool value) {
               settingsProviderNotifier.toggleNotifications();
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Location'),
+            value: settingsProviderState.indexWhere(
+                        (setting) => setting.key == 'isLocationEnabled') >=
+                    0
+                ? settingsProviderState[settingsProviderState.indexWhere(
+                        (setting) => setting.key == 'isLocationEnabled')]
+                    .value as bool
+                : false,
+            onChanged: (bool value) {
+              settingsProviderNotifier.toggleLocation();
             },
           ),
           ListTile(

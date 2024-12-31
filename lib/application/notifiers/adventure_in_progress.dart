@@ -211,62 +211,67 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
       },
     ]);
 
-    if (userProfile != null && userProfile.isNotEmpty) {
-      final userExperience = userProfile.first.experience;
-      final updatedExperience = userExperience + adventure.experience.toInt();
-      await _xploraProfileService.update(
-        userProfile.first.copyWith(
-          experience: updatedExperience.ceil(),
-        ),
-        userProfile.first.id!,
-      );
-      log('User experience updated to: $updatedExperience');
+    try {
+      if (userProfile != null && userProfile.isNotEmpty) {
+        final userExperience = userProfile.first.experience;
+        final updatedExperience = userExperience + adventure.experience.toInt();
+        await _xploraProfileService.update(
+          userProfile.first.copyWith(
+            experience: updatedExperience.ceil(),
+          ),
+          userProfile.first.id!,
+        );
+        log('User experience updated to: $updatedExperience');
 
-      //get all achievements with no userID
-      var allAchievements = await _achievementsCrudService.readByFilters([]);
+        //get all achievements with no userID
+        var allAchievements = await _achievementsCrudService.readByFilters([]);
 
-      allAchievements?.removeWhere(
-        (achievement) => achievement.userId != null && achievement.userId != '',
-      );
+        allAchievements?.removeWhere(
+          (achievement) =>
+              achievement.userId != null && achievement.userId != '',
+        );
 
-      //first check achievements with a trigger quest and whose triggerValue belongs to the current id of the quest
-      //if not check then the experience and level achievements
-      if (allAchievements != null && allAchievements.isNotEmpty) {
-        final questAchievements = allAchievements.where((achievement) {
-          return achievement.trigger == Trigger.adventure &&
-              achievement.triggerValue == state!.adventure.id;
-        }).toList();
+        //first check achievements with a trigger quest and whose triggerValue belongs to the current id of the quest
+        //if not check then the experience and level achievements
+        if (allAchievements != null && allAchievements.isNotEmpty) {
+          final questAchievements = allAchievements.where((achievement) {
+            return achievement.trigger == Trigger.adventure &&
+                achievement.triggerValue == state!.adventure.id;
+          }).toList();
 
-        final experienceAchievements = allAchievements.where((achievement) {
-          return achievement.trigger == Trigger.experience &&
-              int.parse(achievement.triggerValue) <= updatedExperience;
-        }).toList();
+          final experienceAchievements = allAchievements.where((achievement) {
+            return achievement.trigger == Trigger.experience &&
+                int.parse(achievement.triggerValue) <= updatedExperience;
+          }).toList();
 
-        final levelAchievements = allAchievements.where((achievement) {
-          return achievement.trigger == Trigger.level &&
-              int.parse(achievement.triggerValue) <=
-                  userProfile.first
-                      .profileLevel(); //check if the level is updated
-        }).toList();
+          final levelAchievements = allAchievements.where((achievement) {
+            return achievement.trigger == Trigger.level &&
+                int.parse(achievement.triggerValue) <=
+                    userProfile.first
+                        .profileLevel(); //check if the level is updated
+          }).toList();
 
-        final achievementsToAward = [
-          ...questAchievements,
-          ...experienceAchievements,
-          ...levelAchievements,
-        ];
+          final achievementsToAward = [
+            ...questAchievements,
+            ...experienceAchievements,
+            ...levelAchievements,
+          ];
 
-        if (achievementsToAward.isNotEmpty) {
-          for (final achievement in achievementsToAward) {
-            await _achievementsCrudService.create(
-              achievement.copyWith(
-                userId: user.id,
-                dateAchieved: DateTime.now(),
-              ),
-            );
-            log('Achievement awarded: ${achievement.title}');
+          if (achievementsToAward.isNotEmpty) {
+            for (final achievement in achievementsToAward) {
+              await _achievementsCrudService.create(
+                achievement.copyWith(
+                  userId: user.id,
+                  dateAchieved: DateTime.now(),
+                ),
+              );
+              log('Achievement awarded: ${achievement.title}');
+            }
           }
         }
       }
+    } catch (e) {
+      log('Error: $e');
     }
 
     clearAdventureInProgress(); // Adventure awarded, clear progress

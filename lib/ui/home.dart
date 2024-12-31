@@ -249,6 +249,51 @@ class _HomeState extends ConsumerState<Home> {
             if (ref.watch(bottomNavigationBarProvider) ==
                 NavigationItem.notifications)
               const NotificationComponents(),
+            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.XPC ||
+                ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
+              Column(
+                children: [
+                  const SizedBox(
+                    height: 100,
+                  ),
+                  const Center(
+                    child: Text(
+                      'Comming Soon',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 23,
+                  ),
+                  if (ref.watch(bottomNavigationBarProvider) ==
+                      NavigationItem.store)
+                    const Icon(
+                      Icons.store,
+                      size: 100,
+                    ),
+                  if (ref.watch(bottomNavigationBarProvider) ==
+                      NavigationItem.XPC)
+                    const Text(
+                      'XPC',
+                      style: TextStyle(
+                        fontSize: 100,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if (ref.watch(bottomNavigationBarProvider) ==
+                      NavigationItem.XPC)
+                    const Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Text(
+                        'XPC is the digital currency powering the XPLRA ecosystem. Earn XPC by exploring your surroundings, completing quests, and engaging with the app. With the XPC Wallet, securely manage your rewards, track your balance, buy XPC to increase its value, and use XPC to unlock exclusive content, collectibles, and more. Stay tuned for its release!',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                ],
+              ),
           ],
         ),
       ),

@@ -75,11 +75,13 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Xplra',
-      theme: settingsProvider
-              .firstWhere((setting) => setting.key == 'isDarkMode')
-              .value as bool
-          ? getDarkTheme()
-          : getTheme(),
+      theme: () {
+        final index = settingsProvider
+            .indexWhere((setting) => setting.key == 'isDarkMode');
+        return index >= 0 && (settingsProvider[index].value as bool)
+            ? getDarkTheme()
+            : getTheme();
+      }(),
       routes: {
         '/': (context) => const Home(),
         '/onboarding': (context) => const OnboardingPage(),

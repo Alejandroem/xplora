@@ -72,25 +72,40 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
           title: isAuthenticated
               ? ref.watch(createOrReadCurrentUserProfile).when(
                     data: (profile) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'LvL.${profile!.profileLevel()}',
-                            style: TextStyle(
-                              fontSize: 11.0,
-                              color: raisingBlack,
-                              fontWeight: FontWeight.bold,
+                          SizedBox(
+                            width: 64.0,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'LvL.${profile!.profileLevel()}',
+                                  style: TextStyle(
+                                    fontSize: 11.0,
+                                    color: raisingBlack,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  'XP.${profile.experience}',
+                                  style: TextStyle(
+                                    fontSize: 11.0,
+                                    color: raisingBlack,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Text(
-                            'XP.${profile.experience}',
-                            style: TextStyle(
-                              fontSize: 11.0,
-                              color: raisingBlack,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Image.asset(
+                            'assets/png/xplra-logo.png',
+                            width: 72.0,
+                            height: 72.0,
+                            fit: BoxFit.contain,
                           ),
+                          const SizedBox(width: 64.0),
                         ],
                       );
                     },

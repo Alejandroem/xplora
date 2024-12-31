@@ -37,7 +37,43 @@ class _BottomNavigationBarState
           ),
           label: '',
         ),
-        
+        BottomNavigationBarItem(
+          icon: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: currentIndex == NavigationItem.XPC
+                    ? Colors.grey
+                    : Colors.black,
+                width: 2,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                'XPC',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: currentIndex == NavigationItem.XPC
+                      ? Colors.grey
+                      : Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.store,
+            color: currentIndex == NavigationItem.store
+                ? Colors.grey
+                : Colors.black,
+          ),
+          label: '',
+        ),
         BottomNavigationBarItem(
           icon: Icon(
             Icons.notifications,

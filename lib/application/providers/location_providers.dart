@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:geolocator/geolocator.dart';
 
+import '../../domain/services/settings_crud_service.dart';
+import 'settings_providers.dart';
+
 class LocationState {
   final Position? position;
   final bool isLoading;
@@ -13,8 +16,11 @@ class LocationState {
 }
 
 class LocationNotifier extends StateNotifier<LocationState> {
+  final SettingsCrudService settingsCrudService;
   Timer? _timer;
-  LocationNotifier() : super(LocationState()) {
+  LocationNotifier(
+    this.settingsCrudService,
+  ) : super(LocationState()) {
     getCurrentLocation();
     _startLocationUpdates();
   }
@@ -60,7 +66,9 @@ class LocationNotifier extends StateNotifier<LocationState> {
 }
 
 final locationProvider = StateNotifierProvider<LocationNotifier, LocationState>(
-  (ref) => LocationNotifier(),
+  (ref) => LocationNotifier(
+    ref.watch(settingsCrudServiceProvider),
+  ),
 );
 
 final minimumDistanceProvider = StateProvider<int>((ref) {

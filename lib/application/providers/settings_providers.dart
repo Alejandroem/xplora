@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../domain/models/setting.dart';
 import '../../domain/services/auth_service.dart';
@@ -8,6 +9,7 @@ import 'auth_providers.dart';
 
 const _kIsDarkMode = 'isDarkMode';
 const _kIsNotificationsEnabled = 'isNotificationsEnabled';
+const _kIsLocationEnabled = 'isLocationEnabled';
 
 class SettingsStateNotifier extends StateNotifier<List<Setting>> {
   SettingsStateNotifier(
@@ -147,6 +149,69 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
       ),
       ...state.sublist(notificationsIndex + 1),
     ];
+
+    if (!currentNotifications.value) {
+      await Permission.notification.request();
+    }
+  }
+
+  void toggleLocation() async {
+    final locationIndex = state.indexWhere(
+      (setting) => setting.key == _kIsLocationEnabled,
+    );
+    if (locationIndex == -1) {
+      // Create new setting if it doesn't exist
+      final user = await authService.getAuthUser();
+      if (user == null) return;
+
+      final newSetting = Setting(
+        key: _kIsLocationEnabled,
+        value: true,
+        userId: user.id!,
+        variableType: 'bool',
+        updatedAt: DateTime.now(),
+        id: null,
+      );
+
+      final created = await settingsCrudService.create(newSetting);
+      if (created == null) return;
+
+      state = [...state, created];
+      return;
+    }
+
+    final currentLocation = state[locationIndex];
+
+    await settingsCrudService.update(
+      currentLocation.copyWith(
+        value: !(currentLocation.value as bool),
+      ),
+      currentLocation.id!,
+    );
+
+    state = [
+      ...state.sublist(0, locationIndex),
+      currentLocation.copyWith(
+        value: !(currentLocation.value as bool),
+      ),
+      ...state.sublist(locationIndex + 1),
+    ];
+
+    if (!currentLocation.value) {
+      await Permission.location.request();
+    }
+  }
+
+  bool isLocationEnabled() {
+    final locationIndex = state.indexWhere(
+      (setting) => setting.key == _kIsLocationEnabled,
+    );
+
+    if (locationIndex == -1) {
+      return false;
+    }
+
+    return state[locationIndex].value as bool;
   }
 }
 
