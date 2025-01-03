@@ -25,7 +25,7 @@ mixin _$Achievement {
   String get title => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   String get icon => throw _privateConstructorUsedError;
-  DateTime get dateAchieved => throw _privateConstructorUsedError;
+  DateTime? get dateAchieved => throw _privateConstructorUsedError;
   Trigger get trigger => throw _privateConstructorUsedError;
   String get triggerValue => throw _privateConstructorUsedError;
 
@@ -51,7 +51,7 @@ abstract class $AchievementCopyWith<$Res> {
       String title,
       String description,
       String icon,
-      DateTime dateAchieved,
+      DateTime? dateAchieved,
       Trigger trigger,
       String triggerValue});
 }
@@ -76,7 +76,7 @@ class _$AchievementCopyWithImpl<$Res, $Val extends Achievement>
     Object? title = null,
     Object? description = null,
     Object? icon = null,
-    Object? dateAchieved = null,
+    Object? dateAchieved = freezed,
     Object? trigger = null,
     Object? triggerValue = null,
   }) {
@@ -101,10 +101,10 @@ class _$AchievementCopyWithImpl<$Res, $Val extends Achievement>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as String,
-      dateAchieved: null == dateAchieved
+      dateAchieved: freezed == dateAchieved
           ? _value.dateAchieved
           : dateAchieved // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
       trigger: null == trigger
           ? _value.trigger
           : trigger // ignore: cast_nullable_to_non_nullable
@@ -131,7 +131,7 @@ abstract class _$$AchievementImplCopyWith<$Res>
       String title,
       String description,
       String icon,
-      DateTime dateAchieved,
+      DateTime? dateAchieved,
       Trigger trigger,
       String triggerValue});
 }
@@ -154,7 +154,7 @@ class __$$AchievementImplCopyWithImpl<$Res>
     Object? title = null,
     Object? description = null,
     Object? icon = null,
-    Object? dateAchieved = null,
+    Object? dateAchieved = freezed,
     Object? trigger = null,
     Object? triggerValue = null,
   }) {
@@ -179,10 +179,10 @@ class __$$AchievementImplCopyWithImpl<$Res>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as String,
-      dateAchieved: null == dateAchieved
+      dateAchieved: freezed == dateAchieved
           ? _value.dateAchieved
           : dateAchieved // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
       trigger: null == trigger
           ? _value.trigger
           : trigger // ignore: cast_nullable_to_non_nullable
@@ -222,7 +222,7 @@ class _$AchievementImpl implements _Achievement {
   @override
   final String icon;
   @override
-  final DateTime dateAchieved;
+  final DateTime? dateAchieved;
   @override
   final Trigger trigger;
   @override
@@ -279,7 +279,7 @@ abstract class _Achievement implements Achievement {
       required final String title,
       required final String description,
       required final String icon,
-      required final DateTime dateAchieved,
+      required final DateTime? dateAchieved,
       required final Trigger trigger,
       required final String triggerValue}) = _$AchievementImpl;
 
@@ -297,7 +297,7 @@ abstract class _Achievement implements Achievement {
   @override
   String get icon;
   @override
-  DateTime get dateAchieved;
+  DateTime? get dateAchieved;
   @override
   Trigger get trigger;
   @override

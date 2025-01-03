@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/achievements_providers.dart';
 import '../../application/providers/xplorauser_providers.dart';
+import '../../domain/models/achievement.dart';
 import '../../domain/models/xplora_profile.dart';
 import '../../theme.dart';
 import '../components/bookmark_components.dart';
@@ -297,7 +298,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           }
                           return achievements!
                               .map<Widget>(
-                                (achievement) => Card(
+                                (Achievement achievement) => Card(
                                   child: Container(
                                     width: 100.0,
                                     height: 100.0,
@@ -323,7 +324,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           ),
                                           const SizedBox(height: 10.0),
                                           Text(
-                                            achievement.name,
+                                            achievement.title,
                                             style: const TextStyle(
                                               color: Colors.white,
                                             ),

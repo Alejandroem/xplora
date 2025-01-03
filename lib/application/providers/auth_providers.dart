@@ -24,17 +24,27 @@ final currentAuthUserIdStreamProvider = StreamProvider.autoDispose((ref) {
   return authService.getAuthUserStreamUserId();
 });
 
-final createOrReadCurrentUserProfile = FutureProvider.autoDispose((ref) async {
+final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
   final profileService = ref.read(profileServiceProvider);
   final authenticationService = ref.read(authServiceProvider);
   final user = await authenticationService.getAuthUser();
   if (user == null) {
-    return null;
+    yield null;
+    return;
   }
 
-  final profile = await profileService.readBy('userId', user.id!);
-  if (profile.isEmpty) {
-    return await profileService.create(
+  // First check if profile exists
+  final existingProfiles = await profileService.readByFilters([
+    {
+      'field': 'userId',
+      'operator': '==',
+      'value': user.id,
+    }
+  ]);
+
+  // Create profile if it doesn't exist
+  if (existingProfiles == null || existingProfiles.isEmpty) {
+    await profileService.create(
       XploraProfile(
         id: null,
         userId: user.id!,
@@ -44,8 +54,17 @@ final createOrReadCurrentUserProfile = FutureProvider.autoDispose((ref) async {
         username: '',
       ),
     );
-  } else {
-    return profile.first;
+  }
+
+  // Now stream the profile
+  await for (final profiles in profileService.streamByFilters([
+    {
+      'field': 'userId',
+      'operator': '==',
+      'value': user.id,
+    }
+  ])) {
+    yield profiles?.first;
   }
 });
 

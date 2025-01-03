@@ -18,7 +18,7 @@ class Achievement with _$Achievement {
     required String title,
     required String description,
     required String icon,
-    required DateTime dateAchieved,
+    required DateTime? dateAchieved,
     required Trigger trigger,
     required String triggerValue,
   }) = _Achievement;
