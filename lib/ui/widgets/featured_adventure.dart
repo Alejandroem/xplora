@@ -62,8 +62,8 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
             final adventure = data.first; */
 
             return SizedBox(
-              height: 200,
-              width: double.infinity,
+                height: 200, // ~300px on 1.5x pixel ratio devices
+                width: double.infinity, // matches parent width
               child: PageView.builder(
                 onPageChanged: (index) => _currentImageIndex = index,
                 controller: _pageController,

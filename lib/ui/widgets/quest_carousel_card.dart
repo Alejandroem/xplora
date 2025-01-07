@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,7 +40,7 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
               Hero(
                 tag: 'adventure-image-${widget.adventure.id}-carousel',
                 child: Image.network(
-                  color: Colors.white.withOpacity(0.4),
+                  color: Colors.white.withOpacity(0.1),
                   colorBlendMode: BlendMode.lighten,
                   widget.adventure.imageUrl,
                   height: 200,
@@ -46,7 +48,39 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
                   fit: BoxFit.cover,
                 ),
               ),
-              Padding(
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.white.withOpacity(0.1),
+                      Colors.white.withOpacity(0.3),
+                      Colors.white.withOpacity(0.4),
+                      Colors.white.withOpacity(0.5),
+                      Colors.white.withOpacity(0.6),
+                      Colors.white.withOpacity(0.8),
+                      Colors.white.withOpacity(0.9),
+                      Colors.white.withOpacity(1),
+                      Colors.white.withOpacity(1),
+                      Colors.white,
+                    ],
+                    stops: [
+                      0.00,
+                      0.10,
+                      0.15,
+                      0.20,
+                      0.30,
+                      0.40,
+                      0.50,
+                      0.60,
+                      0.70,
+                      0.80,
+                      1.0
+                    ], // Adjust the stops to control the gradient
+                  ),
+                ),
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -57,7 +91,7 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
                       child: Text(
                         widget.adventure.title,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.w900,
                           color: raisingBlack,
                         ),

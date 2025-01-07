@@ -89,22 +89,13 @@ extension XploraProfileXP on XploraProfile {
 
   int experienceForNextLevel() {
     int currentLevel = determineLevel(experience);
-    int requiredXpForNextLevel = xpToLevelUp(currentLevel);
-    return requiredXpForNextLevel;
-  }
-
-  int getExperienceForLevel() {
-    //experience that the user has for the current level
-    int currentLevel = determineLevel(experience);
     int accumulatedXP = 0;
 
     // Calculate total XP for all previous levels
-    for (int i = 1; i < currentLevel; i++) {
+    for (int i = 1; i <= currentLevel; i++) {
       accumulatedXP += xpToLevelUp(i);
     }
 
-    // Calculate progress in current level
-    int xpInCurrentLevel = experience - accumulatedXP;
-    return xpInCurrentLevel;
+    return accumulatedXP;
   }
 }
