@@ -16,21 +16,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
   Widget build(BuildContext context) {
     final questInProgress = ref.watch(adventureInProgressTrackerProvider);
     if (questInProgress == null) {
-      return Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        clipBehavior: Clip.hardEdge,
-        child: const Card(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Lora AI', style: TextStyle(fontSize: 24)),
-            Text('Cooming Soon', style: TextStyle(fontSize: 14)),
-          ],
-        )),
-      );
+      return const SizedBox.shrink();
     }
     return InkWell(
       onTap: () {
