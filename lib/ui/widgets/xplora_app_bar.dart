@@ -139,17 +139,10 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
               width: 48.0,
               child: const SizedBox.shrink(),
             ),
-            /* StreamBuilder<bool>(
+            StreamBuilder<bool>(
               stream: ref.read(authServiceProvider).isSignedIn,
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data == true) {
-                  return IconButton(
-                    icon: const Icon(Icons.logout),
-                    onPressed: () {
-                      ref.read(authServiceProvider).signOut();
-                    },
-                  );
-                } else {
+                if (snapshot.hasData && snapshot.data == false) {
                   return IconButton(
                     icon: const Icon(Icons.login),
                     onPressed: () {
@@ -157,8 +150,9 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     },
                   );
                 }
+                return const SizedBox.shrink();
               },
-            ), */
+            ),
           ],
         );
       },

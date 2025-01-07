@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/profile_providers.dart';
 import '../../application/providers/settings_providers.dart';
+import '../widgets/email_verification_banner.dart';
 import 'privacy_policy.dart';
 import 'terms_and_conditions.dart';
 
@@ -32,6 +33,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       ),
       body: ListView(
         children: [
+          const EmailVerificationBanner(),
           SwitchListTile(
             title: const Text('Dark Mode'),
             value: settingsProviderState

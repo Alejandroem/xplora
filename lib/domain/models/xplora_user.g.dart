@@ -12,6 +12,7 @@ _$XploraUserImpl _$$XploraUserImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       email: json['email'] as String,
       username: json['username'] as String,
+      isEmailVerified: json['isEmailVerified'] as bool,
     );
 
 Map<String, dynamic> _$$XploraUserImplToJson(_$XploraUserImpl instance) =>
@@ -20,4 +21,5 @@ Map<String, dynamic> _$$XploraUserImplToJson(_$XploraUserImpl instance) =>
       'name': instance.name,
       'email': instance.email,
       'username': instance.username,
+      'isEmailVerified': instance.isEmailVerified,
     };

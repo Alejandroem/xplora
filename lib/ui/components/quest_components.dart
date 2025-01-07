@@ -17,7 +17,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 200,
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(

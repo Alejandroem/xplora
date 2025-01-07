@@ -10,6 +10,7 @@ abstract class XploraUser with _$XploraUser {
     required String name,
     required String email,
     required String username,
+    required bool isEmailVerified,
   }) = _XploraUser;
 
   factory XploraUser.fromJson(Map<String, dynamic> json) =>

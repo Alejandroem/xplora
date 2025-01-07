@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/providers/auth_providers.dart';
 import '../../application/providers/navigation_providers.dart';
+import '../dialogs/bottom_login_card.dart';
 
 class XploraBottomNavigationBar extends ConsumerStatefulWidget {
   const XploraBottomNavigationBar({super.key});
@@ -44,7 +46,7 @@ class _BottomNavigationBarState
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: currentIndex == NavigationItem.XPC
+                color: currentIndex == NavigationItem.xpc
                     ? Colors.grey
                     : Colors.black,
                 width: 2,
@@ -55,7 +57,7 @@ class _BottomNavigationBarState
                 'XPC',
                 style: TextStyle(
                   fontSize: 10,
-                  color: currentIndex == NavigationItem.XPC
+                  color: currentIndex == NavigationItem.xpc
                       ? Colors.grey
                       : Colors.black,
                   fontWeight: FontWeight.bold,
@@ -85,9 +87,22 @@ class _BottomNavigationBarState
         ),
       ],
       currentIndex: currentIndex.index,
-      onTap: (index) {
-        ref.read(bottomNavigationBarProvider.notifier).state =
-            NavigationItem.values[index];
+      onTap: (index) async {
+        if (NavigationItem.values[index] == NavigationItem.notifications) {
+          // Show authentication sheet if user is not authenticated
+          final authService = ref.read(authServiceProvider);
+          if (!await authService.isSignedInFuture()) {
+            if (context.mounted) {
+              showBottomLoginCard(context);
+            }
+          } else {
+            ref.read(bottomNavigationBarProvider.notifier).state =
+                NavigationItem.values[index];
+          }
+        } else {
+          ref.read(bottomNavigationBarProvider.notifier).state =
+              NavigationItem.values[index];
+        }
       },
     );
   }

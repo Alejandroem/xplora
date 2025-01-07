@@ -4,6 +4,7 @@ abstract class AuthService {
   Future<bool> isSignedInFuture();
   Stream<bool> get isSignedIn;
   Stream<String?> getAuthUserStreamUserId();
+  Stream<XploraUser?> getAuthUserStream();
   Future<XploraUser?> getAuthUser();
   Future<XploraUser> signInWithEmailAndPassword(
     String email,
@@ -18,4 +19,6 @@ abstract class AuthService {
   Future<void> signOut();
 
   Future<void> deleteAccount();
+
+  Future<void> sendEmailVerification();
 }

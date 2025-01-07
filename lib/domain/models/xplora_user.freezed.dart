@@ -24,6 +24,7 @@ mixin _$XploraUser {
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get username => throw _privateConstructorUsedError;
+  bool get isEmailVerified => throw _privateConstructorUsedError;
 
   /// Serializes this XploraUser to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +42,12 @@ abstract class $XploraUserCopyWith<$Res> {
           XploraUser value, $Res Function(XploraUser) then) =
       _$XploraUserCopyWithImpl<$Res, XploraUser>;
   @useResult
-  $Res call({String? id, String name, String email, String username});
+  $Res call(
+      {String? id,
+      String name,
+      String email,
+      String username,
+      bool isEmailVerified});
 }
 
 /// @nodoc
@@ -63,6 +69,7 @@ class _$XploraUserCopyWithImpl<$Res, $Val extends XploraUser>
     Object? name = null,
     Object? email = null,
     Object? username = null,
+    Object? isEmailVerified = null,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -81,6 +88,10 @@ class _$XploraUserCopyWithImpl<$Res, $Val extends XploraUser>
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
               as String,
+      isEmailVerified: null == isEmailVerified
+          ? _value.isEmailVerified
+          : isEmailVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -93,7 +104,12 @@ abstract class _$$XploraUserImplCopyWith<$Res>
       __$$XploraUserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? id, String name, String email, String username});
+  $Res call(
+      {String? id,
+      String name,
+      String email,
+      String username,
+      bool isEmailVerified});
 }
 
 /// @nodoc
@@ -113,6 +129,7 @@ class __$$XploraUserImplCopyWithImpl<$Res>
     Object? name = null,
     Object? email = null,
     Object? username = null,
+    Object? isEmailVerified = null,
   }) {
     return _then(_$XploraUserImpl(
       id: freezed == id
@@ -131,6 +148,10 @@ class __$$XploraUserImplCopyWithImpl<$Res>
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
               as String,
+      isEmailVerified: null == isEmailVerified
+          ? _value.isEmailVerified
+          : isEmailVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -142,7 +163,8 @@ class _$XploraUserImpl implements _XploraUser {
       {required this.id,
       required this.name,
       required this.email,
-      required this.username});
+      required this.username,
+      required this.isEmailVerified});
 
   factory _$XploraUserImpl.fromJson(Map<String, dynamic> json) =>
       _$$XploraUserImplFromJson(json);
@@ -155,10 +177,12 @@ class _$XploraUserImpl implements _XploraUser {
   final String email;
   @override
   final String username;
+  @override
+  final bool isEmailVerified;
 
   @override
   String toString() {
-    return 'XploraUser(id: $id, name: $name, email: $email, username: $username)';
+    return 'XploraUser(id: $id, name: $name, email: $email, username: $username, isEmailVerified: $isEmailVerified)';
   }
 
   @override
@@ -170,12 +194,15 @@ class _$XploraUserImpl implements _XploraUser {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.username, username) ||
-                other.username == username));
+                other.username == username) &&
+            (identical(other.isEmailVerified, isEmailVerified) ||
+                other.isEmailVerified == isEmailVerified));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, email, username);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, email, username, isEmailVerified);
 
   /// Create a copy of XploraUser
   /// with the given fields replaced by the non-null parameter values.
@@ -198,7 +225,8 @@ abstract class _XploraUser implements XploraUser {
       {required final String? id,
       required final String name,
       required final String email,
-      required final String username}) = _$XploraUserImpl;
+      required final String username,
+      required final bool isEmailVerified}) = _$XploraUserImpl;
 
   factory _XploraUser.fromJson(Map<String, dynamic> json) =
       _$XploraUserImpl.fromJson;
@@ -211,6 +239,8 @@ abstract class _XploraUser implements XploraUser {
   String get email;
   @override
   String get username;
+  @override
+  bool get isEmailVerified;
 
   /// Create a copy of XploraUser
   /// with the given fields replaced by the non-null parameter values.

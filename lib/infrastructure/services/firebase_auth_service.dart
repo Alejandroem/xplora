@@ -31,11 +31,13 @@ class FirebaseAuthService extends AuthService {
     documentSnapshot =
         await collectionReference.doc(userCredential.user!.uid).get();
 
+    final data = documentSnapshot.data() as Map<String, dynamic>;
     return XploraUser(
       id: userCredential.user!.uid,
       email: userCredential.user!.email!,
-      name: documentSnapshot['name'],
-      username: documentSnapshot['username'],
+      name: data['name'] ?? '',
+      username: data['username'] ?? '',
+      isEmailVerified: userCredential.user!.emailVerified,
     );
   }
 
@@ -67,11 +69,15 @@ class FirebaseAuthService extends AuthService {
       'username': username,
     });
 
+    //send verification email
+    await userCredential.user!.sendEmailVerification();
+
     return XploraUser(
       id: userCredential.user!.uid,
       email: userCredential.user!.email!,
       name: name,
       username: username,
+      isEmailVerified: userCredential.user!.emailVerified,
     );
   }
 
@@ -99,6 +105,7 @@ class FirebaseAuthService extends AuthService {
       email: user.email!,
       name: documentSnapshot['name'],
       username: documentSnapshot['username'],
+      isEmailVerified: user.emailVerified,
     );
   }
 
@@ -127,6 +134,39 @@ class FirebaseAuthService extends AuthService {
     User? user = auth.currentUser;
     if (user != null) {
       await user.delete();
+    }
+  }
+
+  @override
+  Stream<XploraUser?> getAuthUserStream() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection('users');
+    return auth.authStateChanges().asyncMap((user) async {
+      if (user == null) {
+        return null;
+      }
+      await user.reload();
+
+      DocumentSnapshot documentSnapshot =
+          await collectionReference.doc(user.uid).get();
+
+      return XploraUser(
+        id: user.uid,
+        email: user.email!,
+        name: documentSnapshot['name'],
+        username: documentSnapshot['username'],
+        isEmailVerified: user.emailVerified,
+      );
+    });
+  }
+
+  @override
+  Future<void> sendEmailVerification() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if (user != null && !user.emailVerified) {
+      await user.sendEmailVerification();
     }
   }
 }

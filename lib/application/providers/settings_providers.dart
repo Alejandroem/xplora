@@ -84,7 +84,6 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
       );
 
       final created = await settingsCrudService.create(newSetting);
-      if (created == null) return;
 
       state = [...state, created];
       return;
@@ -127,7 +126,6 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
       );
 
       final created = await settingsCrudService.create(newSetting);
-      if (created == null) return;
 
       state = [...state, created];
       return;
@@ -174,7 +172,6 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
       );
 
       final created = await settingsCrudService.create(newSetting);
-      if (created == null) return;
 
       state = [...state, created];
       return;

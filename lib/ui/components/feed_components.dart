@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/adventures_carousel.dart';
 import '../widgets/categories_chips.dart';
+import '../widgets/email_verification_banner.dart';
 import '../widgets/featured_adventure.dart';
 import 'quest_components.dart';
 
@@ -19,6 +20,7 @@ class _FeedComponentsState extends ConsumerState<FeedComponents> {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        EmailVerificationBanner(),
         FeaturedAdventure(),
         NearestAdventures(),
         CategoriesChips(),

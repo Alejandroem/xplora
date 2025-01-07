@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -66,7 +64,7 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
                       Colors.white.withOpacity(1),
                       Colors.white,
                     ],
-                    stops: [
+                    stops: const [
                       0.00,
                       0.10,
                       0.15,

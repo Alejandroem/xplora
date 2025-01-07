@@ -249,7 +249,7 @@ class _HomeState extends ConsumerState<Home> {
             if (ref.watch(bottomNavigationBarProvider) ==
                 NavigationItem.notifications)
               const NotificationComponents(),
-            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.XPC ||
+            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc ||
                 ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
               Column(
                 children: [
@@ -275,7 +275,7 @@ class _HomeState extends ConsumerState<Home> {
                       size: 100,
                     ),
                   if (ref.watch(bottomNavigationBarProvider) ==
-                      NavigationItem.XPC)
+                      NavigationItem.xpc)
                     const Text(
                       'XPC',
                       style: TextStyle(
@@ -284,7 +284,7 @@ class _HomeState extends ConsumerState<Home> {
                       ),
                     ),
                   if (ref.watch(bottomNavigationBarProvider) ==
-                      NavigationItem.XPC)
+                      NavigationItem.xpc)
                     const Padding(
                       padding: EdgeInsets.all(32.0),
                       child: Text(
