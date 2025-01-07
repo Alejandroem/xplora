@@ -54,9 +54,10 @@ class _NotificationComponentsState
                           return items.map(
                             (item) {
                               if (item is Adventure) {
-                                return AdventureCard(adventure: item);
+                                return NotificationAdventureCard(
+                                    adventure: item);
                               } else if (item is Quest) {
-                                return QuestCard(quest: item);
+                                return NotificationQuestCard(quest: item);
                               }
                               return const SizedBox();
                             },

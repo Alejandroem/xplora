@@ -91,5 +91,17 @@ final userPreviousActivitiesProviderStream =
     },
   );
 
+  //only 1 week ago
+  final now = DateTime.now();
+  final weekAgo = now.subtract(const Duration(days: 7));
+  combined.removeWhere((element) {
+    if (element is Adventure) {
+      return element.completedAt!.isBefore(weekAgo);
+    } else if (element is Quest) {
+      return element.completedAt!.isBefore(weekAgo);
+    }
+    return false;
+  });
+
   yield combined;
 });

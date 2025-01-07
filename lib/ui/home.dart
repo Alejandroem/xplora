@@ -171,7 +171,7 @@ class _HomeState extends ConsumerState<Home> {
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AdventureCard(adventure: adventure),
+                        NotificationAdventureCard(adventure: adventure),
                       ],
                     ),
                     actions: [

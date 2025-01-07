@@ -147,27 +147,11 @@ class _QuestListState extends ConsumerState<QuestList> {
                             onTap: () async {
                               if (quest.stepType == QuestType.location) {
                                 //url launcher to the location
-                                final url = Uri.parse(
-                                    'https://www.google.com/maps/search/?api=1&query=${widget.isHero ? quest.stepLatitude : 37.7749},${widget.isHero ? quest.stepLongitude : -122.4194}');
-                                if (await canLaunchUrl(url)) {
-                                  await launchUrl(url);
-                                } else {
-                                  throw 'Could not launch $url';
-                                }
-                              } else if (quest.stepType == QuestType.qr) {
-                                setState(() {
-                                  scannedQuest = quest;
-                                });
-                                _showQRScannerDialog(context, quest);
-                              } else if (quest.stepType ==
-                                  QuestType.timeLocation) {
-                                //url launcher to the location
-                                final url = Uri.parse(
-                                    'https://www.google.com/maps/search/?api=1&query=${widget.isHero ? quest.stepLatitude : 37.7749},${widget.isHero ? quest.stepLongitude : -122.4194}');
-                                if (await canLaunchUrl(url)) {
-                                  await launchUrl(url);
-                                } else {
-                                  throw 'Could not launch $url';
+                                if (quest.stepType == QuestType.qr) {
+                                  setState(() {
+                                    scannedQuest = quest;
+                                  });
+                                  _showQRScannerDialog(context, quest);
                                 }
                               }
                             },
