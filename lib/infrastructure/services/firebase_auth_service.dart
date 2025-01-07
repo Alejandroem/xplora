@@ -169,4 +169,15 @@ class FirebaseAuthService extends AuthService {
       await user.sendEmailVerification();
     }
   }
+
+  @override
+  Future<bool> changePassword(String password) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if (user != null) {
+      await user.updatePassword(password);
+      return true;
+    }
+    return false;
+  }
 }
