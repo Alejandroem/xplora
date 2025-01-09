@@ -51,7 +51,7 @@ extension XploraProfileXP on XploraProfile {
   }
 
   int determineLevel(int totalXp) {
-    int currentLevel = 1;
+    int currentLevel = 0;
     int remainingXp = totalXp;
     while (remainingXp >= xpToLevelUp(currentLevel)) {
       remainingXp -= xpToLevelUp(currentLevel);

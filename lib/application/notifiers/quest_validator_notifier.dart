@@ -159,11 +159,12 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
             currentUserPreviousQuests.indexWhere((userQuest) {
                   if (userQuest.id == quest.id &&
                           userQuest.completedAt == null ||
-                      quest.hoursToCompleteAgain == null &&
+                      (quest.hoursToCompleteAgain != null &&
+                          userQuest.completedAt != null &&
                           DateTime.now()
                                   .difference(userQuest.completedAt!)
                                   .inHours <
-                              quest.hoursToCompleteAgain!) {
+                              quest.hoursToCompleteAgain!)) {
                     return false;
                   }
                   return true;
@@ -259,7 +260,8 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
         final levelAchievements = allAchievements.where((achievement) {
           return achievement.trigger == Trigger.level &&
               int.parse(achievement.triggerValue) <=
-                  userProfile.first.profileLevel(); //check if the level is updated
+                  userProfile.first
+                      .profileLevel(); //check if the level is updated
         }).toList();
 
         final achievementsToAward = [

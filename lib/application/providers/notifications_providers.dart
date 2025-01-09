@@ -96,9 +96,11 @@ final userPreviousActivitiesProviderStream =
   final weekAgo = now.subtract(const Duration(days: 7));
   combined.removeWhere((element) {
     if (element is Adventure) {
-      return element.completedAt!.isBefore(weekAgo);
+      return element.completedAt == null ||
+          element.completedAt!.isBefore(weekAgo);
     } else if (element is Quest) {
-      return element.completedAt!.isBefore(weekAgo);
+      return element.completedAt == null ||
+          element.completedAt!.isBefore(weekAgo);
     }
     return false;
   });

@@ -75,77 +75,75 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
               child: Column(
                 children: [
-                  SizedBox(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            onChanged: (value) {
-                              setState(() {
-                                _searchQuery = value;
-                              });
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Find your next adventure',
-                              prefixIcon: const Icon(Icons.search),
-                              contentPadding: const EdgeInsets.all(5),
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              border: OutlineInputBorder(
-                                gapPadding: 0,
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Find your next adventure',
+                            prefixIcon: const Icon(Icons.search),
+                            contentPadding: const EdgeInsets.all(5),
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            border: OutlineInputBorder(
+                              gapPadding: 0,
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                                width: 2,
                               ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                         ),
-                        //icon to toggle filters
-                        Stack(
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.filter_list,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const FiltersPage(),
-                                  ),
-                                );
-                              },
+                      ),
+                      //icon to toggle filters
+                      Stack(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.filter_list,
+                              color: Colors.white,
                             ),
-                            if (ref
-                                        .watch(filtersStateProvider.notifier)
-                                        .state
-                                        .selectedType !=
-                                    'All' ||
-                                ref
-                                        .watch(filtersStateProvider.notifier)
-                                        .state
-                                        .minimumDistance !=
-                                    500000 ||
-                                ref.watch(selectedCategoriesProvider) != '')
-                              Positioned(
-                                right: 8,
-                                top: 8,
-                                child: Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const FiltersPage(),
+                                ),
+                              );
+                            },
+                          ),
+                          if (ref
+                                      .watch(filtersStateProvider.notifier)
+                                      .state
+                                      .selectedType !=
+                                  'All' ||
+                              ref
+                                      .watch(filtersStateProvider.notifier)
+                                      .state
+                                      .minimumDistance !=
+                                  500000 ||
+                              ref.watch(selectedCategoriesProvider) != '')
+                            Positioned(
+                              right: 8,
+                              top: 8,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
                                 ),
                               ),
-                          ],
-                        ),
-                      ],
-                    ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
