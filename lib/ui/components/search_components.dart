@@ -25,12 +25,21 @@ class SearchComponents extends ConsumerStatefulWidget {
 class _SearchComponentsState extends ConsumerState<SearchComponents> {
   String _searchQuery = '';
   late ScrollController _scrollController;
+  bool _showSearchBar = true;
+
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       scrollToCategory(ref.watch(selectedCategoriesProvider));
+    });
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 0 && _showSearchBar) {
+        setState(() => _showSearchBar = false);
+      } else if (_scrollController.offset <= 0 && !_showSearchBar) {
+        setState(() => _showSearchBar = true);
+      }
     });
   }
 
@@ -70,87 +79,84 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 12),
-            // Search bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Find your next adventure',
-                            prefixIcon: const Icon(Icons.search),
-                            contentPadding: const EdgeInsets.all(5),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              gapPadding: 0,
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                                width: 2,
+            if (_showSearchBar)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Find your next adventure',
+                              prefixIcon: const Icon(Icons.search),
+                              contentPadding: const EdgeInsets.all(5),
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              border: OutlineInputBorder(
+                                gapPadding: 0,
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                         ),
-                      ),
-                      //icon to toggle filters
-                      Stack(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.filter_list,
-                              color: Colors.white,
+                        //icon to toggle filters
+                        Stack(
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.filter_list,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const FiltersPage(),
+                                  ),
+                                );
+                              },
                             ),
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const FiltersPage(),
-                                ),
-                              );
-                            },
-                          ),
-                          if (ref
-                                      .watch(filtersStateProvider.notifier)
-                                      .state
-                                      .selectedType !=
-                                  'All' ||
-                              ref
-                                      .watch(filtersStateProvider.notifier)
-                                      .state
-                                      .minimumDistance !=
-                                  500000 ||
-                              ref.watch(selectedCategoriesProvider) != '')
-                            Positioned(
-                              right: 8,
-                              top: 8,
-                              child: Container(
-                                width: 8,
-                                height: 8,
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
+                            if (ref
+                                        .watch(filtersStateProvider.notifier)
+                                        .state
+                                        .selectedType !=
+                                    'All' ||
+                                ref
+                                        .watch(filtersStateProvider.notifier)
+                                        .state
+                                        .minimumDistance !=
+                                    500000 ||
+                                ref.watch(selectedCategoriesProvider) != '')
+                              Positioned(
+                                right: 8,
+                                top: 8,
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 70,
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 70,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: ref.watch(allCategories).when(
@@ -234,10 +240,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                             ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 12),
             Expanded(
               child: nearbyItems.when(
@@ -348,6 +353,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                   });
 
                   return ListView.builder(
+                    controller: _scrollController,
                     itemCount: (filteredData.length),
                     itemBuilder: (context, rowIndex) {
                       final item = filteredData[rowIndex];
