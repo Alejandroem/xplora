@@ -9,6 +9,7 @@ import '../../application/providers/profile_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../dialogs/bottom_change_password_card.dart';
 import '../widgets/email_verification_banner.dart';
+import 'account_settings_page.dart';
 import 'privacy_policy.dart';
 import 'terms_and_conditions.dart';
 
@@ -35,6 +36,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       body: ListView(
         children: [
           const EmailVerificationBanner(),
+          ListTile(
+            title: const Text('Account'),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const AccountSettingsPage(),
+                ),
+              );
+            },
+            trailing: const Icon(Icons.arrow_forward_ios),
+          ),
           ListTile(
             title: const Text('Change Password'),
             onTap: () {

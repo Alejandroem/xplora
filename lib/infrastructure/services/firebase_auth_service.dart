@@ -180,4 +180,27 @@ class FirebaseAuthService extends AuthService {
     }
     return false;
   }
+
+  @override
+  Future<void> updateEmail(String email) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if (user != null) {
+      await user.verifyBeforeUpdateEmail(email);
+      CollectionReference collectionReference =
+          FirebaseFirestore.instance.collection('users');
+      await collectionReference.doc(user.uid).update({'email': email});
+    }
+  }
+
+  @override
+  Future<void> updateName(String name) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if (user != null) {
+      CollectionReference collectionReference =
+          FirebaseFirestore.instance.collection('users');
+      await collectionReference.doc(user.uid).update({'name': name});
+    }
+  }
 }

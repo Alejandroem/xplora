@@ -29,6 +29,11 @@ final currentAuthUserStreamProvider = StreamProvider.autoDispose((ref) {
   return authService.getAuthUserStream();
 });
 
+final currentUserProvider = StreamProvider.autoDispose((ref) {
+  final authService = ref.watch(authServiceProvider);
+  return authService.getAuthUserStream();
+});
+
 final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
   final profileService = ref.read(profileServiceProvider);
   final authenticationService = ref.read(authServiceProvider);

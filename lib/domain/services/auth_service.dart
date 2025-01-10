@@ -22,4 +22,8 @@ abstract class AuthService {
   Future<void> deleteAccount();
 
   Future<void> sendEmailVerification();
+
+  Future<void> updateName(String name);
+
+  Future<void> updateEmail(String email);
 }
