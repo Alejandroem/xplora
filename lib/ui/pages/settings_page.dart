@@ -122,6 +122,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             onTap: () async {
               final authProvider = ref.read(authServiceProvider);
               await authProvider.signOut();
+
+              //pop until /
+              if (context.mounted) {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              }
             },
           ),
           const Divider(),
@@ -136,6 +141,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 (await authProvider.getAuthUser())!.id!,
               );
               await authProvider.deleteAccount();
+              if (context.mounted) {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              }
             },
           ),
         ],

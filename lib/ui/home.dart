@@ -53,6 +53,32 @@ class _HomeState extends ConsumerState<Home> {
         _handleDeepLinkCode(code);
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.watch(hasFinishedOnboardingProvider).whenData(
+        (hasFinishedOnboarding) async {
+          if (!hasFinishedOnboarding) {
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const OnboardingPage(),
+              ),
+            );
+          } else {
+            ref.watch(hasSelectedInitialCategoriesProvider).whenData(
+              (hasSelectedInitialCategories) async {
+                if (!hasSelectedInitialCategories) {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ChooseCategories(),
+                    ),
+                  );
+                }
+              },
+            );
+          }
+        },
+      );
+    });
   }
 
   Future<void> requestLocationPermissions() async {
@@ -141,8 +167,7 @@ class _HomeState extends ConsumerState<Home> {
           final achievementsCrudService =
               ref.watch(achievementsServiceProvider);
           //get all achievements with no userID
-          var allAchievements =
-              await achievementsCrudService.readByFilters([]);
+          var allAchievements = await achievementsCrudService.readByFilters([]);
 
           allAchievements?.removeWhere(
             (achievement) =>
@@ -286,32 +311,6 @@ class _HomeState extends ConsumerState<Home> {
           }
         }
       });
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.watch(hasFinishedOnboardingProvider).whenData(
-        (hasFinishedOnboarding) {
-          if (!hasFinishedOnboarding) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const OnboardingPage(),
-              ),
-            );
-          } else {
-            ref.watch(hasSelectedInitialCategoriesProvider).whenData(
-              (hasSelectedInitialCategories) {
-                if (!hasSelectedInitialCategories) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const ChooseCategories(),
-                    ),
-                  );
-                }
-              },
-            );
-          }
-        },
-      );
     });
 
     return Scaffold(
