@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../application/providers/achievements_providers.dart';
 import '../application/providers/adventure_providers.dart';
 import '../application/providers/deep_links_providers.dart';
 import '../application/providers/navigation_providers.dart';
@@ -10,7 +11,10 @@ import '../application/providers/auth_providers.dart';
 import '../application/providers/local_storage_providers.dart';
 import '../application/providers/notifications_provider.dart';
 import '../application/providers/notifications_providers.dart';
+import '../application/providers/profile_providers.dart';
 import '../application/providers/quest_providers.dart';
+import '../domain/models/achievement.dart';
+import '../domain/models/xplora_profile.dart';
 import 'components/feed_components.dart';
 import 'components/notification_adventure_card.dart';
 import 'components/notification_components.dart';
@@ -105,11 +109,85 @@ class _HomeState extends ConsumerState<Home> {
       if (quest != null &&
           quest.isNotEmpty &&
           quest.first.stepCode == questCode) {
+        //create new quest
         await questCrudService.create(quest.first.copyWith(
           id: null,
           questId: quest.first.id,
           userId: user.id,
         ));
+
+        final xploraProfileService = ref.watch(profileServiceProvider);
+
+        //update the user with the experience points
+        final userProfile = await xploraProfileService.readByFilters([
+          {
+            'field': 'userId',
+            'operator': '==',
+            'value': user.id,
+          },
+        ]);
+
+        if (userProfile != null && userProfile.isNotEmpty) {
+          final userExperience = userProfile.first.experience;
+          final updatedExperience = userExperience + quest.first.experience;
+          await xploraProfileService.update(
+            userProfile.first.copyWith(
+              experience: updatedExperience.ceil(),
+            ),
+            userProfile.first.id!,
+          );
+          log('User experience updated to: $updatedExperience');
+
+          final achievementsCrudService =
+              ref.watch(achievementsServiceProvider);
+          //get all achievements with no userID
+          var allAchievements =
+              await achievementsCrudService.readByFilters([]);
+
+          allAchievements?.removeWhere(
+            (achievement) =>
+                achievement.userId != null && achievement.userId != '',
+          );
+
+          //first check achievements with a trigger quest and whose triggerValue belongs to the current id of the quest
+          //if not check then the experience and level achievements
+          if (allAchievements != null && allAchievements.isNotEmpty) {
+            final questAchievements = allAchievements.where((achievement) {
+              return achievement.trigger == Trigger.quest &&
+                  achievement.triggerValue == quest.first.id;
+            }).toList();
+
+            final experienceAchievements = allAchievements.where((achievement) {
+              return achievement.trigger == Trigger.experience &&
+                  int.parse(achievement.triggerValue) <= updatedExperience;
+            }).toList();
+
+            final levelAchievements = allAchievements.where((achievement) {
+              return achievement.trigger == Trigger.level &&
+                  int.parse(achievement.triggerValue) <=
+                      userProfile.first.profileLevel();
+            }).toList();
+
+            final achievementsToAward = [
+              ...questAchievements,
+              ...experienceAchievements,
+              ...levelAchievements,
+            ];
+
+            if (achievementsToAward.isNotEmpty) {
+              for (final achievement in achievementsToAward) {
+                await achievementsCrudService.create(
+                  achievement.copyWith(
+                    userId: user.id,
+                    dateAchieved: DateTime.now(),
+                  ),
+                );
+                log('Achievement awarded: ${achievement.title}');
+              }
+            }
+          }
+        }
+
         if (context.mounted) {
           if (mounted) {
             showDialog(
