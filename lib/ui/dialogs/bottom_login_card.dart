@@ -8,6 +8,7 @@ import 'bottom_signup_card.dart';
 
 void showBottomLoginCard(BuildContext context) {
   showModalBottomSheet(
+    backgroundColor: Colors.white,
     isScrollControlled: true,
     enableDrag: false,
     isDismissible: true,

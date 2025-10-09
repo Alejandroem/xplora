@@ -51,6 +51,17 @@ class _NotificationComponentsState
                 children: [
                   ...ref.watch(userPreviousActivitiesProviderStream).when(
                         data: (items) {
+                          print('items: $items');
+                          if (items.isEmpty) {
+                            return [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height*0.8,
+                                child: const Center(
+                                  child: Text('No notifications found'),
+                                ),
+                              ),
+                            ];
+                          }
                           return items.map(
                             (item) {
                               if (item is Adventure) {
@@ -64,8 +75,11 @@ class _NotificationComponentsState
                           ).toList();
                         },
                         loading: () => [
-                          const Center(
-                            child: CircularProgressIndicator(),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height*0.8,
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
                           ),
                         ],
                         error: (err, stack) => [

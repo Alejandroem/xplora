@@ -44,6 +44,19 @@ class _QuestCarouselCardState extends ConsumerState<AdventuresCarouselCard> {
                   height: 200,
                   width: 150,
                   fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) {
+                    return Container(
+                      padding: const EdgeInsets.only(bottom: 70),
+                      child: const Center(
+                        child: Icon(
+                          Icons.image_not_supported,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
               Container(

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../application/providers/auth_providers.dart';
+import '../../application/providers/navigation_providers.dart';
 import '../../application/providers/profile_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../dialogs/bottom_change_password_card.dart';
@@ -138,6 +139,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               //pop until /
               if (context.mounted) {
                 Navigator.popUntil(context, (route) => route.isFirst);
+                ref.read(bottomNavigationBarProvider.notifier).state =
+                NavigationItem.home;
               }
             },
           ),

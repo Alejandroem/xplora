@@ -39,13 +39,13 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                       children: [
                         Icon(
                           Icons.directions_run,
-                          color: raisingBlack,
+                          // color: raisingBlack,
                         ),
                         Text(
                           'Activities',
                           style: TextStyle(
                             fontSize: 20,
-                            color: raisingBlack,
+                            // color: raisingBlack,
                           ),
                         ),
                       ],
@@ -168,7 +168,9 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
               ),
             );
           },
-          loading: () => const CircularProgressIndicator(),
+          loading: () => const SizedBox(
+            height: 100,
+              child: Center(child: CircularProgressIndicator())),
           error: (error, stackTrace) => Text('Error: $error'),
         );
   }

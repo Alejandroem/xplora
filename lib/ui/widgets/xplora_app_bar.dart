@@ -32,39 +32,31 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                             ),
                           );
                         },
-                        child: CircleAvatar(
-                          backgroundColor: whiteSmoke,
-                          radius: 16.0,
-                          child: profile!.avatarUrl != null &&
-                                  profile.avatarUrl!.isNotEmpty
-                              ? ClipOval(
-                                  child: Image.network(
-                                    profile.avatarUrl!,
-                                    width: 32.0,
-                                    height: 32.0,
-                                    fit: BoxFit.cover,
+                        child: Transform.scale(
+                          scale: 0.8,
+                          child: CircleAvatar(
+                            backgroundColor: whiteSmoke,
+                            radius: 16.0,
+                            child: profile!.avatarUrl != null &&
+                                    profile.avatarUrl!.isNotEmpty
+                                ? ClipOval(
+                                    child: Image.network(
+                                      profile.avatarUrl!,
+                                      width: 32.0,
+                                      height: 32.0,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.person,
+                                    color: raisingBlack,
                                   ),
-                                )
-                              : const Icon(
-                                  Icons.person,
-                                ),
+                          ),
                         ),
                       );
                     },
-                    loading: () => CircleAvatar(
-                      backgroundColor: whiteSmoke,
-                      radius: 16.0,
-                      child: const Icon(
-                        Icons.person,
-                      ),
-                    ),
-                    error: (error, stackTrace) => CircleAvatar(
-                      backgroundColor: whiteSmoke,
-                      radius: 16.0,
-                      child: const Icon(
-                        Icons.person,
-                      ),
-                    ),
+                    loading: () => placeholderIcon(),
+                    error: (error, stackTrace) => placeholderIcon()
                   )
               : const SizedBox.shrink(),
           titleSpacing: 8.0,
@@ -81,18 +73,16 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'LvL.${profile!.profileLevel()}',
-                                  style: TextStyle(
+                                  'LvL. ${profile!.profileLevel()}',
+                                  style: const TextStyle(
                                     fontSize: 11.0,
-                                    color: raisingBlack,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  'XP.${profile.experience}',
-                                  style: TextStyle(
+                                  'XP. ${profile.experience}',
+                                  style: const TextStyle(
                                     fontSize: 11.0,
-                                    color: raisingBlack,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -104,6 +94,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                             width: 72.0,
                             height: 72.0,
                             fit: BoxFit.contain,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           const SizedBox(width: 64.0),
                         ],
@@ -144,7 +135,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data == false) {
                   return IconButton(
-                    icon: const Icon(Icons.login),
+                    icon: const Icon(Icons.account_circle),
                     onPressed: () {
                       showBottomLoginCard(context);
                     },
@@ -158,6 +149,20 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
       },
       loading: () => AppBar(title: const Text('Loading...')),
       error: (error, stackTrace) => AppBar(title: const Text('Error')),
+    );
+  }
+
+  Widget placeholderIcon(){
+    return Transform.scale(
+      scale: 0.8,
+      child: CircleAvatar(
+        backgroundColor: whiteSmoke,
+        radius: 16.0,
+        child: Icon(
+          Icons.person,
+          color: raisingBlack,
+        ),
+      ),
     );
   }
 }

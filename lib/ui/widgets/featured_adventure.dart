@@ -114,7 +114,9 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
               ),
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const SizedBox(
+            height: 200,
+              child: Center(child: CircularProgressIndicator())),
           error: (error, stackTrace) =>
               const Center(child: Text('An error occurred')),
         );

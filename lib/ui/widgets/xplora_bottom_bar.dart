@@ -19,14 +19,26 @@ class _BottomNavigationBarState
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(bottomNavigationBarProvider);
 
-    return BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+        items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(
             Icons.home,
             color: currentIndex == NavigationItem.home
-                ? Colors.grey
-                : Colors.black,
+                ? Colors.black
+                : Colors.grey,
           ),
           label: '',
         ),
@@ -34,8 +46,8 @@ class _BottomNavigationBarState
           icon: Icon(
             Icons.search,
             color: currentIndex == NavigationItem.search
-                ? Colors.grey
-                : Colors.black,
+                ? Colors.black
+                : Colors.grey,
           ),
           label: '',
         ),
@@ -47,8 +59,8 @@ class _BottomNavigationBarState
               shape: BoxShape.circle,
               border: Border.all(
                 color: currentIndex == NavigationItem.xpc
-                    ? Colors.grey
-                    : Colors.black,
+                    ? Colors.black
+                    : Colors.grey,
                 width: 2,
               ),
             ),
@@ -58,8 +70,8 @@ class _BottomNavigationBarState
                 style: TextStyle(
                   fontSize: 10,
                   color: currentIndex == NavigationItem.xpc
-                      ? Colors.grey
-                      : Colors.black,
+                      ? Colors.black
+                      : Colors.grey,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -71,8 +83,8 @@ class _BottomNavigationBarState
           icon: Icon(
             Icons.store,
             color: currentIndex == NavigationItem.store
-                ? Colors.grey
-                : Colors.black,
+                ? Colors.black
+                : Colors.grey,
           ),
           label: '',
         ),
@@ -80,8 +92,8 @@ class _BottomNavigationBarState
           icon: Icon(
             Icons.notifications,
             color: currentIndex == NavigationItem.notifications
-                ? Colors.grey
-                : Colors.black,
+                ? Colors.black
+                : Colors.grey,
           ),
           label: '',
         ),
@@ -104,6 +116,7 @@ class _BottomNavigationBarState
               NavigationItem.values[index];
         }
       },
+      ),
     );
   }
 }
