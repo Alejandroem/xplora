@@ -17,12 +17,15 @@ import '../application/providers/quest_providers.dart';
 import '../application/providers/settings_providers.dart';
 import '../domain/models/achievement.dart';
 import '../domain/models/xplora_profile.dart';
+import '../theme.dart';
 import 'components/feed_components.dart';
 import 'components/notification_adventure_card.dart';
 import 'components/notification_components.dart';
 import 'components/search_components.dart';
 import 'pages/categories.dart';
 import 'pages/onboarding.dart';
+import 'widgets/lora_orb.dart';
+import 'widgets/quest_progress_indicator.dart';
 import 'widgets/xplora_app_bar.dart';
 import 'widgets/xplora_bottom_bar.dart';
 
@@ -344,63 +347,72 @@ class _HomeState extends ConsumerState<Home> {
       child: Scaffold(
         appBar: getAppBar(),
         bottomNavigationBar: const XploraBottomNavigationBar(),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
-                const FeedComponents(),
-              if (ref.watch(bottomNavigationBarProvider) == NavigationItem.search)
-                const SearchComponents(),
-              if (ref.watch(bottomNavigationBarProvider) ==
-                  NavigationItem.notifications)
-                const NotificationComponents(),
-              if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc ||
-                  ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
-                Column(
+        body: Stack(
+          children: [
+            GradientBackground(
+              child: SingleChildScrollView(
+                child: Column(
                   children: [
-                    const SizedBox(
-                      height: 100,
-                    ),
-                    const Center(
-                      child: Text(
-                        'Coming Soon',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 23,
-                    ),
+                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
+                      const FeedComponents(),
+                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.search)
+                      const SearchComponents(),
                     if (ref.watch(bottomNavigationBarProvider) ==
-                        NavigationItem.store)
-                      const Icon(
-                        Icons.store,
-                        size: 100,
-                      ),
-                    if (ref.watch(bottomNavigationBarProvider) ==
-                        NavigationItem.xpc)
-                      const Text(
-                        'XPC',
-                        style: TextStyle(
-                          fontSize: 100,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    if (ref.watch(bottomNavigationBarProvider) ==
-                        NavigationItem.xpc)
-                      const Padding(
-                        padding: EdgeInsets.all(32.0),
-                        child: Text(
-                          'XPC is the digital currency powering the XPLRA ecosystem. Earn XPC by exploring your surroundings, completing quests, and engaging with the app. With the XPC Wallet, securely manage your rewards, track your balance, buy XPC to increase its value, and use XPC to unlock exclusive content, collectibles, and more. Stay tuned for its release!',
-                          textAlign: TextAlign.center,
-                        ),
+                        NavigationItem.notifications)
+                      const NotificationComponents(),
+                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc ||
+                        ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
+                      Column(
+                        children: [
+                          const SizedBox(
+                            height: 100,
+                          ),
+                          Center(
+                            child: Text(
+                              'Coming Soon',
+                              style: h3Style.copyWith(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 23,
+                          ),
+                          if (ref.watch(bottomNavigationBarProvider) ==
+                              NavigationItem.store)
+                            const Icon(
+                              Icons.store,
+                              size: 100,
+                            ),
+                          if (ref.watch(bottomNavigationBarProvider) ==
+                              NavigationItem.xpc)
+                            Text(
+                              'XPC',
+                              style: h1Style.copyWith(
+                                fontSize: 100,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          if (ref.watch(bottomNavigationBarProvider) ==
+                              NavigationItem.xpc)
+                            Padding(
+                              padding: const EdgeInsets.all(32.0),
+                              child: Text(
+                                'XPC is the digital currency powering the XPLRA ecosystem. Earn XPC by exploring your surroundings, completing quests, and engaging with the app. With the XPC Wallet, securely manage your rewards, track your balance, buy XPC to increase its value, and use XPC to unlock exclusive content, collectibles, and more. Stay tuned for its release!',
+                                textAlign: TextAlign.center,
+                                style: bodyTextStyle,
+                              ),
+                            ),
+                        ],
                       ),
                   ],
                 ),
-            ],
-          ),
+              ),
+            ),
+            const QuestProgressIndicator(),
+            const LoraOrb(),
+          ],
         ),
       ),
     );

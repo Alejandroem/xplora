@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../application/providers/adventure_providers.dart';
+import '../../theme.dart';
 
 class CurrentQuest extends ConsumerStatefulWidget {
   const CurrentQuest({super.key});
@@ -18,6 +19,10 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
     if (questInProgress == null) {
       return const SizedBox.shrink();
     }
+
+    final completeness = questInProgress.completeness;
+    final percentage = completeness.clamp(0, 100);
+
     return InkWell(
       onTap: () {
         /* Navigator.of(context).push(
@@ -26,71 +31,103 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest> {
           ),
         ); */
       },
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        clipBehavior: Clip.hardEdge,
-        child: Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        questInProgress.adventure.title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+      child: GlassContainer(
+        borderRadius: 12,
+        padding: const EdgeInsets.all(0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.flag_circle,
+                          color: accentPrimary,
+                          size: 18,
                         ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'IN PROGRESS',
+                          style: bodyTextStyle.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: accentPrimary,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      questInProgress.adventure.title,
+                      style: subHeadingLabelStyle.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: textPrimary,
                       ),
-                      Text(
-                        questInProgress.adventure.shortDescription,
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      questInProgress.adventure.shortDescription,
+                      style: bodyTextStyle.copyWith(
+                        fontSize: 12,
+                        color: textSecondary,
                       ),
-                      const SizedBox(height: 20.0),
-                      // TODO: Used for quest with steps
-                      /* Text(
-                        'Step ${widget.quest.steps.indexWhere(
-                              (element) {
-                                return element.completed == false;
-                              },
-                            ) + 1} of ${widget.quest.steps.length}',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const Spacer(),
+                    // Progress percentage
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Progress',
+                          style: bodyTextStyle.copyWith(
+                            fontSize: 11,
+                            color: textSecondary,
+                          ),
                         ),
-                      ), */
-                    ],
-                  ),
+                        Text(
+                          '$percentage%',
+                          style: bodyTextStyle.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: accentSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              Container(
-                clipBehavior: Clip.hardEdge,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                ),
-                child: LinearPercentIndicator(
-                  padding: const EdgeInsets.all(0),
-                  lineHeight: 14.0,
-                  percent: questInProgress.completeness / 100,
-                  backgroundColor: Colors.grey,
-                  progressColor: Colors.blue,
+            ),
+            // Progress bar
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
                 ),
               ),
-            ],
-          ),
+              clipBehavior: Clip.hardEdge,
+              child: LinearPercentIndicator(
+                padding: const EdgeInsets.all(0),
+                lineHeight: 6.0,
+                percent: percentage / 100,
+                backgroundColor: strokeDivider,
+                progressColor: accentSecondary,
+                barRadius: const Radius.circular(12),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/navigation_providers.dart';
+import '../../theme.dart';
 import '../dialogs/bottom_login_card.dart';
 
 class XploraBottomNavigationBar extends ConsumerStatefulWidget {
@@ -19,104 +21,79 @@ class _BottomNavigationBarState
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(bottomNavigationBarProvider);
 
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
+    return GlassBottomNavBar(
+      items: <BottomNavigationBarItem>[
+      const BottomNavigationBarItem(
+        icon: Icon(
+          LucideIcons.home,
+        ),
+        label: '',
       ),
-      child: BottomNavigationBar(
-        elevation: 0,
-        type: BottomNavigationBarType.fixed,
-        items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.home,
-            color: currentIndex == NavigationItem.home
-                ? Colors.black
-                : Colors.grey,
-          ),
-          label: '',
+      const BottomNavigationBarItem(
+        icon: Icon(
+          LucideIcons.search,
         ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.search,
-            color: currentIndex == NavigationItem.search
-                ? Colors.black
-                : Colors.grey,
+        label: '',
+      ),
+      BottomNavigationBarItem(
+        icon: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: currentIndex == NavigationItem.xpc
+                  ? accentPrimary
+                  : textSecondary,
+              width: 2,
+            ),
           ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
+          child: Center(
+            child: Text(
+              'XPC',
+              style: bodyTextStyle.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
                 color: currentIndex == NavigationItem.xpc
-                    ? Colors.black
-                    : Colors.grey,
-                width: 2,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                'XPC',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: currentIndex == NavigationItem.xpc
-                      ? Colors.black
-                      : Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
+                    ? accentPrimary
+                    : textSecondary,
               ),
             ),
           ),
-          label: '',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.store,
-            color: currentIndex == NavigationItem.store
-                ? Colors.black
-                : Colors.grey,
-          ),
-          label: '',
+        label: '',
+      ),
+      const BottomNavigationBarItem(
+        icon: Icon(
+          LucideIcons.store,
         ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.notifications,
-            color: currentIndex == NavigationItem.notifications
-                ? Colors.black
-                : Colors.grey,
-          ),
-          label: '',
+        label: '',
+      ),
+      const BottomNavigationBarItem(
+        icon: Icon(
+          LucideIcons.bell,
         ),
-      ],
-      currentIndex: currentIndex.index,
-      onTap: (index) async {
-        if (NavigationItem.values[index] == NavigationItem.notifications) {
-          // Show authentication sheet if user is not authenticated
-          final authService = ref.read(authServiceProvider);
-          if (!await authService.isSignedInFuture()) {
-            if (context.mounted) {
-              showBottomLoginCard(context);
-            }
-          } else {
-            ref.read(bottomNavigationBarProvider.notifier).state =
-                NavigationItem.values[index];
+        label: '',
+      ),
+    ],
+    currentIndex: currentIndex.index,
+    onTap: (index) async {
+      if (NavigationItem.values[index] == NavigationItem.notifications) {
+        // Show authentication sheet if user is not authenticated
+        final authService = ref.read(authServiceProvider);
+        if (!await authService.isSignedInFuture()) {
+          if (context.mounted) {
+            showBottomLoginCard(context);
           }
         } else {
           ref.read(bottomNavigationBarProvider.notifier).state =
               NavigationItem.values[index];
         }
-      },
-      ),
+      } else {
+        ref.read(bottomNavigationBarProvider.notifier).state =
+            NavigationItem.values[index];
+      }
+    },
     );
   }
 }

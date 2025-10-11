@@ -5,6 +5,10 @@ import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/category_providers.dart';
 import '../../application/providers/filters_providers.dart';
 import '../../theme.dart';
+import '../widgets/filter_bubble.dart';
+import '../widgets/glass_app_bar.dart';
+import '../widgets/gradient_background.dart';
+import '../widgets/secondary_button.dart';
 
 class FiltersPage extends ConsumerWidget {
   const FiltersPage({super.key});
@@ -12,34 +16,25 @@ class FiltersPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filtersState = ref.watch(filtersStateProvider);
-    return Scaffold(
-      backgroundColor: raisingBlack,
-      appBar: AppBar(
-        backgroundColor: raisingBlack,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ), // This styles the back arrow
-        title: const Text(
-          'Filters',
-          style: TextStyle(
-            color: Colors.white,
-          ),
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: const GlassAppBar(
+          title: 'Filters',
         ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Column(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Row(
+                Row(
                   children: [
                     Text(
                       'What do you want to explore?',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
+                      style: h3Style.copyWith(
+                        color: textPrimary,
                       ),
                     ),
                   ],
@@ -50,95 +45,57 @@ class FiltersPage extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    IconButton(
-                      icon: Column(
-                        children: [
-                          Icon(
-                            Icons.all_inclusive,
-                            size: 32,
-                            color: filtersState.selectedType == 'All'
-                                ? Colors.blue
-                                : Colors.white,
-                          ),
-                          Text(
-                            'All',
-                            style: TextStyle(
-                              color: filtersState.selectedType == 'All'
-                                  ? Colors.blue
-                                  : Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                    FilterBubble(
+                      text: 'All',
+                      icon: Icon(
+                        Icons.all_inclusive,
+                        size: 20,
+                        color: textPrimary,
                       ),
-                      onPressed: () {
+                      isSelected: filtersState.selectedType == 'All',
+                      onTap: () {
                         ref.read(filtersStateProvider.notifier).state =
                             filtersState.copyWith(
                           selectedType: 'All',
                         );
                       },
-                    ),
-                    IconButton(
-                      icon: Column(
-                        children: [
-                          Icon(
-                            Icons.explore,
-                            size: 32,
-                            color: filtersState.selectedType == 'Adventure'
-                                ? Colors.blue
-                                : Colors.white,
-                          ),
-                          Text(
-                            'Adventure',
-                            style: TextStyle(
-                              color: filtersState.selectedType == 'Adventure'
-                                  ? Colors.blue
-                                  : Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                      onPressed: () {
+                    ),
+                    FilterBubble(
+                      text: 'Adventure',
+                      icon: Icon(
+                        Icons.explore,
+                        size: 20,
+                        color: textPrimary,
+                      ),
+                      isSelected: filtersState.selectedType == 'Adventure',
+                      onTap: () {
                         ref.read(filtersStateProvider.notifier).state =
                             filtersState.copyWith(selectedType: 'Adventure');
                       },
-                    ),
-                    IconButton(
-                      icon: Column(
-                        children: [
-                          Icon(
-                            Icons.flag,
-                            size: 32,
-                            color: filtersState.selectedType == 'Quest'
-                                ? Colors.blue
-                                : Colors.white,
-                          ),
-                          Text(
-                            'Quest',
-                            style: TextStyle(
-                              color: filtersState.selectedType == 'Quest'
-                                  ? Colors.blue
-                                  : Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                      onPressed: () {
+                    ),
+                    FilterBubble(
+                      text: 'Quest',
+                      icon: Icon(
+                        Icons.flag,
+                        size: 20,
+                        color: textPrimary,
+                      ),
+                      isSelected: filtersState.selectedType == 'Quest',
+                      onTap: () {
                         ref.read(filtersStateProvider.notifier).state =
                             filtersState.copyWith(selectedType: 'Quest');
                       },
-                    ),
-                  ],
-                ),
-                const Row(
-                  children: [
-                    Text(
-                      'How far do you want to travel?',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
                     ),
                   ],
@@ -148,12 +105,31 @@ class FiltersPage extends ConsumerWidget {
                 ),
                 Row(
                   children: [
-                    const Icon(
-                      Icons.location_on,
-                      color: Colors.white,
-                      size: 20,
+                    Expanded(
+                      child: Text(
+                        'How far do you want to travel?',
+                        style: h3Style.copyWith(
+                          color: textPrimary,
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 25),
+                  ],
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Icon(
+                        Icons.location_on,
+                        color: iconColor,
+                        size: 25,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         children: [
@@ -162,8 +138,8 @@ class FiltersPage extends ConsumerWidget {
                             min: 1000,
                             max: 500000,
                             divisions: 100,
-                            activeColor: Colors.blue,
-                            inactiveColor: Colors.grey,
+                            activeColor: accentPrimary,
+                            inactiveColor: strokeDivider,
                             onChanged: (value) {
                               ref.read(filtersStateProvider.notifier).state =
                                   filtersState.copyWith(
@@ -172,8 +148,9 @@ class FiltersPage extends ConsumerWidget {
                           ),
                           Text(
                             '${(filtersState.minimumDistance / 1000).round()} km',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: bodyTextStyle.copyWith(
+                              color: textPrimary,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
@@ -187,11 +164,10 @@ class FiltersPage extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Which category interests you?',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
+                      style: h3Style.copyWith(
+                        color: textPrimary,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -204,80 +180,66 @@ class FiltersPage extends ConsumerWidget {
                               );
                             }
                             categories.sort((a, b) => a.name.compareTo(b.name));
-                            return Wrap(
-                              spacing: 8.0,
-                              runSpacing: 8.0,
-                              children: [
-                                FilterChip(
-                                  checkmarkColor: Colors.white,
-                                  selected:
-                                      ref.watch(selectedCategoriesProvider) ==
-                                          '',
-                                  label: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.category_outlined,
-                                        size: 20,
-                                        color: ref.watch(
-                                                    selectedCategoriesProvider) ==
-                                                ''
-                                            ? Colors.white
-                                            : Colors.grey,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text('All', style: TextStyle(color: ref.watch(selectedCategoriesProvider) == '' ? Colors.white : Colors.grey)),
-                                    ],
-                                  ),
-                                  backgroundColor: raisingBlack,
-                                  selectedColor: Colors.blue,
-                                  onSelected: (bool selected) {
-                                    if (selected) {
+                            return Theme(
+                              data: ThemeData(
+                                colorScheme: ColorScheme.dark(
+                                  primary: accentPrimary,
+                                  secondary: accentPrimary,
+                                  onPrimary: textPrimary,
+                                  onSecondary: textPrimary,
+                                ),
+                              ),
+                              child: Wrap(
+                                spacing: 8.0,
+                                runSpacing: 8.0,
+                                children: [
+                                  FilterBubble(
+                                    text: 'All',
+                                    icon: Icon(
+                                      Icons.category_outlined,
+                                      size: 20,
+                                      color: textPrimary,
+                                    ),
+                                    isSelected: ref.watch(selectedCategoriesProvider) == '',
+                                    onTap: () {
                                       ref
                                           .read(selectedCategoriesProvider
                                               .notifier)
                                           .state = '';
-                                    }
-                                  },
-                                ),
+                                    },
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    fontSize: 12,
+                                  ),
                                 ...categories
                                     .where((c) => c.id != 'All')
                                     .map((category) {
-                                  return FilterChip(
-                                    checkmarkColor: Colors.white,
-                                    selected:
-                                        ref.watch(selectedCategoriesProvider) ==
-                                            category.id,
-                                    label: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Image.network(
-                                          category.imageUrl,
-                                          height: 20,
-                                          width: 20,
-                                          color: ref.watch(
-                                                      selectedCategoriesProvider) ==
-                                                  category.id
-                                              ? Colors.white
-                                              : Colors.grey,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(category.name, style: TextStyle(color: ref.watch(selectedCategoriesProvider) == category.id ? Colors.white : Colors.grey)),
-                                      ],
+                                  return FilterBubble(
+                                    text: category.name,
+                                    icon: Image.network(
+                                      category.imageUrl,
+                                      height: 20,
+                                      width: 20,
+                                      color: textPrimary,
                                     ),
-                                    backgroundColor: raisingBlack,
-                                    selectedColor: Colors.blue,
-                                    onSelected: (bool selected) {
-                                      if (selected) {
-                                        ref
-                                            .read(selectedCategoriesProvider
-                                                .notifier)
-                                            .state = category.id;
-                                      }
+                                    isSelected: ref.watch(selectedCategoriesProvider) == category.id,
+                                    onTap: () {
+                                      ref
+                                          .read(selectedCategoriesProvider
+                                              .notifier)
+                                          .state = category.id;
                                     },
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    fontSize: 12,
                                   );
                                 }),
                               ],
+                            ),
                             );
                           },
                           loading: () => const CircularProgressIndicator(),
@@ -291,7 +253,8 @@ class FiltersPage extends ConsumerWidget {
                 const SizedBox(
                   height: 24,
                 ),
-                OutlinedButton(
+                SecondaryButton(
+                  text: 'Clear Filters',
                   onPressed: () {
                     ref.read(selectedCategoriesProvider.notifier).state = '';
                     ref.read(filtersStateProvider.notifier).state =
@@ -301,18 +264,13 @@ class FiltersPage extends ConsumerWidget {
                     );
                     Navigator.pop(context);
                   },
-                  child: const Text(
-                    'Clear Filters',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
+      )
     );
   }
 }

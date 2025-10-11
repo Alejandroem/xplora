@@ -2,20 +2,93 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/adventure_providers.dart';
+import '../../application/providers/category_providers.dart';
 import '../../application/providers/navigation_providers.dart';
+import '../../domain/models/adventure.dart';
 import '../../theme.dart';
-import 'quest_carousel_card.dart';
+import 'filter_bubble.dart';
+import 'adventures_carousel_card.dart';
 
-class NearestAdventures extends ConsumerStatefulWidget {
+// Provider for selected filter
+final selectedCarouselFilterProvider = StateProvider<String>((ref) => 'Nearby');
+
+// Provider for selected activity type
+final selectedActivityTypeProvider = StateProvider<String?>((ref) => null);
+
+class NearestAdventures extends ConsumerWidget {
   const NearestAdventures({super.key});
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _QuestCarouselState();
-}
+  void _showActivityTypesModal(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => GlassContainer(
+        borderRadius: 20,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Activity Types',
+                    style: h3Style.copyWith(color: textPrimary),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, color: textPrimary),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            ref.watch(allCategories).when(
+              data: (categories) {
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    // Clear filter option
+                    FilterBubble(
+                      text: 'All Types',
+                      isSelected: ref.watch(selectedActivityTypeProvider) == null,
+                      onTap: () {
+                        ref.read(selectedActivityTypeProvider.notifier).state = null;
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ...categories.where((c) => c.name != 'All').map((category) {
+                      final isSelected = ref.watch(selectedActivityTypeProvider) == category.id;
+                      return FilterBubble(
+                        text: category.name,
+                        isSelected: isSelected,
+                        onTap: () {
+                          ref.read(selectedActivityTypeProvider.notifier).state = category.id;
+                          Navigator.pop(context);
+                        },
+                      );
+                    }),
+                  ],
+                );
+              },
+              loading: () => const CircularProgressIndicator(),
+              error: (error, stack) => Text('Error: $error', style: TextStyle(color: textPrimary)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-class _QuestCarouselState extends ConsumerState<NearestAdventures> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedFilter = ref.watch(selectedCarouselFilterProvider);
+    final selectedActivityType = ref.watch(selectedActivityTypeProvider);
+    final filters = ['Nearby', 'For You', 'Following'];
+
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -27,131 +100,151 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
               children: [
                 Icon(
                   Icons.location_on,
-                  // color: raisingBlack,
+                  color: textPrimary,
                   size: 20,
                 ),
+                const SizedBox(width: 8),
                 Text(
-                  'Nearest Adventures',
-                  style: TextStyle(
-                    fontSize: 20,
-                    // color: raisingBlack,
-                  ),
+                  'Nearby Places',
+                  style: h3Style.copyWith(color: textPrimary),
                 ),
                 const Spacer(),
-                /* DropdownButton<int>(
-                  value: ref.watch(minimumDistanceProvider),
-                  items: const [
-                    DropdownMenuItem(value: 1000, child: Text('1 km')),
-                    DropdownMenuItem(value: 5000, child: Text('5 km')),
-                    DropdownMenuItem(value: 10000, child: Text('10 km')),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) {
-                      ref.read(minimumDistanceProvider.notifier).state = value;
-                    }
-                  },
-                ), */
               ],
+            ),
+          ),
+          // Filter Bubble Row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8.0, 2, 8.0, 12.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ...filters.map((filter) {
+                    final isSelected = selectedFilter == filter;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: FilterBubble(
+                        text: filter,
+                        isSelected: isSelected,
+                        onTap: () {
+                          ref.read(selectedCarouselFilterProvider.notifier).state = filter;
+                        },
+                      ),
+                    );
+                  }),
+                  // Activity Types dropdown bubble
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: FilterBubble(
+                      text: 'Specific Activity Types',
+                      isSelected: selectedActivityType != null,
+                      onTap: () => _showActivityTypesModal(context, ref),
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        size: 18,
+                        color: selectedActivityType != null
+                            ? textPrimary
+                            : textPrimary,
+                      ),
+                      iconAtEnd: true,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           SizedBox(
             height: 200,
             child: ref.watch(nearbyAdventuresProvider).when(
                   data: (adventures) {
-                    if (adventures.isNotEmpty) {
+                    // Filter adventures based on selected activity type
+                    List<Adventure> filteredAdventures = adventures;
+
+                    if (selectedActivityType != null) {
+                      filteredAdventures = adventures
+                          .where((adventure) => adventure.category == selectedActivityType)
+                          .toList();
+                    }
+
+                    // TODO: Implement 'For You' and 'Following' filter logic
+                    // For now, all filters use nearby adventures
+                    // selectedFilter can be used here to implement different logic
+
+                    if (filteredAdventures.isNotEmpty) {
+                      const maxCards = 20;
+                      final displayedAdventures = filteredAdventures.take(maxCards).toList();
+                      final hasMore = filteredAdventures.length > maxCards;
+
                       return ListView(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         children: [
-                          ...adventures.map(
+                          ...displayedAdventures.map(
                             (adventure) => AdventuresCarouselCard(
                               adventure,
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              ref
-                                  .read(bottomNavigationBarProvider.notifier)
-                                  .state = NavigationItem.search;
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.search,
-                                        color: raisingBlack,
-                                        size: 40,
-                                      ),
-                                      Text(
-                                        'See more',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w900,
-                                          color: raisingBlack,
+                          if (hasMore)
+                            InkWell(
+                              onTap: () {
+                                ref
+                                    .read(bottomNavigationBarProvider.notifier)
+                                    .state = NavigationItem.search;
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: GlassContainer(
+                                  borderRadius: 12,
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SizedBox(
+                                    width: 130,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.search,
+                                          color: accentSecondary,
+                                          size: 40,
                                         ),
-                                      ),
-                                      /* Text(
-                                        widget.adventure.shortDescription,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: raisingBlack,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.only(
-                                                left: 6.0, right: 6.0),
-                                            decoration: BoxDecoration(
-                                              color: raisingBlack,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Text(
-                                              '${widget.adventure.experience.toStringAsFixed(2)} exp',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: springBud,
-                                              ),
-                                            ),
+                                        Text(
+                                          'See more',
+                                          style: subHeadingLabelStyle.copyWith(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimary,
                                           ),
-                                        ],
-                                      ), */
-                                    ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          )
+                            )
                         ],
                       );
                     } else {
-                      return const Center(
-                        child: Text('No adventures found nearby'),
+                      return Center(
+                        child: Text(
+                          selectedActivityType != null
+                              ? 'No adventures found for this activity type'
+                              : 'No adventures found nearby',
+                          style: bodyTextStyle.copyWith(color: textSecondary),
+                        ),
                       );
                     }
                   },
                   loading: () {
                     return const Center(child: CircularProgressIndicator());
                   },
-                  error: (error, stack) => Center(child: Text('Error: $error')),
+                  error: (error, stack) => Center(
+                    child: Text(
+                      'Error: $error',
+                      style: bodyTextStyle.copyWith(color: feedbackAlert),
+                    ),
+                  ),
                 ),
           ),
         ],
