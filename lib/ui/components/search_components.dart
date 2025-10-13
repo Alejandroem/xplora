@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -8,7 +7,6 @@ import '../../application/providers/category_providers.dart';
 import '../../application/providers/filters_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../application/providers/search_providers.dart';
-import '../../application/providers/settings_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/quest.dart';
 import '../../theme.dart';
@@ -43,11 +41,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
         setState(() => _showSearchBar = true);
       }
     });
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
   }
 
   @override
@@ -162,92 +155,89 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        height: 70,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: ref.watch(allCategories).when(
-                                data: (categories) {
-                                  return categories.asMap().entries.map(
-                                    (entry) {
-                                      final category = entry.value;
-                                      if (category.name == 'All') {
-                                        return const SizedBox.shrink();
-                                      }
-                                      return Hero(
-                                        tag: category.id,
-                                        child: InkWell(
-                                          onTap: () {
-                                            if (ref.read(
-                                                    selectedCategoriesProvider) ==
-                                                category.id) {
-                                              ref
-                                                  .read(selectedCategoriesProvider
-                                                      .notifier)
-                                                  .state = '';
-                                            } else {
-                                              ref
-                                                  .read(selectedCategoriesProvider
-                                                      .notifier)
-                                                  .state = category.id;
-                                            }
-                                          },
-                                          child: Container(
-                                            margin:
-                                                const EdgeInsets.only(right: 8),
-                                            width: 80,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: ref.watch(
-                                                          selectedCategoriesProvider) ==
-                                                      category.id
-                                                  ? Colors.grey[600]
-                                                  : Colors.grey[200],
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image.network(
-                                                  category.imageUrl,
-                                                  height: 24,
-                                                  width: 24,
-                                                  fit: BoxFit.cover,
+                    SizedBox(
+                      height: 70,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: ref.watch(allCategories).when(
+                              data: (categories) {
+                                return categories.asMap().entries.map(
+                                  (entry) {
+                                    final category = entry.value;
+                                    if (category.name == 'All') {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return Hero(
+                                      tag: category.id,
+                                      child: InkWell(
+                                        onTap: () {
+                                          if (ref.read(
+                                                  selectedCategoriesProvider) ==
+                                              category.id) {
+                                            ref
+                                                .read(selectedCategoriesProvider
+                                                    .notifier)
+                                                .state = '';
+                                          } else {
+                                            ref
+                                                .read(selectedCategoriesProvider
+                                                    .notifier)
+                                                .state = category.id;
+                                          }
+                                        },
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 8),
+                                          width: 80,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: ref.watch(
+                                                        selectedCategoriesProvider) ==
+                                                    category.id
+                                                ? Colors.grey[600]
+                                                : Colors.grey[200],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Image.network(
+                                                category.imageUrl,
+                                                height: 24,
+                                                width: 24,
+                                                fit: BoxFit.cover,
+                                                color: ref.watch(
+                                                            selectedCategoriesProvider) ==
+                                                        category.id
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                              Text(
+                                                category.name,
+                                                style: TextStyle(
                                                   color: ref.watch(
                                                               selectedCategoriesProvider) ==
                                                           category.id
                                                       ? Colors.white
                                                       : Colors.black,
+                                                  fontSize: 12,
                                                 ),
-                                                Text(
-                                                  category.name,
-                                                  style: TextStyle(
-                                                    color: ref.watch(
-                                                                selectedCategoriesProvider) ==
-                                                            category.id
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      );
-                                    },
-                                  ).toList();
-                                },
-                                loading: () =>
-                                    [const CircularProgressIndicator()],
-                                error: (Object error, StackTrace stackTrace) {
-                                  return [Text('Error: $error')];
-                                },
-                              ),
-                        ),
+                                      ),
+                                    );
+                                  },
+                                ).toList();
+                              },
+                              loading: () =>
+                                  [const CircularProgressIndicator()],
+                              error: (Object error, StackTrace stackTrace) {
+                                return [Text('Error: $error')];
+                              },
+                            ),
                       ),
                     ),
                   ],

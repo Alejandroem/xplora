@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -14,7 +13,6 @@ import '../application/providers/notifications_provider.dart';
 import '../application/providers/notifications_providers.dart';
 import '../application/providers/profile_providers.dart';
 import '../application/providers/quest_providers.dart';
-import '../application/providers/settings_providers.dart';
 import '../domain/models/achievement.dart';
 import '../domain/models/xplora_profile.dart';
 import 'components/feed_components.dart';
@@ -250,21 +248,6 @@ class _HomeState extends ConsumerState<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final settingsProvider = ref.watch(settingsStateNotifierProvider);
-    final index = settingsProvider
-        .indexWhere((setting) => setting.key == 'isDarkMode');
-    final isDarkTheme = index >= 0 && (settingsProvider[index].value as bool);
-    ref.listen(bottomNavigationBarProvider, (previous, next) {
-      if (next == NavigationItem.xpc || next == NavigationItem.store || next == NavigationItem.notifications) {
-        print('isDarkTheme: $isDarkTheme');
-        SystemChrome.setSystemUIOverlayStyle(
-          SystemUiOverlayStyle(
-            statusBarIconBrightness: isDarkTheme ? Brightness.light : Brightness.dark,
-          ),
-        );
-      }
-    });
-
     ref.listen(currentAuthUserIdStreamProvider, (previous, next) {
       if (next.value != null) {
         ref.watch(notificationsServiceProvider).saveToken(next.value!);
@@ -330,77 +313,65 @@ class _HomeState extends ConsumerState<Home> {
       });
     });
 
-    return WillPopScope(
-      onWillPop: () async {
-        final item = ref.read(bottomNavigationBarProvider);
-        if(item!=NavigationItem.home){
-          ref.read(bottomNavigationBarProvider.notifier).state =
-          NavigationItem.home;
-          return false;
-        }else{
-          return true;
-        }
-      },
-      child: Scaffold(
-        appBar: getAppBar(),
-        bottomNavigationBar: const XploraBottomNavigationBar(),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
-                const FeedComponents(),
-              if (ref.watch(bottomNavigationBarProvider) == NavigationItem.search)
-                const SearchComponents(),
-              if (ref.watch(bottomNavigationBarProvider) ==
-                  NavigationItem.notifications)
-                const NotificationComponents(),
-              if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc ||
-                  ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
-                Column(
-                  children: [
-                    const SizedBox(
-                      height: 100,
+    return Scaffold(
+      appBar: getAppBar(),
+      bottomNavigationBar: const XploraBottomNavigationBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
+              const FeedComponents(),
+            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.search)
+              const SearchComponents(),
+            if (ref.watch(bottomNavigationBarProvider) ==
+                NavigationItem.notifications)
+              const NotificationComponents(),
+            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc ||
+                ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
+              Column(
+                children: [
+                  const SizedBox(
+                    height: 100,
+                  ),
+                  const Center(
+                    child: Text(
+                      'Comming Soon',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    const Center(
+                  ),
+                  const SizedBox(
+                    height: 23,
+                  ),
+                  if (ref.watch(bottomNavigationBarProvider) ==
+                      NavigationItem.store)
+                    const Icon(
+                      Icons.store,
+                      size: 100,
+                    ),
+                  if (ref.watch(bottomNavigationBarProvider) ==
+                      NavigationItem.xpc)
+                    const Text(
+                      'XPC',
+                      style: TextStyle(
+                        fontSize: 100,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if (ref.watch(bottomNavigationBarProvider) ==
+                      NavigationItem.xpc)
+                    const Padding(
+                      padding: EdgeInsets.all(32.0),
                       child: Text(
-                        'Coming Soon',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'XPC is the digital currency powering the XPLRA ecosystem. Earn XPC by exploring your surroundings, completing quests, and engaging with the app. With the XPC Wallet, securely manage your rewards, track your balance, buy XPC to increase its value, and use XPC to unlock exclusive content, collectibles, and more. Stay tuned for its release!',
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    const SizedBox(
-                      height: 23,
-                    ),
-                    if (ref.watch(bottomNavigationBarProvider) ==
-                        NavigationItem.store)
-                      const Icon(
-                        Icons.store,
-                        size: 100,
-                      ),
-                    if (ref.watch(bottomNavigationBarProvider) ==
-                        NavigationItem.xpc)
-                      const Text(
-                        'XPC',
-                        style: TextStyle(
-                          fontSize: 100,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    if (ref.watch(bottomNavigationBarProvider) ==
-                        NavigationItem.xpc)
-                      const Padding(
-                        padding: EdgeInsets.all(32.0),
-                        child: Text(
-                          'XPC is the digital currency powering the XPLRA ecosystem. Earn XPC by exploring your surroundings, completing quests, and engaging with the app. With the XPC Wallet, securely manage your rewards, track your balance, buy XPC to increase its value, and use XPC to unlock exclusive content, collectibles, and more. Stay tuned for its release!',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                  ],
-                ),
-            ],
-          ),
+                ],
+              ),
+          ],
         ),
       ),
     );

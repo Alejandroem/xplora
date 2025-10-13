@@ -71,9 +71,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   ),
                 ];
               },
-              loading: () => [SizedBox(
-                height: MediaQuery.of(context).size.height*0.2,
-                  child: const Center(child: CircularProgressIndicator()))],
+              loading: () => [const Center(child: CircularProgressIndicator())],
               error: (error, stackTrace) {
                 return [
                   Center(

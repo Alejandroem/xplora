@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../application/providers/adventure_providers.dart';
 import '../widgets/current_quest.dart';
 import '../widgets/quest_list.dart';
 
@@ -16,123 +15,67 @@ class QuestComponents extends ConsumerStatefulWidget {
 class _QuestComponentsState extends ConsumerState<QuestComponents> {
   @override
   Widget build(BuildContext context) {
-    final questInProgress = ref.watch(adventureInProgressTrackerProvider);
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        height: questInProgress == null ? 120 : 200,
-        child: questInProgress == null
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => Scaffold(
-                              appBar: AppBar(
-                                title: const Text('Quest List'),
-                              ),
-                              body: const Hero(
-                                tag: 'quest-list',
-                                child: QuestList(
-                                  isHero: true,
-                                ),
+    return SizedBox(
+      height: 200,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => Scaffold(
+                            appBar: AppBar(
+                              title: const Text('Quest List'),
+                            ),
+                            body: const Hero(
+                              tag: 'quest-list',
+                              child: QuestList(
+                                isHero: true,
                               ),
                             ),
                           ),
-                        );
-                      },
-                      child: const Card(
-                        child: Center(
-                          child: Text(
-                            'Quests',
-                            style: TextStyle(fontSize: 24),
-                          ),
+                        ),
+                      );
+                    },
+                    child: const Card(
+                      child: Center(
+                        child: Text(
+                          'Quests',
+                          style: TextStyle(fontSize: 24),
                         ),
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      clipBehavior: Clip.hardEdge,
-                      child: const Card(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Lora AI', style: TextStyle(fontSize: 24)),
-                          Text('Cooming Soon', style: TextStyle(fontSize: 14)),
-                        ],
-                      )),
+                ),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                ],
-              )
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    clipBehavior: Clip.hardEdge,
+                    child: const Card(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => Scaffold(
-                                    appBar: AppBar(
-                                      title: const Text('Quest List'),
-                                    ),
-                                    body: const Hero(
-                                      tag: 'quest-list',
-                                      child: QuestList(
-                                        isHero: true,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                            child: const Card(
-                              child: Center(
-                                child: Text(
-                                  'Quests',
-                                  style: TextStyle(fontSize: 24),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            clipBehavior: Clip.hardEdge,
-                            child: const Card(
-                                child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('Lora AI', style: TextStyle(fontSize: 24)),
-                                Text('Cooming Soon', style: TextStyle(fontSize: 14)),
-                              ],
-                            )),
-                          ),
-                        ),
+                        Text('Lora AI', style: TextStyle(fontSize: 24)),
+                        Text('Cooming Soon', style: TextStyle(fontSize: 14)),
                       ],
-                    ),
+                    )),
                   ),
-                  const Expanded(
-                    child: CurrentQuest(),
-                  ),
-                ],
-              ),
+                ),
+              ],
+            ),
+          ),
+          const Expanded(
+            child: CurrentQuest(),
+          ),
+        ],
       ),
     );
   }

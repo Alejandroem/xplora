@@ -27,14 +27,14 @@ class _QuestCarouselState extends ConsumerState<NearestAdventures> {
               children: [
                 Icon(
                   Icons.location_on,
-                  // color: raisingBlack,
+                  color: raisingBlack,
                   size: 20,
                 ),
                 Text(
                   'Nearest Adventures',
                   style: TextStyle(
                     fontSize: 20,
-                    // color: raisingBlack,
+                    color: raisingBlack,
                   ),
                 ),
                 const Spacer(),

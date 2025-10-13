@@ -209,7 +209,6 @@ class FiltersPage extends ConsumerWidget {
                               runSpacing: 8.0,
                               children: [
                                 FilterChip(
-                                  checkmarkColor: Colors.white,
                                   selected:
                                       ref.watch(selectedCategoriesProvider) ==
                                           '',
@@ -226,7 +225,7 @@ class FiltersPage extends ConsumerWidget {
                                             : Colors.grey,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text('All', style: TextStyle(color: ref.watch(selectedCategoriesProvider) == '' ? Colors.white : Colors.grey)),
+                                      const Text('All'),
                                     ],
                                   ),
                                   backgroundColor: raisingBlack,
@@ -244,7 +243,6 @@ class FiltersPage extends ConsumerWidget {
                                     .where((c) => c.id != 'All')
                                     .map((category) {
                                   return FilterChip(
-                                    checkmarkColor: Colors.white,
                                     selected:
                                         ref.watch(selectedCategoriesProvider) ==
                                             category.id,
@@ -262,7 +260,7 @@ class FiltersPage extends ConsumerWidget {
                                               : Colors.grey,
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(category.name, style: TextStyle(color: ref.watch(selectedCategoriesProvider) == category.id ? Colors.white : Colors.grey)),
+                                        Text(category.name),
                                       ],
                                     ),
                                     backgroundColor: raisingBlack,

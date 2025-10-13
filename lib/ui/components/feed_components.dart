@@ -25,7 +25,6 @@ class _FeedComponentsState extends ConsumerState<FeedComponents> {
         NearestAdventures(),
         CategoriesChips(),
         QuestComponents(),
-        SizedBox(height: 10)
       ],
     );
   }

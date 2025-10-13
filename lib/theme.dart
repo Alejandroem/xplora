@@ -10,13 +10,11 @@ ThemeData getTheme() {
   return ThemeData(
     // Customize your theme properties
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Colors.white,
       //backgroundColor: raisingBlack,
       selectedItemColor: raisingBlack,
       unselectedItemColor: raisingBlack.withOpacity(0.5),
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.white,
       //backgroundColor: raisingBlack,
       elevation: 0,
     ),
@@ -25,10 +23,6 @@ ThemeData getTheme() {
     secondaryHeaderColor: springBud,
     fontFamily: 'Jura',
     // Add more theme properties as needed
-    scaffoldBackgroundColor: Colors.white,
-    cardTheme: const CardThemeData(
-      color: Colors.white,
-    ),
   );
 }
 
