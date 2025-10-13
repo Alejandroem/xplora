@@ -8,7 +8,6 @@ import '../../application/providers/auth_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../application/providers/profile_providers.dart';
 import '../../application/providers/settings_providers.dart';
-import '../../theme.dart';
 import '../dialogs/bottom_change_password_card.dart';
 import '../widgets/email_verification_banner.dart';
 import 'account_settings_page.dart';
@@ -31,206 +30,138 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final settingsProviderNotifier = ref.watch(
       settingsStateNotifierProvider.notifier,
     );
-    return GradientBackground(
-      child: Scaffold(
-        appBar: const GlassAppBar(
-          title: 'Settings',
-        ),
-        body: ListView(
-          children: [
-            const EmailVerificationBanner(),
-            ListTile(
-              title: Text(
-                'Account',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: ListView(
+        children: [
+          const EmailVerificationBanner(),
+          ListTile(
+            title: const Text('Account'),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const AccountSettingsPage(),
                 ),
-              ),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const AccountSettingsPage(),
-                  ),
-                );
-              },
-              trailing: const Icon(Icons.arrow_forward_ios),
-            ),
-            ListTile(
-              title: Text(
-                'Change Password',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
+              );
+            },
+            trailing: const Icon(Icons.arrow_forward_ios),
+          ),
+          ListTile(
+            title: const Text('Change Password'),
+            onTap: () {
+              showBottomChangePasswordCard(context);
+            },
+            trailing: const Icon(Icons.arrow_forward_ios),
+          ),
+          SwitchListTile(
+            title: const Text('Dark Mode'),
+            value: settingsProviderState
+                        .indexWhere((setting) => setting.key == 'isDarkMode') >=
+                    0
+                ? settingsProviderState[settingsProviderState
+                        .indexWhere((setting) => setting.key == 'isDarkMode')]
+                    .value as bool
+                : false,
+            onChanged: (bool value) {
+              settingsProviderNotifier.toggleDarkMode();
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Notifications'),
+            value: settingsProviderState.indexWhere(
+                        (setting) => setting.key == 'isNotificationsEnabled') >=
+                    0
+                ? settingsProviderState[settingsProviderState.indexWhere(
+                        (setting) => setting.key == 'isNotificationsEnabled')]
+                    .value as bool
+                : false,
+            onChanged: (bool value) {
+              settingsProviderNotifier.toggleNotifications();
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Location'),
+            value: settingsProviderState.indexWhere(
+                        (setting) => setting.key == 'isLocationEnabled') >=
+                    0
+                ? settingsProviderState[settingsProviderState.indexWhere(
+                        (setting) => setting.key == 'isLocationEnabled')]
+                    .value as bool
+                : false,
+            onChanged: (bool value) {
+              settingsProviderNotifier.toggleLocation();
+            },
+          ),
+          ListTile(
+            title: const Text('Privacy'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrivacyPolicyPage(),
                 ),
-              ),
-              onTap: () {
-                showBottomChangePasswordCard(context);
-              },
-              trailing: const Icon(Icons.arrow_forward_ios),
-            ),
-            SwitchListTile(
-              title: Text(
-                'Dark Mode',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('Terms of Service'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TermsAndConditionsPage(),
                 ),
-              ),
-              value: settingsProviderState
-                          .indexWhere((setting) => setting.key == 'isDarkMode') >=
-                      0
-                  ? settingsProviderState[settingsProviderState
-                          .indexWhere((setting) => setting.key == 'isDarkMode')]
-                      .value as bool
-                  : false,
-              onChanged: (bool value) {
-                settingsProviderNotifier.toggleDarkMode();
-              },
-            ),
-            SwitchListTile(
-              title: Text(
-                'Notifications',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              value: settingsProviderState.indexWhere(
-                          (setting) => setting.key == 'isNotificationsEnabled') >=
-                      0
-                  ? settingsProviderState[settingsProviderState.indexWhere(
-                          (setting) => setting.key == 'isNotificationsEnabled')]
-                      .value as bool
-                  : false,
-              onChanged: (bool value) {
-                settingsProviderNotifier.toggleNotifications();
-              },
-            ),
-            SwitchListTile(
-              title: Text(
-                'Location',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              value: settingsProviderState.indexWhere(
-                          (setting) => setting.key == 'isLocationEnabled') >=
-                      0
-                  ? settingsProviderState[settingsProviderState.indexWhere(
-                          (setting) => setting.key == 'isLocationEnabled')]
-                      .value as bool
-                  : false,
-              onChanged: (bool value) {
-                settingsProviderNotifier.toggleLocation();
-              },
-            ),
-            ListTile(
-              title: Text(
-                'Privacy',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PrivacyPolicyPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              title: Text(
-                'Terms of Service',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TermsAndConditionsPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              title: Text(
-                'Support',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              onTap: () async {
-                final url = Uri.parse('https://www.xplra.com/contact-8');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
-                } else {
-                  // Handle the error here, e.g., show a snackbar or dialog
-                  log('Could not launch $url');
-                }
-              },
-            ),
-            Divider(
-              color: dividerMuted,
-              thickness: 1,
-            ),
-            ListTile(
-              trailing: const Icon(Icons.logout),
-              title: Text(
-                'Logout',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              onTap: () async {
-                final authProvider = ref.read(authServiceProvider);
-                await authProvider.signOut();
-      
-                //pop until /
-                if (context.mounted) {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                  ref.read(bottomNavigationBarProvider.notifier).state =
-                  NavigationItem.home;
-                }
-              },
-            ),
-            Divider(
-              color: dividerMuted,
-              thickness: 1,
-            ),
-            ListTile(
-              leading: const Icon(Icons.warning, color: Colors.red),
-              trailing: const Icon(Icons.delete),
-              title: Text(
-                'Delete Account',
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              onTap: () async {
-                final profileProvider = ref.read(profileServiceProvider);
-                final authProvider = ref.read(authServiceProvider);
-                await profileProvider.delete(
-                  (await authProvider.getAuthUser())!.id!,
-                );
-                await authProvider.deleteAccount();
-                if (context.mounted) {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                }
-              },
-            ),
-          ],
-        ),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('Support'),
+            onTap: () async {
+              final url = Uri.parse('https://www.xplra.com/contact-8');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } else {
+                // Handle the error here, e.g., show a snackbar or dialog
+                log('Could not launch $url');
+              }
+            },
+          ),
+          const Divider(),
+          ListTile(
+            trailing: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            onTap: () async {
+              final authProvider = ref.read(authServiceProvider);
+              await authProvider.signOut();
+
+              //pop until /
+              if (context.mounted) {
+                Navigator.popUntil(context, (route) => route.isFirst);
+                ref.read(bottomNavigationBarProvider.notifier).state =
+                NavigationItem.home;
+              }
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.warning, color: Colors.red),
+            trailing: const Icon(Icons.delete),
+            title: const Text('Delete Account'),
+            onTap: () async {
+              final profileProvider = ref.read(profileServiceProvider);
+              final authProvider = ref.read(authServiceProvider);
+              await profileProvider.delete(
+                (await authProvider.getAuthUser())!.id!,
+              );
+              await authProvider.deleteAccount();
+              if (context.mounted) {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              }
+            },
+          ),
+        ],
       ),
     );
   }

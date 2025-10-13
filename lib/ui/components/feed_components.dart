@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../theme.dart';
 import '../widgets/adventures_carousel.dart';
 import '../widgets/categories_chips.dart';
 import '../widgets/email_verification_banner.dart';
@@ -21,12 +20,12 @@ class _FeedComponentsState extends ConsumerState<FeedComponents> {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // SizedBox(height: 200),
         EmailVerificationBanner(),
         FeaturedAdventure(),
         NearestAdventures(),
         CategoriesChips(),
         QuestComponents(),
+        SizedBox(height: 10)
       ],
     );
   }

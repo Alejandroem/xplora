@@ -8,6 +8,7 @@ import '../../application/providers/category_providers.dart';
 import '../../application/providers/filters_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../application/providers/search_providers.dart';
+import '../../application/providers/settings_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/quest.dart';
 import '../../theme.dart';
@@ -77,11 +78,11 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   Widget build(BuildContext context) {
     final nearbyItems = ref.watch(searchItemsProvider);
 
-    return GradientBackground(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height - kBottomNavigationBarHeight,
-        child: SafeArea(
-          child: Column(
+    return Container(
+      height: MediaQuery.of(context).size.height - kBottomNavigationBarHeight,
+      color: raisingBlack,
+      child: SafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 12),
@@ -100,47 +101,19 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                 _searchQuery = value;
                               });
                             },
-                            style: bodyTextStyle.copyWith(
-                              color: textPrimary,
-                            ),
                             decoration: InputDecoration(
-                              hintStyle: bodyTextStyle.copyWith(
-                                color: textSecondary,
-                                fontSize: 14,
-                              ),
                               hintText: 'Find your next adventure',
-                              prefixIcon: Icon(
-                                Icons.search, 
-                                color: textSecondary,
-                                size: 20,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
+                              prefixIcon: const Icon(Icons.search),
+                              contentPadding: const EdgeInsets.all(5),
                               filled: true,
-                              fillColor: midSurface,
+                              fillColor: Colors.grey[200],
                               border: OutlineInputBorder(
                                 gapPadding: 0,
-                                borderSide: BorderSide(
-                                  color: cardContainerBorder,
-                                  width: 1,
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                  width: 2,
                                 ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: cardContainerBorder,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: accentPrimary,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
@@ -149,10 +122,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                         Stack(
                           children: [
                             IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.filter_list,
-                                color: textPrimary,
-                                size: 24,
+                                color: Colors.white,
                               ),
                               onPressed: () {
                                 Navigator.of(context).push(
@@ -206,73 +178,62 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                       }
                                       return Hero(
                                         tag: category.id,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(right: 8),
-                                          child: InkWell(
-                                            onTap: () {
-                                              if (ref.read(selectedCategoriesProvider) == category.id) {
-                                                ref.read(selectedCategoriesProvider.notifier).state = '';
-                                              } else {
-                                                ref.read(selectedCategoriesProvider.notifier).state = category.id;
-                                              }
-                                            },
-                                            child: Container(
-                                              width: 80,
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 8,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: ref.watch(selectedCategoriesProvider) == category.id
-                                                    ? accentPrimary
-                                                    : Colors.transparent,
-                                                borderRadius: BorderRadius.circular(16),
-                                                border: Border.all(
-                                                  color: ref.watch(selectedCategoriesProvider) == category.id
-                                                      ? accentPrimary
-                                                      : accentPrimary.withOpacity(0.3),
-                                                  width: 1,
+                                        child: InkWell(
+                                          onTap: () {
+                                            if (ref.read(
+                                                    selectedCategoriesProvider) ==
+                                                category.id) {
+                                              ref
+                                                  .read(selectedCategoriesProvider
+                                                      .notifier)
+                                                  .state = '';
+                                            } else {
+                                              ref
+                                                  .read(selectedCategoriesProvider
+                                                      .notifier)
+                                                  .state = category.id;
+                                            }
+                                          },
+                                          child: Container(
+                                            margin:
+                                                const EdgeInsets.only(right: 8),
+                                            width: 80,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: ref.watch(
+                                                          selectedCategoriesProvider) ==
+                                                      category.id
+                                                  ? Colors.grey[600]
+                                                  : Colors.grey[200],
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Image.network(
+                                                  category.imageUrl,
+                                                  height: 24,
+                                                  width: 24,
+                                                  fit: BoxFit.cover,
+                                                  color: ref.watch(
+                                                              selectedCategoriesProvider) ==
+                                                          category.id
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
-                                                boxShadow: ref.watch(selectedCategoriesProvider) == category.id
-                                                    ? [
-                                                        BoxShadow(
-                                                          color: accentPrimary.withOpacity(0.3),
-                                                          blurRadius: 8,
-                                                          spreadRadius: 0,
-                                                        ),
-                                                      ]
-                                                    : null,
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Image.network(
-                                                    category.imageUrl,
-                                                    height: 24,
-                                                    width: 24,
-                                                    fit: BoxFit.cover,
-                                                    color: ref.watch(selectedCategoriesProvider) == category.id
-                                                        ? textPrimary
-                                                        : textSecondary,
+                                                Text(
+                                                  category.name,
+                                                  style: TextStyle(
+                                                    color: ref.watch(
+                                                                selectedCategoriesProvider) ==
+                                                            category.id
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    fontSize: 12,
                                                   ),
-                                                  const SizedBox(height: 4),
-                                                  Text(
-                                                    category.name,
-                                                    style: bodyTextStyle.copyWith(
-                                                      color: ref.watch(selectedCategoriesProvider) == category.id
-                                                          ? textPrimary
-                                                          : textSecondary,
-                                                      fontSize: 10,
-                                                      fontWeight: ref.watch(selectedCategoriesProvider) == category.id
-                                                          ? FontWeight.bold
-                                                          : FontWeight.w500,
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -401,18 +362,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                     return 0;
                   });
 
-                  if (filteredData.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'No adventures found',
-                        style: bodyTextStyle.copyWith(
-                          color: textSecondary,
-                          fontSize: 16,
-                        ),
-                      ),
-                    );
-                  }
-
                   return ListView.builder(
                     controller: _scrollController,
                     itemCount: (filteredData.length),
@@ -470,17 +419,15 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                               }),
                               title: Text(
                                 item.title,
-                                style: subHeadingLabelStyle.copyWith(
-                                  color: textPrimary,
+                                style: const TextStyle(
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16,
                                 ),
                               ),
-                              subtitle: Text(
+                              subtitle: const Text(
                                 'Quest',
-                                style: bodyTextStyle.copyWith(
-                                  color: textSecondary,
-                                  fontSize: 14,
+                                style: TextStyle(
+                                  color: Colors.white70,
                                 ),
                               ),
                             ),
@@ -517,17 +464,15 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                 ListTile(
                                   title: Text(
                                     item.title,
-                                    style: subHeadingLabelStyle.copyWith(
-                                      color: textPrimary,
+                                    style: const TextStyle(
+                                      color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
                                     ),
                                   ),
-                                  subtitle: Text(
+                                  subtitle: const Text(
                                     'Adventure',
-                                    style: bodyTextStyle.copyWith(
-                                      color: textSecondary,
-                                      fontSize: 14,
+                                    style: TextStyle(
+                                      color: Colors.white70,
                                     ),
                                   ),
                                 ),
@@ -550,7 +495,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
               ),
             ),
           ],
-          ),
         ),
       ),
     );

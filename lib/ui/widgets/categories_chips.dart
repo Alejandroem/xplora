@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,7 +5,6 @@ import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/category_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
-import 'filter_bubble.dart';
 
 class CategoriesChips extends ConsumerStatefulWidget {
   const CategoriesChips({super.key});
@@ -36,17 +34,19 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 6),
+                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
                     child: Row(
                       children: [
                         Icon(
                           Icons.directions_run,
-                          color: iconColor,
+                          // color: raisingBlack,
                         ),
-                        const SizedBox(width: 4.0),
                         Text(
                           'Activities',
-                          style: h3Style.copyWith(color: textPrimary),
+                          style: TextStyle(
+                            fontSize: 20,
+                            // color: raisingBlack,
+                          ),
                         ),
                       ],
                     ),
@@ -62,33 +62,44 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: Hero(
                             tag: category.id,
-                            child: FilterBubble(
-                              text: category.name,
-                              isSelected: false,
-                              onTap: () {
+                            child: ChoiceChip(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(64),
+                              ),
+                              showCheckmark: false,
+                              selected: false,
+                              onSelected: (bool selected) {
                                 // Update the selected categories based on the user's selection
-                                ref.read(selectedCategoriesProvider.notifier).state = category.id;
+                                ref
+                                    .read(selectedCategoriesProvider.notifier)
+                                    .state = selected ? category.id : '';
 
                                 //change to search page
-                                ref.watch(bottomNavigationBarProvider.notifier).state = NavigationItem.search;
+                                if (selected) {
+                                  //change to search page
+                                  ref
+                                      .watch(
+                                          bottomNavigationBarProvider.notifier)
+                                      .state = NavigationItem.search;
+                                }
                               },
-                              icon: CachedNetworkImage(
-                                imageUrl: category.imageUrl,
-                                height: 20,
-                                width: 20,
-                                color: textSecondary,
-                                errorWidget: (context, url, error) => Icon(
-                                  Icons.error,
-                                  color: textSecondary,
-                                  size: 20,
-                                ),
+                              backgroundColor: Colors.white,
+                              label: Row(
+                                children: [
+                                  Image.network(
+                                    category.imageUrl,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                  const SizedBox(width: 4.0),
+                                  Text(
+                                    category.name,
+                                    style: TextStyle(
+                                      color : raisingBlack,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              borderRadius: 20,
-                              fontSize: 14,
                             ),
                           ),
                         );
@@ -107,35 +118,46 @@ class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: Hero(
                             tag: category.id,
-                            child: FilterBubble(
-                              text: category.name,
-                              isSelected: isSelected,
-                              onTap: () {
+                            child: ChoiceChip(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(64),
+                              ),
+                              showCheckmark: false,
+                              selected: isSelected,
+                              onSelected: (bool selected) {
                                 // Update the selected categories based on the user's selection
-                                ref.read(selectedCategoriesProvider.notifier).state = isSelected ? '' : category.id;
+                                ref
+                                    .read(selectedCategoriesProvider.notifier)
+                                    .state = selected ? category.id : '';
 
-                                if (!isSelected) {
+                                if (selected) {
                                   //change to search page
-                                  ref.watch(bottomNavigationBarProvider.notifier).state = NavigationItem.search;
+                                  ref
+                                      .watch(
+                                          bottomNavigationBarProvider.notifier)
+                                      .state = NavigationItem.search;
                                 }
                               },
-                              icon: CachedNetworkImage(
-                                imageUrl: category.imageUrl,
-                                height: 20,
-                                width: 20,
-                                color: isSelected ? textPrimary : textSecondary,
-                                errorWidget: (context, url, error) => Icon(
-                                  Icons.error,
-                                  color: isSelected ? textPrimary : textSecondary,
-                                  size: 20,
-                                ),
+                              backgroundColor:
+                                  isSelected ? raisingBlack : Colors.white,
+                              label: Row(
+                                children: [
+                                  Image.network(
+                                    category.imageUrl,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                  const SizedBox(width: 4.0),
+                                  Text(
+                                    category.name,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : raisingBlack,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              borderRadius: 20,
-                              fontSize: 14,
                             ),
                           ),
                         );

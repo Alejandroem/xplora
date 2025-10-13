@@ -1,14 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/adventure_providers.dart';
-import '../../theme.dart';
 import '../pages/adventure_detail.dart';
-
-// Provider for current featured adventure index
-final featuredAdventureIndexProvider = StateProvider<int>((ref) => 0);
 
 class FeaturedAdventure extends ConsumerStatefulWidget {
   const FeaturedAdventure({super.key});
@@ -19,6 +14,7 @@ class FeaturedAdventure extends ConsumerStatefulWidget {
 }
 
 class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
+  int _currentImageIndex = 0;
   late Timer _timer;
   late PageController _pageController;
 
@@ -38,28 +34,23 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
 
   void _startSlideshow() {
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      final currentIndex = ref.read(featuredAdventureIndexProvider);
-      final adventures = ref.read(featuredAdventuresProvider).value;
-      if (adventures != null && adventures.isNotEmpty) {
-        final nextIndex = (currentIndex + 1) % adventures.length;
-        ref.read(featuredAdventureIndexProvider.notifier).state = nextIndex;
+      setState(() {
+        _currentImageIndex = (_currentImageIndex + 1) % 3; // Update image index
         try {
           _pageController.animateToPage(
-            nextIndex,
+            _currentImageIndex,
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
           );
         } catch (e) {
           log(e.toString());
         }
-      }
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentImageIndex = ref.watch(featuredAdventureIndexProvider);
-
     return ref.watch(featuredAdventuresProvider).when(
           data: (data) {
             if (data == null || data.isEmpty) {
@@ -70,108 +61,56 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
             /* // Display only the first adventure
             final adventure = data.first; */
 
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title Section
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: textPrimary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Featured Adventures',
-                          style: h3Style.copyWith(color: textPrimary),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // PageView Section
-                  SizedBox(
-                    height: 200,
-                    width: double.infinity,
-                    child: PageView.builder(
-                      onPageChanged: (index) {
-                        ref.read(featuredAdventureIndexProvider.notifier).state = index;
-                      },
-                      controller: _pageController,
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      AdventureDetail('featured', data[index]),
-                                ),
-                              );
-                            },
-                            child: data[index].featuredImages == null
-                                ? const SizedBox.shrink()
-                                : Card(
-                                    clipBehavior: Clip.hardEdge,
-                                    child: Stack(
-                                      children: [
-                                        SizedBox(
-                                          height: 186,
-                                          child: CachedNetworkImage(
-                                            imageUrl:
-                                                data[index].featuredImages![0],
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                            errorWidget:
-                                                (context, error, stackTrace) {
-                                              return const Center(
-                                                child: Icon(
-                                                  Icons.image_not_supported,
-                                                  size: 50,
-                                                  color: Colors.grey,
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+            return SizedBox(
+                height: 200, // ~300px on 1.5x pixel ratio devices
+                width: double.infinity, // matches parent width
+              child: PageView.builder(
+                onPageChanged: (index) => _currentImageIndex = index,
+                controller: _pageController,
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AdventureDetail('featured', data[index]),
                           ),
                         );
                       },
+                      child: data[index].featuredImages == null
+                          ? const SizedBox.shrink()
+                          : Card(
+                              clipBehavior: Clip.hardEdge,
+                              child: Stack(
+                                children: [
+                                  SizedBox(
+                                    height: 160,
+                                    child: Image.network(
+                                      data[index].featuredImages![0],
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Center(
+                                          child: Icon(
+                                            Icons.image_not_supported,
+                                            size: 50,
+                                            color: Colors.grey,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                     ),
-                  ),
-                  // Page Indicators
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4.0, bottom: 0.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        data.length,
-                        (index) => AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                          height: 8,
-                          width: currentImageIndex == index ? 24 : 8,
-                          decoration: BoxDecoration(
-                            color: currentImageIndex == index
-                                ? accentPrimary
-                                : strokeDivider,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             );
           },
