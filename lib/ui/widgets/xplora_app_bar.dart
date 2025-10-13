@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_providers.dart';
-import '../../domain/models/xplora_profile.dart';
 import '../../theme.dart';
 import '../dialogs/bottom_login_card.dart';
 import '../pages/profile_page.dart';
@@ -65,26 +64,34 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                       error: (error, stackTrace) => placeholderIcon()),
                 ]
               : <Widget>[
-                  Container(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    width: 48.0,
-                    child: const SizedBox.shrink(),
-                  ),
                   StreamBuilder<bool>(
                     stream: ref.read(authServiceProvider).isSignedIn,
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data == false) {
-                        return IconButton(
-                          icon: const Icon(
-                            Icons.account_circle,
-                          ),
-                          onPressed: () {
-                            showBottomLoginCard(context);
+                        return GestureDetector(
+                          onTap: () {
+                            // showBottomLoginCard(context);
+                            Navigator.of(context).pushNamed('/signin');
                           },
+                          child: Transform.scale(
+                            scale: 0.9,
+                            child: CircleAvatar(
+                              backgroundColor: whiteSmoke,
+                              radius: 16.0,
+                              child: Icon(
+                                Icons.person,
+                                color: raisingBlack,
+                              ),
+                            ),
+                          ),
                         );
                       }
                       return const SizedBox.shrink();
                     },
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: const SizedBox.shrink(),
                   ),
                 ];
         },

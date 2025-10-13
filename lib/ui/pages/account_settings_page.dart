@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/xplorauser_providers.dart';
 import '../../domain/models/xplora_user.dart';
+import '../../theme.dart';
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
   const AccountSettingsPage({super.key});
@@ -17,71 +18,111 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Account'),
+      appBar: const GlassAppBar(
+        title: 'Account',
       ),
-      body: ListView(
-        children: ref.watch(currentAuthUserStreamProvider).when(
-              data: (user) {
-                if (user == null) {
+      body: GradientBackground(
+        child: ListView(
+          children: ref.watch(currentAuthUserStreamProvider).when(
+                data: (user) {
+                  if (user == null) {
+                    return [
+                      Center(
+                        child: Text(
+                          'User not found',
+                          style: bodyTextStyle.copyWith(color: textSecondary),
+                        ),
+                      ),
+                    ];
+                  }
                   return [
-                    const Center(
-                      child: Text('User not found'),
+                    ListTile(
+                      title: Text(
+                        'Email',
+                        style: bodyTextStyle.copyWith(color: textPrimary),
+                      ),
+                      subtitle: Text(
+                        user.email,
+                        style: bodyTextStyle.copyWith(color: textSecondary),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => EditEmailPage(user: user),
+                          ),
+                        );
+                      },
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        color: textSecondary,
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        'First Name',
+                        style: bodyTextStyle.copyWith(color: textPrimary),
+                      ),
+                      subtitle: Text(
+                        user.name.split(RegExp(r'\s+')).first,
+                        style: bodyTextStyle.copyWith(color: textSecondary),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => EditFirstNamePage(user: user),
+                          ),
+                        );
+                      },
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        color: textSecondary,
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Last Name',
+                        style: bodyTextStyle.copyWith(color: textPrimary),
+                      ),
+                      subtitle: Text(
+                        user.name.split(RegExp(r'\s+')).skip(1).join(' '),
+                        style: bodyTextStyle.copyWith(color: textSecondary),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => EditLastNamePage(user: user),
+                          ),
+                        );
+                      },
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        color: textSecondary,
+                      ),
                     ),
                   ];
-                }
-                return [
-                  ListTile(
-                    title: const Text('Email'),
-                    subtitle: Text(user.email),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => EditEmailPage(user: user),
-                        ),
-                      );
-                    },
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                  ),
-                  // First name and last name
-                  ListTile(
-                    title: const Text('First Name'),
-                    subtitle: Text(user.name.split(RegExp(r'\s+')).first),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => EditFirstNamePage(user: user),
-                        ),
-                      );
-                    },
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                  ),
-                  ListTile(
-                    title: const Text('Last Name'),
-                    subtitle:
-                        Text(user.name.split(RegExp(r'\s+')).skip(1).join(' ')),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => EditLastNamePage(user: user),
-                        ),
-                      );
-                    },
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                  ),
-                ];
-              },
-              loading: () => [SizedBox(
-                height: MediaQuery.of(context).size.height*0.2,
-                  child: const Center(child: CircularProgressIndicator()))],
-              error: (error, stackTrace) {
-                return [
-                  Center(
-                    child: Text('Error: $error'),
-                  ),
-                ];
-              },
-            ),
+                },
+                loading: () => [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: accentPrimary,
+                      ),
+                    ),
+                  )
+                ],
+                error: (error, stackTrace) {
+                  return [
+                    Center(
+                      child: Text(
+                        'Error: $error',
+                        style: bodyTextStyle.copyWith(color: feedbackAlert),
+                      ),
+                    ),
+                  ];
+                },
+              ),
+        ),
       ),
     );
   }
@@ -119,41 +160,62 @@ class _EditLastNamePageState extends ConsumerState<EditLastNamePage> {
     final authService = ref.watch(authServiceProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Last Name'),
+      appBar: const GlassAppBar(
+        title: 'Edit Last Name',
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: lastNameController,
-              decoration: const InputDecoration(labelText: 'Last Name'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                final newName =
-                    '${widget.user.name.split(RegExp(r'\s+')).first} ${lastNameController.text}';
-                try {
-                  await authService.updateName(newName);
-                  ref.read(userServiceProvider).update(
-                        widget.user.copyWith(name: newName),
-                        widget.user.id!,
+      body: GradientBackground(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 8),
+              XploraTextField(
+                controller: lastNameController,
+                labelText: 'Last Name',
+              ),
+              const SizedBox(height: 24.0),
+              PrimaryButton(
+                height: 50,
+                text: 'Save',
+                onPressed: () async {
+                  final newName =
+                      '${widget.user.name.split(RegExp(r'\s+')).first} ${lastNameController.text}';
+                  try {
+                    await authService.updateName(newName);
+                    ref.read(userServiceProvider).update(
+                          widget.user.copyWith(name: newName),
+                          widget.user.id!,
+                        );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Last name updated',
+                            style: bodyTextStyle.copyWith(color: textPrimary),
+                          ),
+                          backgroundColor: accentPrimary,
+                        ),
                       );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Last name updated')),
-                  );
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to update last name: $e')),
-                  );
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
+                      Navigator.of(context).pop();
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Failed to update last name: $e',
+                            style: bodyTextStyle.copyWith(color: textPrimary),
+                          ),
+                          backgroundColor: feedbackAlert,
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -192,41 +254,62 @@ class _EditFirstNamePageState extends ConsumerState<EditFirstNamePage> {
     final authService = ref.watch(authServiceProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit First Name'),
+      appBar: const GlassAppBar(
+        title: 'Edit First Name',
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: firstNameController,
-              decoration: const InputDecoration(labelText: 'First Name'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                final newName =
-                    '${firstNameController.text} ${widget.user.name.split(RegExp(r'\s+')).skip(1).join(' ')}';
-                try {
-                  await authService.updateName(newName);
-                  ref.read(userServiceProvider).update(
-                        widget.user.copyWith(name: newName),
-                        widget.user.id!,
+      body: GradientBackground(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 8),
+              XploraTextField(
+                controller: firstNameController,
+                labelText: 'First Name',
+              ),
+              const SizedBox(height: 24.0),
+              PrimaryButton(
+                height: 50,
+                text: 'Save',
+                onPressed: () async {
+                  final newName =
+                      '${firstNameController.text} ${widget.user.name.split(RegExp(r'\s+')).skip(1).join(' ')}';
+                  try {
+                    await authService.updateName(newName);
+                    ref.read(userServiceProvider).update(
+                          widget.user.copyWith(name: newName),
+                          widget.user.id!,
+                        );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'First name updated',
+                            style: bodyTextStyle.copyWith(color: textPrimary),
+                          ),
+                          backgroundColor: accentPrimary,
+                        ),
                       );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('First name updated')),
-                  );
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to update first name: $e')),
-                  );
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
+                      Navigator.of(context).pop();
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Failed to update first name: $e',
+                            style: bodyTextStyle.copyWith(color: textPrimary),
+                          ),
+                          backgroundColor: feedbackAlert,
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -264,39 +347,61 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
     final authService = ref.watch(authServiceProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Email'),
+      appBar: const GlassAppBar(
+        title: 'Edit Email',
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await authService.updateEmail(emailController.text);
-                  ref.read(userServiceProvider).update(
-                        widget.user.copyWith(email: emailController.text),
-                        widget.user.id!,
+      body: GradientBackground(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 8),
+              XploraTextField(
+                controller: emailController,
+                labelText: 'Email',
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 24.0),
+              PrimaryButton(
+                height: 50,
+                text: 'Save',
+                onPressed: () async {
+                  try {
+                    await authService.updateEmail(emailController.text);
+                    ref.read(userServiceProvider).update(
+                          widget.user.copyWith(email: emailController.text),
+                          widget.user.id!,
+                        );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Email updated',
+                            style: bodyTextStyle.copyWith(color: textPrimary),
+                          ),
+                          backgroundColor: accentPrimary,
+                        ),
                       );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Email updated')),
-                  );
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to update email: $e')),
-                  );
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
+                      Navigator.of(context).pop();
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Failed to update email: $e',
+                            style: bodyTextStyle.copyWith(color: textPrimary),
+                          ),
+                          backgroundColor: feedbackAlert,
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

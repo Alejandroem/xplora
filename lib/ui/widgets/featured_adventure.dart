@@ -164,7 +164,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                           decoration: BoxDecoration(
                             color: currentImageIndex == index
                                 ? accentPrimary
-                                : strokeDivider,
+                                : textSecondary,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),

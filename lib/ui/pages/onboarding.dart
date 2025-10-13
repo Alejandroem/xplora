@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../infrastructure/constants.dart';
 import '../../application/providers/local_storage_providers.dart';
+import '../../theme.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -35,240 +35,134 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     });
   }
 
+  Future<void> _finishOnboarding() async {
+    final localStorage = ref.read(localStorageProvider);
+    await localStorage.save(
+      kHasFinishedOnboardingKey,
+      'true',
+    );
+
+    if (context.mounted) {
+      Navigator.of(context).pushReplacementNamed('/home');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: _onPageChanged,
+      body: GradientBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: _onPageChanged,
+                  children: [
+                    // Carousel 1: Explore. Evolve. Earn.
+                    _buildCarouselPage(
+                      icon: Icons.explore_rounded,
+                      iconSize: 120,
+                      text: 'Explore. Evolve. Earn.',
+                    ),
+                    // Carousel 2: Discover hidden gems near you
+                    _buildCarouselPage(
+                      svgAsset: 'assets/svg/find-next-adventure.svg',
+                      text: 'Discover hidden gems near you.',
+                    ),
+                    // Carousel 3: Complete quests to level up
+                    _buildCarouselPage(
+                      svgAsset: 'assets/svg/earn-rewards.svg',
+                      text: 'Complete quests to level up.',
+                    ),
+                  ],
+                ),
+              ),
+              // Page indicators
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    3,
+                    (index) => AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: _currentPage == index ? 24 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: _currentPage == index
+                            ? accentPrimary
+                            : textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // CTA Button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: PrimaryButton(
+                    text: _currentPage == 2 ? 'Start' : 'Next',
+                    onPressed: _currentPage == 2
+                        ? _finishOnboarding
+                        : () {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                    fontSize: 18,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCarouselPage({
+    IconData? icon,
+    String? svgAsset,
+    double iconSize = 100,
+    required String text,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            color: Colors.white,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Xplora',
-                    style: GoogleFonts.lato(
-                      textStyle: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    'Find your next adventure',
-                    style: GoogleFonts.lato(
-                      textStyle: const TextStyle(
-                        fontSize: 24,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  TextButton(
-                    onPressed: () {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.ease,
-                      );
-                    },
-                    child: Text(
-                      'Press Start to Continue',
-                      style: GoogleFonts.lato(
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  OutlinedButton(
-                    onPressed: () {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.ease,
-                      );
-                    },
-                    child: const Text('Start'),
-                  ),
-                ],
+          // Image or Icon
+          if (svgAsset != null)
+            SizedBox(
+              height: 250,
+              child: SvgPicture.asset(
+                svgAsset,
+                colorFilter: ColorFilter.mode(
+                  iconColor,
+                  BlendMode.srcIn,
+                ),
               ),
+            )
+          else if (icon != null)
+            Icon(
+              icon,
+              size: iconSize,
+              color: iconColor,
             ),
-          ),
-          // First onboarding sheet
-          Container(
-            color: Colors.white,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 250,
-                    child: SvgPicture.asset(
-                      'assets/svg/find-next-adventure.svg',
-                    ),
-                  ),
-                  Text(
-                    'Choose your quest',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.lato(
-                      textStyle: const TextStyle(
-                        fontSize: 36,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Text(
-                      'Quests are a series of steps with rewards in some of them\n\nThey are like your regular afternoon walk but with a twist...',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.lato(
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  OutlinedButton(
-                    onPressed: () {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.ease,
-                      );
-                    },
-                    child: const Text('Next'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Second onboarding sheet
-          Container(
-            color: Colors.white,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 250,
-                    child: SvgPicture.asset(
-                      'assets/svg/earn-rewards.svg',
-                    ),
-                  ),
-                  Text(
-                    'Earn experience and Level up',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.lato(
-                      textStyle: const TextStyle(
-                        fontSize: 36,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Text(
-                      'When you complete a quest, you earn experience points\n\nYou can use these points to level up and unlock new quests and rewards',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.lato(
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  OutlinedButton(
-                    onPressed: () {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.ease,
-                      );
-                    },
-                    child: const Text('Next'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Third onboarding sheet
-          Container(
-            color: Colors.white,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 250,
-                    child: SvgPicture.asset(
-                      'assets/svg/walk-talk.svg',
-                    ),
-                  ),
-                  Text(
-                    'Share your progress...',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.lato(
-                      textStyle: const TextStyle(
-                        fontSize: 36,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Text(
-                      'You can share your progress with friends and family\n\nYou can also invite them to join you on your quests',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.lato(
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  OutlinedButton(
-                    onPressed: () async {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.ease,
-                      );
-
-                      final localStorage = ref.read(localStorageProvider);
-                      await localStorage.save(
-                        kHasFinishedOnboardingKey,
-                        'true',
-                      );
-
-                      final hasSelectedInitialCategories = await localStorage
-                          .read(kHasSelectedInitialCategoriesKey);
-
-                      if (hasSelectedInitialCategories == null) {
-                        if (context.mounted) {
-                          Navigator.of(context).pushNamed('/categories');
-                        }
-                      } else {
-                        if (context.mounted) {
-                          Navigator.of(context).pop();
-                        }
-                      }
-                    },
-                    child: const Text('Let\'s Go!'),
-                  ),
-                ],
-              ),
+          const SizedBox(height: 50),
+          // Text
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: h1Style.copyWith(
+              color: textPrimary,
             ),
           ),
         ],

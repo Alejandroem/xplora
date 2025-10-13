@@ -58,32 +58,6 @@ class _HomeState extends ConsumerState<Home> {
         _handleDeepLinkCode(code);
       }
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.watch(hasFinishedOnboardingProvider).whenData(
-        (hasFinishedOnboarding) async {
-          if (!hasFinishedOnboarding) {
-            await Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const OnboardingPage(),
-              ),
-            );
-          } else {
-            ref.watch(hasSelectedInitialCategoriesProvider).whenData(
-              (hasSelectedInitialCategories) async {
-                if (!hasSelectedInitialCategories) {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const ChooseCategories(),
-                    ),
-                  );
-                }
-              },
-            );
-          }
-        },
-      );
-    });
   }
 
   Future<void> requestLocationPermissions() async {
@@ -259,6 +233,7 @@ class _HomeState extends ConsumerState<Home> {
     final isDarkTheme = index >= 0 && (settingsProvider[index].value as bool);
     ref.listen(bottomNavigationBarProvider, (previous, next) {
       if (next == NavigationItem.xpc || next == NavigationItem.store || next == NavigationItem.notifications) {
+        // after user logs in the dark theme is false (needs to be fixed)
         print('isDarkTheme: $isDarkTheme');
         SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(

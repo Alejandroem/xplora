@@ -107,7 +107,7 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                 );
 
                 if (context.mounted) {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pushReplacementNamed('/home');
                 }
               },
               child: Text(

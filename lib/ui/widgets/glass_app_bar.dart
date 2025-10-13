@@ -6,7 +6,7 @@ import '../../theme/colors.dart';
 /// Transparent AppBar with glass effect, thin purple divider at bottom, and logo in Orbitron
 /// Light, floating feel with backdrop blur
 class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String? title; /// Optional title text in Orbitron
+  final dynamic title; /// Optional title text (String) or widget in Orbitron
   final List<Widget>? actions; /// Optional action buttons
   final Widget? leading; /// Optional leading widget
   final bool centerTitle;
@@ -40,14 +40,16 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
             scrolledUnderElevation: 0,
             leading: leading,
             title: title != null
-                ? Text(
-                    title!,
-                    style: GoogleFonts.orbitron( /// Logo/title in Orbitron font
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
-                    ),
-                  )
+                ? (title is String
+                    ? Text(
+                        title,
+                        style: GoogleFonts.orbitron( /// Logo/title in Orbitron font
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimary,
+                        ),
+                      )
+                    : title as Widget)
                 : null,
             centerTitle: centerTitle,
             actions: actions,

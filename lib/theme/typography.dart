@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../theme.dart';
+
 // Heading Styles (Orbitron font)
 /// Usage: Hero titles, section titles
 /// Style: Bold, uppercase or semi-uppercase
@@ -28,4 +30,6 @@ const subHeadingLabelStyle = TextStyle(
 
 // Body Text (Inter font)
 /// Usage: Paragraphs, general text
-final bodyTextStyle = GoogleFonts.inter();
+final bodyTextStyle = GoogleFonts.inter(
+  color: textPrimary
+);

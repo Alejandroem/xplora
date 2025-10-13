@@ -8,6 +8,8 @@ import '../../application/providers/boomark_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/bookmark.dart';
 import '../../theme.dart';
+import '../widgets/secondary_button.dart';
+import '../widgets/glass_app_bar.dart';
 
 class AdventureDetail extends ConsumerStatefulWidget {
   final String source;
@@ -137,108 +139,113 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
   Widget build(BuildContext context) {
     return GradientBackground(
       child: Scaffold(
+        appBar: GlassAppBar(
+          title: widget.adventure.title,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          actions: [
+            ref
+                .watch(adventureBookmarkProvider(
+                  widget.adventure.id!,
+                ))
+                .when(
+                  data: (bookmarks) {
+                    final bookmark = bookmarks != null && bookmarks.isNotEmpty
+                        ? bookmarks.first
+                        : null;
+                    return IconButton(
+                      icon: Icon(
+                        bookmark != null
+                            ? Icons.bookmark
+                            : Icons.bookmark_border,
+                      ),
+                      onPressed: creatingBookmark
+                          ? null
+                          : () async {
+                              setState(() {
+                                creatingBookmark = true;
+                              });
+                              final bookmarkCrudService =
+                                  ref.read(boomarkCrudServiceProvider);
+                              final authService =
+                                  ref.read(authServiceProvider);
+                              final user = await authService.getAuthUser();
+                              if (user == null) {
+                                return;
+                              }
+                              if (bookmark == null) {
+                                await bookmarkCrudService.create(
+                                  Bookmark(
+                                    id: null,
+                                    type: BookmarkType.adventure,
+                                    entityId: widget.adventure.id!,
+                                    userId: user.id!,
+                                  ),
+                                );
+                              } else {
+                                bookmarkCrudService.delete(bookmark.id!);
+                              }
+                              ref.invalidate(adventureBookmarkProvider(
+                                widget.adventure.id!,
+                              ));
+                              setState(() {
+                                creatingBookmark = false;
+                              });
+                            },
+                    );
+                  },
+                  loading: () => const SizedBox(),
+                  error: (error, stack) => const SizedBox(),
+                ),
+          ],
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Stack(
-              fit: StackFit.passthrough,
-              children: [
-                Hero(
-                  tag: 'adventure-image-${widget.adventure.id}-${widget.source}',
-                  child: CachedNetworkImage(
-                    imageUrl:  widget.adventure.imageUrl,
+            Hero(
+              tag: 'adventure-image-${widget.adventure.id}-${widget.source}',
+              child: CachedNetworkImage(
+                imageUrl: widget.adventure.imageUrl,
+                height: 200,
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) {
+                  // Print error details to console
+                  print('Image loading error for URL: $url');
+                  print('Error details: $error');
+                  
+                  return Container(
                     height: 200,
-                    fit: BoxFit.fitWidth,
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                    placeholder: (context, url) => const CircularProgressIndicator(),
-                  ),
-                ),
-                Positioned(
-                  top: 25,
-                  left: 10,
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                //boomark icon
-                ref
-                    .watch(adventureBookmarkProvider(
-                      widget.adventure.id!,
-                    ))
-                    .when(
-                      data: (bookmarks) {
-                        final bookmark = bookmarks != null && bookmarks.isNotEmpty
-                            ? bookmarks.first
-                            : null;
-                        return Positioned(
-                          top: 25,
-                          right: 10,
-                          child: IconButton(
-                            icon: Icon(
-                              bookmark != null
-                                  ? Icons.bookmark
-                                  : Icons.bookmark_border,
-                              color: Colors.white,
-                            ),
-                            onPressed: creatingBookmark
-                                ? null
-                                : () async {
-                                    setState(() {
-                                      creatingBookmark = true;
-                                    });
-                                    final bookmarkCrudService =
-                                        ref.read(boomarkCrudServiceProvider);
-                                    final authService =
-                                        ref.read(authServiceProvider);
-                                    final user = await authService.getAuthUser();
-                                    if (user == null) {
-                                      return;
-                                    }
-                                    if (bookmark == null) {
-                                      await bookmarkCrudService.create(
-                                        Bookmark(
-                                          id: null,
-                                          type: BookmarkType.adventure,
-                                          entityId: widget.adventure.id!,
-                                          userId: user.id!,
-                                        ),
-                                      );
-                                    } else {
-                                      bookmarkCrudService.delete(bookmark.id!);
-                                    }
-                                    ref.invalidate(adventureBookmarkProvider(
-                                      widget.adventure.id!,
-                                    ));
-                                    setState(() {
-                                      creatingBookmark = false;
-                                    });
-                                  },
+                    color: midSurface,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: feedbackAlert,
+                          size: 48,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Failed to load image',
+                          style: bodyTextStyle.copyWith(
+                            color: feedbackAlert,
+                            fontSize: 14,
                           ),
-                        );
-                      },
-                      loading: () => const SizedBox(),
-                      error: (error, stack) => const SizedBox(),
+                        ),
+                      ],
                     ),
-              ],
-            ),
-            // Slide and Fade for title
-            SlideTransition(
-              position: _titleSlideAnimation,
-              child: FadeTransition(
-                opacity: _titleFadeAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    widget.adventure.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
+                  );
+                },
+                placeholder: (context, url) => Container(
+                  height: 200,
+                  color: midSurface,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: accentPrimary,
                     ),
                   ),
                 ),
@@ -251,7 +258,10 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                 opacity: _firstFadeAnimation,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(widget.adventure.shortDescription),
+                  child: Text(
+                    widget.adventure.shortDescription,
+                    style: bodyTextStyle.copyWith(color: textPrimary, fontSize: 16),
+                  ),
                 ),
               ),
             ),
@@ -262,7 +272,10 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                 opacity: _secondFadeAnimation,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(widget.adventure.longDescription),
+                  child: Text(
+                    widget.adventure.longDescription,
+                    style: bodyTextStyle.copyWith(color: textPrimary, fontSize: 16),
+                  ),
                 ),
               ),
             ),
@@ -274,38 +287,33 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                      'Xp. ${widget.adventure.experience.toStringAsFixed(2)}'),
+                    'Xp. ${widget.adventure.experience.toStringAsFixed(2)}',
+                    style: h3Style.copyWith(color: textPrimary),
+                  ),
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
-              child: OutlinedButton(
-                onPressed: () async {
-                  //url launcher to the location
-                  final url = Uri.parse(
-                      'https://www.google.com/maps/search/?api=1&query=${widget.adventure.latitude},${widget.adventure.longitude}');
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url);
-                  } else {
-                    throw 'Could not launch $url';
-                  }
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.map,
-                      color: raisingBlack,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Open in Google Maps',
-                      style: TextStyle(
-                        color: raisingBlack,
-                      ),
-                    ),
-                  ],
+              child: Center(
+                child: SecondaryButton(
+                  text: 'Open in Google Maps',
+                  icon: Icon(
+                    Icons.map,
+                    color: textPrimary,
+                    size: 20,
+                  ),
+                  onPressed: () async {
+                    //url launcher to the location
+                    final url = Uri.parse(
+                        'https://www.google.com/maps/search/?api=1&query=${widget.adventure.latitude},${widget.adventure.longitude}');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                  },
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
             )

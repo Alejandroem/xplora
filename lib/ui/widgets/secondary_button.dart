@@ -11,6 +11,7 @@ class SecondaryButton extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final bool isEnabled;
   final double? width;
+  final Widget? icon;
 
   const SecondaryButton({
     super.key,
@@ -20,6 +21,7 @@ class SecondaryButton extends StatefulWidget {
     this.padding,
     this.isEnabled = true,
     this.width,
+    this.icon,
   });
 
   @override
@@ -63,15 +65,24 @@ class _SecondaryButtonState extends State<SecondaryButton> {
                 : null,
           ),
           child: Center(
-            child: Text(
-              widget.text,
-              style: bodyTextStyle.copyWith(
-                fontSize: widget.fontSize ?? 14,
-                fontWeight: FontWeight.bold,
-                color: widget.isEnabled 
-                    ? textPrimary /// White text when enabled
-                    : textSecondary, /// Gray text when disabled
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.icon != null) ...[
+                  widget.icon!,
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  widget.text,
+                  style: bodyTextStyle.copyWith(
+                    fontSize: widget.fontSize ?? 14,
+                    fontWeight: FontWeight.bold,
+                    color: widget.isEnabled 
+                        ? textPrimary /// White text when enabled
+                        : textSecondary, /// Gray text when disabled
+                  ),
+                ),
+              ],
             ),
           ),
         ),

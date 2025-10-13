@@ -6,3 +6,4 @@ export '../ui/widgets/primary_button.dart';
 export '../ui/widgets/secondary_button.dart';
 export '../ui/widgets/filter_bubble.dart';
 export '../ui/widgets/glass_bottom_nav_bar.dart';
+export '../ui/widgets/xplora_text_field.dart';

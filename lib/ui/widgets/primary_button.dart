@@ -10,6 +10,7 @@ class PrimaryButton extends StatefulWidget {
   final bool usePurple; /// If true, uses purple; if false, uses green (default)
   final double? fontSize;
   final EdgeInsetsGeometry? padding;
+  final double? height;
 
   const PrimaryButton({
     super.key,
@@ -18,6 +19,7 @@ class PrimaryButton extends StatefulWidget {
     this.usePurple = false,
     this.fontSize,
     this.padding,
+    this.height,
   });
 
   @override
@@ -37,30 +39,33 @@ class _PrimaryButtonState extends State<PrimaryButton> {
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTap: widget.onPressed,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: widget.padding ?? const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
-          decoration: BoxDecoration(
-            color: buttonColor,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: buttonColor.withOpacity(_isHovered ? 0.6 : 0.3),
-                blurRadius: _isHovered ? 12 : 6,
-                spreadRadius: _isHovered ? 2 : 0,
-              ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              widget.text,
-              style: bodyTextStyle.copyWith(
-                fontSize: widget.fontSize ?? 14,
-                fontWeight: FontWeight.bold,
-                color: textColor,
+        child: SizedBox(
+          height: widget.height,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: widget.padding ?? const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              color: buttonColor,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: buttonColor.withOpacity(_isHovered ? 0.6 : 0.3),
+                  blurRadius: _isHovered ? 12 : 6,
+                  spreadRadius: _isHovered ? 2 : 0,
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                widget.text,
+                style: bodyTextStyle.copyWith(
+                  fontSize: widget.fontSize ?? 14,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
               ),
             ),
           ),

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/auth_providers.dart';
+import '../../theme.dart';
 
 class BottomChangePasswordCard extends ConsumerStatefulWidget {
-  BottomChangePasswordCard({super.key});
+  const BottomChangePasswordCard({super.key});
 
   @override
-  _BottomChangePasswordCardState createState() =>
+  ConsumerState<BottomChangePasswordCard> createState() =>
       _BottomChangePasswordCardState();
 }
 
@@ -22,77 +23,115 @@ class _BottomChangePasswordCardState
   bool isLoading = false;
 
   @override
+  void dispose() {
+    oldPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authService = ref.watch(authServiceProvider);
 
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: const Color(0xff121212), /// Solid background to prevent text interference
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        border: Border(
+          top: BorderSide(
+            color: accentPrimary.withOpacity(0.3),
+            width: 2,
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.all(24.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextField(
+          // Title
+          Text(
+            'Change Password',
+            style: h3Style.copyWith(color: textPrimary),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24.0),
+          // Old Password Field
+          XploraTextField(
             controller: oldPasswordController,
-            decoration: InputDecoration(
-              labelText: 'Old Password',
-              suffixIcon: IconButton(
-                icon: Icon(obscureOldPassword
-                    ? Icons.visibility
-                    : Icons.visibility_off),
-                onPressed: () {
-                  setState(() {
-                    obscureOldPassword = !obscureOldPassword;
-                  });
-                },
-              ),
-            ),
+            labelText: 'Old Password',
             obscureText: obscureOldPassword,
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscureOldPassword ? Icons.visibility : Icons.visibility_off,
+                color: textSecondary,
+              ),
+              onPressed: () {
+                setState(() {
+                  obscureOldPassword = !obscureOldPassword;
+                });
+              },
+            ),
           ),
           const SizedBox(height: 16.0),
-          TextField(
+          // New Password Field
+          XploraTextField(
             controller: newPasswordController,
-            decoration: InputDecoration(
-              labelText: 'New Password',
-              suffixIcon: IconButton(
-                icon: Icon(obscureNewPassword
-                    ? Icons.visibility
-                    : Icons.visibility_off),
-                onPressed: () {
-                  setState(() {
-                    obscureNewPassword = !obscureNewPassword;
-                  });
-                },
-              ),
-            ),
+            labelText: 'New Password',
             obscureText: obscureNewPassword,
-          ),
-          const SizedBox(height: 16.0),
-          TextField(
-            controller: confirmPasswordController,
-            decoration: InputDecoration(
-              labelText: 'Confirm New Password',
-              suffixIcon: IconButton(
-                icon: Icon(obscureConfirmPassword
-                    ? Icons.visibility
-                    : Icons.visibility_off),
-                onPressed: () {
-                  setState(() {
-                    obscureConfirmPassword = !obscureConfirmPassword;
-                  });
-                },
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscureNewPassword ? Icons.visibility : Icons.visibility_off,
+                color: textSecondary,
               ),
+              onPressed: () {
+                setState(() {
+                  obscureNewPassword = !obscureNewPassword;
+                });
+              },
             ),
-            obscureText: obscureConfirmPassword,
           ),
           const SizedBox(height: 16.0),
+          // Confirm Password Field
+          XploraTextField(
+            controller: confirmPasswordController,
+            labelText: 'Confirm New Password',
+            obscureText: obscureConfirmPassword,
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                color: textSecondary,
+              ),
+              onPressed: () {
+                setState(() {
+                  obscureConfirmPassword = !obscureConfirmPassword;
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 24.0),
+          // Submit Button
           isLoading
-              ? CircularProgressIndicator()
-              : ElevatedButton(
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: accentPrimary,
+                  ),
+                )
+              : PrimaryButton(
+                  height: 50,
+                  text: 'Change Password',
                   onPressed: () async {
                     if (newPasswordController.text !=
                         confirmPasswordController.text) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('New passwords do not match')),
+                        SnackBar(
+                          content: Text(
+                            'New passwords do not match',
+                            style: bodyTextStyle.copyWith(color: textPrimary),
+                          ),
+                          backgroundColor: feedbackAlert,
+                        ),
                       );
                       return;
                     }
@@ -111,29 +150,36 @@ class _BottomChangePasswordCardState
                           .changePassword(newPasswordController.text);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Password changed successfully')),
+                          SnackBar(
+                            content: Text(
+                              'Password changed successfully',
+                              style: bodyTextStyle.copyWith(color: textPrimary),
+                            ),
+                            backgroundColor: accentPrimary,
+                          ),
                         );
-                      }
-                      if (context.mounted) {
                         Navigator.of(context).pop();
                       }
                     } catch (e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                              content: Text('Failed to change password: $e')),
+                            content: Text(
+                              'Failed to change password: $e',
+                              style: bodyTextStyle.copyWith(color: textPrimary),
+                            ),
+                            backgroundColor: feedbackAlert,
+                          ),
                         );
                       }
                     } finally {
-                      if (context.mounted) {
+                      if (mounted) {
                         setState(() {
                           isLoading = false;
                         });
                       }
                     }
                   },
-                  child: const Text('Change Password'),
                 ),
         ],
       ),
@@ -144,15 +190,16 @@ class _BottomChangePasswordCardState
 void showBottomChangePasswordCard(BuildContext context) {
   showModalBottomSheet(
     isScrollControlled: true,
-    enableDrag: false,
+    enableDrag: true,
     isDismissible: true,
     context: context,
+    backgroundColor: Colors.transparent, /// Transparent to show custom background
     builder: (context) {
       return Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: BottomChangePasswordCard(),
+        child: const BottomChangePasswordCard(),
       );
     },
   );

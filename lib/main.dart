@@ -9,8 +9,11 @@ import 'package:location/location.dart';
 import 'application/providers/settings_providers.dart';
 import 'theme.dart';
 import 'ui/home.dart';
+import 'ui/initial_route_handler.dart';
 import 'ui/pages/categories.dart';
 import 'ui/pages/onboarding.dart';
+import 'ui/pages/signin_page.dart';
+import 'ui/pages/signup_page.dart';
 
 final Location location = Location();
 
@@ -71,7 +74,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsProvider = ref.watch(settingsStateNotifierProvider);
+    // final settingsProvider = ref.watch(settingsStateNotifierProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Xplra',
@@ -84,9 +87,12 @@ class MyApp extends ConsumerWidget {
         //     : getTheme();
       }(),
       routes: {
-        '/': (context) => const Home(),
+        '/': (context) => const InitialRouteHandler(),
+        '/home': (context) => const Home(),
         '/onboarding': (context) => const OnboardingPage(),
         '/categories': (context) => const ChooseCategories(),
+        '/signin': (context) => const SignInPage(),
+        '/signup': (context) => const SignUpPage(),
       },
     );
   }
