@@ -98,15 +98,9 @@ class NearestAdventures extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
             child: Row(
               children: [
-                Icon(
-                  Icons.location_on,
-                  color: textPrimary,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
                 Text(
                   'Nearby Places',
-                  style: h3Style.copyWith(color: textPrimary),
+                  style: h2Style.copyWith(fontSize: 20, fontWeight: FontWeight.w400),
                 ),
                 const Spacer(),
               ],

@@ -24,12 +24,8 @@ mixin _$QuestInProgress {
   DateTime get startedAt => throw _privateConstructorUsedError;
   int? get timeInArea => throw _privateConstructorUsedError;
 
-  /// Serializes this QuestInProgress to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of QuestInProgress
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $QuestInProgressCopyWith<QuestInProgress> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -55,8 +51,6 @@ class _$QuestInProgressCopyWithImpl<$Res, $Val extends QuestInProgress>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of QuestInProgress
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -80,8 +74,6 @@ class _$QuestInProgressCopyWithImpl<$Res, $Val extends QuestInProgress>
     ) as $Val);
   }
 
-  /// Create a copy of QuestInProgress
-  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $QuestCopyWith<$Res> get quest {
@@ -113,8 +105,6 @@ class __$$QuestInProgressImplCopyWithImpl<$Res>
       _$QuestInProgressImpl _value, $Res Function(_$QuestInProgressImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of QuestInProgress
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -172,13 +162,11 @@ class _$QuestInProgressImpl implements _QuestInProgress {
                 other.timeInArea == timeInArea));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, quest, startedAt, timeInArea);
 
-  /// Create a copy of QuestInProgress
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$QuestInProgressImplCopyWith<_$QuestInProgressImpl> get copyWith =>
@@ -208,11 +196,8 @@ abstract class _QuestInProgress implements QuestInProgress {
   DateTime get startedAt;
   @override
   int? get timeInArea;
-
-  /// Create a copy of QuestInProgress
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$QuestInProgressImplCopyWith<_$QuestInProgressImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

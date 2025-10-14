@@ -27,12 +27,8 @@ mixin _$XploraProfile {
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get username => throw _privateConstructorUsedError;
 
-  /// Serializes this XploraProfile to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of XploraProfile
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $XploraProfileCopyWith<XploraProfile> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -62,8 +58,6 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of XploraProfile
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -128,8 +122,6 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
       _$XploraProfileImpl _value, $Res Function(_$XploraProfileImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of XploraProfile
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -225,14 +217,12 @@ class _$XploraProfileImpl implements _XploraProfile {
                 other.username == username));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, userId, experience,
       const DeepCollectionEquality().hash(_categories), avatarUrl, username);
 
-  /// Create a copy of XploraProfile
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$XploraProfileImplCopyWith<_$XploraProfileImpl> get copyWith =>
@@ -270,11 +260,8 @@ abstract class _XploraProfile implements XploraProfile {
   String? get avatarUrl;
   @override
   String? get username;
-
-  /// Create a copy of XploraProfile
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$XploraProfileImplCopyWith<_$XploraProfileImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

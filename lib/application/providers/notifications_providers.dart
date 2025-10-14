@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/quest.dart';
 import 'adventure_providers.dart';
-import 'auth_providers.dart';
+import 'auth_service_providers.dart';
 import 'quest_providers.dart';
 
 final userPreviousAdventuresProviderStream =

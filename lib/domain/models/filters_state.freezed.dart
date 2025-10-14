@@ -24,12 +24,8 @@ mixin _$FiltersState {
   int get minimumDistance => throw _privateConstructorUsedError;
   bool get filtersEnabled => throw _privateConstructorUsedError;
 
-  /// Serializes this FiltersState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of FiltersState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $FiltersStateCopyWith<FiltersState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -53,8 +49,6 @@ class _$FiltersStateCopyWithImpl<$Res, $Val extends FiltersState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of FiltersState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -98,8 +92,6 @@ class __$$FiltersStateImplCopyWithImpl<$Res>
       _$FiltersStateImpl _value, $Res Function(_$FiltersStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of FiltersState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -163,14 +155,12 @@ class _$FiltersStateImpl implements _FiltersState {
                 other.filtersEnabled == filtersEnabled));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode =>
       Object.hash(runtimeType, selectedType, minimumDistance, filtersEnabled);
 
-  /// Create a copy of FiltersState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$FiltersStateImplCopyWith<_$FiltersStateImpl> get copyWith =>
@@ -199,11 +189,8 @@ abstract class _FiltersState implements FiltersState {
   int get minimumDistance;
   @override
   bool get filtersEnabled;
-
-  /// Create a copy of FiltersState
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$FiltersStateImplCopyWith<_$FiltersStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:geolocator/geolocator.dart';
 
 import '../../domain/services/settings_crud_service.dart';
-import 'settings_providers.dart';
+import 'settings_crud_providers.dart';
 
 class LocationState {
   final Position? position;

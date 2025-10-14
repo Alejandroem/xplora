@@ -94,7 +94,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
-                          child: TextField(
+                          child: XploraTextField(
                             onChanged: (value) {
                               setState(() {
                                 _searchQuery = value;
@@ -103,11 +103,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                             style: bodyTextStyle.copyWith(
                               color: textPrimary,
                             ),
-                            decoration: InputDecoration(
-                              hintStyle: bodyTextStyle.copyWith(
-                                color: textSecondary,
-                                fontSize: 14,
-                              ),
                               hintText: 'Find your next adventure',
                               prefixIcon: Icon(
                                 Icons.search, 
@@ -118,31 +113,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                 horizontal: 16,
                                 vertical: 12,
                               ),
-                              filled: true,
-                              fillColor: midSurface,
-                              border: OutlineInputBorder(
-                                gapPadding: 0,
-                                borderSide: BorderSide(
-                                  color: cardContainerBorder,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: cardContainerBorder,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: accentPrimary,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
                           ),
                         ),
                         //icon to toggle filters

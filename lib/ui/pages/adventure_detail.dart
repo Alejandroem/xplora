@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../application/providers/auth_providers.dart';
+import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/boomark_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/bookmark.dart';

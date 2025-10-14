@@ -1,61 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme.dart';
+import '../../application/providers/auth_providers.dart';
+import '../../application/providers/settings_providers.dart';
+import '../../utils/snackbar_utils.dart';
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  ConsumerState<SignInPage> createState() => _SignInPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
+class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: GlassAppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/png/xplora-logo.png',
-              height: 24,
-              width: 24,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Xplra',
-              style: h2Style.copyWith(
-                color: textPrimary,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
+      appBar: const GlassAppBar(
+        title: 'logo',
         centerTitle: true,
       ),
       body: GradientBackground(
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Sign In title
-                  Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Sign In title
+                Center(
                     child: Text(
                       'Sign In',
                       style: h1Style.copyWith(
@@ -80,7 +53,6 @@ class _SignInPageState extends State<SignInPage> {
                   
                   // Email field
                   XploraTextField(
-                    controller: _emailController,
                     labelText: 'Email',
                     hintText: 'Enter your email address',
                     keyboardType: TextInputType.emailAddress,
@@ -89,49 +61,39 @@ class _SignInPageState extends State<SignInPage> {
                       color: textSecondary,
                       size: 20,
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
+                    onChanged: (value) {
+                      ref.read(loginFormNotifierProvider.notifier).setEmail(value.trim());
                     },
                   ),
                   const SizedBox(height: 20),
                   
                   // Password field
-                  XploraTextField(
-                    controller: _passwordController,
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
-                    obscureText: _obscurePassword,
-                    prefixIcon: Icon(
-                      Icons.lock_outline,
-                      color: textSecondary,
-                      size: 20,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: textSecondary,
-                        size: 20,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final loginState = ref.watch(loginFormNotifierProvider);
+                      return XploraTextField(
+                        labelText: 'Password',
+                        hintText: 'Enter your password',
+                        obscureText: loginState.obscureText,
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: textSecondary,
+                          size: 20,
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            ref.read(loginFormNotifierProvider.notifier).toggleObscureText();
+                          },
+                          icon: Icon(
+                            loginState.obscureText ? Icons.visibility_off : Icons.visibility,
+                            color: textSecondary,
+                            size: 20,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          ref.read(loginFormNotifierProvider.notifier).setPassword(value.trim());
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 32),
@@ -140,17 +102,55 @@ class _SignInPageState extends State<SignInPage> {
                   SizedBox(
                     width: double.infinity,
                     height: 56,
-                    child: PrimaryButton(
-                      text: 'Sign In',
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // TODO: Implement sign in logic
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Sign in functionality coming soon!'),
-                            ),
-                          );
-                        }
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        final loginState = ref.watch(loginFormNotifierProvider);
+                        return PrimaryButton(
+                          text: loginState.isLoading ? 'Signing in...' : 'Sign in',
+                          onPressed: loginState.isLoading ? null : () async {
+                            final loginNotifier = ref.read(loginFormNotifierProvider.notifier);
+                            
+                            try {
+                              await loginNotifier.login();
+                              
+                              // Check for errors
+                              final finalState = ref.read(loginFormNotifierProvider);
+                              if (finalState.errors.isNotEmpty) {
+                                if (context.mounted) {
+                                  showXploraSnackBar(
+                                    context,
+                                    finalState.errors.first,
+                                    isError: true,
+                                  );
+                                }
+                              } else {
+                                // Success - refresh settings and navigate
+                                if (context.mounted) {
+                                  // Refresh settings to ensure they're loaded
+                                  ref.invalidate(settingsStateNotifierProvider);
+                                  
+                                  showXploraSnackBar(
+                                    context,
+                                    'Signed in successfully!',
+                                  );
+                                  Navigator.of(context).pop();
+                                }
+                              }
+                            } catch (e) {
+                              // Get the current state to show the actual error
+                              final finalState = ref.read(loginFormNotifierProvider);
+                              if (context.mounted) {
+                                showXploraSnackBar(
+                                  context,
+                                  finalState.errors.isNotEmpty 
+                                      ? finalState.errors.first 
+                                      : 'Sign in failed. Please try again.',
+                                  isError: true,
+                                );
+                              }
+                            }
+                          },
+                        );
                       },
                     ),
                   ),
@@ -168,7 +168,7 @@ class _SignInPageState extends State<SignInPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
-                          'or',
+                          'or continue with',
                           style: bodyTextStyle.copyWith(
                             color: textSecondary,
                             fontSize: 14,
@@ -193,10 +193,9 @@ class _SignInPageState extends State<SignInPage> {
                         iconPath: 'assets/png/google-icon.png',
                         onPressed: () {
                           // TODO: Implement Google sign in
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Google sign in coming soon!'),
-                            ),
+                          showXploraSnackBar(
+                            context,
+                            'Google sign in coming soon!',
                           );
                         },
                       ),
@@ -204,10 +203,9 @@ class _SignInPageState extends State<SignInPage> {
                         icon: Icons.apple,
                         onPressed: () {
                           // TODO: Implement Apple sign in
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Apple sign in coming soon!'),
-                            ),
+                          showXploraSnackBar(
+                            context,
+                            'Apple sign in coming soon!',
                           );
                         },
                       ),
@@ -215,10 +213,9 @@ class _SignInPageState extends State<SignInPage> {
                         iconPath: 'assets/png/github-icon.png',
                         onPressed: () {
                           // TODO: Implement GitHub sign in
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('GitHub sign in coming soon!'),
-                            ),
+                          showXploraSnackBar(
+                            context,
+                            'GitHub sign in coming soon!',
                           );
                         },
                       ),
@@ -231,23 +228,22 @@ class _SignInPageState extends State<SignInPage> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed('/signup');
+                        Navigator.of(context).pushReplacementNamed('/signup');
                       },
-                      child: RichText(
-                        text: TextSpan(
+                      child: Text.rich(
+                        style: bodyTextStyle,
+                        TextSpan(
                           children: [
                             TextSpan(
                               text: "Don't have an account? ",
                               style: bodyTextStyle.copyWith(
                                 color: textSecondary,
-                                fontSize: 14,
                               ),
                             ),
                             TextSpan(
                               text: 'Sign Up',
                               style: bodyTextStyle.copyWith(
                                 color: accentPrimary,
-                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -262,8 +258,7 @@ class _SignInPageState extends State<SignInPage> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildSocialIconButton({

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/bookmark.dart';
 import '../../domain/services/boomark_crud_service.dart';
 import '../../infrastructure/services/firebase_bookmark_crud_service.dart';
-import 'auth_providers.dart';
+import 'auth_service_providers.dart';
 
 final boomarkCrudServiceProvider = Provider<BookmarkCrudService>((ref) {
   return FirebaseBookmarkCrudService();

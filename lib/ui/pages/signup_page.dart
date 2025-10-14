@@ -1,68 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme.dart';
+import '../../application/providers/auth_providers.dart';
+import '../../application/providers/settings_providers.dart';
+import '../../utils/snackbar_utils.dart';
 
-class SignUpPage extends StatefulWidget {
+class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  ConsumerState<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+class _SignUpPageState extends ConsumerState<SignUpPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: GlassAppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/png/xplora-logo.png',
-              height: 24,
-              width: 24,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Xplra',
-              style: h2Style.copyWith(
-                color: textPrimary,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
+      appBar: const GlassAppBar(
+        title: 'logo',
         centerTitle: true,
       ),
       body: GradientBackground(
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                   // Sign Up title
                   Center(
                     child: Text(
@@ -87,98 +55,27 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   const SizedBox(height: 48),
                   
-                  // Username field
-                  XploraTextField(
-                    controller: _usernameController,
-                    labelText: 'Username',
-                    hintText: 'Choose a unique username',
-                    prefixIcon: Icon(
-                      Icons.person_outline,
-                      color: textSecondary,
-                      size: 20,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a username';
-                      }
-                      if (value.length < 3) {
-                        return 'Username must be at least 3 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
                   
-                  // First and Last name fields in same row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: XploraTextField(
-                          controller: _firstNameController,
-                          labelText: 'First Name',
-                          hintText: 'First name',
-                          prefixIcon: Icon(
-                            Icons.person_outline,
-                            color: textSecondary,
-                            size: 20,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Required';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: XploraTextField(
-                          controller: _lastNameController,
-                          labelText: 'Last Name',
-                          hintText: 'Last name',
-                          prefixIcon: Icon(
-                            Icons.person_outline,
-                            color: textSecondary,
-                            size: 20,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Required';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
                   
                   // Email field
                   XploraTextField(
-                    controller: _emailController,
                     labelText: 'Email',
                     hintText: 'Enter your email address',
                     keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
                     prefixIcon: Icon(
                       Icons.email_outlined,
                       color: textSecondary,
                       size: 20,
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
+                    onChanged: (value) {
+                      ref.read(signupFormNotifierProvider.notifier).setEmail(value.trim());
                     },
                   ),
                   const SizedBox(height: 20),
                   
                   // Password field
                   XploraTextField(
-                    controller: _passwordController,
                     labelText: 'Password',
                     hintText: 'Create a strong password',
                     obscureText: _obscurePassword,
@@ -199,21 +96,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         size: 20,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
+                    onChanged: (value) {
+                      ref.read(signupFormNotifierProvider.notifier).setPassword(value.trim());
                     },
                   ),
                   const SizedBox(height: 20),
                   
                   // Confirm Password field
                   XploraTextField(
-                    controller: _confirmPasswordController,
                     labelText: 'Confirm Password',
                     hintText: 'Confirm your password',
                     obscureText: _obscureConfirmPassword,
@@ -234,14 +124,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         size: 20,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
-                      }
-                      if (value != _passwordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
+                    onChanged: (value) {
+                      ref.read(signupFormNotifierProvider.notifier).setConfirmPassword(value.trim());
                     },
                   ),
                   const SizedBox(height: 32),
@@ -250,17 +134,42 @@ class _SignUpPageState extends State<SignUpPage> {
                   SizedBox(
                     width: double.infinity,
                     height: 56,
-                    child: PrimaryButton(
-                      text: 'Sign Up',
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // TODO: Implement sign up logic
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Sign up functionality coming soon!'),
-                            ),
-                          );
-                        }
+                    child: Consumer(
+                      builder: (ctx, ref, child)
+                      {
+                        final isLoading = ref.watch(signupFormNotifierProvider).isLoading;
+                        return PrimaryButton(
+                          text: isLoading ? 'Signing up...' : 'Sign up',
+                          onPressed: isLoading ? null : () async {
+                            final signUpNotifier =
+                                ref.read(signupFormNotifierProvider.notifier);
+
+
+                            // Perform sign up
+                            await signUpNotifier.signUp();
+
+                            // Check for errors
+                            final finalState =
+                                ref.read(signupFormNotifierProvider);
+                            if (finalState.errors.isNotEmpty) {
+                              if (context.mounted) {
+                                showXploraSnackBar(
+                                  context,
+                                  finalState.errors.first,
+                                  isError: true,
+                                );
+                              }
+                            } else {
+                              // Success - navigate to profile completion screen
+                              if (context.mounted) {
+                                // Refresh settings to ensure they're loaded
+                                ref.invalidate(settingsStateNotifierProvider);
+                                
+                                Navigator.of(context).pushReplacementNamed('/complete-profile');
+                              }
+                            }
+                          },
+                        );
                       },
                     ),
                   ),
@@ -278,7 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
-                          'or',
+                          'or continue with',
                           style: bodyTextStyle.copyWith(
                             color: textSecondary,
                             fontSize: 14,
@@ -303,10 +212,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         iconPath: 'assets/png/google-icon.png',
                         onPressed: () {
                           // TODO: Implement Google sign up
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Google sign up coming soon!'),
-                            ),
+                          showXploraSnackBar(
+                            context,
+                            'Google sign up coming soon!',
                           );
                         },
                       ),
@@ -314,10 +222,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         icon: Icons.apple,
                         onPressed: () {
                           // TODO: Implement Apple sign up
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Apple sign up coming soon!'),
-                            ),
+                          showXploraSnackBar(
+                            context,
+                            'Apple sign up coming soon!',
                           );
                         },
                       ),
@@ -325,10 +232,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         iconPath: 'assets/png/github-icon.png',
                         onPressed: () {
                           // TODO: Implement GitHub sign up
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('GitHub sign up coming soon!'),
-                            ),
+                          showXploraSnackBar(
+                            context,
+                            'GitHub sign up coming soon!',
                           );
                         },
                       ),
@@ -341,23 +247,22 @@ class _SignUpPageState extends State<SignUpPage> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed('/signin');
+                        Navigator.of(context).pushReplacementNamed('/signin');
                       },
-                      child: RichText(
-                        text: TextSpan(
+                      child: Text.rich(
+                        style: bodyTextStyle,
+                        TextSpan(
                           children: [
                             TextSpan(
                               text: 'Already have an account? ',
                               style: bodyTextStyle.copyWith(
                                 color: textSecondary,
-                                fontSize: 14,
                               ),
                             ),
                             TextSpan(
-                              text: 'Sign In',
+                              text: 'Sign in',
                               style: bodyTextStyle.copyWith(
                                 color: accentPrimary,
-                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -372,8 +277,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildSocialIconButton({

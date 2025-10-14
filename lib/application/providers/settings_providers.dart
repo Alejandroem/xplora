@@ -4,8 +4,8 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../domain/models/setting.dart';
 import '../../domain/services/auth_service.dart';
 import '../../domain/services/settings_crud_service.dart';
-import '../../infrastructure/services/firebase_settings_crud_service.dart';
-import 'auth_providers.dart';
+import 'auth_service_providers.dart';
+import 'settings_crud_providers.dart';
 
 const _kIsDarkMode = 'isDarkMode';
 const _kIsNotificationsEnabled = 'isNotificationsEnabled';
@@ -223,7 +223,3 @@ final settingsStateNotifierProvider =
     ),
   );
 });
-
-final settingsCrudServiceProvider = Provider<SettingsCrudService>(
-  (ref) => FirebaseSettingsCrudService(),
-);

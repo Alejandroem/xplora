@@ -41,12 +41,8 @@ mixin _$Adventure {
   DateTime? get completedAt => throw _privateConstructorUsedError;
   int? get hoursToCompleteAgain => throw _privateConstructorUsedError;
 
-  /// Serializes this Adventure to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Adventure
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $AdventureCopyWith<Adventure> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -87,8 +83,6 @@ class _$AdventureCopyWithImpl<$Res, $Val extends Adventure>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Adventure
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -225,8 +219,6 @@ class __$$AdventureImplCopyWithImpl<$Res>
       _$AdventureImpl _value, $Res Function(_$AdventureImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Adventure
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -445,7 +437,7 @@ class _$AdventureImpl implements _Adventure {
                 other.hoursToCompleteAgain == hoursToCompleteAgain));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -468,9 +460,7 @@ class _$AdventureImpl implements _Adventure {
       completedAt,
       hoursToCompleteAgain);
 
-  /// Create a copy of Adventure
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$AdventureImplCopyWith<_$AdventureImpl> get copyWith =>
@@ -511,11 +501,10 @@ abstract class _Adventure implements Adventure {
   @override
   String? get id;
   @override
-  String? get userId; //Only set if a user already got through it
-  @override
-  String?
-      get adventureId; //Only set if a user already got through it as it should be the old adventure id
-  @override
+  String? get userId;
+  @override //Only set if a user already got through it
+  String? get adventureId;
+  @override //Only set if a user already got through it as it should be the old adventure id
   String? get category;
   @override
   bool? get featured;
@@ -545,11 +534,8 @@ abstract class _Adventure implements Adventure {
   DateTime? get completedAt;
   @override
   int? get hoursToCompleteAgain;
-
-  /// Create a copy of Adventure
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$AdventureImplCopyWith<_$AdventureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

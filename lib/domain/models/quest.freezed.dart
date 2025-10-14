@@ -39,12 +39,8 @@ mixin _$Quest {
   DateTime? get completedAt => throw _privateConstructorUsedError;
   int? get hoursToCompleteAgain => throw _privateConstructorUsedError;
 
-  /// Serializes this Quest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Quest
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $QuestCopyWith<Quest> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -84,8 +80,6 @@ class _$QuestCopyWithImpl<$Res, $Val extends Quest>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Quest
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -221,8 +215,6 @@ class __$$QuestImplCopyWithImpl<$Res>
       _$QuestImpl _value, $Res Function(_$QuestImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Quest
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -429,7 +421,7 @@ class _$QuestImpl implements _Quest {
                 other.hoursToCompleteAgain == hoursToCompleteAgain));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -452,9 +444,7 @@ class _$QuestImpl implements _Quest {
       completedAt,
       hoursToCompleteAgain);
 
-  /// Create a copy of Quest
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$QuestImplCopyWith<_$QuestImpl> get copyWith =>
@@ -527,11 +517,8 @@ abstract class _Quest implements Quest {
   DateTime? get completedAt;
   @override
   int? get hoursToCompleteAgain;
-
-  /// Create a copy of Quest
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$QuestImplCopyWith<_$QuestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

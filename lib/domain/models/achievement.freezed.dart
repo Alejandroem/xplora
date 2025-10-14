@@ -29,12 +29,8 @@ mixin _$Achievement {
   Trigger get trigger => throw _privateConstructorUsedError;
   String get triggerValue => throw _privateConstructorUsedError;
 
-  /// Serializes this Achievement to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Achievement
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $AchievementCopyWith<Achievement> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -66,8 +62,6 @@ class _$AchievementCopyWithImpl<$Res, $Val extends Achievement>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Achievement
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -144,8 +138,6 @@ class __$$AchievementImplCopyWithImpl<$Res>
       _$AchievementImpl _value, $Res Function(_$AchievementImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Achievement
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -251,14 +243,12 @@ class _$AchievementImpl implements _Achievement {
                 other.triggerValue == triggerValue));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, userId, title, description,
       icon, dateAchieved, trigger, triggerValue);
 
-  /// Create a copy of Achievement
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$AchievementImplCopyWith<_$AchievementImpl> get copyWith =>
@@ -302,11 +292,8 @@ abstract class _Achievement implements Achievement {
   Trigger get trigger;
   @override
   String get triggerValue;
-
-  /// Create a copy of Achievement
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$AchievementImplCopyWith<_$AchievementImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

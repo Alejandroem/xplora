@@ -8,7 +8,7 @@ import '../../domain/services/adventure_crud_service.dart';
 import '../../infrastructure/services/firebase_adventure_crud_service.dart';
 import '../notifiers/adventure_in_progress.dart';
 import 'achievements_providers.dart';
-import 'auth_providers.dart';
+import 'auth_service_providers.dart';
 import 'location_providers.dart';
 import 'xplorauser_providers.dart';
 

@@ -20,28 +20,17 @@ SignupForm _$SignupFormFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SignupForm {
-  String get username => throw _privateConstructorUsedError;
-  bool get touchedUsername => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   bool get touchedEmail => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   bool get touchedPassword => throw _privateConstructorUsedError;
   String get confirmPassword => throw _privateConstructorUsedError;
   bool get touchedConfirmPassword => throw _privateConstructorUsedError;
-  String get firstName => throw _privateConstructorUsedError;
-  bool get touchedFirstName => throw _privateConstructorUsedError;
-  String get lastName => throw _privateConstructorUsedError;
-  bool get touchedLastName => throw _privateConstructorUsedError;
   List<String> get errors => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
-  bool get isUsernameUnique => throw _privateConstructorUsedError;
 
-  /// Serializes this SignupForm to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of SignupForm
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $SignupFormCopyWith<SignupForm> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -53,21 +42,14 @@ abstract class $SignupFormCopyWith<$Res> {
       _$SignupFormCopyWithImpl<$Res, SignupForm>;
   @useResult
   $Res call(
-      {String username,
-      bool touchedUsername,
-      String email,
+      {String email,
       bool touchedEmail,
       String password,
       bool touchedPassword,
       String confirmPassword,
       bool touchedConfirmPassword,
-      String firstName,
-      bool touchedFirstName,
-      String lastName,
-      bool touchedLastName,
       List<String> errors,
-      bool isLoading,
-      bool isUsernameUnique});
+      bool isLoading});
 }
 
 /// @nodoc
@@ -80,36 +62,19 @@ class _$SignupFormCopyWithImpl<$Res, $Val extends SignupForm>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of SignupForm
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? username = null,
-    Object? touchedUsername = null,
     Object? email = null,
     Object? touchedEmail = null,
     Object? password = null,
     Object? touchedPassword = null,
     Object? confirmPassword = null,
     Object? touchedConfirmPassword = null,
-    Object? firstName = null,
-    Object? touchedFirstName = null,
-    Object? lastName = null,
-    Object? touchedLastName = null,
     Object? errors = null,
     Object? isLoading = null,
-    Object? isUsernameUnique = null,
   }) {
     return _then(_value.copyWith(
-      username: null == username
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String,
-      touchedUsername: null == touchedUsername
-          ? _value.touchedUsername
-          : touchedUsername // ignore: cast_nullable_to_non_nullable
-              as bool,
       email: null == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
@@ -134,22 +99,6 @@ class _$SignupFormCopyWithImpl<$Res, $Val extends SignupForm>
           ? _value.touchedConfirmPassword
           : touchedConfirmPassword // ignore: cast_nullable_to_non_nullable
               as bool,
-      firstName: null == firstName
-          ? _value.firstName
-          : firstName // ignore: cast_nullable_to_non_nullable
-              as String,
-      touchedFirstName: null == touchedFirstName
-          ? _value.touchedFirstName
-          : touchedFirstName // ignore: cast_nullable_to_non_nullable
-              as bool,
-      lastName: null == lastName
-          ? _value.lastName
-          : lastName // ignore: cast_nullable_to_non_nullable
-              as String,
-      touchedLastName: null == touchedLastName
-          ? _value.touchedLastName
-          : touchedLastName // ignore: cast_nullable_to_non_nullable
-              as bool,
       errors: null == errors
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -157,10 +106,6 @@ class _$SignupFormCopyWithImpl<$Res, $Val extends SignupForm>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isUsernameUnique: null == isUsernameUnique
-          ? _value.isUsernameUnique
-          : isUsernameUnique // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
@@ -175,21 +120,14 @@ abstract class _$$SignupFormImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String username,
-      bool touchedUsername,
-      String email,
+      {String email,
       bool touchedEmail,
       String password,
       bool touchedPassword,
       String confirmPassword,
       bool touchedConfirmPassword,
-      String firstName,
-      bool touchedFirstName,
-      String lastName,
-      bool touchedLastName,
       List<String> errors,
-      bool isLoading,
-      bool isUsernameUnique});
+      bool isLoading});
 }
 
 /// @nodoc
@@ -200,36 +138,19 @@ class __$$SignupFormImplCopyWithImpl<$Res>
       _$SignupFormImpl _value, $Res Function(_$SignupFormImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of SignupForm
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? username = null,
-    Object? touchedUsername = null,
     Object? email = null,
     Object? touchedEmail = null,
     Object? password = null,
     Object? touchedPassword = null,
     Object? confirmPassword = null,
     Object? touchedConfirmPassword = null,
-    Object? firstName = null,
-    Object? touchedFirstName = null,
-    Object? lastName = null,
-    Object? touchedLastName = null,
     Object? errors = null,
     Object? isLoading = null,
-    Object? isUsernameUnique = null,
   }) {
     return _then(_$SignupFormImpl(
-      username: null == username
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String,
-      touchedUsername: null == touchedUsername
-          ? _value.touchedUsername
-          : touchedUsername // ignore: cast_nullable_to_non_nullable
-              as bool,
       email: null == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
@@ -254,22 +175,6 @@ class __$$SignupFormImplCopyWithImpl<$Res>
           ? _value.touchedConfirmPassword
           : touchedConfirmPassword // ignore: cast_nullable_to_non_nullable
               as bool,
-      firstName: null == firstName
-          ? _value.firstName
-          : firstName // ignore: cast_nullable_to_non_nullable
-              as String,
-      touchedFirstName: null == touchedFirstName
-          ? _value.touchedFirstName
-          : touchedFirstName // ignore: cast_nullable_to_non_nullable
-              as bool,
-      lastName: null == lastName
-          ? _value.lastName
-          : lastName // ignore: cast_nullable_to_non_nullable
-              as String,
-      touchedLastName: null == touchedLastName
-          ? _value.touchedLastName
-          : touchedLastName // ignore: cast_nullable_to_non_nullable
-              as bool,
       errors: null == errors
           ? _value._errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -277,10 +182,6 @@ class __$$SignupFormImplCopyWithImpl<$Res>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isUsernameUnique: null == isUsernameUnique
-          ? _value.isUsernameUnique
-          : isUsernameUnique // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -290,30 +191,19 @@ class __$$SignupFormImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SignupFormImpl implements _SignupForm {
   const _$SignupFormImpl(
-      {required this.username,
-      required this.touchedUsername,
-      required this.email,
+      {required this.email,
       required this.touchedEmail,
       required this.password,
       required this.touchedPassword,
       required this.confirmPassword,
       required this.touchedConfirmPassword,
-      required this.firstName,
-      required this.touchedFirstName,
-      required this.lastName,
-      required this.touchedLastName,
       required final List<String> errors,
-      required this.isLoading,
-      required this.isUsernameUnique})
+      required this.isLoading})
       : _errors = errors;
 
   factory _$SignupFormImpl.fromJson(Map<String, dynamic> json) =>
       _$$SignupFormImplFromJson(json);
 
-  @override
-  final String username;
-  @override
-  final bool touchedUsername;
   @override
   final String email;
   @override
@@ -326,14 +216,6 @@ class _$SignupFormImpl implements _SignupForm {
   final String confirmPassword;
   @override
   final bool touchedConfirmPassword;
-  @override
-  final String firstName;
-  @override
-  final bool touchedFirstName;
-  @override
-  final String lastName;
-  @override
-  final bool touchedLastName;
   final List<String> _errors;
   @override
   List<String> get errors {
@@ -344,12 +226,10 @@ class _$SignupFormImpl implements _SignupForm {
 
   @override
   final bool isLoading;
-  @override
-  final bool isUsernameUnique;
 
   @override
   String toString() {
-    return 'SignupForm(username: $username, touchedUsername: $touchedUsername, email: $email, touchedEmail: $touchedEmail, password: $password, touchedPassword: $touchedPassword, confirmPassword: $confirmPassword, touchedConfirmPassword: $touchedConfirmPassword, firstName: $firstName, touchedFirstName: $touchedFirstName, lastName: $lastName, touchedLastName: $touchedLastName, errors: $errors, isLoading: $isLoading, isUsernameUnique: $isUsernameUnique)';
+    return 'SignupForm(email: $email, touchedEmail: $touchedEmail, password: $password, touchedPassword: $touchedPassword, confirmPassword: $confirmPassword, touchedConfirmPassword: $touchedConfirmPassword, errors: $errors, isLoading: $isLoading)';
   }
 
   @override
@@ -357,10 +237,6 @@ class _$SignupFormImpl implements _SignupForm {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SignupFormImpl &&
-            (identical(other.username, username) ||
-                other.username == username) &&
-            (identical(other.touchedUsername, touchedUsername) ||
-                other.touchedUsername == touchedUsername) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.touchedEmail, touchedEmail) ||
                 other.touchedEmail == touchedEmail) &&
@@ -372,44 +248,25 @@ class _$SignupFormImpl implements _SignupForm {
                 other.confirmPassword == confirmPassword) &&
             (identical(other.touchedConfirmPassword, touchedConfirmPassword) ||
                 other.touchedConfirmPassword == touchedConfirmPassword) &&
-            (identical(other.firstName, firstName) ||
-                other.firstName == firstName) &&
-            (identical(other.touchedFirstName, touchedFirstName) ||
-                other.touchedFirstName == touchedFirstName) &&
-            (identical(other.lastName, lastName) ||
-                other.lastName == lastName) &&
-            (identical(other.touchedLastName, touchedLastName) ||
-                other.touchedLastName == touchedLastName) &&
             const DeepCollectionEquality().equals(other._errors, _errors) &&
             (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading) &&
-            (identical(other.isUsernameUnique, isUsernameUnique) ||
-                other.isUsernameUnique == isUsernameUnique));
+                other.isLoading == isLoading));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      username,
-      touchedUsername,
       email,
       touchedEmail,
       password,
       touchedPassword,
       confirmPassword,
       touchedConfirmPassword,
-      firstName,
-      touchedFirstName,
-      lastName,
-      touchedLastName,
       const DeepCollectionEquality().hash(_errors),
-      isLoading,
-      isUsernameUnique);
+      isLoading);
 
-  /// Create a copy of SignupForm
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$SignupFormImplCopyWith<_$SignupFormImpl> get copyWith =>
@@ -425,29 +282,18 @@ class _$SignupFormImpl implements _SignupForm {
 
 abstract class _SignupForm implements SignupForm {
   const factory _SignupForm(
-      {required final String username,
-      required final bool touchedUsername,
-      required final String email,
+      {required final String email,
       required final bool touchedEmail,
       required final String password,
       required final bool touchedPassword,
       required final String confirmPassword,
       required final bool touchedConfirmPassword,
-      required final String firstName,
-      required final bool touchedFirstName,
-      required final String lastName,
-      required final bool touchedLastName,
       required final List<String> errors,
-      required final bool isLoading,
-      required final bool isUsernameUnique}) = _$SignupFormImpl;
+      required final bool isLoading}) = _$SignupFormImpl;
 
   factory _SignupForm.fromJson(Map<String, dynamic> json) =
       _$SignupFormImpl.fromJson;
 
-  @override
-  String get username;
-  @override
-  bool get touchedUsername;
   @override
   String get email;
   @override
@@ -461,24 +307,11 @@ abstract class _SignupForm implements SignupForm {
   @override
   bool get touchedConfirmPassword;
   @override
-  String get firstName;
-  @override
-  bool get touchedFirstName;
-  @override
-  String get lastName;
-  @override
-  bool get touchedLastName;
-  @override
   List<String> get errors;
   @override
   bool get isLoading;
   @override
-  bool get isUsernameUnique;
-
-  /// Create a copy of SignupForm
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$SignupFormImplCopyWith<_$SignupFormImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

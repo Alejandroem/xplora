@@ -14,6 +14,7 @@ import 'ui/pages/categories.dart';
 import 'ui/pages/onboarding.dart';
 import 'ui/pages/signin_page.dart';
 import 'ui/pages/signup_page.dart';
+import 'ui/pages/complete_profile_page.dart';
 
 final Location location = Location();
 
@@ -93,6 +94,7 @@ class MyApp extends ConsumerWidget {
         '/categories': (context) => const ChooseCategories(),
         '/signin': (context) => const SignInPage(),
         '/signup': (context) => const SignUpPage(),
+        '/complete-profile': (context) => const CompleteProfilePage(),
       },
     );
   }

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import '../../application/providers/auth_providers.dart';
+import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/quest_providers.dart';
 import '../../domain/models/quest.dart';
 import '../../theme.dart';

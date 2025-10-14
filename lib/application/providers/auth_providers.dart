@@ -5,13 +5,10 @@ import '../notifiers/signup_notifier.dart';
 import '../../domain/models/login_form.dart';
 import '../../domain/models/signup_form.dart';
 import '../../domain/models/xplora_profile.dart';
-import '../../domain/services/auth_service.dart';
-import '../../infrastructure/services/firebase_auth_service.dart';
 import 'xplorauser_providers.dart';
+import 'settings_crud_providers.dart';
+import 'auth_service_providers.dart';
 
-final authServiceProvider = Provider<AuthService>((ref) {
-  return FirebaseAuthService();
-});
 
 final isAuthenticatedProvider = StreamProvider.autoDispose((ref) {
   final authService = ref.watch(authServiceProvider);
@@ -102,6 +99,7 @@ final loginFormNotifierProvider =
     StateNotifierProvider<LoginFormNotifier, LoginForm>((ref) {
   final authService = ref.watch(authServiceProvider);
   final profileService = ref.watch(profileServiceProvider);
+  final settingsService = ref.watch(settingsCrudServiceProvider);
   return LoginFormNotifier(
     const LoginForm(
       email: '',
@@ -114,6 +112,7 @@ final loginFormNotifierProvider =
     ),
     authService,
     profileService,
+    settingsService,
   );
 });
 
@@ -121,10 +120,9 @@ final signupFormNotifierProvider =
     StateNotifierProvider<SignupFormNotifier, SignupForm>((ref) {
   final authService = ref.watch(authServiceProvider);
   final profileService = ref.watch(profileServiceProvider);
+  final settingsService = ref.watch(settingsCrudServiceProvider);
   return SignupFormNotifier(
     const SignupForm(
-      username: '',
-      touchedUsername: false,
       email: '',
       touchedEmail: false,
       password: '',
@@ -132,14 +130,10 @@ final signupFormNotifierProvider =
       errors: [],
       confirmPassword: '',
       touchedConfirmPassword: false,
-      firstName: '',
-      touchedFirstName: false,
-      lastName: '',
-      touchedLastName: false,
       isLoading: false,
-      isUsernameUnique: false,
     ),
     authService,
     profileService,
+    settingsService,
   );
 });

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_providers.dart';
+import '../../application/providers/auth_service_providers.dart';
 import '../../theme.dart';
 import '../dialogs/bottom_login_card.dart';
 import '../pages/profile_page.dart';
@@ -17,7 +18,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final isAuthenticatedAsyncValue = ref.watch(isAuthenticatedProvider);
 
     return GlassAppBar(
-      title: 'Xplra',
+      title: 'logo',
       centerTitle: true,
       actions: isAuthenticatedAsyncValue.when(
         data: (isAuthenticated) {

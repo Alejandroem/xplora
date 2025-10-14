@@ -25,12 +25,8 @@ mixin _$Bookmark {
   BookmarkType get type => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
 
-  /// Serializes this Bookmark to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Bookmark
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $BookmarkCopyWith<Bookmark> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -53,8 +49,6 @@ class _$BookmarkCopyWithImpl<$Res, $Val extends Bookmark>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Bookmark
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -103,8 +97,6 @@ class __$$BookmarkImplCopyWithImpl<$Res>
       _$BookmarkImpl _value, $Res Function(_$BookmarkImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Bookmark
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -172,13 +164,11 @@ class _$BookmarkImpl implements _Bookmark {
             (identical(other.userId, userId) || other.userId == userId));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, entityId, type, userId);
 
-  /// Create a copy of Bookmark
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$BookmarkImplCopyWith<_$BookmarkImpl> get copyWith =>
@@ -210,11 +200,8 @@ abstract class _Bookmark implements Bookmark {
   BookmarkType get type;
   @override
   String get userId;
-
-  /// Create a copy of Bookmark
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$BookmarkImplCopyWith<_$BookmarkImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

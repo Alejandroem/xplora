@@ -9,6 +9,7 @@ import '../application/providers/adventure_providers.dart';
 import '../application/providers/deep_links_providers.dart';
 import '../application/providers/navigation_providers.dart';
 import '../application/providers/auth_providers.dart';
+import '../application/providers/auth_service_providers.dart';
 import '../application/providers/local_storage_providers.dart';
 import '../application/providers/notifications_provider.dart';
 import '../application/providers/notifications_providers.dart';

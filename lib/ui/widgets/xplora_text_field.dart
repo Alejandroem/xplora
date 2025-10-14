@@ -9,6 +9,8 @@ class XploraTextField extends StatelessWidget {
   final String? hintText;
   final bool obscureText;
   final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final TextCapitalization textCapitalization;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final String? Function(String?)? validator;
@@ -25,6 +27,8 @@ class XploraTextField extends StatelessWidget {
     this.hintText,
     this.obscureText = false,
     this.keyboardType,
+    this.textInputAction,
+    this.textCapitalization = TextCapitalization.none,
     this.suffixIcon,
     this.prefixIcon,
     this.validator,
@@ -38,9 +42,14 @@ class XploraTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onTapOutside: (event) {
+        FocusScope.of(context).unfocus();
+      },
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      textCapitalization: textCapitalization,
       onChanged: onChanged,
       maxLines: maxLines,
       enabled: enabled,
@@ -49,7 +58,7 @@ class XploraTextField extends StatelessWidget {
         labelText: labelText,
         hintText: hintText,
         labelStyle: bodyTextStyle.copyWith(color: textSecondary),
-        hintStyle: bodyTextStyle.copyWith(color: textSecondary.withOpacity(0.6)),
+        hintStyle: bodyTextStyle.copyWith(color: textSecondary.withOpacity(0.6), fontSize: 14),
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
         enabledBorder: OutlineInputBorder(

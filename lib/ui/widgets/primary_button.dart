@@ -6,7 +6,7 @@ import '../../theme/typography.dart';
 /// Hover state increases glow intensity
 class PrimaryButton extends StatefulWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool usePurple; /// If true, uses purple; if false, uses green (default)
   final double? fontSize;
   final EdgeInsetsGeometry? padding;
@@ -15,7 +15,7 @@ class PrimaryButton extends StatefulWidget {
   const PrimaryButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.usePurple = false,
     this.fontSize,
     this.padding,
@@ -48,7 +48,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
               vertical: 8,
             ),
             decoration: BoxDecoration(
-              color: buttonColor,
+              color: widget.onPressed == null ? textSecondary : buttonColor,
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(

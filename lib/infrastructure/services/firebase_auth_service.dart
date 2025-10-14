@@ -60,6 +60,8 @@ class FirebaseAuthService extends AuthService {
       password: password,
     );
 
+    final now = DateTime.now().toUtc().toIso8601String();
+
     CollectionReference collectionReference =
         FirebaseFirestore.instance.collection('users');
     await collectionReference.doc(userCredential.user!.uid).set({
@@ -67,6 +69,9 @@ class FirebaseAuthService extends AuthService {
       'id': userCredential.user!.uid,
       'name': name,
       'username': username,
+      'type': 'user',
+      'createdAt': now,
+      'updatedAt': now,
     });
 
     //send verification email

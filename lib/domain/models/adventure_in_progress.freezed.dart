@@ -24,12 +24,8 @@ mixin _$AdventureInProgress {
   DateTime get enteredPlaceAt => throw _privateConstructorUsedError;
   int get completeness => throw _privateConstructorUsedError;
 
-  /// Serializes this AdventureInProgress to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of AdventureInProgress
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $AdventureInProgressCopyWith<AdventureInProgress> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -55,8 +51,6 @@ class _$AdventureInProgressCopyWithImpl<$Res, $Val extends AdventureInProgress>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AdventureInProgress
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -80,8 +74,6 @@ class _$AdventureInProgressCopyWithImpl<$Res, $Val extends AdventureInProgress>
     ) as $Val);
   }
 
-  /// Create a copy of AdventureInProgress
-  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AdventureCopyWith<$Res> get adventure {
@@ -113,8 +105,6 @@ class __$$AdventureInProgressImplCopyWithImpl<$Res>
       $Res Function(_$AdventureInProgressImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of AdventureInProgress
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -175,14 +165,12 @@ class _$AdventureInProgressImpl implements _AdventureInProgress {
                 other.completeness == completeness));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode =>
       Object.hash(runtimeType, adventure, enteredPlaceAt, completeness);
 
-  /// Create a copy of AdventureInProgress
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$AdventureInProgressImplCopyWith<_$AdventureInProgressImpl> get copyWith =>
@@ -212,11 +200,8 @@ abstract class _AdventureInProgress implements AdventureInProgress {
   DateTime get enteredPlaceAt;
   @override
   int get completeness;
-
-  /// Create a copy of AdventureInProgress
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$AdventureInProgressImplCopyWith<_$AdventureInProgressImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -43,38 +43,38 @@ void showBottomSignUpCard(BuildContext context, {bool modal = true}) {
                             labelText: 'Username',
                           ),
                           onChanged: (value) async {
-                            signUpNotifier.setUsername(value);
+                            // signUpNotifier.setUsername(value);
 
-                            if (value.isNotEmpty) {
-                              final profileService =
-                                  ref.read(profileServiceProvider);
+                            // if (value.isNotEmpty) {
+                            //   final profileService =
+                            //       ref.read(profileServiceProvider);
 
-                              // Check if the username is unique
-                              final existingUsers =
-                                  await profileService.readByFilters([
-                                {
-                                  'field': 'username',
-                                  'operator': '==',
-                                  'value': value,
-                                }
-                              ]);
+                            //   // Check if the username is unique
+                            //   final existingUsers =
+                            //       await profileService.readByFilters([
+                            //     {
+                            //       'field': 'username',
+                            //       'operator': '==',
+                            //       'value': value,
+                            //     }
+                            //   ]);
 
-                              final isUnique = existingUsers?.isEmpty ?? true;
-                              signUpNotifier.setUsernameUnique(isUnique);
-                            } else {
-                              signUpNotifier.setUsernameUnique(false);
-                            }
+                            //   final isUnique = existingUsers?.isEmpty ?? true;
+                            //   signUpNotifier.setUsernameUnique(isUnique);
+                            // } else {
+                            //   signUpNotifier.setUsernameUnique(false);
+                            // }
                           },
                         ),
-                        if (!signUpState.isUsernameUnique &&
-                            signUpState.touchedUsername)
-                          const Padding(
-                            padding: EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              'Username is already taken',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
+                        // if (!signUpState.isUsernameUnique &&
+                        //     signUpState.touchedUsername)
+                        //   const Padding(
+                        //     padding: EdgeInsets.only(top: 8.0),
+                        //     child: Text(
+                        //       'Username is already taken',
+                        //       style: TextStyle(color: Colors.red),
+                        //     ),
+                        //   ),
                         const SizedBox(height: 16),
                         Row(
                           children: [
@@ -84,9 +84,9 @@ void showBottomSignUpCard(BuildContext context, {bool modal = true}) {
                                   labelText: 'First Name',
                                 ),
                                 onChanged: (value) {
-                                  ref
-                                      .read(signupFormNotifierProvider.notifier)
-                                      .setFirstName(value);
+                                  // ref
+                                  //     .read(signupFormNotifierProvider.notifier)
+                                  //     .setFirstName(value);
                                 },
                               ),
                             ),
@@ -97,9 +97,9 @@ void showBottomSignUpCard(BuildContext context, {bool modal = true}) {
                                   labelText: 'Last Name',
                                 ),
                                 onChanged: (value) {
-                                  ref
-                                      .read(signupFormNotifierProvider.notifier)
-                                      .setLastName(value);
+                                  // ref
+                                  //     .read(signupFormNotifierProvider.notifier)
+                                  //     .setLastName(value);
                                 },
                               ),
                             ),
