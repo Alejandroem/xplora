@@ -21,8 +21,8 @@ XploraUser _$XploraUserFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$XploraUser {
   String? get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
+  String get displayName => throw _privateConstructorUsedError;
   String get username => throw _privateConstructorUsedError;
   bool get isEmailVerified => throw _privateConstructorUsedError;
 
@@ -40,8 +40,8 @@ abstract class $XploraUserCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
-      String name,
       String email,
+      String displayName,
       String username,
       bool isEmailVerified});
 }
@@ -60,8 +60,8 @@ class _$XploraUserCopyWithImpl<$Res, $Val extends XploraUser>
   @override
   $Res call({
     Object? id = freezed,
-    Object? name = null,
     Object? email = null,
+    Object? displayName = null,
     Object? username = null,
     Object? isEmailVerified = null,
   }) {
@@ -70,13 +70,13 @@ class _$XploraUserCopyWithImpl<$Res, $Val extends XploraUser>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
       email: null == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      displayName: null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
               as String,
       username: null == username
           ? _value.username
@@ -100,8 +100,8 @@ abstract class _$$XploraUserImplCopyWith<$Res>
   @useResult
   $Res call(
       {String? id,
-      String name,
       String email,
+      String displayName,
       String username,
       bool isEmailVerified});
 }
@@ -118,8 +118,8 @@ class __$$XploraUserImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
-    Object? name = null,
     Object? email = null,
+    Object? displayName = null,
     Object? username = null,
     Object? isEmailVerified = null,
   }) {
@@ -128,13 +128,13 @@ class __$$XploraUserImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
       email: null == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      displayName: null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
               as String,
       username: null == username
           ? _value.username
@@ -153,8 +153,8 @@ class __$$XploraUserImplCopyWithImpl<$Res>
 class _$XploraUserImpl implements _XploraUser {
   const _$XploraUserImpl(
       {required this.id,
-      required this.name,
       required this.email,
+      required this.displayName,
       required this.username,
       required this.isEmailVerified});
 
@@ -164,9 +164,9 @@ class _$XploraUserImpl implements _XploraUser {
   @override
   final String? id;
   @override
-  final String name;
-  @override
   final String email;
+  @override
+  final String displayName;
   @override
   final String username;
   @override
@@ -174,7 +174,7 @@ class _$XploraUserImpl implements _XploraUser {
 
   @override
   String toString() {
-    return 'XploraUser(id: $id, name: $name, email: $email, username: $username, isEmailVerified: $isEmailVerified)';
+    return 'XploraUser(id: $id, email: $email, displayName: $displayName, username: $username, isEmailVerified: $isEmailVerified)';
   }
 
   @override
@@ -183,8 +183,9 @@ class _$XploraUserImpl implements _XploraUser {
         (other.runtimeType == runtimeType &&
             other is _$XploraUserImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
             (identical(other.email, email) || other.email == email) &&
+            (identical(other.displayName, displayName) ||
+                other.displayName == displayName) &&
             (identical(other.username, username) ||
                 other.username == username) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
@@ -193,8 +194,8 @@ class _$XploraUserImpl implements _XploraUser {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, email, username, isEmailVerified);
+  int get hashCode => Object.hash(
+      runtimeType, id, email, displayName, username, isEmailVerified);
 
   @JsonKey(ignore: true)
   @override
@@ -213,8 +214,8 @@ class _$XploraUserImpl implements _XploraUser {
 abstract class _XploraUser implements XploraUser {
   const factory _XploraUser(
       {required final String? id,
-      required final String name,
       required final String email,
+      required final String displayName,
       required final String username,
       required final bool isEmailVerified}) = _$XploraUserImpl;
 
@@ -224,9 +225,9 @@ abstract class _XploraUser implements XploraUser {
   @override
   String? get id;
   @override
-  String get name;
-  @override
   String get email;
+  @override
+  String get displayName;
   @override
   String get username;
   @override

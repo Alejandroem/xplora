@@ -26,6 +26,8 @@ mixin _$SignupForm {
   bool get touchedPassword => throw _privateConstructorUsedError;
   String get confirmPassword => throw _privateConstructorUsedError;
   bool get touchedConfirmPassword => throw _privateConstructorUsedError;
+  String get displayName => throw _privateConstructorUsedError;
+  bool get touchedDisplayName => throw _privateConstructorUsedError;
   List<String> get errors => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
 
@@ -48,6 +50,8 @@ abstract class $SignupFormCopyWith<$Res> {
       bool touchedPassword,
       String confirmPassword,
       bool touchedConfirmPassword,
+      String displayName,
+      bool touchedDisplayName,
       List<String> errors,
       bool isLoading});
 }
@@ -71,6 +75,8 @@ class _$SignupFormCopyWithImpl<$Res, $Val extends SignupForm>
     Object? touchedPassword = null,
     Object? confirmPassword = null,
     Object? touchedConfirmPassword = null,
+    Object? displayName = null,
+    Object? touchedDisplayName = null,
     Object? errors = null,
     Object? isLoading = null,
   }) {
@@ -99,6 +105,14 @@ class _$SignupFormCopyWithImpl<$Res, $Val extends SignupForm>
           ? _value.touchedConfirmPassword
           : touchedConfirmPassword // ignore: cast_nullable_to_non_nullable
               as bool,
+      displayName: null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String,
+      touchedDisplayName: null == touchedDisplayName
+          ? _value.touchedDisplayName
+          : touchedDisplayName // ignore: cast_nullable_to_non_nullable
+              as bool,
       errors: null == errors
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -126,6 +140,8 @@ abstract class _$$SignupFormImplCopyWith<$Res>
       bool touchedPassword,
       String confirmPassword,
       bool touchedConfirmPassword,
+      String displayName,
+      bool touchedDisplayName,
       List<String> errors,
       bool isLoading});
 }
@@ -147,6 +163,8 @@ class __$$SignupFormImplCopyWithImpl<$Res>
     Object? touchedPassword = null,
     Object? confirmPassword = null,
     Object? touchedConfirmPassword = null,
+    Object? displayName = null,
+    Object? touchedDisplayName = null,
     Object? errors = null,
     Object? isLoading = null,
   }) {
@@ -175,6 +193,14 @@ class __$$SignupFormImplCopyWithImpl<$Res>
           ? _value.touchedConfirmPassword
           : touchedConfirmPassword // ignore: cast_nullable_to_non_nullable
               as bool,
+      displayName: null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String,
+      touchedDisplayName: null == touchedDisplayName
+          ? _value.touchedDisplayName
+          : touchedDisplayName // ignore: cast_nullable_to_non_nullable
+              as bool,
       errors: null == errors
           ? _value._errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -197,6 +223,8 @@ class _$SignupFormImpl implements _SignupForm {
       required this.touchedPassword,
       required this.confirmPassword,
       required this.touchedConfirmPassword,
+      required this.displayName,
+      required this.touchedDisplayName,
       required final List<String> errors,
       required this.isLoading})
       : _errors = errors;
@@ -216,6 +244,10 @@ class _$SignupFormImpl implements _SignupForm {
   final String confirmPassword;
   @override
   final bool touchedConfirmPassword;
+  @override
+  final String displayName;
+  @override
+  final bool touchedDisplayName;
   final List<String> _errors;
   @override
   List<String> get errors {
@@ -229,7 +261,7 @@ class _$SignupFormImpl implements _SignupForm {
 
   @override
   String toString() {
-    return 'SignupForm(email: $email, touchedEmail: $touchedEmail, password: $password, touchedPassword: $touchedPassword, confirmPassword: $confirmPassword, touchedConfirmPassword: $touchedConfirmPassword, errors: $errors, isLoading: $isLoading)';
+    return 'SignupForm(email: $email, touchedEmail: $touchedEmail, password: $password, touchedPassword: $touchedPassword, confirmPassword: $confirmPassword, touchedConfirmPassword: $touchedConfirmPassword, displayName: $displayName, touchedDisplayName: $touchedDisplayName, errors: $errors, isLoading: $isLoading)';
   }
 
   @override
@@ -248,6 +280,10 @@ class _$SignupFormImpl implements _SignupForm {
                 other.confirmPassword == confirmPassword) &&
             (identical(other.touchedConfirmPassword, touchedConfirmPassword) ||
                 other.touchedConfirmPassword == touchedConfirmPassword) &&
+            (identical(other.displayName, displayName) ||
+                other.displayName == displayName) &&
+            (identical(other.touchedDisplayName, touchedDisplayName) ||
+                other.touchedDisplayName == touchedDisplayName) &&
             const DeepCollectionEquality().equals(other._errors, _errors) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading));
@@ -263,6 +299,8 @@ class _$SignupFormImpl implements _SignupForm {
       touchedPassword,
       confirmPassword,
       touchedConfirmPassword,
+      displayName,
+      touchedDisplayName,
       const DeepCollectionEquality().hash(_errors),
       isLoading);
 
@@ -288,6 +326,8 @@ abstract class _SignupForm implements SignupForm {
       required final bool touchedPassword,
       required final String confirmPassword,
       required final bool touchedConfirmPassword,
+      required final String displayName,
+      required final bool touchedDisplayName,
       required final List<String> errors,
       required final bool isLoading}) = _$SignupFormImpl;
 
@@ -306,6 +346,10 @@ abstract class _SignupForm implements SignupForm {
   String get confirmPassword;
   @override
   bool get touchedConfirmPassword;
+  @override
+  String get displayName;
+  @override
+  bool get touchedDisplayName;
   @override
   List<String> get errors;
   @override

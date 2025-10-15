@@ -25,7 +25,17 @@ mixin _$XploraProfile {
   int get experience => throw _privateConstructorUsedError;
   List<String> get categories => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
-  String? get username => throw _privateConstructorUsedError;
+  String? get username =>
+      throw _privateConstructorUsedError; // Additional profile fields
+  String? get preferredLanguage => throw _privateConstructorUsedError;
+  String? get country => throw _privateConstructorUsedError;
+  String? get city => throw _privateConstructorUsedError;
+  String? get birthdayMonth => throw _privateConstructorUsedError;
+  String? get birthdayYear => throw _privateConstructorUsedError;
+  String? get gender => throw _privateConstructorUsedError;
+  String? get primaryInterestCategory => throw _privateConstructorUsedError;
+  String? get createdAt => throw _privateConstructorUsedError;
+  String? get updatedAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,7 +55,16 @@ abstract class $XploraProfileCopyWith<$Res> {
       int experience,
       List<String> categories,
       String? avatarUrl,
-      String? username});
+      String? username,
+      String? preferredLanguage,
+      String? country,
+      String? city,
+      String? birthdayMonth,
+      String? birthdayYear,
+      String? gender,
+      String? primaryInterestCategory,
+      String? createdAt,
+      String? updatedAt});
 }
 
 /// @nodoc
@@ -67,6 +86,15 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
     Object? categories = null,
     Object? avatarUrl = freezed,
     Object? username = freezed,
+    Object? preferredLanguage = freezed,
+    Object? country = freezed,
+    Object? city = freezed,
+    Object? birthdayMonth = freezed,
+    Object? birthdayYear = freezed,
+    Object? gender = freezed,
+    Object? primaryInterestCategory = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -93,6 +121,42 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
               as String?,
+      preferredLanguage: freezed == preferredLanguage
+          ? _value.preferredLanguage
+          : preferredLanguage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      country: freezed == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as String?,
+      city: freezed == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String?,
+      birthdayMonth: freezed == birthdayMonth
+          ? _value.birthdayMonth
+          : birthdayMonth // ignore: cast_nullable_to_non_nullable
+              as String?,
+      birthdayYear: freezed == birthdayYear
+          ? _value.birthdayYear
+          : birthdayYear // ignore: cast_nullable_to_non_nullable
+              as String?,
+      gender: freezed == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      primaryInterestCategory: freezed == primaryInterestCategory
+          ? _value.primaryInterestCategory
+          : primaryInterestCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -111,7 +175,16 @@ abstract class _$$XploraProfileImplCopyWith<$Res>
       int experience,
       List<String> categories,
       String? avatarUrl,
-      String? username});
+      String? username,
+      String? preferredLanguage,
+      String? country,
+      String? city,
+      String? birthdayMonth,
+      String? birthdayYear,
+      String? gender,
+      String? primaryInterestCategory,
+      String? createdAt,
+      String? updatedAt});
 }
 
 /// @nodoc
@@ -131,6 +204,15 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
     Object? categories = null,
     Object? avatarUrl = freezed,
     Object? username = freezed,
+    Object? preferredLanguage = freezed,
+    Object? country = freezed,
+    Object? city = freezed,
+    Object? birthdayMonth = freezed,
+    Object? birthdayYear = freezed,
+    Object? gender = freezed,
+    Object? primaryInterestCategory = freezed,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(_$XploraProfileImpl(
       id: freezed == id
@@ -157,6 +239,42 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
               as String?,
+      preferredLanguage: freezed == preferredLanguage
+          ? _value.preferredLanguage
+          : preferredLanguage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      country: freezed == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as String?,
+      city: freezed == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String?,
+      birthdayMonth: freezed == birthdayMonth
+          ? _value.birthdayMonth
+          : birthdayMonth // ignore: cast_nullable_to_non_nullable
+              as String?,
+      birthdayYear: freezed == birthdayYear
+          ? _value.birthdayYear
+          : birthdayYear // ignore: cast_nullable_to_non_nullable
+              as String?,
+      gender: freezed == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      primaryInterestCategory: freezed == primaryInterestCategory
+          ? _value.primaryInterestCategory
+          : primaryInterestCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -170,7 +288,16 @@ class _$XploraProfileImpl implements _XploraProfile {
       required this.experience,
       required final List<String> categories,
       required this.avatarUrl,
-      required this.username})
+      required this.username,
+      required this.preferredLanguage,
+      required this.country,
+      required this.city,
+      required this.birthdayMonth,
+      required this.birthdayYear,
+      required this.gender,
+      required this.primaryInterestCategory,
+      required this.createdAt,
+      required this.updatedAt})
       : _categories = categories;
 
   factory _$XploraProfileImpl.fromJson(Map<String, dynamic> json) =>
@@ -194,10 +321,29 @@ class _$XploraProfileImpl implements _XploraProfile {
   final String? avatarUrl;
   @override
   final String? username;
+// Additional profile fields
+  @override
+  final String? preferredLanguage;
+  @override
+  final String? country;
+  @override
+  final String? city;
+  @override
+  final String? birthdayMonth;
+  @override
+  final String? birthdayYear;
+  @override
+  final String? gender;
+  @override
+  final String? primaryInterestCategory;
+  @override
+  final String? createdAt;
+  @override
+  final String? updatedAt;
 
   @override
   String toString() {
-    return 'XploraProfile(id: $id, userId: $userId, experience: $experience, categories: $categories, avatarUrl: $avatarUrl, username: $username)';
+    return 'XploraProfile(id: $id, userId: $userId, experience: $experience, categories: $categories, avatarUrl: $avatarUrl, username: $username, preferredLanguage: $preferredLanguage, country: $country, city: $city, birthdayMonth: $birthdayMonth, birthdayYear: $birthdayYear, gender: $gender, primaryInterestCategory: $primaryInterestCategory, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -214,13 +360,44 @@ class _$XploraProfileImpl implements _XploraProfile {
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
             (identical(other.username, username) ||
-                other.username == username));
+                other.username == username) &&
+            (identical(other.preferredLanguage, preferredLanguage) ||
+                other.preferredLanguage == preferredLanguage) &&
+            (identical(other.country, country) || other.country == country) &&
+            (identical(other.city, city) || other.city == city) &&
+            (identical(other.birthdayMonth, birthdayMonth) ||
+                other.birthdayMonth == birthdayMonth) &&
+            (identical(other.birthdayYear, birthdayYear) ||
+                other.birthdayYear == birthdayYear) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(
+                    other.primaryInterestCategory, primaryInterestCategory) ||
+                other.primaryInterestCategory == primaryInterestCategory) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, userId, experience,
-      const DeepCollectionEquality().hash(_categories), avatarUrl, username);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      userId,
+      experience,
+      const DeepCollectionEquality().hash(_categories),
+      avatarUrl,
+      username,
+      preferredLanguage,
+      country,
+      city,
+      birthdayMonth,
+      birthdayYear,
+      gender,
+      primaryInterestCategory,
+      createdAt,
+      updatedAt);
 
   @JsonKey(ignore: true)
   @override
@@ -243,7 +420,16 @@ abstract class _XploraProfile implements XploraProfile {
       required final int experience,
       required final List<String> categories,
       required final String? avatarUrl,
-      required final String? username}) = _$XploraProfileImpl;
+      required final String? username,
+      required final String? preferredLanguage,
+      required final String? country,
+      required final String? city,
+      required final String? birthdayMonth,
+      required final String? birthdayYear,
+      required final String? gender,
+      required final String? primaryInterestCategory,
+      required final String? createdAt,
+      required final String? updatedAt}) = _$XploraProfileImpl;
 
   factory _XploraProfile.fromJson(Map<String, dynamic> json) =
       _$XploraProfileImpl.fromJson;
@@ -260,6 +446,24 @@ abstract class _XploraProfile implements XploraProfile {
   String? get avatarUrl;
   @override
   String? get username;
+  @override // Additional profile fields
+  String? get preferredLanguage;
+  @override
+  String? get country;
+  @override
+  String? get city;
+  @override
+  String? get birthdayMonth;
+  @override
+  String? get birthdayYear;
+  @override
+  String? get gender;
+  @override
+  String? get primaryInterestCategory;
+  @override
+  String? get createdAt;
+  @override
+  String? get updatedAt;
   @override
   @JsonKey(ignore: true)
   _$$XploraProfileImplCopyWith<_$XploraProfileImpl> get copyWith =>

@@ -7,8 +7,6 @@ part 'complete_profile_form.g.dart';
 @freezed
 abstract class CompleteProfileForm with _$CompleteProfileForm {
   const factory CompleteProfileForm({
-    required String displayName,
-    required bool touchedDisplayName,
     required String username,
     required bool touchedUsername,
     required String avatarUrl,
@@ -29,6 +27,7 @@ abstract class CompleteProfileForm with _$CompleteProfileForm {
     required List<String> errors,
     required bool isLoading,
     required bool isUsernameUnique,
+    required bool isCheckingUsername,
     required List<Country> countries,
     required List<City> cities,
     required bool isLoadingCountries,

@@ -12,6 +12,16 @@ abstract class XploraProfile with _$XploraProfile {
     required List<String> categories,
     required String? avatarUrl,
     required String? username,
+    // Additional profile fields
+    required String? preferredLanguage,
+    required String? country,
+    required String? city,
+    required String? birthdayMonth,
+    required String? birthdayYear,
+    required String? gender,
+    required String? primaryInterestCategory,
+    required String? createdAt,
+    required String? updatedAt,
   }) = _XploraProfile;
 
   factory XploraProfile.fromJson(Map<String, dynamic> json) =>

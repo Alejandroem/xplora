@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../application/providers/achievements_providers.dart';
 import '../../application/providers/xplorauser_providers.dart';
@@ -118,18 +119,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 return;
                               }
 
-                              final profileService =
-                                  ref.read(profileServiceProvider);
-
-                              final existingUsers =
-                                  await profileService.readByFilters([
-                                {
-                                  'field': 'username',
-                                  'operator': '==',
-                                  'value': value,
-                                }
-                              ]);
-                              final isUnique = existingUsers?.isEmpty ?? true;
+                              final querySnapshot = await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .where('username', isEqualTo: value)
+                                  .get();
+                              final isUnique = querySnapshot.docs.isEmpty;
 
                               setState(() {
                                 _isChecking = false;

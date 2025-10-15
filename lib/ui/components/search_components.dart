@@ -339,18 +339,19 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                   }
 
                   //sort them by distance
-                  filteredData.sort((a, b) {
-                    if (a is Adventure && b is Adventure) {
-                      return Geolocator.distanceBetween(
-                              location.position!.latitude,
-                              location.position!.longitude,
-                              a.latitude,
-                              a.longitude)
-                          .compareTo(Geolocator.distanceBetween(
-                              location.position!.latitude,
-                              location.position!.longitude,
-                              b.latitude,
-                              b.longitude));
+                  if (location.position != null) {
+                    filteredData.sort((a, b) {
+                      if (a is Adventure && b is Adventure) {
+                        return Geolocator.distanceBetween(
+                                location.position!.latitude,
+                                location.position!.longitude,
+                                a.latitude,
+                                a.longitude)
+                            .compareTo(Geolocator.distanceBetween(
+                                location.position!.latitude,
+                                location.position!.longitude,
+                                b.latitude,
+                                b.longitude));
                     } else if (a is Quest &&
                         b is Quest &&
                         (a.stepType == QuestType.location ||
@@ -370,6 +371,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                     }
                     return 0;
                   });
+                  }
 
                   if (filteredData.isEmpty) {
                     return Center(

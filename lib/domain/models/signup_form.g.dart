@@ -14,6 +14,8 @@ _$SignupFormImpl _$$SignupFormImplFromJson(Map<String, dynamic> json) =>
       touchedPassword: json['touchedPassword'] as bool,
       confirmPassword: json['confirmPassword'] as String,
       touchedConfirmPassword: json['touchedConfirmPassword'] as bool,
+      displayName: json['displayName'] as String,
+      touchedDisplayName: json['touchedDisplayName'] as bool,
       errors:
           (json['errors'] as List<dynamic>).map((e) => e as String).toList(),
       isLoading: json['isLoading'] as bool,
@@ -27,6 +29,8 @@ Map<String, dynamic> _$$SignupFormImplToJson(_$SignupFormImpl instance) =>
       'touchedPassword': instance.touchedPassword,
       'confirmPassword': instance.confirmPassword,
       'touchedConfirmPassword': instance.touchedConfirmPassword,
+      'displayName': instance.displayName,
+      'touchedDisplayName': instance.touchedDisplayName,
       'errors': instance.errors,
       'isLoading': instance.isLoading,
     };

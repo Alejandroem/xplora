@@ -87,23 +87,27 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       final profiles = await profileService.readBy('userId', user.id!);
       if (profiles.isEmpty) {
         //Create profile with username from authenticated user
+        final now = DateTime.now().toUtc().toIso8601String();
         final xploraProfile = XploraProfile(
-          id: null,
+          id: user.id,
           userId: user.id!,
           experience: 0,
           categories: [],
           avatarUrl: '',
-          username: user.username, // Save username from authenticated user
+          username: '', // Will be set later in complete profile
+          preferredLanguage: '',
+          country: '',
+          city: '',
+          birthdayMonth: '',
+          birthdayYear: '',
+          gender: '',
+          primaryInterestCategory: '',
+          createdAt: now,
+          updatedAt: now,
         );
         await profileService.create(xploraProfile);
-      } else {
-        // Update existing profile with username from authenticated user
-        final profile = profiles.first;
-        if (profile.username != user.username) {
-          final updatedProfile = profile.copyWith(username: user.username);
-          await profileService.update(updatedProfile, profile.id!);
-        }
       }
+      // Note: Profile will be updated when user completes their profile
 
       // Fetch user settings after successful login
       await _fetchUserSettings(user.id!);

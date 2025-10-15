@@ -56,6 +56,29 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                   const SizedBox(height: 48),
                   
                   
+      
+                  // Display Name field
+                  Consumer(
+                    builder: (context, ref, child) {
+                      return XploraTextField(
+                        labelText: 'Display Name',
+                        hintText: 'Enter your display name',
+                        textInputAction: TextInputAction.next,
+                        textCapitalization: TextCapitalization.words,
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: textSecondary,
+                          size: 20,
+                        ),
+                        onChanged: (value) {
+                          ref
+                              .read(signupFormNotifierProvider.notifier)
+                              .setDisplayName(value.trim());
+                        },
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
                   
                   // Email field
                   XploraTextField(

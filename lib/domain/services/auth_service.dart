@@ -14,8 +14,7 @@ abstract class AuthService {
   Future<XploraUser> signUpWithEmailAndPassword(
     String email,
     String password,
-    String name,
-    String username,
+    String displayName,
   );
   Future<void> signOut();
 

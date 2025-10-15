@@ -41,16 +41,10 @@ final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
   }
 
   // First check if profile exists
-  final existingProfiles = await profileService.readByFilters([
-    {
-      'field': 'userId',
-      'operator': '==',
-      'value': user.id,
-    }
-  ]);
+  final existingProfile = await profileService.read(user.id!);
 
   // Create profile if it doesn't exist
-  if (existingProfiles == null || existingProfiles.isEmpty) {
+  if (existingProfile == null) {
     await profileService.create(
       XploraProfile(
         id: null,
@@ -59,19 +53,22 @@ final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
         categories: [],
         avatarUrl: '',
         username: '',
+        preferredLanguage: '',
+        country: '',
+        city: '',
+        birthdayMonth: '',
+        birthdayYear: '',
+        gender: '',
+        primaryInterestCategory: '',
+        createdAt: '',
+        updatedAt: '',
       ),
     );
   }
 
   // Now stream the profile
-  await for (final profiles in profileService.streamByFilters([
-    {
-      'field': 'userId',
-      'operator': '==',
-      'value': user.id,
-    }
-  ])) {
-    yield profiles?.first;
+  await for (final profile in profileService.getStream(user.id!)) {
+    yield profile;
   }
 });
 
@@ -81,15 +78,7 @@ final createOrReadProfileStreamProvider = StreamProvider.autoDispose((ref) {
   final profileService = ref.watch(profileServiceProvider);
   return authService.getAuthUserStreamUserId().asyncMap((userId) {
     if (userId != null) {
-      return profileService.streamByFilters(
-        [
-          {
-            'field': 'id',
-            'operator': '==',
-            'value': userId,
-          }
-        ],
-      );
+      return profileService.getStream(userId);
     }
     return null;
   });
@@ -130,6 +119,8 @@ final signupFormNotifierProvider =
       errors: [],
       confirmPassword: '',
       touchedConfirmPassword: false,
+      displayName: '',
+      touchedDisplayName: false,
       isLoading: false,
     ),
     authService,

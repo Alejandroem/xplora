@@ -12,6 +12,8 @@ abstract class SignupForm with _$SignupForm {
     required bool touchedPassword,
     required String confirmPassword,
     required bool touchedConfirmPassword,
+    required String displayName,
+    required bool touchedDisplayName,
     required List<String> errors,
     required bool isLoading,
   }) = _SignupForm;

@@ -2,15 +2,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../application/providers/achievements_providers.dart';
 import '../application/providers/adventure_providers.dart';
 import '../application/providers/deep_links_providers.dart';
+import '../application/providers/location_providers.dart';
 import '../application/providers/navigation_providers.dart';
 import '../application/providers/auth_providers.dart';
 import '../application/providers/auth_service_providers.dart';
-import '../application/providers/local_storage_providers.dart';
 import '../application/providers/notifications_provider.dart';
 import '../application/providers/notifications_providers.dart';
 import '../application/providers/profile_providers.dart';
@@ -23,8 +22,6 @@ import 'components/feed_components.dart';
 import 'components/notification_adventure_card.dart';
 import 'components/notification_components.dart';
 import 'components/search_components.dart';
-import 'pages/categories.dart';
-import 'pages/onboarding.dart';
 import 'widgets/lora_orb.dart';
 import 'widgets/quest_progress_indicator.dart';
 import 'widgets/xplora_app_bar.dart';
@@ -46,7 +43,10 @@ class _HomeState extends ConsumerState<Home> {
     super.initState();
     log('Home: initState');
 
-    requestLocationPermissions();
+    // Initialize location tracking only when user is authenticated
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeLocationIfNeeded();
+    });
 
     // Access the deepLinkServiceProvider and listen for deep link events
     final deepLinkService = ref.read(deepLinkServiceProvider);
@@ -61,10 +61,17 @@ class _HomeState extends ConsumerState<Home> {
     });
   }
 
-  Future<void> requestLocationPermissions() async {
-    var status = await Permission.location.status;
-    if (status.isDenied) {
-      await Permission.location.request();
+  Future<void> _initializeLocationIfNeeded() async {
+    try {
+      final authService = ref.read(authServiceProvider);
+      final isSignedIn = await authService.isSignedInFuture();
+      
+      if (isSignedIn) {
+        // Only initialize location tracking for authenticated users
+        ref.read(locationProvider.notifier).initializeLocationTracking();
+      }
+    } catch (e) {
+      log('Error initializing location: $e');
     }
   }
 
@@ -252,6 +259,7 @@ class _HomeState extends ConsumerState<Home> {
 
     ref.watch(adventureInProgressTrackerProvider);
     ref.watch(questInProgressTrackerProvider);
+    ref.watch(autoEnableLocationTrackingProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(userPreviousAdventuresProviderStream).whenData((adventures) {
         if (adventures != null) {

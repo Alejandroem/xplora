@@ -9,8 +9,6 @@ part of 'complete_profile_form.dart';
 _$CompleteProfileFormImpl _$$CompleteProfileFormImplFromJson(
         Map<String, dynamic> json) =>
     _$CompleteProfileFormImpl(
-      displayName: json['displayName'] as String,
-      touchedDisplayName: json['touchedDisplayName'] as bool,
       username: json['username'] as String,
       touchedUsername: json['touchedUsername'] as bool,
       avatarUrl: json['avatarUrl'] as String,
@@ -33,6 +31,7 @@ _$CompleteProfileFormImpl _$$CompleteProfileFormImplFromJson(
           (json['errors'] as List<dynamic>).map((e) => e as String).toList(),
       isLoading: json['isLoading'] as bool,
       isUsernameUnique: json['isUsernameUnique'] as bool,
+      isCheckingUsername: json['isCheckingUsername'] as bool,
       countries: (json['countries'] as List<dynamic>)
           .map((e) => Country.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -45,8 +44,6 @@ _$CompleteProfileFormImpl _$$CompleteProfileFormImplFromJson(
 Map<String, dynamic> _$$CompleteProfileFormImplToJson(
         _$CompleteProfileFormImpl instance) =>
     <String, dynamic>{
-      'displayName': instance.displayName,
-      'touchedDisplayName': instance.touchedDisplayName,
       'username': instance.username,
       'touchedUsername': instance.touchedUsername,
       'avatarUrl': instance.avatarUrl,
@@ -67,6 +64,7 @@ Map<String, dynamic> _$$CompleteProfileFormImplToJson(
       'errors': instance.errors,
       'isLoading': instance.isLoading,
       'isUsernameUnique': instance.isUsernameUnique,
+      'isCheckingUsername': instance.isCheckingUsername,
       'countries': instance.countries,
       'cities': instance.cities,
       'isLoadingCountries': instance.isLoadingCountries,

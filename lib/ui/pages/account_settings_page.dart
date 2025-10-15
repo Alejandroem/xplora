@@ -60,38 +60,17 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     ),
                     ListTile(
                       title: Text(
-                        'First Name',
+                        'Display Name',
                         style: bodyTextStyle.copyWith(color: textPrimary),
                       ),
                       subtitle: Text(
-                        user.name.split(RegExp(r'\s+')).first,
+                        user.displayName,
                         style: bodyTextStyle.copyWith(color: textSecondary),
                       ),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => EditFirstNamePage(user: user),
-                          ),
-                        );
-                      },
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        color: textSecondary,
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        'Last Name',
-                        style: bodyTextStyle.copyWith(color: textPrimary),
-                      ),
-                      subtitle: Text(
-                        user.name.split(RegExp(r'\s+')).skip(1).join(' '),
-                        style: bodyTextStyle.copyWith(color: textSecondary),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => EditLastNamePage(user: user),
+                            builder: (_) => EditDisplayNamePage(user: user),
                           ),
                         );
                       },
@@ -129,30 +108,30 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   }
 }
 
-class EditLastNamePage extends ConsumerStatefulWidget {
+class EditDisplayNamePage extends ConsumerStatefulWidget {
   final XploraUser user;
 
-  const EditLastNamePage({required this.user, super.key});
+  const EditDisplayNamePage({required this.user, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _EditLastNamePageState();
+      _EditDisplayNamePageState();
 }
 
-class _EditLastNamePageState extends ConsumerState<EditLastNamePage> {
-  late TextEditingController lastNameController;
+class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
+  late TextEditingController displayNameController;
 
   @override
   void initState() {
     super.initState();
-    lastNameController = TextEditingController(
-      text: widget.user.name.split(RegExp(r'\s+')).skip(1).join(' '),
+    displayNameController = TextEditingController(
+      text: widget.user.displayName,
     );
   }
 
   @override
   void dispose() {
-    lastNameController.dispose();
+    displayNameController.dispose();
     super.dispose();
   }
 
@@ -162,7 +141,7 @@ class _EditLastNamePageState extends ConsumerState<EditLastNamePage> {
 
     return Scaffold(
       appBar: const GlassAppBar(
-        title: 'Edit Last Name',
+        title: 'Edit Display Name',
       ),
       body: GradientBackground(
         child: Padding(
@@ -172,27 +151,26 @@ class _EditLastNamePageState extends ConsumerState<EditLastNamePage> {
             children: [
               const SizedBox(height: 8),
               XploraTextField(
-                controller: lastNameController,
-                labelText: 'Last Name',
+                controller: displayNameController,
+                labelText: 'Display Name',
               ),
               const SizedBox(height: 24.0),
               PrimaryButton(
                 height: 50,
                 text: 'Save',
                 onPressed: () async {
-                  final newName =
-                      '${widget.user.name.split(RegExp(r'\s+')).first} ${lastNameController.text}';
+                  final newDisplayName = displayNameController.text.trim();
                   try {
-                    await authService.updateName(newName);
+                    await authService.updateName(newDisplayName);
                     ref.read(userServiceProvider).update(
-                          widget.user.copyWith(name: newName),
+                          widget.user.copyWith(displayName: newDisplayName),
                           widget.user.id!,
                         );
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            'Last name updated',
+                            'Display name updated',
                             style: bodyTextStyle.copyWith(color: textPrimary),
                           ),
                           backgroundColor: accentPrimary,
@@ -205,7 +183,7 @@ class _EditLastNamePageState extends ConsumerState<EditLastNamePage> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            'Failed to update last name: $e',
+                            'Failed to update display name: $e',
                             style: bodyTextStyle.copyWith(color: textPrimary),
                           ),
                           backgroundColor: feedbackAlert,
@@ -223,99 +201,6 @@ class _EditLastNamePageState extends ConsumerState<EditLastNamePage> {
   }
 }
 
-class EditFirstNamePage extends ConsumerStatefulWidget {
-  final XploraUser user;
-
-  const EditFirstNamePage({required this.user, super.key});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _EditFirstNamePageState();
-}
-
-class _EditFirstNamePageState extends ConsumerState<EditFirstNamePage> {
-  late TextEditingController firstNameController;
-
-  @override
-  void initState() {
-    super.initState();
-    firstNameController = TextEditingController(
-      text: widget.user.name.split(RegExp(r'\s+')).first,
-    );
-  }
-
-  @override
-  void dispose() {
-    firstNameController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final authService = ref.watch(authServiceProvider);
-
-    return Scaffold(
-      appBar: const GlassAppBar(
-        title: 'Edit First Name',
-      ),
-      body: GradientBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 8),
-              XploraTextField(
-                controller: firstNameController,
-                labelText: 'First Name',
-              ),
-              const SizedBox(height: 24.0),
-              PrimaryButton(
-                height: 50,
-                text: 'Save',
-                onPressed: () async {
-                  final newName =
-                      '${firstNameController.text} ${widget.user.name.split(RegExp(r'\s+')).skip(1).join(' ')}';
-                  try {
-                    await authService.updateName(newName);
-                    ref.read(userServiceProvider).update(
-                          widget.user.copyWith(name: newName),
-                          widget.user.id!,
-                        );
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'First name updated',
-                            style: bodyTextStyle.copyWith(color: textPrimary),
-                          ),
-                          backgroundColor: accentPrimary,
-                        ),
-                      );
-                      Navigator.of(context).pop();
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Failed to update first name: $e',
-                            style: bodyTextStyle.copyWith(color: textPrimary),
-                          ),
-                          backgroundColor: feedbackAlert,
-                        ),
-                      );
-                    }
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class EditEmailPage extends ConsumerStatefulWidget {
   final XploraUser user;

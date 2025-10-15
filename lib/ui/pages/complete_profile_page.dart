@@ -4,9 +4,9 @@ import 'dart:io';
 import '../../domain/services/country_city_data_service.dart';
 import '../../theme.dart';
 import '../../application/providers/complete_profile_providers.dart';
-import '../../application/providers/profile_providers.dart';
 import '../../utils/snackbar_utils.dart';
 import '../dialogs/bottom_avatar_selection_card.dart';
+import '../dialogs/location_permission_dialog.dart';
 
 class CompleteProfilePage extends ConsumerStatefulWidget {
   const CompleteProfilePage({super.key});
@@ -131,63 +131,78 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                   ),
                   const SizedBox(height: 48),
       
-                  // Display Name field
-                  Consumer(
-                    builder: (context, ref, child) {
-                      return XploraTextField(
-                        labelText: 'Display Name',
-                        hintText: 'Enter your display name',
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.words,
-                        prefixIcon: Icon(
-                          Icons.person_outline,
-                          color: textSecondary,
-                          size: 20,
-                        ),
-                        onChanged: (value) {
-                          ref
-                              .read(completeProfileFormNotifierProvider.notifier)
-                              .setDisplayName(value.trim());
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-      
                   // Username field
                   Consumer(
                     builder: (context, ref, child) {
-                      return XploraTextField(
-                        labelText: 'Handle (username)',
-                        hintText: 'Choose a unique handle',
-                        textInputAction: TextInputAction.next,
-                        prefixIcon: Icon(
-                          Icons.person_outlined,
-                          color: textSecondary,
-                          size: 20,
-                        ),
-                        onChanged: (value) async {
-                          final trimmedValue = value.trim();
-                          final profileNotifier =
-                              ref.read(completeProfileFormNotifierProvider.notifier);
-                          profileNotifier.setUsername(trimmedValue);
-      
-                          if (trimmedValue.isNotEmpty && trimmedValue.length >= 6) {
-                            final profileService = ref.read(profileServiceProvider);
-                            final existingUsers = await profileService.readByFilters([
-                              {
-                                'field': 'username',
-                                'operator': '==',
-                                'value': trimmedValue,
-                              }
-                            ]);
-      
-                            final isUnique = existingUsers?.isEmpty ?? true;
-                            profileNotifier.setUsernameUnique(isUnique);
-                          } else {
-                            profileNotifier.setUsernameUnique(false);
-                          }
-                        },
+                      final profileState = ref.watch(completeProfileFormNotifierProvider);
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          XploraTextField(
+                            labelText: 'Handle',
+                            hintText: 'Choose a unique handle',
+                            textInputAction: TextInputAction.next,
+                            prefixIcon: Icon(
+                              Icons.person_outlined,
+                              color: textSecondary,
+                              size: 20,
+                            ),
+                            onChanged: (value) {
+                              final trimmedValue = value.trim();
+                              final profileNotifier =
+                                  ref.read(completeProfileFormNotifierProvider.notifier);
+                              profileNotifier.setUsername(trimmedValue);
+          
+                              // Check username availability (debounced)
+                              profileNotifier.checkUsernameAvailability(trimmedValue);
+                            },
+                          ),
+                          if (profileState.username.isNotEmpty && profileState.username.length >= 6)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                children: [
+                                  if (profileState.isCheckingUsername)
+                                    const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                                      ),
+                                    )
+                                  else if (profileState.isUsernameUnique)
+                                    const Icon(
+                                      Icons.check_circle,
+                                      color: Colors.green,
+                                      size: 16,
+                                    )
+                                  else
+                                    const Icon(
+                                      Icons.error,
+                                      color: Colors.red,
+                                      size: 16,
+                                    ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    profileState.isCheckingUsername
+                                        ? 'Checking availability...'
+                                        : profileState.isUsernameUnique 
+                                            ? 'Username is available' 
+                                            : 'Username is already taken',
+                                    style: TextStyle(
+                                      color: profileState.isCheckingUsername
+                                          ? Colors.blue
+                                          : profileState.isUsernameUnique 
+                                              ? Colors.green 
+                                              : Colors.red,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                       );
                     },
                   ),
@@ -434,15 +449,21 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                       );
                                     }
                                   } else {
-                                    // Success - navigate to home
+                                    // Success - show location permission dialog
                                     if (context.mounted) {
                                       ref.invalidate(completeProfileFormNotifierProvider);
                                       showXploraSnackBar(
                                         context,
                                         'Profile completed successfully!',
                                       );
-                                      Navigator.of(context)
-                                          .pop();
+                                      
+                                      // Show location permission dialog
+                                      await showLocationPermissionDialog(context);
+                                      
+                                      // Navigate back regardless of location permission result
+                                      if (context.mounted) {
+                                        Navigator.of(context).pop();
+                                      }
                                     }
                                   }
                                 },
@@ -631,7 +652,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                 fontSize: 16,
                                 height: 1.3,
                               ),
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -640,9 +661,9 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     ),
                   );
                 }).toList(),
-                onChanged: (String? newValue) async {
+                onChanged: (String? newValue) {
                         if (newValue != null) {
-                          await ref
+                          ref
                               .read(completeProfileFormNotifierProvider.notifier)
                               .selectCountry(newValue);
                         }
@@ -765,7 +786,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                 fontSize: 16,
                                 height: 1.3,
                               ),
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),

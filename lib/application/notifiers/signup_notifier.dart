@@ -74,8 +74,37 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
         errors: []);
   }
 
+  void setDisplayName(String displayName) {
+    if (displayName.isEmpty) {
+      state = state.copyWith(
+          displayName: displayName, touchedDisplayName: false, errors: []);
+      return;
+    }
+
+    if (RegExp(r'[0-9]').hasMatch(displayName)) {
+      state = state.copyWith(
+          displayName: displayName,
+          touchedDisplayName: true,
+          errors: ['Display name cannot contain numbers']);
+      return;
+    }
+
+    state = state.copyWith(
+        displayName: displayName, touchedDisplayName: true, errors: []);
+  }
+
 
   bool isValid() {
+    if (state.displayName.isEmpty) {
+      state = state.copyWith(touchedDisplayName: true, errors: ['Display name is required']);
+      return false;
+    }
+
+    if (RegExp(r'[0-9]').hasMatch(state.displayName)) {
+      state = state.copyWith(touchedDisplayName: true, errors: ['Display name cannot contain numbers']);
+      return false;
+    }
+
     if (state.email.isEmpty) {
       state = state.copyWith(touchedEmail: true, errors: ['Email is required']);
       return false;
@@ -131,20 +160,29 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
       final user = await authenticationService.signUpWithEmailAndPassword(
         state.email,
         state.password,
-        '', // Empty display name for now, will be set in profile completion
-        '', // Empty username for now, will be set in profile completion
+        state.displayName,
       );
 
       final profiles = await profileService.readBy('userId', user.id!);
       if (profiles.isEmpty) {
-        //Create profile with empty username for now
+        //Create profile with empty data for now
+        final now = DateTime.now().toUtc().toIso8601String();
         final xploraProfile = XploraProfile(
-          id: null,
+          id: user.id,
           userId: user.id!,
           experience: 0,
           categories: [],
           avatarUrl: '',
           username: '', // Empty username for now, will be set in profile completion
+          preferredLanguage: '',
+          country: '',
+          city: '',
+          birthdayMonth: '',
+          birthdayYear: '',
+          gender: '',
+          primaryInterestCategory: '',
+          createdAt: now,
+          updatedAt: now,
         );
         await profileService.create(xploraProfile);
       }

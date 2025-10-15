@@ -25,6 +25,7 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
   Timer? _locationCheckTimer;
   Timer? _leaveAreaTimer;
   Timer? _awardAdventureTimer;
+  bool _isLocationTrackingEnabled = false;
 
   final AdventureCrudService _adventureCrudService;
   final AuthService _authService;
@@ -37,16 +38,35 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
     this._xploraProfileService,
     this._achievementsCrudService,
   ) : super(null) {
-    _locationCheckTimer = Timer.periodic(
-      Duration(
-          seconds: _checkInterval), // Completeness will update every 10 seconds
-      (timer) {
-        _checkUserLocation();
-      },
-    );
+    // Don't start location tracking automatically
+    // It will be started when location permission is granted
+  }
+
+  void enableLocationTracking() {
+    if (!_isLocationTrackingEnabled) {
+      print('🗺️ AdventureInProgressNotifier: Enabling location tracking');
+      _isLocationTrackingEnabled = true;
+      _locationCheckTimer = Timer.periodic(
+        Duration(seconds: _checkInterval),
+        (timer) {
+          _checkUserLocation();
+        },
+      );
+    }
   }
 
   Future<void> _checkUserLocation() async {
+    if (!_isLocationTrackingEnabled) {
+      return; // Don't check location if tracking is not enabled
+    }
+    
+    // Check if user is authenticated before requesting location
+    final isSignedIn = await _authService.isSignedInFuture();
+    if (!isSignedIn) {
+      print('🔍 AdventureInProgressNotifier: User not authenticated, skipping location check');
+      return;
+    }
+    
     XploraUser? user = await _authService.getAuthUser();
     if (user == null) {
       log('User is not authenticated');

@@ -20,8 +20,6 @@ CompleteProfileForm _$CompleteProfileFormFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CompleteProfileForm {
-  String get displayName => throw _privateConstructorUsedError;
-  bool get touchedDisplayName => throw _privateConstructorUsedError;
   String get username => throw _privateConstructorUsedError;
   bool get touchedUsername => throw _privateConstructorUsedError;
   String get avatarUrl => throw _privateConstructorUsedError;
@@ -42,6 +40,7 @@ mixin _$CompleteProfileForm {
   List<String> get errors => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isUsernameUnique => throw _privateConstructorUsedError;
+  bool get isCheckingUsername => throw _privateConstructorUsedError;
   List<Country> get countries => throw _privateConstructorUsedError;
   List<City> get cities => throw _privateConstructorUsedError;
   bool get isLoadingCountries => throw _privateConstructorUsedError;
@@ -59,9 +58,7 @@ abstract class $CompleteProfileFormCopyWith<$Res> {
       _$CompleteProfileFormCopyWithImpl<$Res, CompleteProfileForm>;
   @useResult
   $Res call(
-      {String displayName,
-      bool touchedDisplayName,
-      String username,
+      {String username,
       bool touchedUsername,
       String avatarUrl,
       String preferredLanguage,
@@ -81,6 +78,7 @@ abstract class $CompleteProfileFormCopyWith<$Res> {
       List<String> errors,
       bool isLoading,
       bool isUsernameUnique,
+      bool isCheckingUsername,
       List<Country> countries,
       List<City> cities,
       bool isLoadingCountries});
@@ -99,8 +97,6 @@ class _$CompleteProfileFormCopyWithImpl<$Res, $Val extends CompleteProfileForm>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? displayName = null,
-    Object? touchedDisplayName = null,
     Object? username = null,
     Object? touchedUsername = null,
     Object? avatarUrl = null,
@@ -121,19 +117,12 @@ class _$CompleteProfileFormCopyWithImpl<$Res, $Val extends CompleteProfileForm>
     Object? errors = null,
     Object? isLoading = null,
     Object? isUsernameUnique = null,
+    Object? isCheckingUsername = null,
     Object? countries = null,
     Object? cities = null,
     Object? isLoadingCountries = null,
   }) {
     return _then(_value.copyWith(
-      displayName: null == displayName
-          ? _value.displayName
-          : displayName // ignore: cast_nullable_to_non_nullable
-              as String,
-      touchedDisplayName: null == touchedDisplayName
-          ? _value.touchedDisplayName
-          : touchedDisplayName // ignore: cast_nullable_to_non_nullable
-              as bool,
       username: null == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
@@ -214,6 +203,10 @@ class _$CompleteProfileFormCopyWithImpl<$Res, $Val extends CompleteProfileForm>
           ? _value.isUsernameUnique
           : isUsernameUnique // ignore: cast_nullable_to_non_nullable
               as bool,
+      isCheckingUsername: null == isCheckingUsername
+          ? _value.isCheckingUsername
+          : isCheckingUsername // ignore: cast_nullable_to_non_nullable
+              as bool,
       countries: null == countries
           ? _value.countries
           : countries // ignore: cast_nullable_to_non_nullable
@@ -239,9 +232,7 @@ abstract class _$$CompleteProfileFormImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String displayName,
-      bool touchedDisplayName,
-      String username,
+      {String username,
       bool touchedUsername,
       String avatarUrl,
       String preferredLanguage,
@@ -261,6 +252,7 @@ abstract class _$$CompleteProfileFormImplCopyWith<$Res>
       List<String> errors,
       bool isLoading,
       bool isUsernameUnique,
+      bool isCheckingUsername,
       List<Country> countries,
       List<City> cities,
       bool isLoadingCountries});
@@ -277,8 +269,6 @@ class __$$CompleteProfileFormImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? displayName = null,
-    Object? touchedDisplayName = null,
     Object? username = null,
     Object? touchedUsername = null,
     Object? avatarUrl = null,
@@ -299,19 +289,12 @@ class __$$CompleteProfileFormImplCopyWithImpl<$Res>
     Object? errors = null,
     Object? isLoading = null,
     Object? isUsernameUnique = null,
+    Object? isCheckingUsername = null,
     Object? countries = null,
     Object? cities = null,
     Object? isLoadingCountries = null,
   }) {
     return _then(_$CompleteProfileFormImpl(
-      displayName: null == displayName
-          ? _value.displayName
-          : displayName // ignore: cast_nullable_to_non_nullable
-              as String,
-      touchedDisplayName: null == touchedDisplayName
-          ? _value.touchedDisplayName
-          : touchedDisplayName // ignore: cast_nullable_to_non_nullable
-              as bool,
       username: null == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
@@ -392,6 +375,10 @@ class __$$CompleteProfileFormImplCopyWithImpl<$Res>
           ? _value.isUsernameUnique
           : isUsernameUnique // ignore: cast_nullable_to_non_nullable
               as bool,
+      isCheckingUsername: null == isCheckingUsername
+          ? _value.isCheckingUsername
+          : isCheckingUsername // ignore: cast_nullable_to_non_nullable
+              as bool,
       countries: null == countries
           ? _value._countries
           : countries // ignore: cast_nullable_to_non_nullable
@@ -412,9 +399,7 @@ class __$$CompleteProfileFormImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CompleteProfileFormImpl implements _CompleteProfileForm {
   const _$CompleteProfileFormImpl(
-      {required this.displayName,
-      required this.touchedDisplayName,
-      required this.username,
+      {required this.username,
       required this.touchedUsername,
       required this.avatarUrl,
       required this.preferredLanguage,
@@ -434,6 +419,7 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
       required final List<String> errors,
       required this.isLoading,
       required this.isUsernameUnique,
+      required this.isCheckingUsername,
       required final List<Country> countries,
       required final List<City> cities,
       required this.isLoadingCountries})
@@ -444,10 +430,6 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
   factory _$CompleteProfileFormImpl.fromJson(Map<String, dynamic> json) =>
       _$$CompleteProfileFormImplFromJson(json);
 
-  @override
-  final String displayName;
-  @override
-  final bool touchedDisplayName;
   @override
   final String username;
   @override
@@ -494,6 +476,8 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
   final bool isLoading;
   @override
   final bool isUsernameUnique;
+  @override
+  final bool isCheckingUsername;
   final List<Country> _countries;
   @override
   List<Country> get countries {
@@ -515,7 +499,7 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
 
   @override
   String toString() {
-    return 'CompleteProfileForm(displayName: $displayName, touchedDisplayName: $touchedDisplayName, username: $username, touchedUsername: $touchedUsername, avatarUrl: $avatarUrl, preferredLanguage: $preferredLanguage, touchedPreferredLanguage: $touchedPreferredLanguage, country: $country, touchedCountry: $touchedCountry, city: $city, touchedCity: $touchedCity, birthdayMonth: $birthdayMonth, touchedBirthdayMonth: $touchedBirthdayMonth, birthdayYear: $birthdayYear, touchedBirthdayYear: $touchedBirthdayYear, gender: $gender, touchedGender: $touchedGender, primaryInterestCategory: $primaryInterestCategory, touchedPrimaryInterestCategory: $touchedPrimaryInterestCategory, errors: $errors, isLoading: $isLoading, isUsernameUnique: $isUsernameUnique, countries: $countries, cities: $cities, isLoadingCountries: $isLoadingCountries)';
+    return 'CompleteProfileForm(username: $username, touchedUsername: $touchedUsername, avatarUrl: $avatarUrl, preferredLanguage: $preferredLanguage, touchedPreferredLanguage: $touchedPreferredLanguage, country: $country, touchedCountry: $touchedCountry, city: $city, touchedCity: $touchedCity, birthdayMonth: $birthdayMonth, touchedBirthdayMonth: $touchedBirthdayMonth, birthdayYear: $birthdayYear, touchedBirthdayYear: $touchedBirthdayYear, gender: $gender, touchedGender: $touchedGender, primaryInterestCategory: $primaryInterestCategory, touchedPrimaryInterestCategory: $touchedPrimaryInterestCategory, errors: $errors, isLoading: $isLoading, isUsernameUnique: $isUsernameUnique, isCheckingUsername: $isCheckingUsername, countries: $countries, cities: $cities, isLoadingCountries: $isLoadingCountries)';
   }
 
   @override
@@ -523,10 +507,6 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CompleteProfileFormImpl &&
-            (identical(other.displayName, displayName) ||
-                other.displayName == displayName) &&
-            (identical(other.touchedDisplayName, touchedDisplayName) ||
-                other.touchedDisplayName == touchedDisplayName) &&
             (identical(other.username, username) ||
                 other.username == username) &&
             (identical(other.touchedUsername, touchedUsername) ||
@@ -567,6 +547,8 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
                 other.isLoading == isLoading) &&
             (identical(other.isUsernameUnique, isUsernameUnique) ||
                 other.isUsernameUnique == isUsernameUnique) &&
+            (identical(other.isCheckingUsername, isCheckingUsername) ||
+                other.isCheckingUsername == isCheckingUsername) &&
             const DeepCollectionEquality()
                 .equals(other._countries, _countries) &&
             const DeepCollectionEquality().equals(other._cities, _cities) &&
@@ -578,8 +560,6 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        displayName,
-        touchedDisplayName,
         username,
         touchedUsername,
         avatarUrl,
@@ -600,6 +580,7 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
         const DeepCollectionEquality().hash(_errors),
         isLoading,
         isUsernameUnique,
+        isCheckingUsername,
         const DeepCollectionEquality().hash(_countries),
         const DeepCollectionEquality().hash(_cities),
         isLoadingCountries
@@ -622,9 +603,7 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
 
 abstract class _CompleteProfileForm implements CompleteProfileForm {
   const factory _CompleteProfileForm(
-      {required final String displayName,
-      required final bool touchedDisplayName,
-      required final String username,
+      {required final String username,
       required final bool touchedUsername,
       required final String avatarUrl,
       required final String preferredLanguage,
@@ -644,6 +623,7 @@ abstract class _CompleteProfileForm implements CompleteProfileForm {
       required final List<String> errors,
       required final bool isLoading,
       required final bool isUsernameUnique,
+      required final bool isCheckingUsername,
       required final List<Country> countries,
       required final List<City> cities,
       required final bool isLoadingCountries}) = _$CompleteProfileFormImpl;
@@ -651,10 +631,6 @@ abstract class _CompleteProfileForm implements CompleteProfileForm {
   factory _CompleteProfileForm.fromJson(Map<String, dynamic> json) =
       _$CompleteProfileFormImpl.fromJson;
 
-  @override
-  String get displayName;
-  @override
-  bool get touchedDisplayName;
   @override
   String get username;
   @override
@@ -695,6 +671,8 @@ abstract class _CompleteProfileForm implements CompleteProfileForm {
   bool get isLoading;
   @override
   bool get isUsernameUnique;
+  @override
+  bool get isCheckingUsername;
   @override
   List<Country> get countries;
   @override

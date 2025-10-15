@@ -79,12 +79,21 @@ final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
   final profileService = ref.watch(profileServiceProvider);
   final achievementsService = ref.watch(achievementsServiceProvider);
 
-  return AdventureInProgressNotifier(
+  final notifier = AdventureInProgressNotifier(
     adventureCrudService,
     authService,
     profileService,
     achievementsService,
   );
+  
+  // Watch for location tracking enabled state
+  ref.listen(locationTrackingEnabledProvider, (previous, next) {
+    if (next) {
+      notifier.enableLocationTracking();
+    }
+  });
+  
+  return notifier;
 });
 
 final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {

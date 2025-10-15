@@ -122,11 +122,20 @@ final userPreviousQuestProvider = FutureProvider<List<Quest>>((ref) async {
 
 final questInProgressTrackerProvider =
     StateNotifierProvider<QuestValidatorNotifier, QuestInProgress?>((ref) {
-  return QuestValidatorNotifier(
+  final notifier = QuestValidatorNotifier(
     ref,
     ref.watch(questCrudServiceProvider),
     ref.watch(profileServiceProvider),
     ref.watch(achievementsServiceProvider),
     ref.watch(authServiceProvider),
   );
+  
+  // Watch for location tracking enabled state
+  ref.listen(locationTrackingEnabledProvider, (previous, next) {
+    if (next) {
+      notifier.enableLocationTracking();
+    }
+  });
+  
+  return notifier;
 });

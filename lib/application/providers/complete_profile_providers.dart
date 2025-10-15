@@ -4,14 +4,14 @@ import '../../domain/models/complete_profile_form.dart';
 import '../notifiers/complete_profile_notifier.dart';
 import 'profile_providers.dart';
 import 'auth_service_providers.dart';
+import 'storage_providers.dart';
 
 final completeProfileFormNotifierProvider = StateNotifierProvider<CompleteProfileFormNotifier, CompleteProfileForm>((ref) {
   final profileService = ref.watch(profileServiceProvider);
   final authService = ref.watch(authServiceProvider);
+  final storageService = ref.watch(storageServiceProvider);
   return CompleteProfileFormNotifier(
     const CompleteProfileForm(
-      displayName: '',
-      touchedDisplayName: false,
       username: '',
       touchedUsername: false,
       avatarUrl: '',
@@ -32,11 +32,13 @@ final completeProfileFormNotifierProvider = StateNotifierProvider<CompleteProfil
       errors: [],
       isLoading: false,
       isUsernameUnique: false,
+      isCheckingUsername: false,
       countries: [],
       cities: [],
       isLoadingCountries: false,
     ),
     profileService,
     authService,
+    storageService,
   );
 });

@@ -7,8 +7,8 @@ part 'xplora_user.g.dart';
 abstract class XploraUser with _$XploraUser {
   const factory XploraUser({
     required String? id,
-    required String name,
     required String email,
+    required String displayName,
     required String username,
     required bool isEmailVerified,
   }) = _XploraUser;

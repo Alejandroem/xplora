@@ -1,34 +1,26 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../domain/models/complete_profile_form.dart';
+import '../../domain/models/xplora_profile.dart';
 import '../../domain/services/xplora_profile_service.dart';
 import '../../domain/services/auth_service.dart';
+import '../../domain/services/storage_service.dart';
 import '../../domain/services/country_city_data_service.dart';
 
 class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
   XploraProfileService profileService;
   AuthService authService;
+  StorageService storageService;
+  Timer? _usernameValidationTimer;
   
-  CompleteProfileFormNotifier(super.state, this.profileService, this.authService);
+  CompleteProfileFormNotifier(super.state, this.profileService, this.authService, this.storageService);
 
-  void setDisplayName(String displayName) {
-    if (displayName.isEmpty) {
-      state = state
-          .copyWith(displayName: displayName, touchedDisplayName: false, errors: []);
-      return;
-    }
-
-    if (RegExp(r'[0-9]').hasMatch(displayName)) {
-      state = state.copyWith(
-          displayName: displayName,
-          touchedDisplayName: true,
-          errors: ['Display name cannot contain numbers']);
-      return;
-    }
-
-    state = state
-        .copyWith(displayName: displayName, touchedDisplayName: true, errors: []);
+  @override
+  void dispose() {
+    _usernameValidationTimer?.cancel();
+    super.dispose();
   }
 
   void setUsername(String username) {
@@ -107,6 +99,38 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
     state = state.copyWith(isUsernameUnique: isUnique);
   }
 
+  Future<void> checkUsernameAvailability(String username) async {
+    // Cancel previous timer
+    _usernameValidationTimer?.cancel();
+    
+    if (username.isEmpty || username.length < 6) {
+      state = state.copyWith(isUsernameUnique: false, isCheckingUsername: false);
+      return;
+    }
+
+    // Set loading state immediately
+    state = state.copyWith(isCheckingUsername: true);
+
+    // Debounce the validation by 500ms
+    _usernameValidationTimer = Timer(const Duration(milliseconds: 500), () async {
+      await _performUsernameValidation(username);
+    });
+  }
+
+  Future<void> _performUsernameValidation(String username) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .get();
+      
+      final isAvailable = querySnapshot.docs.isEmpty;
+      state = state.copyWith(isUsernameUnique: isAvailable, isCheckingUsername: false);
+    } catch (e) {
+      state = state.copyWith(isUsernameUnique: false, isCheckingUsername: false);
+    }
+  }
+
   Future<void> loadCountries() async {
     state = state.copyWith(isLoadingCountries: true);
     try {
@@ -147,24 +171,11 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
       cities: [],
     );
     
-    // Add a small delay to prevent dropdown from closing immediately
-    await Future.delayed(const Duration(milliseconds: 100));
-    
-    // Load cities for the selected country
-    await loadCitiesForCountry(countryName);
+    // Load cities for the selected country asynchronously without blocking
+    loadCitiesForCountry(countryName);
   }
 
   bool isValid() {
-    if (state.displayName.isEmpty) {
-      state = state.copyWith(touchedDisplayName: true, errors: ['Display name is required']);
-      return false;
-    }
-
-    if (RegExp(r'[0-9]').hasMatch(state.displayName)) {
-      state = state.copyWith(touchedDisplayName: true, errors: ['Display name cannot contain numbers']);
-      return false;
-    }
-
     if (state.username.isEmpty) {
       state = state.copyWith(touchedUsername: true, errors: ['Username is required']);
       return false;
@@ -185,7 +196,7 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
       return false;
     }
 
-    if (state.city.isEmpty) {
+    if (state.cities.isNotEmpty && state.city.isEmpty) {
       state = state.copyWith(touchedCity: true, errors: ['City is required']);
       return false;
     }
@@ -205,14 +216,30 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
       return false;
     }
 
+    if (!state.isUsernameUnique) {
+      state = state.copyWith(touchedUsername: true, errors: ['Username is already taken']);
+      return false;
+    }
+
     state = state.copyWith(errors: []);
     return true;
   }
 
   Future<void> completeProfile() async {
     state = state.copyWith(isLoading: true);
+    
+    // Wait for any pending username validation to complete
+    // if (state.username.isNotEmpty && state.username.length >= 6) {
+    //   await _performUsernameValidation(state.username);
+    // }
+    
     final valid = isValid();
     if (!valid) {
+      state = state.copyWith(isLoading: false);
+      return;
+    }
+
+    if(state.errors.isNotEmpty) {
       state = state.copyWith(isLoading: false);
       return;
     }
@@ -226,16 +253,49 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
         return;
       }
 
-      final profiles = await profileService.readBy('userId', currentUser.id!);
-      if (profiles.isNotEmpty) {
-        final profile = profiles.first;
-        final updatedProfile = profile.copyWith(
-          username: state.username,
-          avatarUrl: state.avatarUrl,
-          // Add other fields as needed when XploraProfile model is updated
-        );
-        await profileService.update(updatedProfile, profile.id!);
+      // Update username in user document
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id!)
+          .update({'username': state.username});
+
+      // Upload avatar image to Firebase Storage if it's a local file path
+      String avatarUrl = state.avatarUrl;
+      if (state.avatarUrl.isNotEmpty && !state.avatarUrl.startsWith('http')) {
+        try {
+          avatarUrl = await storageService.uploadImage(
+            state.avatarUrl, 
+            currentUser.id!
+          );
+        } catch (e) {
+          state = state.copyWith(errors: ['Failed to upload profile image: $e']);
+          state = state.copyWith(isLoading: false);
+          return;
+        }
       }
+
+      // Create or update the complete XploraProfile with all data
+      final now = DateTime.now().toUtc().toIso8601String();
+      final completeProfile = XploraProfile(
+        id: currentUser.id,
+        userId: currentUser.id!,
+        experience: 0, // Default experience
+        categories: [], // Default empty categories
+        avatarUrl: avatarUrl,
+        username: state.username,
+        preferredLanguage: state.preferredLanguage,
+        country: state.country,
+        city: state.city,
+        birthdayMonth: state.birthdayMonth,
+        birthdayYear: state.birthdayYear,
+        gender: state.gender,
+        primaryInterestCategory: state.primaryInterestCategory,
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      // Save to user subcollection: users/{userId}/profile/data
+      await profileService.updateOrCreate(completeProfile, currentUser.id!);
     } catch (e) {
       state = state.copyWith(errors: [e.toString()]);
     }

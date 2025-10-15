@@ -41,14 +41,14 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                               scale: 0.9,
                               child: CircleAvatar(
                                 backgroundColor: whiteSmoke,
-                                radius: 16.0,
+                                radius: 20.0,
                                 child: profile!.avatarUrl != null &&
                                         profile.avatarUrl!.isNotEmpty
                                     ? ClipOval(
                                         child: Image.network(
                                           profile.avatarUrl!,
-                                          width: 32.0,
-                                          height: 32.0,
+                                          width: 40.0,
+                                          height: 40.0,
                                           fit: BoxFit.cover,
                                         ),
                                       )

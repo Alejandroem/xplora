@@ -23,7 +23,7 @@ class FirebaseAuthService extends AuthService {
       collectionReference.doc(userCredential.user!.uid).set({
         'email': email,
         'id': userCredential.user!.uid,
-        'name': '',
+        'displayName': '',
         'username': '',
       });
     }
@@ -35,7 +35,7 @@ class FirebaseAuthService extends AuthService {
     return XploraUser(
       id: userCredential.user!.uid,
       email: userCredential.user!.email!,
-      name: data['name'] ?? '',
+      displayName: data['displayName'] ?? '',
       username: data['username'] ?? '',
       isEmailVerified: userCredential.user!.emailVerified,
     );
@@ -51,8 +51,7 @@ class FirebaseAuthService extends AuthService {
   Future<XploraUser> signUpWithEmailAndPassword(
     String email,
     String password,
-    String name,
-    String username,
+    String displayName,
   ) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     UserCredential userCredential = await auth.createUserWithEmailAndPassword(
@@ -67,8 +66,8 @@ class FirebaseAuthService extends AuthService {
     await collectionReference.doc(userCredential.user!.uid).set({
       'email': email,
       'id': userCredential.user!.uid,
-      'name': name,
-      'username': username,
+      'displayName': displayName,
+      'username': '',
       'type': 'user',
       'createdAt': now,
       'updatedAt': now,
@@ -80,8 +79,8 @@ class FirebaseAuthService extends AuthService {
     return XploraUser(
       id: userCredential.user!.uid,
       email: userCredential.user!.email!,
-      name: name,
-      username: username,
+      displayName: displayName,
+      username: '',
       isEmailVerified: userCredential.user!.emailVerified,
     );
   }
@@ -108,8 +107,8 @@ class FirebaseAuthService extends AuthService {
     return XploraUser(
       id: user.uid,
       email: user.email!,
-      name: documentSnapshot['name'],
-      username: documentSnapshot['username'],
+      displayName: documentSnapshot['displayName'] ?? '',
+      username: documentSnapshot['username'] ?? '',
       isEmailVerified: user.emailVerified,
     );
   }
@@ -159,8 +158,8 @@ class FirebaseAuthService extends AuthService {
       return XploraUser(
         id: user.uid,
         email: user.email!,
-        name: documentSnapshot['name'],
-        username: documentSnapshot['username'],
+        displayName: documentSnapshot['displayName'] ?? '',
+        username: documentSnapshot['username'] ?? '',
         isEmailVerified: user.emailVerified,
       );
     });
