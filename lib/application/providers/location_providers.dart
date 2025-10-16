@@ -106,10 +106,6 @@ final locationTrackingEnabledProvider = StateProvider<bool>((ref) {
 
 // Provider that automatically enables location tracking for authenticated users with permission
 final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
-  final authService = ref.watch(authServiceProvider);
-  final isSignedIn = await authService.isSignedInFuture();
-  
-  if (isSignedIn) {
     // Check if location permission is already granted
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (serviceEnabled) {
@@ -120,12 +116,11 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
         ref.read(locationTrackingEnabledProvider.notifier).state = true;
         ref.read(locationProvider.notifier).initializeLocationTracking();
       }else{
-        print('🗺️ autoEnableLocationTrackingProvider: User is authenticated and has no location permission');
+        print('🗺️ autoEnableLocationTrackingProvider: User is authenticated and has no location permission, not enabling tracking');
       }
     }else{
-      print('🗺️ autoEnableLocationTrackingProvider: User is authenticated and location services are not enabled');
+      print('🗺️ autoEnableLocationTrackingProvider: User is authenticated and location services are not enabled, not enabling tracking');
     }
-  }
 });
 
 // Provider to check if location permission is granted

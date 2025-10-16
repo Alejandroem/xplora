@@ -55,14 +55,8 @@ class QuestValidatorNotifier extends StateNotifier<QuestInProgress?> {
 
   Future<void> _checkUserLocation() async {
     if (!_isLocationTrackingEnabled) {
+      print('🗺️ QuestValidatorNotifier: Location tracking not enabled, skipping location check');
       return; // Don't check location if tracking is not enabled
-    }
-    
-    // Check if user is authenticated before requesting location
-    final isSignedIn = await _authService.isSignedInFuture();
-    if (!isSignedIn) {
-      print('🔍 QuestValidatorNotifier: User not authenticated, skipping location check');
-      return;
     }
     
     final userLocation = await _getUserLocation();

@@ -26,8 +26,11 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
     final user = await authService.getAuthUser();
 
     if (user == null) {
+      print('SettingsStateNotifier: No user found');
       return;
     }
+
+    print('SettingsStateNotifier: Loading settings for user ${user.id}');
 
     final settings = await settingsCrudService.readByFilters([
       {
@@ -36,6 +39,13 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
         'value': user.id!,
       }
     ]);
+
+    print('SettingsStateNotifier: Loaded ${settings?.length ?? 0} settings');
+    if (settings != null) {
+      for (var setting in settings) {
+        print('Setting: ${setting.key} = ${setting.value}');
+      }
+    }
 
     state = settings ?? [];
   }
@@ -64,7 +74,7 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
     return state[notificationsIndex].value as bool;
   }
 
-  void toggleDarkMode() async {
+  Future<void> toggleDarkMode() async {
     final darkModeIndex = state.indexWhere(
       (setting) => setting.key == _kIsDarkMode,
     );
@@ -107,7 +117,7 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
     ];
   }
 
-  void toggleNotifications() async {
+  Future<void> toggleNotifications() async {
     final notificationsIndex = state.indexWhere(
       (setting) => setting.key == _kIsNotificationsEnabled,
     );
@@ -153,7 +163,54 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
     }
   }
 
-  void toggleLocation() async {
+  Future<void> setLocationEnabled(bool enabled) async {
+    final locationIndex = state.indexWhere(
+      (setting) => setting.key == _kIsLocationEnabled,
+    );
+    if (locationIndex == -1) {
+      // Create new setting if it doesn't exist
+      final user = await authService.getAuthUser();
+      if (user == null) return;
+
+      final newSetting = Setting(
+        key: _kIsLocationEnabled,
+        value: enabled,
+        userId: user.id!,
+        variableType: 'bool',
+        updatedAt: DateTime.now(),
+        id: null,
+      );
+
+      final created = await settingsCrudService.create(newSetting);
+
+      state = [...state, created];
+      return;
+    }
+
+    final currentLocation = state[locationIndex];
+
+    // Only update if the value is different
+    if (currentLocation.value == enabled) {
+      return;
+    }
+
+    await settingsCrudService.update(
+      currentLocation.copyWith(
+        value: enabled,
+      ),
+      currentLocation.id!,
+    );
+
+    state = [
+      ...state.sublist(0, locationIndex),
+      currentLocation.copyWith(
+        value: enabled,
+      ),
+      ...state.sublist(locationIndex + 1),
+    ];
+  }
+
+  Future<void> toggleLocation() async {
     final locationIndex = state.indexWhere(
       (setting) => setting.key == _kIsLocationEnabled,
     );

@@ -44,9 +44,9 @@ class _HomeState extends ConsumerState<Home> {
     log('Home: initState');
 
     // Initialize location tracking only when user is authenticated
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeLocationIfNeeded();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _initializeLocationIfNeeded();
+    // });
 
     // Access the deepLinkServiceProvider and listen for deep link events
     final deepLinkService = ref.read(deepLinkServiceProvider);
@@ -61,19 +61,19 @@ class _HomeState extends ConsumerState<Home> {
     });
   }
 
-  Future<void> _initializeLocationIfNeeded() async {
-    try {
-      final authService = ref.read(authServiceProvider);
-      final isSignedIn = await authService.isSignedInFuture();
-      
-      if (isSignedIn) {
-        // Only initialize location tracking for authenticated users
-        ref.read(locationProvider.notifier).initializeLocationTracking();
-      }
-    } catch (e) {
-      log('Error initializing location: $e');
-    }
-  }
+  // Future<void> _initializeLocationIfNeeded() async {
+  //   try {
+  //     final authService = ref.read(authServiceProvider);
+  //     final isSignedIn = await authService.isSignedInFuture();
+  //
+  //     if (isSignedIn) {
+  //       // Only initialize location tracking for authenticated users
+  //       ref.read(locationProvider.notifier).initializeLocationTracking();
+  //     }
+  //   } catch (e) {
+  //     log('Error initializing location: $e');
+  //   }
+  // }
 
   Future<void> _handleDeepLinkCode(String code) async {
     //Code should have the schema xplora://quest?code=123 get the code

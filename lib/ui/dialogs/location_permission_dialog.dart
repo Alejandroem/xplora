@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:location/location.dart';
+import '../../application/providers/auth_service_providers.dart';
+import '../../application/providers/complete_profile_providers.dart';
 import '../../application/providers/location_providers.dart';
+import '../../application/providers/settings_providers.dart';
 import '../../theme.dart';
 
 class LocationPermissionDialog extends ConsumerStatefulWidget {
@@ -21,12 +24,16 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
 
     try {
       Location location = Location();
-      
+
       // Check if location services are enabled
       bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await location.requestService();
         if (!serviceEnabled) {
+          // Update settings - location denied
+          final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+          await settingsNotifier.setLocationEnabled(false);
+
           if (mounted) {
             Navigator.of(context).pop(false);
           }
@@ -39,6 +46,10 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await location.requestPermission();
         if (permissionGranted != PermissionStatus.granted) {
+          // Update settings - location denied
+          final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+          await settingsNotifier.setLocationEnabled(false);
+
           if (mounted) {
             Navigator.of(context).pop(false);
           }
@@ -48,13 +59,17 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
 
       // Enable location tracking for notifiers
       ref.read(locationTrackingEnabledProvider.notifier).state = true;
-      
+
       // Initialize location tracking in the location provider
       ref.read(locationProvider.notifier).initializeLocationTracking();
-      
+
       // Invalidate location permission provider to refresh the permission status
       ref.invalidate(locationPermissionProvider);
-      
+
+      // Update settings - location allowed
+      final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+      await settingsNotifier.setLocationEnabled(true);
+
       if (mounted) {
         Navigator.of(context).pop(true);
       }
@@ -71,8 +86,14 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
     }
   }
 
-  void _skipLocationPermission() {
-    Navigator.of(context).pop(false);
+  void _skipLocationPermission() async {
+    // Update settings - location denied/skipped
+    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+    await settingsNotifier.setLocationEnabled(false);
+
+    if (mounted) {
+      Navigator.of(context).pop(false);
+    }
   }
 
   @override
@@ -131,7 +152,7 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 18),
                   
                   // Warning text
                   Container(

@@ -193,6 +193,7 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
       // Fetch user settings to ensure they're available
       await _fetchUserSettings(user.id!);
     } on FirebaseAuthException catch (e) {
+      print(e);
       if (e.code == 'email-already-in-use') {
         state = state.copyWith(errors: ['Email already in use, please use a different email']);
       } else if (e.code == 'weak-password') {
@@ -215,11 +216,11 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
   Future<void> _createDefaultSettings(String userId) async {
     try {
       final now = DateTime.now();
-      
+
       // Check actual permission status for notifications and location
       final notificationStatus = await Permission.notification.status;
       final locationStatus = await Permission.location.status;
-      
+
       // Create default settings based on actual permissions
       final defaultSettings = [
         Setting(
@@ -248,7 +249,7 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
         ),
       ];
 
-      // Create all default settings
+      // Create all default settings (they will be saved in single data doc)
       for (final setting in defaultSettings) {
         await settingsService.create(setting);
       }

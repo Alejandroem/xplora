@@ -57,14 +57,8 @@ class AdventureInProgressNotifier extends StateNotifier<AdventureInProgress?> {
 
   Future<void> _checkUserLocation() async {
     if (!_isLocationTrackingEnabled) {
+      print('🗺️ AdventureInProgressNotifier: Location tracking not enabled, skipping location check');
       return; // Don't check location if tracking is not enabled
-    }
-    
-    // Check if user is authenticated before requesting location
-    final isSignedIn = await _authService.isSignedInFuture();
-    if (!isSignedIn) {
-      print('🔍 AdventureInProgressNotifier: User not authenticated, skipping location check');
-      return;
     }
     
     XploraUser? user = await _authService.getAuthUser();

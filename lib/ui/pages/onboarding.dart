@@ -16,6 +16,7 @@ class OnboardingPage extends ConsumerStatefulWidget {
 class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   late PageController _pageController;
   int _currentPage = 0;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -36,13 +37,16 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 
   Future<void> _finishOnboarding() async {
+    setState(() {
+      _isLoading = true;
+    });
     final localStorage = ref.read(localStorageProvider);
     await localStorage.save(
       kHasFinishedOnboardingKey,
       'true',
     );
 
-    if (context.mounted) {
+    if (mounted) {
       Navigator.of(context).pushReplacementNamed('/home');
     }
   }
@@ -106,9 +110,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 child: SizedBox(
                   width: double.infinity,
                   child: PrimaryButton(
-                    text: _currentPage == 2 ? 'Start' : 'Next',
+                    text: _currentPage == 2 ? _isLoading ? 'Loading...' : 'Start' : 'Next',
                     onPressed: _currentPage == 2
-                        ? _finishOnboarding
+                        ? _isLoading ? null : _finishOnboarding
                         : () {
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 300),

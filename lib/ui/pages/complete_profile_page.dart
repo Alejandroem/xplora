@@ -20,6 +20,12 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
   String? _selectedImagePath;
   final FocusNode _countryFocusNode = FocusNode();
   final FocusNode _cityFocusNode = FocusNode();
+  
+  // Memoize year list to avoid regenerating on every build
+  late final List<String> _years = List.generate(
+    100,
+    (index) => (DateTime.now().year - 100 + index).toString(),
+  );
 
   @override
   void initState() {
@@ -211,6 +217,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                   // Avatar section (optional)
                   Consumer(
                     builder: (context, ref, child) {
+                      final profileState = ref.watch(completeProfileFormNotifierProvider);
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -227,9 +234,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                               onTap: () {
                                 showBottomAvatarSelectionCard(
                                   context: context,
-                                  currentAvatarUrl: ref
-                                      .watch(completeProfileFormNotifierProvider)
-                                      .avatarUrl,
+                                  currentAvatarUrl: profileState.avatarUrl,
                                   selectedImagePath: _selectedImagePath,
                                   onAvatarSelected: (imagePath) {
                                     _selectedImagePath = imagePath;
@@ -321,45 +326,43 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildDropdownField(
-                          label: 'Month',
-                          value: ref
-                              .watch(completeProfileFormNotifierProvider)
-                              .birthdayMonth,
-                          items: _months,
-                          onChanged: (value) {
-                            ref
-                                .read(
-                                    completeProfileFormNotifierProvider.notifier)
-                                .setBirthdayMonth(value);
-                          },
-                          icon: Icons.calendar_month,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildDropdownField(
-                          label: 'Year',
-                          value: ref
-                              .watch(completeProfileFormNotifierProvider)
-                              .birthdayYear,
-                          items: List.generate(
-                              100,
-                              (index) =>
-                                  (DateTime.now().year - 100 + index).toString()),
-                          onChanged: (value) {
-                            ref
-                                .read(
-                                    completeProfileFormNotifierProvider.notifier)
-                                .setBirthdayYear(value);
-                          },
-                          icon: Icons.calendar_today,
-                        ),
-                      ),
-                    ],
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final profileState = ref.watch(completeProfileFormNotifierProvider);
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: _buildDropdownField(
+                              label: 'Month',
+                              value: profileState.birthdayMonth,
+                              items: _months,
+                              onChanged: (value) {
+                                ref
+                                    .read(
+                                        completeProfileFormNotifierProvider.notifier)
+                                    .setBirthdayMonth(value);
+                              },
+                              icon: Icons.calendar_month,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildDropdownField(
+                              label: 'Year',
+                              value: profileState.birthdayYear,
+                              items: _years,
+                              onChanged: (value) {
+                                ref
+                                    .read(
+                                        completeProfileFormNotifierProvider.notifier)
+                                    .setBirthdayYear(value);
+                              },
+                              icon: Icons.calendar_today,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
       
@@ -412,7 +415,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                             .watch(completeProfileFormNotifierProvider)
                             .isLoading;
                         return PrimaryButton(
-                          text: isLoading ? 'Completing...' : 'Complete Profile',
+                          text: isLoading ? 'Completing profile...' : 'Complete Profile',
                           onPressed: isLoading
                               ? null
                               : () async {
@@ -452,17 +455,17 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                     // Success - show location permission dialog
                                     if (context.mounted) {
                                       ref.invalidate(completeProfileFormNotifierProvider);
-                                      showXploraSnackBar(
-                                        context,
-                                        'Profile completed successfully!',
-                                      );
-                                      
+                                      // showXploraSnackBar(
+                                      //   context,
+                                      //   'Profile completed successfully!',
+                                      // );
+
                                       // Show location permission dialog
                                       await showLocationPermissionDialog(context);
                                       
                                       // Navigate back regardless of location permission result
                                       if (context.mounted) {
-                                        Navigator.of(context).pop();
+                                        Navigator.pushReplacementNamed(context, '/categories');
                                       }
                                     }
                                   }
@@ -483,33 +486,37 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
 
 
   Widget _buildAvatarFromUrl() {
-    final avatarUrl = ref.watch(completeProfileFormNotifierProvider).avatarUrl;
-    
-    if (avatarUrl.isEmpty) {
-      return Icon(
-        Icons.add_a_photo,
-        color: textSecondary,
-        size: 40,
-      );
-    }
-    
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(50),
-      child: avatarUrl.startsWith('http')
-          ? Image.network(
-              avatarUrl,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(
-                  Icons.person,
-                  color: textSecondary,
-                  size: 40,
-                );
-              },
-            )
-          : _buildFileImage(avatarUrl),
+    return Consumer(
+      builder: (context, ref, child) {
+        final avatarUrl = ref.watch(completeProfileFormNotifierProvider).avatarUrl;
+        
+        if (avatarUrl.isEmpty) {
+          return Icon(
+            Icons.add_a_photo,
+            color: textSecondary,
+            size: 40,
+          );
+        }
+        
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: avatarUrl.startsWith('http')
+              ? Image.network(
+                  avatarUrl,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.person,
+                      color: textSecondary,
+                      size: 40,
+                    );
+                  },
+                )
+              : _buildFileImage(avatarUrl),
+        );
+      },
     );
   }
 
@@ -547,269 +554,289 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
   }
 
   Widget _buildCountryDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Country',
-          style: h3Style.copyWith(
-            color: textPrimary,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: midSurface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: cardContainerBorder,
-              width: 1,
-            ),
-          ),
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              canvasColor: const Color(0xff121212),
-              focusColor: accentPrimary.withOpacity(0.1),
-              hoverColor: accentPrimary.withOpacity(0.05),
-              highlightColor: accentPrimary.withOpacity(0.1),
-              splashColor: accentPrimary.withOpacity(0.05),
-              dividerColor: Colors.transparent,
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                value: ref.watch(completeProfileFormNotifierProvider).country.isEmpty ? null : ref.watch(completeProfileFormNotifierProvider).country,
-                hint: Text(
-                  ref.watch(completeProfileFormNotifierProvider).isLoadingCountries ? 'Loading...' : 'Select Country',
-                  style: bodyTextStyle.copyWith(
-                    color: textSecondary,
-                    fontSize: 16,
-                  ),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: textSecondary,
-                ),
-                isExpanded: true,
-                dropdownColor: const Color(0xff121212),
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontSize: 16,
-                ),
-                selectedItemBuilder: (BuildContext context) {
-                  return ref.watch(completeProfileFormNotifierProvider).countries.map<Widget>((Country country) {
-                    return Container(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.flag,
-                            color: textSecondary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              country.name,
-                              style: bodyTextStyle.copyWith(
-                                color: textPrimary,
-                                fontSize: 16,
-                                height: 1.3,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList();
-                },
-                items: ref.watch(completeProfileFormNotifierProvider).countries.map((Country country) {
-                  return DropdownMenuItem<String>(
-                    value: country.name,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Icon(
-                              Icons.flag,
-                              color: textSecondary,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              country.name,
-                              style: bodyTextStyle.copyWith(
-                                color: textPrimary,
-                                fontSize: 16,
-                                height: 1.3,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          ref
-                              .read(completeProfileFormNotifierProvider.notifier)
-                              .selectCountry(newValue);
-                        }
-                      },
+    return Consumer(
+      builder: (context, ref, child) {
+        // Cache state once at the beginning
+        final profileState = ref.watch(completeProfileFormNotifierProvider);
+        final selectedCountry = profileState.country.isEmpty ? null : profileState.country;
+        final countries = profileState.countries;
+        final isLoading = profileState.isLoadingCountries;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Country',
+              style: h3Style.copyWith(
+                color: textPrimary,
+                fontSize: 14,
               ),
             ),
-          ),
-        ),
-      ],
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: midSurface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: cardContainerBorder,
+                  width: 1,
+                ),
+              ),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  canvasColor: const Color(0xff121212),
+                  focusColor: accentPrimary.withOpacity(0.1),
+                  hoverColor: accentPrimary.withOpacity(0.05),
+                  highlightColor: accentPrimary.withOpacity(0.1),
+                  splashColor: accentPrimary.withOpacity(0.05),
+                  dividerColor: Colors.transparent,
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    value: selectedCountry,
+                    hint: Text(
+                      isLoading ? 'Loading...' : 'Select Country',
+                      style: bodyTextStyle.copyWith(
+                        color: textSecondary,
+                        fontSize: 16,
+                      ),
+                    ),
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: textSecondary,
+                    ),
+                    isExpanded: true,
+                    dropdownColor: const Color(0xff121212),
+                    style: bodyTextStyle.copyWith(
+                      color: textPrimary,
+                      fontSize: 16,
+                    ),
+                    selectedItemBuilder: (BuildContext context) {
+                      return countries.map<Widget>((Country country) {
+                        return Container(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.flag,
+                                color: textSecondary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  country.name,
+                                  style: bodyTextStyle.copyWith(
+                                    color: textPrimary,
+                                    fontSize: 16,
+                                    height: 1.3,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList();
+                    },
+                    items: countries.map((Country country) {
+                      return DropdownMenuItem<String>(
+                        value: country.name,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Icon(
+                                  Icons.flag,
+                                  color: textSecondary,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  country.name,
+                                  style: bodyTextStyle.copyWith(
+                                    color: textPrimary,
+                                    fontSize: 16,
+                                    height: 1.3,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        ref
+                            .read(completeProfileFormNotifierProvider.notifier)
+                            .selectCountry(newValue);
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   Widget _buildCityDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'City',
-          style: h3Style.copyWith(
-            color: textPrimary,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: midSurface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: cardContainerBorder,
-              width: 1,
-            ),
-          ),
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              canvasColor: const Color(0xff121212),
-              focusColor: accentPrimary.withOpacity(0.1),
-              hoverColor: accentPrimary.withOpacity(0.05),
-              highlightColor: accentPrimary.withOpacity(0.1),
-              splashColor: accentPrimary.withOpacity(0.05),
-              dividerColor: Colors.transparent,
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                value: ref.watch(completeProfileFormNotifierProvider).city.isEmpty ? null : ref.watch(completeProfileFormNotifierProvider).city,
-                hint: Text(
-                  ref.watch(completeProfileFormNotifierProvider).country.isEmpty
-                      ? 'Select Country First'
-                      : ref.watch(completeProfileFormNotifierProvider).cities.isEmpty
-                          ? 'No Cities Available'
-                          : 'Select City',
-                  style: bodyTextStyle.copyWith(
-                    color: textSecondary,
-                    fontSize: 16,
-                  ),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: textSecondary,
-                ),
-                isExpanded: true,
-                dropdownColor: const Color(0xff121212),
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontSize: 16,
-                ),
-                selectedItemBuilder: (BuildContext context) {
-                  return ref.watch(completeProfileFormNotifierProvider).cities.map<Widget>((City city) {
-                    return Container(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.location_city,
-                            color: textSecondary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              city.name,
-                              style: bodyTextStyle.copyWith(
-                                color: textPrimary,
-                                fontSize: 16,
-                                height: 1.3,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList();
-                },
-                items: ref.watch(completeProfileFormNotifierProvider).cities.map((City city) {
-                  return DropdownMenuItem<String>(
-                    value: city.name,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Icon(
-                              Icons.location_city,
-                              color: textSecondary,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              city.name,
-                              style: bodyTextStyle.copyWith(
-                                color: textPrimary,
-                                fontSize: 16,
-                                height: 1.3,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: ref.watch(completeProfileFormNotifierProvider).country.isEmpty || 
-                    ref.watch(completeProfileFormNotifierProvider).cities.isEmpty
-                    ? null
-                    : (String? newValue) {
-                        if (newValue != null) {
-                          ref
-                              .read(completeProfileFormNotifierProvider.notifier)
-                              .setCity(newValue);
-                        }
-                      },
+    return Consumer(
+      builder: (context, ref, child) {
+        // Cache state once at the beginning
+        final profileState = ref.watch(completeProfileFormNotifierProvider);
+        final selectedCity = profileState.city.isEmpty ? null : profileState.city;
+        final cities = profileState.cities;
+        final isCountrySelected = profileState.country.isNotEmpty;
+        final hasCities = cities.isNotEmpty;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'City',
+              style: h3Style.copyWith(
+                color: textPrimary,
+                fontSize: 14,
               ),
             ),
-          ),
-        ),
-      ],
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: midSurface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: cardContainerBorder,
+                  width: 1,
+                ),
+              ),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  canvasColor: const Color(0xff121212),
+                  focusColor: accentPrimary.withOpacity(0.1),
+                  hoverColor: accentPrimary.withOpacity(0.05),
+                  highlightColor: accentPrimary.withOpacity(0.1),
+                  splashColor: accentPrimary.withOpacity(0.05),
+                  dividerColor: Colors.transparent,
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    value: selectedCity,
+                    hint: Text(
+                      !isCountrySelected
+                          ? 'Select Country First'
+                          : !hasCities
+                              ? 'No Cities Available'
+                              : 'Select City',
+                      style: bodyTextStyle.copyWith(
+                        color: textSecondary,
+                        fontSize: 16,
+                      ),
+                    ),
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: textSecondary,
+                    ),
+                    isExpanded: true,
+                    dropdownColor: const Color(0xff121212),
+                    style: bodyTextStyle.copyWith(
+                      color: textPrimary,
+                      fontSize: 16,
+                    ),
+                    selectedItemBuilder: (BuildContext context) {
+                      return cities.map<Widget>((City city) {
+                        return Container(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_city,
+                                color: textSecondary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  city.name,
+                                  style: bodyTextStyle.copyWith(
+                                    color: textPrimary,
+                                    fontSize: 16,
+                                    height: 1.3,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList();
+                    },
+                    items: cities.map((City city) {
+                      return DropdownMenuItem<String>(
+                        value: city.name,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Icon(
+                                  Icons.location_city,
+                                  color: textSecondary,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  city.name,
+                                  style: bodyTextStyle.copyWith(
+                                    color: textPrimary,
+                                    fontSize: 16,
+                                    height: 1.3,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: !isCountrySelected || !hasCities
+                        ? null
+                        : (String? newValue) {
+                            if (newValue != null) {
+                              ref
+                                  .read(completeProfileFormNotifierProvider.notifier)
+                                  .setCity(newValue);
+                            }
+                          },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -833,108 +860,108 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
         ),
         const SizedBox(height: 8),
         Container(
-            decoration: BoxDecoration(
-              color: midSurface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: cardContainerBorder,
-                width: 1,
-              ),
+          decoration: BoxDecoration(
+            color: midSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: cardContainerBorder,
+              width: 1,
             ),
-            child: Theme(
-               data: Theme.of(context).copyWith(
-                 canvasColor: const Color(0xff121212),
-                 focusColor: accentPrimary.withOpacity(0.1),
-                 hoverColor: accentPrimary.withOpacity(0.05),
-                 highlightColor: accentPrimary.withOpacity(0.1),
-                 splashColor: accentPrimary.withOpacity(0.05),
-                 dividerColor: Colors.transparent,
-               ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  value: value.isEmpty ? null : value,
-                  hint: Text(
-                    'Select $label',
-                    style: bodyTextStyle.copyWith(
-                      color: textSecondary,
-                      fontSize: 16,
-                    ),
-                  ),
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: textSecondary,
-                  ),
-                  isExpanded: true,
-                  dropdownColor: const Color(
-                      0xff121212), // Solid background for dropdown menu
+          ),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: const Color(0xff121212),
+              focusColor: accentPrimary.withOpacity(0.1),
+              hoverColor: accentPrimary.withOpacity(0.05),
+              highlightColor: accentPrimary.withOpacity(0.1),
+              splashColor: accentPrimary.withOpacity(0.05),
+              dividerColor: Colors.transparent,
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                value: value.isEmpty ? null : value,
+                hint: Text(
+                  'Select $label',
                   style: bodyTextStyle.copyWith(
-                    color: textPrimary,
+                    color: textSecondary,
                     fontSize: 16,
                   ),
-                  selectedItemBuilder: (BuildContext context) {
-                    return items.map<Widget>((String item) {
-                      return Container(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: [
-                            Icon(
-                              icon,
-                              color: textSecondary,
-                              size: 20,
+                ),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: textSecondary,
+                ),
+                isExpanded: true,
+                dropdownColor: const Color(0xff121212),
+                style: bodyTextStyle.copyWith(
+                  color: textPrimary,
+                  fontSize: 16,
+                ),
+                selectedItemBuilder: (BuildContext context) {
+                  return items.map<Widget>((String item) {
+                    return Container(
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          Icon(
+                            icon,
+                            color: textSecondary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: bodyTextStyle.copyWith(
+                                color: textPrimary,
+                                fontSize: 16,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                item,
-                                style: bodyTextStyle.copyWith(
-                                  color: textPrimary,
-                                  fontSize: 16,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList();
+                },
+                items: items.map((String item) {
+                  return DropdownMenuItem<String>(
+                    value: item,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            icon,
+                            color: textSecondary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: bodyTextStyle.copyWith(
+                                color: textPrimary,
+                                fontSize: 16,
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    }).toList();
-                  },
-                   items: items.map((String item) {
-                     return DropdownMenuItem<String>(
-                       value: item,
-                       child: Padding(
-                         padding: const EdgeInsets.symmetric(
-                             horizontal: 16, vertical: 8),
-                         child: Row(
-                           children: [
-                             Icon(
-                               icon,
-                               color: textSecondary,
-                               size: 20,
-                             ),
-                             const SizedBox(width: 12),
-                             Expanded(
-                               child: Text(
-                                 item,
-                                 style: bodyTextStyle.copyWith(
-                                   color: textPrimary,
-                                   fontSize: 16,
-                                 ),
-                               ),
-                             ),
-                           ],
-                         ),
-                       ),
-                     );
-                   }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      onChanged(newValue);
-                    }
-                  },
-                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    onChanged(newValue);
+                  }
+                },
               ),
-            )),
+            ),
+          ),
+        ),
       ],
     );
   }

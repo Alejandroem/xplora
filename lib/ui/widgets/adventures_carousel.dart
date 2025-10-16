@@ -47,37 +47,47 @@ class NearestAdventures extends ConsumerWidget {
               ),
             ),
             ref.watch(allCategories).when(
-              data: (categories) {
-                return Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    // Clear filter option
-                    FilterBubble(
-                      text: 'All Types',
-                      isSelected: ref.watch(selectedActivityTypeProvider) == null,
-                      onTap: () {
-                        ref.read(selectedActivityTypeProvider.notifier).state = null;
-                        Navigator.pop(context);
-                      },
-                    ),
-                    ...categories.where((c) => c.name != 'All').map((category) {
-                      final isSelected = ref.watch(selectedActivityTypeProvider) == category.id;
-                      return FilterBubble(
-                        text: category.name,
-                        isSelected: isSelected,
-                        onTap: () {
-                          ref.read(selectedActivityTypeProvider.notifier).state = category.id;
-                          Navigator.pop(context);
-                        },
-                      );
-                    }),
-                  ],
-                );
-              },
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stack) => Text('Error: $error', style: TextStyle(color: textPrimary)),
-            ),
+                  data: (categories) {
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        // Clear filter option
+                        FilterBubble(
+                          text: 'All Types',
+                          isSelected:
+                              ref.watch(selectedActivityTypeProvider) == null,
+                          onTap: () {
+                            ref
+                                .read(selectedActivityTypeProvider.notifier)
+                                .state = null;
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ...categories
+                            .where((c) => c.name != 'All')
+                            .map((category) {
+                          final isSelected =
+                              ref.watch(selectedActivityTypeProvider) ==
+                                  category.id;
+                          return FilterBubble(
+                            text: category.name,
+                            isSelected: isSelected,
+                            onTap: () {
+                              ref
+                                  .read(selectedActivityTypeProvider.notifier)
+                                  .state = category.id;
+                              Navigator.pop(context);
+                            },
+                          );
+                        }),
+                      ],
+                    );
+                  },
+                  loading: () => const CircularProgressIndicator(),
+                  error: (error, stack) => Text('Error: $error',
+                      style: TextStyle(color: textPrimary)),
+                ),
           ],
         ),
       ),
@@ -90,35 +100,27 @@ class NearestAdventures extends ConsumerWidget {
     final selectedActivityType = ref.watch(selectedActivityTypeProvider);
     final filters = ['Nearby', 'For You', 'Following'];
 
-    // Check if user is authenticated
-    final authState = ref.watch(currentUserProvider);
-    
-    return authState.when(
-      data: (user) {
-        // Only show the carousel if user is authenticated
-        if (user == null) {
-          return const SizedBox.shrink(); // Don't show anything if user is not authenticated
-        }
+    // Check if location tracking is enabled (user granted permission through custom dialog)
+    final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
 
-        // Check if location tracking is enabled (user granted permission through custom dialog)
-        final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
-        
-        if (!locationTrackingEnabled) {
-          return const SizedBox.shrink(); // Don't show carousel if location tracking not enabled
-        }
+    if (!locationTrackingEnabled) {
+      return const SizedBox
+          .shrink(); // Don't show carousel if location tracking not enabled
+    }
 
-        return Container(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
             child: Row(
               children: [
                 Text(
                   'Nearby Places',
-                  style: h2Style.copyWith(fontSize: 20, fontWeight: FontWeight.w400),
+                  style: h2Style.copyWith(
+                      fontSize: 20, fontWeight: FontWeight.w400),
                 ),
                 const Spacer(),
               ],
@@ -139,7 +141,9 @@ class NearestAdventures extends ConsumerWidget {
                         text: filter,
                         isSelected: isSelected,
                         onTap: () {
-                          ref.read(selectedCarouselFilterProvider.notifier).state = filter;
+                          ref
+                              .read(selectedCarouselFilterProvider.notifier)
+                              .state = filter;
                         },
                       ),
                     );
@@ -176,7 +180,8 @@ class NearestAdventures extends ConsumerWidget {
 
                         if (selectedActivityType != null) {
                           filteredAdventures = adventures
-                              .where((adventure) => adventure.category == selectedActivityType)
+                              .where((adventure) =>
+                                  adventure.category == selectedActivityType)
                               .toList();
                         }
 
@@ -186,7 +191,8 @@ class NearestAdventures extends ConsumerWidget {
 
                         if (filteredAdventures.isNotEmpty) {
                           const maxCards = 20;
-                          final displayedAdventures = filteredAdventures.take(maxCards).toList();
+                          final displayedAdventures =
+                              filteredAdventures.take(maxCards).toList();
                           final hasMore = filteredAdventures.length > maxCards;
 
                           return ListView(
@@ -202,7 +208,8 @@ class NearestAdventures extends ConsumerWidget {
                                 InkWell(
                                   onTap: () {
                                     ref
-                                        .read(bottomNavigationBarProvider.notifier)
+                                        .read(bottomNavigationBarProvider
+                                            .notifier)
                                         .state = NavigationItem.search;
                                   },
                                   child: Padding(
@@ -225,7 +232,8 @@ class NearestAdventures extends ConsumerWidget {
                                             ),
                                             Text(
                                               'See more',
-                                              style: subHeadingLabelStyle.copyWith(
+                                              style:
+                                                  subHeadingLabelStyle.copyWith(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                                 color: textPrimary,
@@ -245,7 +253,8 @@ class NearestAdventures extends ConsumerWidget {
                               selectedActivityType != null
                                   ? 'No adventures found for this activity type'
                                   : 'No adventures found nearby',
-                              style: bodyTextStyle.copyWith(color: textSecondary),
+                              style:
+                                  bodyTextStyle.copyWith(color: textSecondary),
                             ),
                           );
                         }
@@ -263,12 +272,8 @@ class NearestAdventures extends ConsumerWidget {
               },
             ),
           ),
-            ],
-          ),
-        );
-      },
-      loading: () => const SizedBox.shrink(), // Don't show anything while loading
-      error: (error, stack) => const SizedBox.shrink(), // Don't show anything on error
+        ],
+      ),
     );
   }
 }

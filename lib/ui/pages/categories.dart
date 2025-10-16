@@ -1,11 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/category_providers.dart';
+import '../../application/providers/profile_providers.dart';
 import '../../infrastructure/constants.dart';
 import '../../application/providers/local_storage_providers.dart';
+import '../../infrastructure/services/firebase_auth_service.dart';
 import '../../theme.dart';
+import '../../utils/snackbar_utils.dart';
 
 class ChooseCategories extends ConsumerStatefulWidget {
   const ChooseCategories({super.key});
@@ -18,33 +24,31 @@ class ChooseCategories extends ConsumerStatefulWidget {
 class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
   List<String> selectedCategories = [];
   double chipOpacity = 0;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        chipOpacity = 1;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        setState(() {
-          chipOpacity = 1;
-        });
-      });
-    });
-
     return Scaffold(
-      body: Center(
+      appBar: const GlassAppBar(title: 'logo', centerTitle: true,),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Choose Categories where you want to explore Quests',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.lato(
-                textStyle: TextStyle(
-                  fontSize: 32,
-                  color: springBud,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
+            Text('Choose interests for personalized feed and quest recommendations',
+                textAlign: TextAlign.center, style: h2Style),
+            const SizedBox(height: 22),
             ref.watch(allCategories).when(
                   data: (categories) {
                     return Wrap(
@@ -55,9 +59,9 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                         final category = entry.value;
                         return AnimatedOpacity(
                           opacity: chipOpacity,
-                          duration: Duration(milliseconds: index * 500),
+                          duration: Duration(milliseconds: index * 200),
                           curve: Curves.easeIn,
-                          child: GestureDetector(
+                          child: FilterBubble(
                             onTap: () {
                               setState(() {
                                 if (selectedCategories.contains(category.id)) {
@@ -67,21 +71,9 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                                 }
                               });
                             },
-                            child: Chip(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(32),
-                                side: BorderSide(
-                                  color: selectedCategories.contains(category.id)
-                                      ? Colors.white
-                                      : Colors.blue.shade100,
-                                ),
-                              ),
-                              label: Text(category.name),
-                              backgroundColor:
-                                  selectedCategories.contains(category.id)
-                                      ? Colors.blue
-                                      : Colors.white,
-                            ),
+                            text: category.name,
+                            isSelected:
+                                selectedCategories.contains(category.id),
                           ),
                         );
                       }).toList(),
@@ -90,34 +82,45 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                   loading: () => const CircularProgressIndicator(),
                   error: (error, _) => Text('Error: $error'),
                 ),
-            const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed: () async {
-                final localStorage = ref.read(localStorageProvider);
-                //final profileService = ref.read(profileServiceProvider);
+            const SizedBox(height: 32),
+            SizedBox(
+              width: MediaQuery.sizeOf(context).width * 0.3,
+              child: SecondaryButton(
+                onPressed: _isLoading || selectedCategories.isEmpty ? null : () async {
+                  final localStorage = ref.read(localStorageProvider);
+                  // final profileService = ref.read(profileServiceProvider);
 
-                //TODO tie this to a user anonymous id
-                /* await profileService.create(
-                  XploraProfile(categories: categories),
-                ); */
+                  //TODO tie this to a user anonymous id
+                  /* await profileService.create(
+                    XploraProfile(categories: categories),
+                  ); */
 
-                await localStorage.save(
-                  kHasSelectedInitialCategoriesKey,
-                  'true',
-                );
+                  setState(() {
+                    _isLoading = true;
+                  });
 
-                if (context.mounted) {
-                  Navigator.of(context).pushReplacementNamed('/home');
-                }
-              },
-              child: Text(
-                'Save Categories',
-                style: GoogleFonts.lato(
-                  textStyle: TextStyle(
-                    fontSize: 14,
-                    color: springBud,
-                  ),
-                ),
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('profile')
+                      .doc('data')
+                      .update({'categories': selectedCategories});
+
+                  await localStorage.save(
+                    kHasSelectedInitialCategoriesKey,
+                    'true',
+                  );
+
+                  if (context.mounted) {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    showXploraSnackBar(context, 'Interests saved successfully!');
+                    // Navigator.of(context).pushReplacementNamed('/home');
+                    Navigator.of(context).pop();
+                  }
+                },
+                text: _isLoading ? 'Saving...' : 'Save',
               ),
             ),
           ],

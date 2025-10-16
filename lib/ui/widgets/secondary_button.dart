@@ -6,7 +6,7 @@ import '../../theme/typography.dart';
 /// Used for secondary actions like "Clear Filters"
 class SecondaryButton extends StatefulWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final double? fontSize;
   final EdgeInsetsGeometry? padding;
   final bool isEnabled;
@@ -16,7 +16,7 @@ class SecondaryButton extends StatefulWidget {
   const SecondaryButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.fontSize,
     this.padding,
     this.isEnabled = true,

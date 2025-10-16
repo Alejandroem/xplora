@@ -25,12 +25,12 @@ class SettingsPage extends ConsumerStatefulWidget {
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    final settingsProviderState = ref.watch(
-      settingsStateNotifierProvider,
-    );
     final settingsProviderNotifier = ref.watch(
       settingsStateNotifierProvider.notifier,
     );
+    // Watch the state to trigger rebuilds when settings change
+    ref.watch(settingsStateNotifierProvider);
+
     return GradientBackground(
       child: Scaffold(
         appBar: const GlassAppBar(
@@ -77,15 +77,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              value: settingsProviderState
-                          .indexWhere((setting) => setting.key == 'isDarkMode') >=
-                      0
-                  ? settingsProviderState[settingsProviderState
-                          .indexWhere((setting) => setting.key == 'isDarkMode')]
-                      .value as bool
-                  : false,
+              value: settingsProviderNotifier.isDarkMode(),
               onChanged: (bool value) {
-                // settingsProviderNotifier.toggleDarkMode();
+                settingsProviderNotifier.toggleDarkMode();
               },
             ),
             SwitchListTile(
@@ -96,13 +90,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              value: settingsProviderState.indexWhere(
-                          (setting) => setting.key == 'isNotificationsEnabled') >=
-                      0
-                  ? settingsProviderState[settingsProviderState.indexWhere(
-                          (setting) => setting.key == 'isNotificationsEnabled')]
-                      .value as bool
-                  : false,
+              value: settingsProviderNotifier.isNotificationsEnabled(),
               onChanged: (bool value) {
                 settingsProviderNotifier.toggleNotifications();
               },
@@ -115,13 +103,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              value: settingsProviderState.indexWhere(
-                          (setting) => setting.key == 'isLocationEnabled') >=
-                      0
-                  ? settingsProviderState[settingsProviderState.indexWhere(
-                          (setting) => setting.key == 'isLocationEnabled')]
-                      .value as bool
-                  : false,
+              value: settingsProviderNotifier.isLocationEnabled(),
               onChanged: (bool value) {
                 settingsProviderNotifier.toggleLocation();
               },

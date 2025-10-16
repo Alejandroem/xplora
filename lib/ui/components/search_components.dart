@@ -62,13 +62,17 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
             categories.indexWhere((element) => element.id == categoryId);
         const itemWidth = 88.0; // width (80) + margin (8)
         final offset = index * itemWidth;
-        _scrollController.animateTo(
-          offset,
-          duration: const Duration(
-            milliseconds: 300,
-          ),
-          curve: Curves.easeInOut,
-        );
+        if(_scrollController.hasClients) {
+          _scrollController.animateTo(
+            offset,
+            duration: const Duration(
+              milliseconds: 300,
+            ),
+            curve: Curves.easeInOut,
+          );
+        }else{
+          print('Scroll controller is not initialized');
+        }
       },
     );
   }
