@@ -11,6 +11,7 @@ class PrimaryButton extends StatefulWidget {
   final double? fontSize;
   final EdgeInsetsGeometry? padding;
   final double? height;
+  final double? width;
 
   const PrimaryButton({
     super.key,
@@ -20,6 +21,7 @@ class PrimaryButton extends StatefulWidget {
     this.fontSize,
     this.padding,
     this.height,
+    this.width,
   });
 
   @override
@@ -41,6 +43,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
         onTap: widget.onPressed,
         child: SizedBox(
           height: widget.height,
+          width: widget.width,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding: widget.padding ?? const EdgeInsets.symmetric(

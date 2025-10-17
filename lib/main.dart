@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,26 +10,12 @@ import 'ui/pages/onboarding.dart';
 import 'ui/pages/signin_page.dart';
 import 'ui/pages/signup_page.dart';
 import 'ui/pages/complete_profile_page.dart';
+import 'ui/pages/privacy_consent_summary.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  // Request permission for notifications
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
-
-  log('User granted permission: ${settings.authorizationStatus}');
 
   runApp(
     const ProviderScope(
@@ -63,6 +46,7 @@ class MyApp extends ConsumerWidget {
         '/home': (context) => const Home(),
         '/onboarding': (context) => const OnboardingPage(),
         '/categories': (context) => const ChooseCategories(),
+        '/privacy-consent-summary': (context) => const PrivacyConsentSummary(),
         '/signin': (context) => const SignInPage(),
         '/signup': (context) => const SignUpPage(),
         '/complete-profile': (context) => const CompleteProfilePage(),

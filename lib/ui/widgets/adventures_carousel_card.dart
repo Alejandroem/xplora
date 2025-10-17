@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../application/providers/location_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../theme.dart';
+import '../../utils/shimmer_widgets.dart';
 import '../pages/adventure_detail.dart';
 
 class AdventuresCarouselCard extends ConsumerStatefulWidget {
@@ -66,15 +67,9 @@ class _AdventuresCarouselCardState extends ConsumerState<AdventuresCarouselCard>
                       height: 200,
                       width: 160,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        height: 200,
-                        color: const Color(0xff121212),
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            color: accentPrimary,
-                            strokeWidth: 2,
-                          ),
-                        ),
+                      placeholder: (context, url) => ShimmerWidgets.adventureCardShimmer(
+                        width: 160,
+                        height: 200
                       ),
                       errorWidget: (context, url, error) {
                         return Container(

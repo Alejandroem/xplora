@@ -117,6 +117,53 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
     ];
   }
 
+  Future<void> setNotificationsEnabled(bool enabled) async {
+    final notificationsIndex = state.indexWhere(
+      (setting) => setting.key == _kIsNotificationsEnabled,
+    );
+    if (notificationsIndex == -1) {
+      // Create new setting if it doesn't exist
+      final user = await authService.getAuthUser();
+      if (user == null) return;
+
+      final newSetting = Setting(
+        key: _kIsNotificationsEnabled,
+        value: enabled,
+        userId: user.id!,
+        variableType: 'bool',
+        updatedAt: DateTime.now(),
+        id: null,
+      );
+
+      final created = await settingsCrudService.create(newSetting);
+
+      state = [...state, created];
+      return;
+    }
+
+    final currentNotifications = state[notificationsIndex];
+
+    // Only update if the value is different
+    if (currentNotifications.value == enabled) {
+      return;
+    }
+
+    await settingsCrudService.update(
+      currentNotifications.copyWith(
+        value: enabled,
+      ),
+      currentNotifications.id!,
+    );
+
+    state = [
+      ...state.sublist(0, notificationsIndex),
+      currentNotifications.copyWith(
+        value: enabled,
+      ),
+      ...state.sublist(notificationsIndex + 1),
+    ];
+  }
+
   Future<void> toggleNotifications() async {
     final notificationsIndex = state.indexWhere(
       (setting) => setting.key == _kIsNotificationsEnabled,

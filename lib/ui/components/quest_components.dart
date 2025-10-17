@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../theme.dart';
+import '../pages/quest_list_page.dart';
 import '../widgets/current_quest.dart';
-import '../widgets/quest_list.dart';
 
 class QuestComponents extends ConsumerStatefulWidget {
   const QuestComponents({super.key});
@@ -43,9 +43,12 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
             ),
           ),
           SizedBox(
-            height: questInProgress == null ? 140 : 220,
-            child: questInProgress == null
-                ? Row(
+            height: 220,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Expanded(
@@ -55,38 +58,26 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => const GradientBackground(
-                                    child: Scaffold(
-                                      appBar: GlassAppBar(
-                                        title: 'Quest List',
-                                      ),
-                                      body: Hero(
-                                        tag: 'quest-list',
-                                        child: QuestList(
-                                          isHero: true,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  builder: (_) => const QuestListPage(),
                                 ),
                               );
                             },
                             child: GlassContainer(
                               borderRadius: 12,
-                              padding: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.all(12.0),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
                                     Icons.list_alt,
                                     color: iconColor,
-                                    size: 40,
+                                    size: 30,
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 4),
                                   Text(
                                     'View Quests',
-                                    style: subHeadingLabelStyle.copyWith(
-                                      fontSize: 16,
+                                    style: bodyTextStyle.copyWith(
+                                      fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                       color: textPrimary,
                                     ),
@@ -103,29 +94,28 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                           padding: const EdgeInsets.all(4.0),
                           child: GlassContainer(
                             borderRadius: 12,
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
                                   Icons.smart_toy_outlined,
                                   color: iconColor,
-                                  size: 40,
+                                  size: 30,
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 4),
                                 Text(
                                   'Lora AI',
-                                  style: subHeadingLabelStyle.copyWith(
-                                    fontSize: 16,
+                                  style: bodyTextStyle.copyWith(
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: textPrimary,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
                                 Text(
                                   'Coming Soon',
                                   style: bodyTextStyle.copyWith(
-                                    fontSize: 12,
+                                    fontSize: 10,
                                     color: textSecondary,
                                   ),
                                 ),
@@ -135,108 +125,16 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                         ),
                       ),
                     ],
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => Scaffold(
-                                          appBar: AppBar(
-                                            title: const Text('Quest List'),
-                                          ),
-                                          body: const Hero(
-                                            tag: 'quest-list',
-                                            child: QuestList(
-                                              isHero: true,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: GlassContainer(
-                                    borderRadius: 12,
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.list_alt,
-                                          color: iconColor,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'View Quests',
-                                          style: bodyTextStyle.copyWith(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            color: textPrimary,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: GlassContainer(
-                                  borderRadius: 12,
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.smart_toy_outlined,
-                                        color: iconColor,
-                                        size: 30,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Lora AI',
-                                        style: bodyTextStyle.copyWith(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: textPrimary,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Coming Soon',
-                                        style: bodyTextStyle.copyWith(
-                                          fontSize: 10,
-                                          color: textSecondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: CurrentQuest(),
-                        ),
-                      ),
-                    ],
                   ),
+                ),
+                const Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: CurrentQuest(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

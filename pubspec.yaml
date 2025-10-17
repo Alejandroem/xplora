@@ -38,6 +38,7 @@ dependencies:
   lucide_icons: ^0.257.0
   image_picker: ^1.0.7
   path: ^1.9.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
