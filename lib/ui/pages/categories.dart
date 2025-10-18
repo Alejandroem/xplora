@@ -12,6 +12,7 @@ import '../../application/providers/local_storage_providers.dart';
 import '../../infrastructure/services/firebase_auth_service.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
+import '../dialogs/invite_friends_dialog.dart';
 
 class ChooseCategories extends ConsumerStatefulWidget {
   const ChooseCategories({super.key});
@@ -87,37 +88,44 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
               SizedBox(
                 width: MediaQuery.sizeOf(context).width * 0.3,
                 child: PrimaryButton(
-                  height: 50,
+                  // height: 50,
                   onPressed: _isLoading || selectedCategories.isEmpty ? null : () async {
                     final localStorage = ref.read(localStorageProvider);
                     // final profileService = ref.read(profileServiceProvider);
-      
+
                     //TODO tie this to a user anonymous id
                     /* await profileService.create(
                       XploraProfile(categories: categories),
                     ); */
-      
+
                     setState(() {
                       _isLoading = true;
                     });
-      
+
                     await FirebaseFirestore.instance
                         .collection('users')
                         .doc(FirebaseAuth.instance.currentUser!.uid)
                         .collection('profile')
                         .doc('data')
                         .update({'categories': selectedCategories});
-      
+
                     await localStorage.save(
                       kHasSelectedInitialCategoriesKey,
                       'true',
                     );
-      
+
                     if (context.mounted) {
                       setState(() {
                         _isLoading = false;
                       });
-                      Navigator.of(context).pushReplacementNamed('/privacy-consent-summary');
+
+                      // Show invite friends dialog after saving categories
+                      await showInviteFriendsDialog(context);
+
+                      // Navigate to next screen after dialog is dismissed
+                      if (context.mounted) {
+                        Navigator.of(context).pushReplacementNamed('/privacy-consent-summary');
+                      }
                     }
                   },
                   text: _isLoading ? 'Saving...' : 'Save',

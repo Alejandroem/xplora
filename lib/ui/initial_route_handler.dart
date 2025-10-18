@@ -56,17 +56,16 @@ class _LoadingScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/png/xplora-logo.png',
-                width: 120,
-                height: 120,
-              ),
-              const SizedBox(height: 24),
+              // Image.asset(
+              //   'assets/png/xplora-logo.png',
+              //   width: 120,
+              //   height: 120,
+              // ),
+              // const SizedBox(height: 24),
               Text(
                 'XPLRA',
                 style: h1Style.copyWith(
                   color: textPrimary,
-                  letterSpacing: 4,
                 ),
               ),
             ],

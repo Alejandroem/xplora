@@ -38,6 +38,10 @@ ThemeData getTheme() {
 
 ThemeData getDarkTheme() {
   return ThemeData(
+    iconTheme: IconThemeData(
+      color: iconColor,
+    ),
+
     brightness: Brightness.dark, /// Sets the overall theme brightness to dark mode
 
     scaffoldBackgroundColor: Colors.transparent,

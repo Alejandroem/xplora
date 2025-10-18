@@ -2,14 +2,21 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/providers/quest_providers.dart';
 import '../../theme.dart';
+import '../dialogs/invite_friends_dialog.dart';
+import '../dialogs/location_permission_dialog.dart';
+import '../pages/lora_ai_assistant.dart';
 
 // Provider for L.O.R.A. menu state
 final loraMenuOpenProvider = StateProvider<bool>((ref) => false);
 
 /// L.O.R.A. Orb - Floating AI assistant orb
-/// Idle state with soft glow and subtle movement
-/// On tap shows action menu
+/// Idle state: Static orb with no animations
+/// Triggered state (quest active or nearby quests): Synchronized breathing and glow
+///   - Breathing rhythm: 3.5 seconds (inhale → exhale)
+///   - Glow brightens as orb scales up (inhale), dims as it scales down (exhale)
+/// On tap navigates to LORA AI Assistant screen
 class LoraOrb extends ConsumerStatefulWidget {
   const LoraOrb({super.key});
 
@@ -20,203 +27,124 @@ class LoraOrb extends ConsumerStatefulWidget {
 class _LoraOrbState extends ConsumerState<LoraOrb>
     with TickerProviderStateMixin {
   late AnimationController _glowController;
-  late AnimationController _floatController;
+  late AnimationController _breatheController;
   late Animation<double> _glowAnimation;
-  late Animation<double> _floatAnimation;
+  late Animation<double> _breatheAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    // Glow animation - pulsing effect
-    _glowController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+    // Single controller for synchronized breathing and glow
+    _breatheController = AnimationController(
+      duration: const Duration(milliseconds: 3500), // Natural breathing rhythm
       vsync: this,
     )..repeat(reverse: true);
 
-    _glowAnimation = Tween<double>(begin: 0.3, end: 0.6).animate(
-      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    // Breathing animation - subtle scale change (inhale/exhale)
+    _breatheAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(
+        parent: _breatheController,
+        curve: Curves.easeInOut,
+      ),
     );
 
-    // Float animation - subtle movement
-    _floatController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _floatAnimation = Tween<double>(begin: -5, end: 5).animate(
-      CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
+    // Glow animation - synchronized with breathing
+    // Glows brighter on inhale (scale up), dims on exhale (scale down)
+    _glowAnimation = Tween<double>(begin: 0.3, end: 0.7).animate(
+      CurvedAnimation(
+        parent: _breatheController,
+        curve: Curves.easeInOut,
+      ),
     );
+
+    // Keep glow controller for compatibility but use breathe controller
+    _glowController = _breatheController;
   }
 
   @override
   void dispose() {
-    _glowController.dispose();
-    _floatController.dispose();
+    _breatheController.dispose();
+    // _glowController is just a reference to _breatheController, no need to dispose twice
     super.dispose();
   }
 
   void _toggleMenu() {
-    ref.read(loraMenuOpenProvider.notifier).state =
-        !ref.read(loraMenuOpenProvider);
-  }
-
-  void _onMenuItemTap(String action) {
-    ref.read(loraMenuOpenProvider.notifier).state = false;
-    // TODO: Implement action handlers
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$action - Coming Soon!', style: bodyTextStyle.copyWith(color: textPrimary)),
-        duration: const Duration(seconds: 1),
-        backgroundColor: accentPrimary,
+    // Navigate to LORA AI Assistant screen
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const LoraAiAssistant(),
       ),
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
-    final isMenuOpen = ref.watch(loraMenuOpenProvider);
+    // Watch quest and nearby quest state
+    final questInProgress = ref.watch(questInProgressTrackerProvider);
+    final nearbyQuests = ref.watch(nearbyQuestProvider);
+
+    // Determine if there's a trigger (active quest or nearby quests)
+    final hasNearbyQuests = nearbyQuests.when(
+      data: (quests) => quests.isNotEmpty,
+      loading: () => false,
+      error: (_, __) => false,
+    );
+
+    final hasTrigger = questInProgress != null || hasNearbyQuests;
 
     return Positioned(
       bottom: 20,
       right: 20,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // Action Menu
-          if (isMenuOpen) ...[
-            _buildMenuItem(
-              icon: Icons.explore,
-              label: 'Trip Suggestions',
-              onTap: () => _onMenuItemTap('Trip Suggestions'),
-            ),
-            const SizedBox(height: 12),
-            _buildMenuItem(
-              icon: Icons.lightbulb_outline,
-              label: 'Quest Hints',
-              onTap: () => _onMenuItemTap('Quest Hints'),
-            ),
-            const SizedBox(height: 12),
-            _buildMenuItem(
-              icon: Icons.navigation,
-              label: 'Navigation',
-              onTap: () => _onMenuItemTap('Navigation'),
-            ),
-            const SizedBox(height: 12),
-            _buildMenuItem(
-              icon: Icons.map_outlined,
-              label: 'Trip Planner',
-              onTap: () => _onMenuItemTap('Trip Planner'),
-            ),
-            const SizedBox(height: 16),
-          ],
-          // Floating Orb
-          AnimatedBuilder(
-            animation: Listenable.merge([_glowController, _floatController]),
-            builder: (context, child) {
-              return Transform.translate(
-                offset: Offset(0, _floatAnimation.value),
-                child: GestureDetector(
-                  onTap: _toggleMenu,
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: accentPrimary,
-                      border: Border.all(
-                        color: accentPrimary.withOpacity(0.5),
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: accentPrimary.withOpacity(_glowAnimation.value),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                        // Inner shadow for depth
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+      child: AnimatedBuilder(
+        animation: _breatheController,
+        builder: (context, child) {
+          // Calculate animation values inside builder so they update on each frame
+          final glowOpacity = hasTrigger ? _glowAnimation.value : 0.0;
+          final scale = hasTrigger ? _breatheAnimation.value : 1.0;
+
+          return Transform.scale(
+            scale: scale,
+            child: GestureDetector(
+              onTap: _toggleMenu,
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: accentPrimary,
+                  border: Border.all(
+                    color: accentPrimary.withOpacity(0.5),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accentPrimary.withOpacity(glowOpacity),
+                      blurRadius: 20,
+                      spreadRadius: 5,
                     ),
-                    child: Center(
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 150),
-                        transitionBuilder: (child, animation) {
-                          return ScaleTransition(
-                            scale: animation,
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: Icon(
-                          isMenuOpen ? Icons.close : Icons.auto_awesome,
-                          key: ValueKey<bool>(isMenuOpen),
-                          color: textPrimary,
-                          size: 30,
-                        ),
-                      ),
+                    // Inner shadow for depth
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
+                  ],
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.auto_awesome,
+                    color: textPrimary,
+                    size: 30,
                   ),
                 ),
-              );
-            },
-          ),
-        ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildMenuItem({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 200),
-      tween: Tween<double>(begin: 0, end: 1),
-      builder: (context, value, child) {
-        return Transform.scale(
-          scale: value,
-          alignment: Alignment.centerRight,
-          child: Opacity(
-            opacity: value,
-            child: child,
-          ),
-        );
-      },
-      child: InkWell(
-        onTap: onTap,
-        child: GlassContainer(
-          borderRadius: 25,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                color: iconColor,
-                size: 20,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: bodyTextStyle.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

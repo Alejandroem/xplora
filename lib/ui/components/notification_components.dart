@@ -42,7 +42,8 @@ class _NotificationComponentsState
                 //     },
                 //   ),
                 // ],
-                title: 'Notifications'
+                title: 'Notifications Center',
+                centerTitle: true,
               ),
               body: SingleChildScrollView(
                 child: Column(

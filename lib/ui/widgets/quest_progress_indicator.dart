@@ -24,8 +24,8 @@ class QuestProgressIndicator extends ConsumerWidget {
     final percentage = completeness.clamp(0, 100);
 
     return Positioned(
-      bottom: 100, // Above bottom nav bar
-      left: 16,
+      bottom: 20, // Above bottom nav bar
+      left: 20,
       child: GlassContainer(
         borderRadius: 30,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

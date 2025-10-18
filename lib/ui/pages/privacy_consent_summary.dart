@@ -7,6 +7,7 @@ import '../../infrastructure/constants.dart';
 import '../../application/providers/local_storage_providers.dart';
 import '../../theme.dart';
 import '../widgets/primary_button.dart';
+import '../dialogs/xp_boost_onboarding_dialog.dart';
 
 class PrivacyConsentSummary extends ConsumerStatefulWidget {
   const PrivacyConsentSummary({super.key});
@@ -106,36 +107,48 @@ class _PrivacyConsentSummaryState extends ConsumerState<PrivacyConsentSummary> {
                   child: PrimaryButton(
                     height: 50,
                     onPressed: _isLoading ? null : () async {
-                      setState(() {
-                        _isLoading = true;
-                      });
+                      // setState(() {
+                      //   _isLoading = true;
+                      // });
+                      //
+                      // // Request notification permission
+                      // final messaging = FirebaseMessaging.instance;
+                      // final settings = await messaging.requestPermission(
+                      //   alert: true,
+                      //   announcement: false,
+                      //   badge: true,
+                      //   carPlay: false,
+                      //   criticalAlert: false,
+                      //   provisional: false,
+                      //   sound: true,
+                      // );
+                      //
+                      // // Save notification settings based on user's choice
+                      // final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+                      // final isNotificationGranted = settings.authorizationStatus == AuthorizationStatus.authorized ||
+                      //     settings.authorizationStatus == AuthorizationStatus.provisional;
+                      //
+                      // await settingsNotifier.setNotificationsEnabled(isNotificationGranted);
+                      //
+                      // setState(() {
+                      //   _isLoading = false;
+                      // });
 
-                      // Request notification permission
-                      final messaging = FirebaseMessaging.instance;
-                      final settings = await messaging.requestPermission(
-                        alert: true,
-                        announcement: false,
-                        badge: true,
-                        carPlay: false,
-                        criticalAlert: false,
-                        provisional: false,
-                        sound: true,
-                      );
+                      // if(context.mounted) {
+                        // Show XP Boost onboarding dialog
+                        final shouldContinue = await showXpBoostOnboardingDialog(
+                            context);
 
-                      // Save notification settings based on user's choice
-                      final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
-                      final isNotificationGranted = settings.authorizationStatus == AuthorizationStatus.authorized ||
-                          settings.authorizationStatus == AuthorizationStatus.provisional;
-
-                      await settingsNotifier.setNotificationsEnabled(isNotificationGranted);
-
-                      if (mounted) {
-                        setState(() {
-                          _isLoading = false;
-                        });
-                        // Navigate to home or close this screen
-                        Navigator.of(context).pop();
-                      }
+                        if (context.mounted) {
+                          // If user chose "Continue", navigate to XP boost screen
+                          if (shouldContinue == true) {
+                            // TODO: Navigate to XP boost onboarding screen
+                            // For now, just close the dialog and proceed
+                          }
+                          // Close this screen
+                          Navigator.of(context).pop();
+                        }
+                      // }
                     },
                     text: _isLoading ? 'Loading...' : 'Start Exploring',
                   ),

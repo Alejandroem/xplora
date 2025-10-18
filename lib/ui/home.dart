@@ -22,6 +22,7 @@ import 'components/feed_components.dart';
 import 'components/notification_adventure_card.dart';
 import 'components/notification_components.dart';
 import 'components/search_components.dart';
+import 'pages/economy_hub.dart';
 import 'widgets/lora_orb.dart';
 import 'widgets/quest_progress_indicator.dart';
 import 'widgets/xplora_app_bar.dart';
@@ -227,7 +228,8 @@ class _HomeState extends ConsumerState<Home> {
   }
 
   PreferredSizeWidget? getAppBar() {
-    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home) {
+    final bottomBar = ref.watch(bottomNavigationBarProvider);
+    if (bottomBar != NavigationItem.notifications && bottomBar!=NavigationItem.search) {
       return const XplorAppBar();
     }
     return null;
@@ -344,13 +346,12 @@ class _HomeState extends ConsumerState<Home> {
                     if (ref.watch(bottomNavigationBarProvider) ==
                         NavigationItem.notifications)
                       const NotificationComponents(),
-                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc ||
-                        ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
+                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc)
+                      const EconomyHub(),
+                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
                       Column(
                         children: [
-                          const SizedBox(
-                            height: 100,
-                          ),
+                          const SizedBox(height: 100),
                           Center(
                             child: Text(
                               'Coming Soon',
@@ -360,34 +361,11 @@ class _HomeState extends ConsumerState<Home> {
                               ),
                             ),
                           ),
-                          const SizedBox(
-                            height: 23,
+                          const SizedBox(height: 23),
+                          const Icon(
+                            Icons.store,
+                            size: 100,
                           ),
-                          if (ref.watch(bottomNavigationBarProvider) ==
-                              NavigationItem.store)
-                            const Icon(
-                              Icons.store,
-                              size: 100,
-                            ),
-                          if (ref.watch(bottomNavigationBarProvider) ==
-                              NavigationItem.xpc)
-                            Text(
-                              'XPC',
-                              style: h1Style.copyWith(
-                                fontSize: 100,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          if (ref.watch(bottomNavigationBarProvider) ==
-                              NavigationItem.xpc)
-                            Padding(
-                              padding: const EdgeInsets.all(32.0),
-                              child: Text(
-                                'XPC is the digital currency powering the XPLRA ecosystem. Earn XPC by exploring your surroundings, completing quests, and engaging with the app. With the XPC Wallet, securely manage your rewards, track your balance, buy XPC to increase its value, and use XPC to unlock exclusive content, collectibles, and more. Stay tuned for its release!',
-                                textAlign: TextAlign.center,
-                                style: bodyTextStyle,
-                              ),
-                            ),
                         ],
                       ),
                   ],

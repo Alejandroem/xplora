@@ -12,6 +12,7 @@ class PrimaryButton extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final double? height;
   final double? width;
+  final int? maxLines;
 
   const PrimaryButton({
     super.key,
@@ -22,6 +23,7 @@ class PrimaryButton extends StatefulWidget {
     this.padding,
     this.height,
     this.width,
+    this.maxLines
   });
 
   @override
@@ -69,6 +71,9 @@ class _PrimaryButtonState extends State<PrimaryButton> {
                   fontWeight: FontWeight.bold,
                   color: textColor,
                 ),
+                textAlign: TextAlign.center,
+                maxLines: widget.maxLines,
+                overflow: widget.maxLines!=null ? TextOverflow.ellipsis : null,
               ),
             ),
           ),

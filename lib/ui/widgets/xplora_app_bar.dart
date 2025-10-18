@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
+import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
+import '../../utils/shimmer_widgets.dart';
 import '../dialogs/bottom_login_card.dart';
 import '../pages/profile_page.dart';
 
@@ -16,11 +19,12 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isAuthenticatedAsyncValue = ref.watch(isAuthenticatedProvider);
+    final bottomBar = ref.watch(bottomNavigationBarProvider);
 
     return GlassAppBar(
-      title: 'logo',
+      title: bottomBar == NavigationItem.home ? 'logo' : bottomBar==NavigationItem.xpc ? 'Economy Hub' : 'Store',
       centerTitle: true,
-      actions: isAuthenticatedAsyncValue.when(
+      actions: bottomBar==NavigationItem.home ? isAuthenticatedAsyncValue.when(
         data: (isAuthenticated) {
           return isAuthenticated
               ? <Widget>[
@@ -45,11 +49,13 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                 child: profile!.avatarUrl != null &&
                                         profile.avatarUrl!.isNotEmpty
                                     ? ClipOval(
-                                        child: Image.network(
-                                          profile.avatarUrl!,
+                                        child: CachedNetworkImage(
+                                          imageUrl: profile.avatarUrl!,
                                           width: 40.0,
                                           height: 40.0,
                                           fit: BoxFit.cover,
+                                          errorWidget: (ctx, err, _) => const Icon(Icons.error),
+                                          placeholder: (ctx, loading) => ShimmerWidgets.circleShimmer(radius: 18),
                                         ),
                                       )
                                     : Icon(
@@ -98,7 +104,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
         },
         loading: () => [const SizedBox.shrink()],
         error: (error, stackTrace) => [const SizedBox.shrink()],
-      ),
+      ) : null,
     );
   }
 
