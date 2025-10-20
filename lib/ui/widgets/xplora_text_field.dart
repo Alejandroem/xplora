@@ -19,6 +19,7 @@ class XploraTextField extends StatelessWidget {
   final bool enabled;
   final TextStyle? style;
   final EdgeInsetsGeometry? contentPadding;
+  final int? maxLength;
 
   const XploraTextField({
     super.key,
@@ -37,6 +38,7 @@ class XploraTextField extends StatelessWidget {
     this.enabled = true,
     this.style,
     this.contentPadding,
+    this.maxLength,
   });
 
   @override
@@ -52,6 +54,7 @@ class XploraTextField extends StatelessWidget {
       textCapitalization: textCapitalization,
       onChanged: onChanged,
       maxLines: maxLines,
+      maxLength: maxLength,
       enabled: enabled,
       style: style ?? bodyTextStyle.copyWith(color: textPrimary),
       decoration: InputDecoration(

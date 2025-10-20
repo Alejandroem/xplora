@@ -6,6 +6,7 @@ import '../../application/providers/settings_providers.dart';
 import '../../infrastructure/constants.dart';
 import '../../application/providers/local_storage_providers.dart';
 import '../../theme.dart';
+import '../dialogs/first_session_dialog.dart';
 import '../widgets/primary_button.dart';
 import '../dialogs/xp_boost_onboarding_dialog.dart';
 
@@ -24,137 +25,143 @@ class _PrivacyConsentSummaryState extends ConsumerState<PrivacyConsentSummary> {
     // Check if location permission was granted
     final locationPermissionAsync = ref.watch(locationPermissionProvider);
 
-    return GradientBackground(
-      child: Scaffold(
-        appBar: const GlassAppBar(title: 'logo', centerTitle: true,),
-        body: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title
-              Center(
-                child: Text(
-                  'Privacy & Consent Summary',
-                  style: h1Style.copyWith(fontSize: 28),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 38),
-
-              // Consent items with checkboxes
-              locationPermissionAsync.when(
-                data: (hasLocationPermission) {
-                  return Column(
-                    children: [
-                      // Location usage - only shown if permission granted
-                      if (hasLocationPermission)
-                        const _ConsentItem(
-                          icon: Icons.location_on,
-                          text: 'Location usage',
-                          isChecked: true,
-                        ),
-                      if (hasLocationPermission) const SizedBox(height: 16),
-
-                      // Terms & Privacy
-                      const _ConsentItem(
-                        icon: Icons.shield_outlined,
-                        text: 'Terms & Privacy',
-                        isChecked: true,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // XP rules
-                      const _ConsentItem(
-                        icon: Icons.timer_outlined,
-                        text: 'XP rules (cooldowns, fair play)',
-                        isChecked: true,
-                      ),
-                    ],
-                  );
-                },
-                loading: () => Center(
-                  child: CircularProgressIndicator(color: accentPrimary),
-                ),
-                error: (_, __) {
-                  // On error, just show Terms & Privacy and XP rules
-                  return const Column(
-                    children: [
-                      _ConsentItem(
-                        icon: Icons.shield_outlined,
-                        text: 'Terms & Privacy',
-                        isChecked: true,
-                      ),
-                      SizedBox(height: 16),
-                      _ConsentItem(
-                        icon: Icons.timer_outlined,
-                        text: 'XP rules (cooldowns, fair play)',
-                        isChecked: true,
-                      ),
-                    ],
-                  );
-                },
-              ),
-
-              const SizedBox(height: 48),
-
-              // Start Exploring button
-              Center(
-                child: SizedBox(
-                  width: MediaQuery.sizeOf(context).width * 0.83,
-                  child: PrimaryButton(
-                    height: 50,
-                    onPressed: _isLoading ? null : () async {
-                      // setState(() {
-                      //   _isLoading = true;
-                      // });
-                      //
-                      // // Request notification permission
-                      // final messaging = FirebaseMessaging.instance;
-                      // final settings = await messaging.requestPermission(
-                      //   alert: true,
-                      //   announcement: false,
-                      //   badge: true,
-                      //   carPlay: false,
-                      //   criticalAlert: false,
-                      //   provisional: false,
-                      //   sound: true,
-                      // );
-                      //
-                      // // Save notification settings based on user's choice
-                      // final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
-                      // final isNotificationGranted = settings.authorizationStatus == AuthorizationStatus.authorized ||
-                      //     settings.authorizationStatus == AuthorizationStatus.provisional;
-                      //
-                      // await settingsNotifier.setNotificationsEnabled(isNotificationGranted);
-                      //
-                      // setState(() {
-                      //   _isLoading = false;
-                      // });
-
-                      // if(context.mounted) {
-                        // Show XP Boost onboarding dialog
-                        final shouldContinue = await showXpBoostOnboardingDialog(
-                            context);
-
-                        if (context.mounted) {
-                          // If user chose "Continue", navigate to XP boost screen
-                          if (shouldContinue == true) {
-                            // TODO: Navigate to XP boost onboarding screen
-                            // For now, just close the dialog and proceed
-                          }
-                          // Close this screen
-                          Navigator.of(context).pop();
-                        }
-                      // }
-                    },
-                    text: _isLoading ? 'Loading...' : 'Start Exploring',
+    return WillPopScope(
+      onWillPop: () async {
+        final isLocationEnabled = ref.read(locationTrackingEnabledProvider);
+        if (isLocationEnabled) {
+          showFirstSessionDialog(context);
+        }
+        return true;
+      },
+      child: GradientBackground(
+        child: Scaffold(
+          appBar: const GlassAppBar(title: 'logo', centerTitle: true,),
+          body: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Center(
+                  child: Text(
+                    'Privacy & Consent Summary',
+                    style: h1Style.copyWith(fontSize: 28),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 38),
+
+                // Consent items with checkboxes
+                locationPermissionAsync.when(
+                  data: (hasLocationPermission) {
+                    return Column(
+                      children: [
+                        // Location usage - only shown if permission granted
+                        if (hasLocationPermission)
+                          const _ConsentItem(
+                            icon: Icons.location_on,
+                            text: 'Location usage',
+                            isChecked: true,
+                          ),
+                        if (hasLocationPermission) const SizedBox(height: 16),
+
+                        // Terms & Privacy
+                        const _ConsentItem(
+                          icon: Icons.shield_outlined,
+                          text: 'Terms & Privacy',
+                          isChecked: true,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // XP rules
+                        const _ConsentItem(
+                          icon: Icons.timer_outlined,
+                          text: 'XP rules (cooldowns, fair play)',
+                          isChecked: true,
+                        ),
+                      ],
+                    );
+                  },
+                  loading: () => Center(
+                    child: CircularProgressIndicator(color: accentPrimary),
+                  ),
+                  error: (_, __) {
+                    // On error, just show Terms & Privacy and XP rules
+                    return const Column(
+                      children: [
+                        _ConsentItem(
+                          icon: Icons.shield_outlined,
+                          text: 'Terms & Privacy',
+                          isChecked: true,
+                        ),
+                        SizedBox(height: 16),
+                        _ConsentItem(
+                          icon: Icons.timer_outlined,
+                          text: 'XP rules (cooldowns, fair play)',
+                          isChecked: true,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 48),
+
+                // Start Exploring button
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.83,
+                    child: PrimaryButton(
+                      height: 50,
+                      onPressed: _isLoading ? null : () async {
+                        // setState(() {
+                        //   _isLoading = true;
+                        // });
+                        //
+                        // // Request notification permission
+                        // final messaging = FirebaseMessaging.instance;
+                        // final settings = await messaging.requestPermission(
+                        //   alert: true,
+                        //   announcement: false,
+                        //   badge: true,
+                        //   carPlay: false,
+                        //   criticalAlert: false,
+                        //   provisional: false,
+                        //   sound: true,
+                        // );
+                        //
+                        // // Save notification settings based on user's choice
+                        // final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+                        // final isNotificationGranted = settings.authorizationStatus == AuthorizationStatus.authorized ||
+                        //     settings.authorizationStatus == AuthorizationStatus.provisional;
+                        //
+                        // await settingsNotifier.setNotificationsEnabled(isNotificationGranted);
+                        //
+                        // setState(() {
+                        //   _isLoading = false;
+                        // });
+
+                        // Show XP Boost onboarding dialog
+                        final shouldContinue = await showXpBoostOnboardingDialog(context);
+
+                        if (context.mounted) {
+                          // If user chose "Let's Go!", navigate to XP onboarding screen
+                          if (shouldContinue == true) {
+                            Navigator.of(context).pushReplacementNamed('/xp-onboarding');
+                          }else{
+                            // If user skipped, close this screen
+                            Navigator.of(context).pop();
+                          }
+                        }
+                      },
+                      text: _isLoading ? 'Loading...' : 'Start Exploring',
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

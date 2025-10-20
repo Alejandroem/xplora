@@ -22,6 +22,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
   final FocusNode _cityFocusNode = FocusNode();
   final TextEditingController _usernameController = TextEditingController();
   bool _isShowingDialog = false;
+  final FocusNode _dummyFocusNode = FocusNode();
 
   // Memoize year list to avoid regenerating on every build
   late final List<String> _years = List.generate(
@@ -43,6 +44,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
     _countryFocusNode.dispose();
     _cityFocusNode.dispose();
     _usernameController.dispose();
+    _dummyFocusNode.dispose();
     super.dispose();
   }
 
@@ -109,402 +111,408 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
           title: 'logo',
           centerTitle: true,
         ),
-        body: GradientBackground(
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Complete Profile title
-                  Center(
-                    child: Text(
-                      'Complete Your Profile',
-                      style: h1Style.copyWith(
-                        color: textPrimary,
-                        fontSize: 32,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-      
-                  Center(
-                    child: Text(
-                      'Tell us more about yourself to personalize your experience',
-                      style: bodyTextStyle.copyWith(
-                        color: textSecondary,
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-      
-                  // Username field
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      XploraTextField(
-                        controller: _usernameController,
-                        labelText: 'Handle',
-                        hintText: 'Choose a unique handle',
-                        textInputAction: TextInputAction.next,
-                        prefixIcon: Icon(
-                          Icons.person_outlined,
-                          color: textSecondary,
-                          size: 20,
-                        ),
-                        onChanged: (value) {
-                          final trimmedValue = value.trim();
-                          final profileNotifier =
-                              ref.read(completeProfileFormNotifierProvider.notifier);
-                          profileNotifier.setUsername(trimmedValue);
-
-                          // Check username availability (debounced)
-                          profileNotifier.checkUsernameAvailability(trimmedValue);
-                        },
-                      ),
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final username = ref.watch(
-                            completeProfileFormNotifierProvider.select((state) => state.username),
-                          );
-                          final isCheckingUsername = ref.watch(
-                            completeProfileFormNotifierProvider.select((state) => state.isCheckingUsername),
-                          );
-                          final isUsernameUnique = ref.watch(
-                            completeProfileFormNotifierProvider.select((state) => state.isUsernameUnique),
-                          );
-
-                          if (username.isNotEmpty && username.length >= 6) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Row(
-                                children: [
-                                  if (isCheckingUsername)
-                                    const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                                      ),
-                                    )
-                                  else if (isUsernameUnique)
-                                    const Icon(
-                                      Icons.check_circle,
-                                      color: Colors.green,
-                                      size: 16,
-                                    )
-                                  else
-                                    const Icon(
-                                      Icons.error,
-                                      color: Colors.red,
-                                      size: 16,
-                                    ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    isCheckingUsername
-                                        ? 'Checking availability...'
-                                        : isUsernameUnique
-                                            ? 'Username is available'
-                                            : 'Username is already taken',
-                                    style: TextStyle(
-                                      color: isCheckingUsername
-                                          ? Colors.blue
-                                          : isUsernameUnique
-                                              ? Colors.green
-                                              : Colors.red,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-      
-                  // Avatar section (optional)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Avatar (Optional)',
-                        style: h3Style.copyWith(
+        body: Focus(
+          focusNode: _dummyFocusNode,
+          child: GradientBackground(
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Complete Profile title
+                    Center(
+                      child: Text(
+                        'Complete Your Profile',
+                        style: h1Style.copyWith(
                           color: textPrimary,
+                          fontSize: 32,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    Center(
+                      child: Text(
+                        'Tell us more about yourself to personalize your experience',
+                        style: bodyTextStyle.copyWith(
+                          color: textSecondary,
                           fontSize: 16,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 12),
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            final currentAvatarUrl = ref.read(completeProfileFormNotifierProvider).avatarUrl;
-                            showBottomAvatarSelectionCard(
-                              context: context,
-                              currentAvatarUrl: currentAvatarUrl,
-                              selectedImagePath: _selectedImagePath,
-                              onAvatarSelected: (imagePath) {
-                                setState(() {
-                                  _selectedImagePath = imagePath;
-                                });
-                                ref
-                                    .read(completeProfileFormNotifierProvider.notifier)
-                                    .setAvatarUrl(imagePath);
-                              },
-                            );
+                    ),
+                    const SizedBox(height: 48),
+
+                    // Username field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        XploraTextField(
+                          controller: _usernameController,
+                          labelText: 'Handle',
+                          hintText: 'Choose a unique handle',
+                          textInputAction: TextInputAction.next,
+                          prefixIcon: Icon(
+                            Icons.person_outlined,
+                            color: textSecondary,
+                            size: 20,
+                          ),
+                          onChanged: (value) {
+                            final trimmedValue = value.trim();
+                            final profileNotifier =
+                                ref.read(completeProfileFormNotifierProvider.notifier);
+                            profileNotifier.setUsername(trimmedValue);
+
+                            // Check username availability (debounced)
+                            profileNotifier.checkUsernameAvailability(trimmedValue);
                           },
-                          child: Container(
-                            width: 130,
-                            height: 130,
-                            decoration: BoxDecoration(
-                              color: midSurface,
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(
-                                color: accentPrimary.withOpacity(0.3),
-                                width: 2,
-                              ),
-                            ),
-                            child: _selectedImagePath != null
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: Image.file(
-                                      File(_selectedImagePath!),
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Icon(
-                                          Icons.person,
-                                          color: textSecondary,
-                                          size: 40,
-                                        );
-                                      },
+                        ),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            final username = ref.watch(
+                              completeProfileFormNotifierProvider.select((state) => state.username),
+                            );
+                            final isCheckingUsername = ref.watch(
+                              completeProfileFormNotifierProvider.select((state) => state.isCheckingUsername),
+                            );
+                            final isUsernameUnique = ref.watch(
+                              completeProfileFormNotifierProvider.select((state) => state.isUsernameUnique),
+                            );
+
+                            if (username.isNotEmpty && username.length >= 6) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Row(
+                                  children: [
+                                    if (isCheckingUsername)
+                                      const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                                        ),
+                                      )
+                                    else if (isUsernameUnique)
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                        size: 16,
+                                      )
+                                    else
+                                      const Icon(
+                                        Icons.error,
+                                        color: Colors.red,
+                                        size: 16,
+                                      ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      isCheckingUsername
+                                          ? 'Checking availability...'
+                                          : isUsernameUnique
+                                              ? 'Username is available'
+                                              : 'Username is already taken',
+                                      style: TextStyle(
+                                        color: isCheckingUsername
+                                            ? Colors.blue
+                                            : isUsernameUnique
+                                                ? Colors.green
+                                                : Colors.red,
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                  )
-                                : _buildAvatarFromUrl(),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Avatar section (optional)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Avatar (Optional)',
+                          style: h3Style.copyWith(
+                            color: textPrimary,
+                            fontSize: 16,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                    ],
-                  ),
-      
-                  // Preferred Language dropdown
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final preferredLanguage = ref.watch(
-                        completeProfileFormNotifierProvider.select((state) => state.preferredLanguage),
-                      );
-                      return _buildDropdownField(
-                        label: 'Preferred Language',
-                        value: preferredLanguage,
-                        items: _languages,
-                        onChanged: (value) {
-                          ref
-                              .read(completeProfileFormNotifierProvider.notifier)
-                              .setPreferredLanguage(value);
-                        },
-                        icon: Icons.language,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-      
-                  // Country and City fields
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildCountryDropdown(),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildCityDropdown(),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-      
-                  // Birthday fields
-                  Text(
-                    'Birthday',
-                    style: h3Style.copyWith(
-                      color: textPrimary,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final birthdayMonth = ref.watch(
-                        completeProfileFormNotifierProvider.select((state) => state.birthdayMonth),
-                      );
-                      final birthdayYear = ref.watch(
-                        completeProfileFormNotifierProvider.select((state) => state.birthdayYear),
-                      );
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: _buildDropdownField(
-                              label: 'Month',
-                              value: birthdayMonth,
-                              items: _months,
-                              onChanged: (value) {
-                                ref
-                                    .read(
-                                        completeProfileFormNotifierProvider.notifier)
-                                    .setBirthdayMonth(value);
-                              },
-                              icon: Icons.calendar_month,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildDropdownField(
-                              label: 'Year',
-                              value: birthdayYear,
-                              items: _years,
-                              onChanged: (value) {
-                                ref
-                                    .read(
-                                        completeProfileFormNotifierProvider.notifier)
-                                    .setBirthdayYear(value);
-                              },
-                              icon: Icons.calendar_today,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-      
-                  // Gender dropdown (optional)
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final gender = ref.watch(
-                        completeProfileFormNotifierProvider.select((state) => state.gender),
-                      );
-                      return _buildDropdownField(
-                        label: 'Gender (Optional)',
-                        value: gender,
-                        items: _genders,
-                        onChanged: (value) {
-                          ref
-                              .read(completeProfileFormNotifierProvider.notifier)
-                              .setGender(value);
-                        },
-                        icon: Icons.person,
-                        isOptional: true,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Primary Interest Category dropdown
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final primaryInterestCategory = ref.watch(
-                        completeProfileFormNotifierProvider.select((state) => state.primaryInterestCategory),
-                      );
-                      return _buildDropdownField(
-                        label: 'Primary Interest Category',
-                        value: primaryInterestCategory,
-                        items: _interestCategories,
-                        onChanged: (value) {
-                          ref
-                              .read(completeProfileFormNotifierProvider.notifier)
-                              .setPrimaryInterestCategory(value);
-                        },
-                        icon: Icons.favorite,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 32),
-      
-                  // Complete Profile button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: Consumer(
-                      builder: (ctx, ref, child) {
-                        final isLoading = ref.watch(
-                          completeProfileFormNotifierProvider.select((state) => state.isLoading),
-                        );
-                        final isButtonLoading = isLoading || _isShowingDialog;
-
-                        return PrimaryButton(
-                          text: isButtonLoading ? 'Completing profile...' : 'Complete Profile',
-                          onPressed: isButtonLoading
-                              ? null
-                              : () async {
-                                  final profileNotifier = ref.read(
-                                      completeProfileFormNotifierProvider
-                                          .notifier);
-                                  final profileState = ref
-                                      .read(completeProfileFormNotifierProvider);
-
-                                  // Check if username is unique (only if username was entered and is valid)
-                                  if (profileState.username.isNotEmpty &&
-                                      profileState.username.length >= 6 &&
-                                      !profileState.isUsernameUnique) {
-                                    showXploraSnackBar(
-                                      context,
-                                      'Username is already taken',
-                                      isError: true,
-                                    );
-                                    return;
-                                  }
-
-                                  // Perform profile completion
-                                  await profileNotifier.completeProfile();
-
-                                  // Check for errors
-                                  final finalState = ref
-                                      .read(completeProfileFormNotifierProvider);
-                                  if (finalState.errors.isNotEmpty) {
-                                    if (context.mounted) {
-                                      showXploraSnackBar(
-                                        context,
-                                        finalState.errors.first,
-                                        isError: true,
-                                      );
-                                    }
-                                  } else {
-                                    // Success - show location permission dialog
-                                    if (context.mounted) {
-                                      // Set dialog loading state
-                                      setState(() {
-                                        _isShowingDialog = true;
-                                      });
-
-                                      // Show location permission dialog
-                                      await showLocationPermissionDialog(context);
-
-                                      // Clear state after dialog closes
-                                      if (mounted) {
-                                        setState(() {
-                                          _isShowingDialog = false;
-                                        });
-                                        ref.invalidate(completeProfileFormNotifierProvider);
-
-                                        // Navigate to categories
-                                        Navigator.pushReplacementNamed(context, '/categories');
-                                      }
-                                    }
-                                  }
+                        const SizedBox(height: 12),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final currentAvatarUrl = ref.read(completeProfileFormNotifierProvider).avatarUrl;
+                              // Request focus on dummy node to prevent text field focus
+                              _dummyFocusNode.requestFocus();
+                              await Future.delayed(const Duration(milliseconds: 100));
+                              showBottomAvatarSelectionCard(
+                                context: context,
+                                currentAvatarUrl: currentAvatarUrl,
+                                selectedImagePath: _selectedImagePath,
+                                onAvatarSelected: (imagePath) {
+                                  setState(() {
+                                    _selectedImagePath = imagePath;
+                                  });
+                                  ref
+                                      .read(completeProfileFormNotifierProvider.notifier)
+                                      .setAvatarUrl(imagePath);
                                 },
+                              );
+                            },
+                            child: Container(
+                              width: 130,
+                              height: 130,
+                              decoration: BoxDecoration(
+                                color: midSurface,
+                                borderRadius: BorderRadius.circular(100),
+                                border: Border.all(
+                                  color: accentPrimary.withOpacity(0.3),
+                                  width: 2,
+                                ),
+                              ),
+                              child: _selectedImagePath != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Image.file(
+                                        File(_selectedImagePath!),
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Icon(
+                                            Icons.person,
+                                            color: textSecondary,
+                                            size: 40,
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  : _buildAvatarFromUrl(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+
+                    // Preferred Language dropdown
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final preferredLanguage = ref.watch(
+                          completeProfileFormNotifierProvider.select((state) => state.preferredLanguage),
+                        );
+                        return _buildDropdownField(
+                          label: 'Preferred Language',
+                          value: preferredLanguage,
+                          items: _languages,
+                          onChanged: (value) {
+                            ref
+                                .read(completeProfileFormNotifierProvider.notifier)
+                                .setPreferredLanguage(value);
+                          },
+                          icon: Icons.language,
                         );
                       },
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                    const SizedBox(height: 20),
+
+                    // Country and City fields
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildCountryDropdown(),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildCityDropdown(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Birthday fields
+                    Text(
+                      'Birthday',
+                      style: h3Style.copyWith(
+                        color: textPrimary,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final birthdayMonth = ref.watch(
+                          completeProfileFormNotifierProvider.select((state) => state.birthdayMonth),
+                        );
+                        final birthdayYear = ref.watch(
+                          completeProfileFormNotifierProvider.select((state) => state.birthdayYear),
+                        );
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: _buildDropdownField(
+                                label: 'Month',
+                                value: birthdayMonth,
+                                items: _months,
+                                onChanged: (value) {
+                                  ref
+                                      .read(
+                                          completeProfileFormNotifierProvider.notifier)
+                                      .setBirthdayMonth(value);
+                                },
+                                icon: Icons.calendar_month,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildDropdownField(
+                                label: 'Year',
+                                value: birthdayYear,
+                                items: _years,
+                                onChanged: (value) {
+                                  ref
+                                      .read(
+                                          completeProfileFormNotifierProvider.notifier)
+                                      .setBirthdayYear(value);
+                                },
+                                icon: Icons.calendar_today,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Gender dropdown (optional)
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final gender = ref.watch(
+                          completeProfileFormNotifierProvider.select((state) => state.gender),
+                        );
+                        return _buildDropdownField(
+                          label: 'Gender (Optional)',
+                          value: gender,
+                          items: _genders,
+                          onChanged: (value) {
+                            ref
+                                .read(completeProfileFormNotifierProvider.notifier)
+                                .setGender(value);
+                          },
+                          icon: Icons.person,
+                          isOptional: true,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Primary Interest Category dropdown
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final primaryInterestCategory = ref.watch(
+                          completeProfileFormNotifierProvider.select((state) => state.primaryInterestCategory),
+                        );
+                        return _buildDropdownField(
+                          label: 'Primary Interest Category',
+                          value: primaryInterestCategory,
+                          items: _interestCategories,
+                          onChanged: (value) {
+                            ref
+                                .read(completeProfileFormNotifierProvider.notifier)
+                                .setPrimaryInterestCategory(value);
+                          },
+                          icon: Icons.favorite,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Complete Profile button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: Consumer(
+                        builder: (ctx, ref, child) {
+                          final isLoading = ref.watch(
+                            completeProfileFormNotifierProvider.select((state) => state.isLoading),
+                          );
+                          final isButtonLoading = isLoading || _isShowingDialog;
+
+                          return PrimaryButton(
+                            text: isButtonLoading ? 'Completing profile...' : 'Complete Profile',
+                            onPressed: isButtonLoading
+                                ? null
+                                : () async {
+                                    final profileNotifier = ref.read(
+                                        completeProfileFormNotifierProvider
+                                            .notifier);
+                                    final profileState = ref
+                                        .read(completeProfileFormNotifierProvider);
+
+                                    // Check if username is unique (only if username was entered and is valid)
+                                    if (profileState.username.isNotEmpty &&
+                                        profileState.username.length >= 6 &&
+                                        !profileState.isUsernameUnique) {
+                                      showXploraSnackBar(
+                                        context,
+                                        'Username is already taken',
+                                        isError: true,
+                                      );
+                                      return;
+                                    }
+
+                                    // Perform profile completion
+                                    await profileNotifier.completeProfile();
+
+                                    // Check for errors
+                                    final finalState = ref
+                                        .read(completeProfileFormNotifierProvider);
+                                    if (finalState.errors.isNotEmpty) {
+                                      if (context.mounted) {
+                                        showXploraSnackBar(
+                                          context,
+                                          finalState.errors.first,
+                                          isError: true,
+                                        );
+                                      }
+                                    } else {
+                                      // Success - show location permission dialog
+                                      if (context.mounted) {
+                                        // Set dialog loading state
+                                        setState(() {
+                                          _isShowingDialog = true;
+                                        });
+
+                                        // Show location permission dialog
+                                        await showLocationPermissionDialog(context);
+
+                                        // Clear state after dialog closes
+                                        if (mounted) {
+                                          setState(() {
+                                            _isShowingDialog = false;
+                                          });
+                                          ref.invalidate(completeProfileFormNotifierProvider);
+
+                                          // Navigate to categories
+                                          Navigator.pushReplacementNamed(context, '/categories');
+                                        }
+                                      }
+                                    }
+                                  },
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
           ),
@@ -707,7 +715,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                         ),
                       );
                     }).toList(),
-                    onChanged: (String? newValue) {
+                    onChanged: (String? newValue) async {
                       if (newValue != null) {
                         ref
                             .read(completeProfileFormNotifierProvider.notifier)
@@ -733,6 +741,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
         final cities = profileState.cities;
         final isCountrySelected = profileState.country.isNotEmpty;
         final hasCities = cities.isNotEmpty;
+        final isLoadingCities = profileState.isLoadingCities;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -770,9 +779,11 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     hint: Text(
                       !isCountrySelected
                           ? 'Select Country First'
-                          : !hasCities
-                              ? 'No Cities Available'
-                              : 'Select City',
+                          : isLoadingCities
+                              ? 'Loading cities...'
+                              : !hasCities
+                                  ? 'No Cities Available'
+                                  : 'Select City',
                       style: bodyTextStyle.copyWith(
                         color: textSecondary,
                         fontSize: 16,
@@ -852,7 +863,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                         ),
                       );
                     }).toList(),
-                    onChanged: !isCountrySelected || !hasCities
+                    onChanged: !isCountrySelected || !hasCities || isLoadingCities
                         ? null
                         : (String? newValue) {
                             if (newValue != null) {

@@ -39,6 +39,7 @@ _$CompleteProfileFormImpl _$$CompleteProfileFormImplFromJson(
           .map((e) => City.fromJson(e as Map<String, dynamic>))
           .toList(),
       isLoadingCountries: json['isLoadingCountries'] as bool,
+      isLoadingCities: json['isLoadingCities'] as bool,
     );
 
 Map<String, dynamic> _$$CompleteProfileFormImplToJson(
@@ -68,4 +69,5 @@ Map<String, dynamic> _$$CompleteProfileFormImplToJson(
       'countries': instance.countries,
       'cities': instance.cities,
       'isLoadingCountries': instance.isLoadingCountries,
+      'isLoadingCities': instance.isLoadingCities,
     };

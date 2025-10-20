@@ -6,11 +6,14 @@ import 'theme.dart';
 import 'ui/home.dart';
 import 'ui/initial_route_handler.dart';
 import 'ui/pages/categories.dart';
+import 'ui/pages/lora_ai_assistant.dart';
 import 'ui/pages/onboarding.dart';
 import 'ui/pages/signin_page.dart';
 import 'ui/pages/signup_page.dart';
 import 'ui/pages/complete_profile_page.dart';
+import 'ui/pages/welcome_mission.dart';
 import 'ui/pages/privacy_consent_summary.dart';
+import 'ui/pages/xp_onboarding_page.dart';
 
 
 void main() async {
@@ -46,7 +49,10 @@ class MyApp extends ConsumerWidget {
         '/home': (context) => const Home(),
         '/onboarding': (context) => const OnboardingPage(),
         '/categories': (context) => const ChooseCategories(),
+        '/welcome-mission': (context) => const WelcomeMissionPage(),
         '/privacy-consent-summary': (context) => const PrivacyConsentSummary(),
+        '/xp-onboarding': (context) => const XpOnboardingPage(),
+        '/lora-assistant': (context) => const LoraAiAssistant(),
         '/signin': (context) => const SignInPage(),
         '/signup': (context) => const SignUpPage(),
         '/complete-profile': (context) => const CompleteProfilePage(),

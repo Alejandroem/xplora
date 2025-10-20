@@ -66,13 +66,19 @@ class CountryCityDataService {
     if (!_isLoaded) {
       await _loadData();
     }
-    
+
     final country = _countries.firstWhere(
       (c) => c.name.toLowerCase() == countryName.toLowerCase(),
       orElse: () => _countries.first,
     );
-    
-    return country.cities.map((cityName) => City.fromString(cityName)).toList();
+
+    // Remove duplicates by converting to Set and back to List
+    final uniqueCityNames = country.cities.toSet().toList();
+
+    // Sort alphabetically for better UX
+    uniqueCityNames.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    return uniqueCityNames.map((cityName) => City.fromString(cityName)).toList();
   }
 
   static Future<void> _loadData() async {

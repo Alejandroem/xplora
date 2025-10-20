@@ -15,6 +15,7 @@ import '../application/providers/notifications_providers.dart';
 import '../application/providers/profile_providers.dart';
 import '../application/providers/quest_providers.dart';
 import '../application/providers/settings_providers.dart';
+import 'dialogs/location_permanently_denied_dialog.dart';
 import '../domain/models/achievement.dart';
 import '../domain/models/xplora_profile.dart';
 import '../theme.dart';
@@ -262,6 +263,33 @@ class _HomeState extends ConsumerState<Home> {
     ref.watch(adventureInProgressTrackerProvider);
     ref.watch(questInProgressTrackerProvider);
     ref.watch(autoEnableLocationTrackingProvider);
+
+    // Listen for permanently denied location permission
+    ref.listen<LocationPermissionRequestStatus>(
+      locationPermissionRequestStatusProvider,
+      (previous, next) {
+        if (next == LocationPermissionRequestStatus.permanentlyDenied) {
+          print('Location permanently denied');
+          // Show permanently denied dialog
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (mounted) {
+              final result = await showLocationPermanentlyDeniedDialog(context);
+
+              if(result){
+                // After dialog closes, check if user enabled permission from settings
+                // and re-check the autoEnableLocationTrackingProvider
+                ref.invalidate(autoEnableLocationTrackingProvider);
+              }
+
+              // Reset the status after dialog is shown
+              ref.read(locationPermissionRequestStatusProvider.notifier).state =
+                  LocationPermissionRequestStatus.none;
+            }
+          });
+        }
+      },
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(userPreviousAdventuresProviderStream).whenData((adventures) {
         if (adventures != null) {

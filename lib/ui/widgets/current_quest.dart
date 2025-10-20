@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../application/providers/adventure_providers.dart';
+import '../../application/providers/location_providers.dart';
+import '../../application/providers/quest_providers.dart';
 import '../../domain/models/adventure_in_progress.dart';
 import '../../theme.dart';
 import '../pages/quest_list_page.dart';
@@ -171,12 +173,14 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
     if (currentQuest == null) {
       // null → active (60%)
       // Create a mock quest with 60% completeness
-      ref.read(adventureInProgressTrackerProvider.notifier).state = _createMockQuest(60);
+      ref.read(adventureInProgressTrackerProvider.notifier).state =
+          _createMockQuest(60);
     } else {
       final completeness = currentQuest.completeness ?? 0;
       if (completeness < 100) {
         // active (60%) → complete (100%)
-        ref.read(adventureInProgressTrackerProvider.notifier).state = _createMockQuest(100);
+        ref.read(adventureInProgressTrackerProvider.notifier).state =
+            _createMockQuest(100);
       } else {
         // complete (100%) → null
         ref.read(adventureInProgressTrackerProvider.notifier).state = null;
@@ -206,7 +210,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
   Widget _buildCurrentState(BuildContext context, dynamic questInProgress) {
     // Show idle state when no quest is active
     if (questInProgress == null) {
-      final nearbyAdventures = ref.watch(nearbyAdventuresProvider);
+      final nearbyAdventures = ref.watch(nearbyQuestProvider);
 
       return InkWell(
         key: const ValueKey('idle_state'),
@@ -305,15 +309,26 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                     ),
                   ),
                 ),
-                error: (error, stack) => Text(
-                  'Browse available quests',
-                  style: bodyTextStyle.copyWith(
-                    fontSize: 11,
-                    color: textSecondary.withOpacity(0.7),
-                  ),
-                  textAlign: TextAlign.center,
+                error: (error, stack) => Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Browse available quests',
+                        style: bodyTextStyle.copyWith(
+                          fontSize: 11,
+                          color: textSecondary.withOpacity(0.7),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: textSecondary,
+                      size: 18,
+                    ),
+                  ],
                 ),
-              ),
+              )
             ],
           ),
         ),
@@ -348,7 +363,8 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                       boxShadow: _isCollecting
                           ? [
                               BoxShadow(
-                                color: iconColor.withOpacity(0.5 * _glowAnimation.value),
+                                color: iconColor
+                                    .withOpacity(0.5 * _glowAnimation.value),
                                 blurRadius: 20 * _glowAnimation.value,
                                 spreadRadius: 5 * _glowAnimation.value,
                               ),
@@ -407,7 +423,8 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                       boxShadow: _isCollecting
                           ? [
                               BoxShadow(
-                                color: accentSecondary.withOpacity(0.6 * _glowAnimation.value),
+                                color: accentSecondary
+                                    .withOpacity(0.6 * _glowAnimation.value),
                                 blurRadius: 15 * _glowAnimation.value,
                                 spreadRadius: 3 * _glowAnimation.value,
                               ),
@@ -416,7 +433,8 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                     ),
                     child: PrimaryButton(
                       // width: MediaQuery.sizeOf(context).width*0.33,
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 6),
                       onPressed: _isCollecting
                           ? null
                           : () async {
@@ -475,7 +493,8 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                 const SizedBox(height: 8),
                 // XP Reward
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: accentSecondary.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(6),
@@ -503,7 +522,6 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               ],
             ),
             const SizedBox(height: 18),
-
 
             // Progress label with count
             Row(

@@ -36,6 +36,7 @@ final completeProfileFormNotifierProvider = StateNotifierProvider<CompleteProfil
       countries: [],
       cities: [],
       isLoadingCountries: false,
+      isLoadingCities: false,
     ),
     profileService,
     authService,

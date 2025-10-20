@@ -71,11 +71,10 @@ class _LoraOrbState extends ConsumerState<LoraOrb>
 
   void _toggleMenu() {
     // Navigate to LORA AI Assistant screen
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const LoraAiAssistant(),
-      ),
+    Navigator.of(context).pushNamed(
+      '/lora-assistant'
     );
+    // showInviteFriendsDialog(context);
   }
 
 

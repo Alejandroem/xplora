@@ -12,6 +12,7 @@ class SecondaryButton extends StatefulWidget {
   final bool isEnabled;
   final double? width;
   final Widget? icon;
+  final double? height;
 
   const SecondaryButton({
     super.key,
@@ -22,6 +23,7 @@ class SecondaryButton extends StatefulWidget {
     this.isEnabled = true,
     this.width,
     this.icon,
+    this.height,
   });
 
   @override
@@ -41,6 +43,7 @@ class _SecondaryButtonState extends State<SecondaryButton> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: widget.width,
+          height: widget.height,
           padding: widget.padding ?? const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 8,

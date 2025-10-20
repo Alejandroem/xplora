@@ -122,9 +122,11 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                       // Show invite friends dialog after saving categories
                       await showInviteFriendsDialog(context);
 
-                      // Navigate to next screen after dialog is dismissed
+                      // TODO: Assign first quest
+
+                      // Navigate to welcome mission screen after dialog is dismissed
                       if (context.mounted) {
-                        Navigator.of(context).pushReplacementNamed('/privacy-consent-summary');
+                        Navigator.of(context).pushReplacementNamed('/welcome-mission');
                       }
                     }
                   },

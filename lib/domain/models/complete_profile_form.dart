@@ -31,6 +31,7 @@ abstract class CompleteProfileForm with _$CompleteProfileForm {
     required List<Country> countries,
     required List<City> cities,
     required bool isLoadingCountries,
+    required bool isLoadingCities,
   }) = _CompleteProfileForm;
 
   factory CompleteProfileForm.fromJson(Map<String, dynamic> json) =>

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:location/location.dart';
-import '../../application/providers/auth_service_providers.dart';
-import '../../application/providers/complete_profile_providers.dart';
+import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../theme.dart';
 import 'base_dialog.dart';
+import 'location_permanently_denied_dialog.dart';
 
 class LocationPermissionDialog extends ConsumerStatefulWidget {
   const LocationPermissionDialog({super.key});
@@ -44,9 +44,36 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
 
       // Check for location permissions
       PermissionStatus permissionGranted = await location.hasPermission();
+
+      // If permission is permanently denied, show settings dialog
+      if (permissionGranted == PermissionStatus.deniedForever) {
+        if (mounted) {
+          await showLocationPermanentlyDeniedDialog(context);
+          // Update settings - location denied
+          final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+          await settingsNotifier.setLocationEnabled(false);
+          Navigator.of(context).pop(false);
+        }
+        return;
+      }
+
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
+
+        // Check if it became permanently denied after requesting
+        if (permissionGranted == PermissionStatus.deniedForever) {
+          if (mounted) {
+            await showLocationPermanentlyDeniedDialog(context);
+            // Update settings - location denied
+            final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+            await settingsNotifier.setLocationEnabled(false);
+            Navigator.of(context).pop(false);
+          }
+          return;
+        }
+
+        if (permissionGranted != PermissionStatus.granted &&
+            permissionGranted != PermissionStatus.grantedLimited) {
           // Update settings - location denied
           final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
           await settingsNotifier.setLocationEnabled(false);
@@ -66,6 +93,9 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
 
       // Invalidate location permission provider to refresh the permission status
       ref.invalidate(locationPermissionProvider);
+
+      // Invalidate nearby adventures provider to refresh the adventures list
+      ref.invalidate(nearbyAdventuresProvider);
 
       // Update settings - location allowed
       final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);

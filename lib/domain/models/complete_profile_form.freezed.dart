@@ -44,6 +44,7 @@ mixin _$CompleteProfileForm {
   List<Country> get countries => throw _privateConstructorUsedError;
   List<City> get cities => throw _privateConstructorUsedError;
   bool get isLoadingCountries => throw _privateConstructorUsedError;
+  bool get isLoadingCities => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -81,7 +82,8 @@ abstract class $CompleteProfileFormCopyWith<$Res> {
       bool isCheckingUsername,
       List<Country> countries,
       List<City> cities,
-      bool isLoadingCountries});
+      bool isLoadingCountries,
+      bool isLoadingCities});
 }
 
 /// @nodoc
@@ -121,6 +123,7 @@ class _$CompleteProfileFormCopyWithImpl<$Res, $Val extends CompleteProfileForm>
     Object? countries = null,
     Object? cities = null,
     Object? isLoadingCountries = null,
+    Object? isLoadingCities = null,
   }) {
     return _then(_value.copyWith(
       username: null == username
@@ -219,6 +222,10 @@ class _$CompleteProfileFormCopyWithImpl<$Res, $Val extends CompleteProfileForm>
           ? _value.isLoadingCountries
           : isLoadingCountries // ignore: cast_nullable_to_non_nullable
               as bool,
+      isLoadingCities: null == isLoadingCities
+          ? _value.isLoadingCities
+          : isLoadingCities // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -255,7 +262,8 @@ abstract class _$$CompleteProfileFormImplCopyWith<$Res>
       bool isCheckingUsername,
       List<Country> countries,
       List<City> cities,
-      bool isLoadingCountries});
+      bool isLoadingCountries,
+      bool isLoadingCities});
 }
 
 /// @nodoc
@@ -293,6 +301,7 @@ class __$$CompleteProfileFormImplCopyWithImpl<$Res>
     Object? countries = null,
     Object? cities = null,
     Object? isLoadingCountries = null,
+    Object? isLoadingCities = null,
   }) {
     return _then(_$CompleteProfileFormImpl(
       username: null == username
@@ -391,6 +400,10 @@ class __$$CompleteProfileFormImplCopyWithImpl<$Res>
           ? _value.isLoadingCountries
           : isLoadingCountries // ignore: cast_nullable_to_non_nullable
               as bool,
+      isLoadingCities: null == isLoadingCities
+          ? _value.isLoadingCities
+          : isLoadingCities // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -422,7 +435,8 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
       required this.isCheckingUsername,
       required final List<Country> countries,
       required final List<City> cities,
-      required this.isLoadingCountries})
+      required this.isLoadingCountries,
+      required this.isLoadingCities})
       : _errors = errors,
         _countries = countries,
         _cities = cities;
@@ -496,10 +510,12 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
 
   @override
   final bool isLoadingCountries;
+  @override
+  final bool isLoadingCities;
 
   @override
   String toString() {
-    return 'CompleteProfileForm(username: $username, touchedUsername: $touchedUsername, avatarUrl: $avatarUrl, preferredLanguage: $preferredLanguage, touchedPreferredLanguage: $touchedPreferredLanguage, country: $country, touchedCountry: $touchedCountry, city: $city, touchedCity: $touchedCity, birthdayMonth: $birthdayMonth, touchedBirthdayMonth: $touchedBirthdayMonth, birthdayYear: $birthdayYear, touchedBirthdayYear: $touchedBirthdayYear, gender: $gender, touchedGender: $touchedGender, primaryInterestCategory: $primaryInterestCategory, touchedPrimaryInterestCategory: $touchedPrimaryInterestCategory, errors: $errors, isLoading: $isLoading, isUsernameUnique: $isUsernameUnique, isCheckingUsername: $isCheckingUsername, countries: $countries, cities: $cities, isLoadingCountries: $isLoadingCountries)';
+    return 'CompleteProfileForm(username: $username, touchedUsername: $touchedUsername, avatarUrl: $avatarUrl, preferredLanguage: $preferredLanguage, touchedPreferredLanguage: $touchedPreferredLanguage, country: $country, touchedCountry: $touchedCountry, city: $city, touchedCity: $touchedCity, birthdayMonth: $birthdayMonth, touchedBirthdayMonth: $touchedBirthdayMonth, birthdayYear: $birthdayYear, touchedBirthdayYear: $touchedBirthdayYear, gender: $gender, touchedGender: $touchedGender, primaryInterestCategory: $primaryInterestCategory, touchedPrimaryInterestCategory: $touchedPrimaryInterestCategory, errors: $errors, isLoading: $isLoading, isUsernameUnique: $isUsernameUnique, isCheckingUsername: $isCheckingUsername, countries: $countries, cities: $cities, isLoadingCountries: $isLoadingCountries, isLoadingCities: $isLoadingCities)';
   }
 
   @override
@@ -553,7 +569,9 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
                 .equals(other._countries, _countries) &&
             const DeepCollectionEquality().equals(other._cities, _cities) &&
             (identical(other.isLoadingCountries, isLoadingCountries) ||
-                other.isLoadingCountries == isLoadingCountries));
+                other.isLoadingCountries == isLoadingCountries) &&
+            (identical(other.isLoadingCities, isLoadingCities) ||
+                other.isLoadingCities == isLoadingCities));
   }
 
   @JsonKey(ignore: true)
@@ -583,7 +601,8 @@ class _$CompleteProfileFormImpl implements _CompleteProfileForm {
         isCheckingUsername,
         const DeepCollectionEquality().hash(_countries),
         const DeepCollectionEquality().hash(_cities),
-        isLoadingCountries
+        isLoadingCountries,
+        isLoadingCities
       ]);
 
   @JsonKey(ignore: true)
@@ -626,7 +645,8 @@ abstract class _CompleteProfileForm implements CompleteProfileForm {
       required final bool isCheckingUsername,
       required final List<Country> countries,
       required final List<City> cities,
-      required final bool isLoadingCountries}) = _$CompleteProfileFormImpl;
+      required final bool isLoadingCountries,
+      required final bool isLoadingCities}) = _$CompleteProfileFormImpl;
 
   factory _CompleteProfileForm.fromJson(Map<String, dynamic> json) =
       _$CompleteProfileFormImpl.fromJson;
@@ -679,6 +699,8 @@ abstract class _CompleteProfileForm implements CompleteProfileForm {
   List<City> get cities;
   @override
   bool get isLoadingCountries;
+  @override
+  bool get isLoadingCities;
   @override
   @JsonKey(ignore: true)
   _$$CompleteProfileFormImplCopyWith<_$CompleteProfileFormImpl> get copyWith =>

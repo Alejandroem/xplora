@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../theme.dart';
+import '../widgets/total_xp_badge.dart';
 import 'base_dialog.dart';
 
 /// Invite Friends Dialog - Shows QR code and sharing options
@@ -17,7 +18,8 @@ class InviteFriendsDialog extends ConsumerStatefulWidget {
 class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
   // Static placeholder data (will be replaced with real data later)
   final String _inviteLink = 'https://xplora.app/invite/ABC123';
-  final String _shareMessage = 'Join me on XPLORA and explore amazing places together! Use my invite link to earn bonus XP: https://xplora.app/invite/ABC123';
+  final String _shareMessage =
+      'Join me on XPLORA and explore amazing places together! Use my invite link to earn bonus XP: https://xplora.app/invite/ABC123';
   bool _linkCopied = false;
 
   void _copyLink() {
@@ -164,11 +166,32 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
         ],
       ),
       actions: [
-        PrimaryButton(
-          height: 50,
-          width: double.infinity,
-          onPressed: _shareLink,
-          text: 'Share Link',
+        Column(
+          spacing: 26,
+          children: [
+            Row(
+              spacing: 10,
+              children: [
+                Expanded(
+                  child: SecondaryButton(
+                    height: 50,
+                      text: 'Done',
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: PrimaryButton(
+                    height: 50,
+                    onPressed: _shareLink,
+                    text: 'Share Link',
+                  ),
+                ),
+              ],
+            ),
+            TotalXpBadge(xp: 50),
+          ],
         ),
       ],
     );

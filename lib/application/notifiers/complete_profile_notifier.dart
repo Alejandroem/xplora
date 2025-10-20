@@ -148,12 +148,17 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
   }
 
   Future<void> loadCitiesForCountry(String countryName) async {
+    state = state.copyWith(isLoadingCities: true);
     try {
       final cities = await CountryCityDataService.getCitiesForCountry(countryName);
-      state = state.copyWith(cities: cities);
+      state = state.copyWith(
+        cities: cities,
+        isLoadingCities: false,
+      );
     } catch (e) {
       state = state.copyWith(
         cities: [],
+        isLoadingCities: false,
         errors: ['Error loading cities: $e'],
       );
     }
@@ -169,10 +174,12 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
       country: countryName,
       city: '',
       cities: [],
+      touchedCountry: true,
+      errors: [],
     );
-    
-    // Load cities for the selected country asynchronously without blocking
-    loadCitiesForCountry(countryName);
+
+    // Load cities for the selected country
+    await loadCitiesForCountry(countryName);
   }
 
   bool isValid() {

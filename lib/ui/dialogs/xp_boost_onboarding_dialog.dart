@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/secondary_button.dart';
+import '../widgets/total_xp_badge.dart';
 import 'base_dialog.dart';
 
 /// XP Boost Onboarding Dialog - Encourages users to complete additional profile setup
@@ -13,13 +14,13 @@ class XpBoostOnboardingDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return BaseDialog(
       icon: Container(
-        width: 90,
-        height: 90,
+        width: 100,
+        height: 100,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: accentPrimary,
+          color: accentPrimary.withOpacity(0.2),
           border: Border.all(
-            color: iconColor.withOpacity(0.5),
+            color: accentPrimary.withOpacity(0.5),
             width: 2,
           ),
         ),
@@ -65,37 +66,17 @@ class XpBoostOnboardingDialog extends ConsumerWidget {
             description: 'Invite friends to earn',
             xpReward: '+50 XP',
           ),
+          const SizedBox(height: 12),
+          const _BoostItem(
+            icon: Icons.military_tech_outlined,
+            title: 'Badges for onboarding milestones',
+            description: 'Unlock special achievements',
+            xpReward: '',
+          ),
           const SizedBox(height: 24),
 
           // Total XP Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: accentPrimary.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: accentPrimary,
-                width: 2,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.star,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Earn up to 250 XP',
-                  style: h3Style.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          TotalXpBadge(xp: 200),
         ],
       ),
       actions: [
@@ -108,7 +89,7 @@ class XpBoostOnboardingDialog extends ConsumerWidget {
                 fontSize: 16,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 onPressed: () {
-                  Navigator.of(context).pop(false); // Return false for skip
+                  Navigator.of(context).pop();
                 },
               ),
             ),
@@ -120,8 +101,7 @@ class XpBoostOnboardingDialog extends ConsumerWidget {
               child: PrimaryButton(
                 height: 50,
                 onPressed: () {
-                  Navigator.of(context).pop(true); // Return true for continue
-                  // TODO: Navigate to XP boost onboarding screen
+                  Navigator.of(context).pop(true);
                 },
                 text: 'Let\'s Go!',
               ),
@@ -228,20 +208,21 @@ class _BoostItem extends StatelessWidget {
           const SizedBox(width: 8),
 
           // XP Reward
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: accentPrimary.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              xpReward,
-              style: bodyTextStyle.copyWith(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+          if (xpReward.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: accentPrimary.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                xpReward,
+                style: bodyTextStyle.copyWith(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -256,5 +237,5 @@ Future<bool?> showXpBoostOnboardingDialog(BuildContext context) async {
     builder: (BuildContext context) {
       return const XpBoostOnboardingDialog();
     },
-  ) ?? false;
+  );
 }
