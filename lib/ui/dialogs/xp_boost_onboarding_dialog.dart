@@ -87,7 +87,7 @@ class XpBoostOnboardingDialog extends ConsumerWidget {
               child: SecondaryButton(
                 text: 'Skip',
                 fontSize: 16,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                height: 50,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

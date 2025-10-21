@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../theme.dart';
 import 'base_dialog.dart';
 
@@ -40,14 +42,14 @@ class LocationPermanentlyDeniedDialog extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.info_outline,
               size: 20,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Go to Settings > Apps > Xplora > Permissions > Location',
+                'Go to Settings > Apps > Xplra > Permissions > Location',
                 style: bodyTextStyle.copyWith(
                   fontSize: 14,
                   height: 1.4,
@@ -77,8 +79,16 @@ class LocationPermanentlyDeniedDialog extends StatelessWidget {
               child: PrimaryButton(
                 text: 'Open Settings',
                 onPressed: () async {
+                  print('Opening app settings...');
                   // Open app settings
-                  await openAppSettings();
+                  // final canOpen = await openAppSettings();
+                  final canOpen = await Geolocator.openAppSettings();
+                  if (canOpen) {
+                    print('App settings opened successfully');
+                  } else {
+                    print('Failed to open app settings');
+                    // retry any other method (other than openAppSettings)
+                  }
                   if (context.mounted) {
                     Navigator.of(context).pop(true);
                   }

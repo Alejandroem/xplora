@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 void showXploraSnackBar(
   BuildContext context,
   String message, {
+  bool isInfo = false,
   bool isError = false,
   Duration duration = const Duration(seconds: 2),
 }) {
@@ -17,7 +18,7 @@ void showXploraSnackBar(
           fontWeight: FontWeight.w500,
         ),
       ),
-      backgroundColor: isError ? Colors.red : Colors.green,
+      backgroundColor: isError ? Colors.red : isInfo ? Colors.blue : Colors.green,
       duration: duration,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(

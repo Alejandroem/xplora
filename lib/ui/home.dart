@@ -276,9 +276,12 @@ class _HomeState extends ConsumerState<Home> {
               final result = await showLocationPermanentlyDeniedDialog(context);
 
               if(result){
+                print('User opened settings to enable location permission');
                 // After dialog closes, check if user enabled permission from settings
                 // and re-check the autoEnableLocationTrackingProvider
                 ref.invalidate(autoEnableLocationTrackingProvider);
+              }else{
+                print('User declined to enable location permission');
               }
 
               // Reset the status after dialog is shown

@@ -207,4 +207,97 @@ class FirebaseAuthService extends AuthService {
       await collectionReference.doc(user.uid).update({'name': name});
     }
   }
+
+  @override
+  Future<XploraUser> signInWithGoogle() async {
+    // TODO: Uncomment and implement when Google Sign-In is set up in Firebase
+    /*
+    // Import these packages when implementing:
+    // import 'package:google_sign_in/google_sign_in.dart';
+    // import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+    
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      
+      if (googleUser == null) {
+        throw Exception('Google sign-in was canceled by user');
+      }
+      
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      
+      // Create a new credential
+      final credential = firebase_auth.GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      
+      // Sign in to Firebase with the Google credential
+      final UserCredential userCredential = await auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+      
+      if (user == null) {
+        throw Exception('Failed to sign in with Google');
+      }
+      
+      // Check if this is a new user
+      final bool isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+      
+      // Create or update user document in Firestore
+      final CollectionReference collectionReference = FirebaseFirestore.instance.collection('users');
+      final DocumentSnapshot documentSnapshot = await collectionReference.doc(user.uid).get();
+      
+      if (!documentSnapshot.exists || isNewUser) {
+        final now = DateTime.now().toUtc().toIso8601String();
+        await collectionReference.doc(user.uid).set({
+          'email': user.email,
+          'id': user.uid,
+          'displayName': user.displayName ?? '',
+          'username': '',
+          'type': 'user',
+          'createdAt': now,
+          'updatedAt': now,
+          'isGoogleUser': true,
+        });
+      }
+      
+      // Get the updated user document
+      final DocumentSnapshot updatedSnapshot = await collectionReference.doc(user.uid).get();
+      final data = updatedSnapshot.data() as Map<String, dynamic>;
+      
+      return XploraUser(
+        id: user.uid,
+        email: user.email!,
+        displayName: data['displayName'] ?? '',
+        username: data['username'] ?? '',
+        isEmailVerified: user.emailVerified,
+      );
+      
+    } catch (e) {
+      // Re-throw with more specific error information
+      if (e.toString().contains('sign_in_canceled')) {
+        throw Exception('sign_in_canceled');
+      } else if (e.toString().contains('network_error')) {
+        throw Exception('network_error');
+      } else if (e.toString().contains('account_exists_with_different_credential')) {
+        throw Exception('account_exists_with_different_credential');
+      } else if (e.toString().contains('invalid_credential')) {
+        throw Exception('invalid_credential');
+      } else if (e.toString().contains('user_disabled')) {
+        throw Exception('user_disabled');
+      } else if (e.toString().contains('too_many_requests')) {
+        throw Exception('too_many_requests');
+      } else {
+        throw Exception('sign_in_failed: ${e.toString()}');
+      }
+    }
+    */
+    
+    // For now, throw an exception to indicate it's not implemented
+    throw UnimplementedError('Google Sign-In is not yet configured. Please set up Google Sign-In in Firebase.');
+  }
 }

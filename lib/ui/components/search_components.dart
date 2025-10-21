@@ -26,12 +26,14 @@ class SearchComponents extends ConsumerStatefulWidget {
 class _SearchComponentsState extends ConsumerState<SearchComponents> {
   String _searchQuery = '';
   late ScrollController _scrollController;
+  late ScrollController _categoryScrollController;
   bool _showSearchBar = true;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _categoryScrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       scrollToCategory(ref.watch(selectedCategoriesProvider));
     });
@@ -52,26 +54,40 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _categoryScrollController.dispose();
     super.dispose();
   }
 
   void scrollToCategory(String categoryId) {
+    if (categoryId.isEmpty) return;
+
     ref.watch(allCategories).whenData(
       (categories) {
         final index =
             categories.indexWhere((element) => element.id == categoryId);
+        if (index == -1) return;
+
         const itemWidth = 88.0; // width (80) + margin (8)
-        final offset = index * itemWidth;
-        if(_scrollController.hasClients) {
-          _scrollController.animateTo(
-            offset,
+
+        if(_categoryScrollController.hasClients) {
+          final viewportWidth = _categoryScrollController.position.viewportDimension;
+
+          // Center the category in the viewport
+          final scrollPosition = (index * itemWidth) - (viewportWidth / 2) + (itemWidth / 2);
+
+          // Clamp to valid scroll range
+          final clampedPosition = scrollPosition.clamp(
+            _categoryScrollController.position.minScrollExtent,
+            _categoryScrollController.position.maxScrollExtent,
+          );
+
+          _categoryScrollController.animateTo(
+            clampedPosition,
             duration: const Duration(
               milliseconds: 300,
             ),
             curve: Curves.easeInOut,
           );
-        }else{
-          print('Scroll controller is not initialized');
         }
       },
     );
@@ -165,9 +181,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                     ),
                     const SizedBox(height: 12),
                     SingleChildScrollView(
+                      controller: _categoryScrollController,
                       scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        height: 70,
+                      child: IntrinsicHeight(
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: ref.watch(allCategories).when(
@@ -242,8 +258,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                                           : FontWeight.w500,
                                                     ),
                                                     textAlign: TextAlign.center,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: null,
                                                   ),
                                                 ],
                                               ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../application/providers/adventure_providers.dart';
+import '../../application/providers/location_providers.dart';
 import '../../theme.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/settings_providers.dart';
@@ -128,6 +130,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                 if (context.mounted) {
                                   // Refresh settings to ensure they're loaded
                                   ref.invalidate(settingsStateNotifierProvider);
+
+                                  // Refresh location to ensure it's loaded
+                                  ref.invalidate(nearbyAdventuresProvider);
+
+                                  // Refresh auto enable location provider
+                                  ref.invalidate(autoEnableLocationTrackingProvider);
                                   
                                   showXploraSnackBar(
                                     context,
@@ -192,11 +200,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       _buildSocialIconButton(
                         iconPath: 'assets/png/google-icon.png',
                         onPressed: () {
-                          // TODO: Implement Google sign in
-                          showXploraSnackBar(
-                            context,
-                            'Google sign in coming soon!',
-                          );
+                          ref.read(loginFormNotifierProvider.notifier).loginWithGoogle();
                         },
                       ),
                       _buildSocialIconButton(

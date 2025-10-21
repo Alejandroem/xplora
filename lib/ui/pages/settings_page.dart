@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../application/providers/profile_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../theme.dart';
+import '../../utils/snackbar_utils.dart';
 import '../dialogs/bottom_change_password_card.dart';
 import '../widgets/email_verification_banner.dart';
 import 'account_settings_page.dart';
@@ -176,9 +178,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               onTap: () async {
                 final authProvider = ref.read(authServiceProvider);
                 await authProvider.signOut();
+                ref.invalidate(nearbyAdventuresProvider);
       
                 //pop until /
                 if (context.mounted) {
+                  showXploraSnackBar(
+                    context,
+                    'Logged out successfully',
+                  );
                   Navigator.popUntil(context, (route) => route.isFirst);
                   ref.read(bottomNavigationBarProvider.notifier).state =
                   NavigationItem.home;

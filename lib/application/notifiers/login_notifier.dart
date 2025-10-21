@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,6 +86,7 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       );
 
       final profiles = await profileService.readBy('userId', user.id!);
+      profiles.forEach((action)=>print('action.city: ${action.city}'));
       if (profiles.isEmpty) {
         //Create profile with username from authenticated user
         final now = DateTime.now().toUtc().toIso8601String();
@@ -139,6 +141,99 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       throw Exception(errorMessage);
     }
     state = state.copyWith(isLoading: false);
+  }
+
+  /// Google Sign-In with timeout and proper error handling
+  Future<void> loginWithGoogle() async {
+    state = state.copyWith(isLoading: true, errors: []);
+    
+    try {
+      // Set up timeout for Google sign-in (30 seconds)
+      final user = await authenticationService.signInWithGoogle()
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw TimeoutException('Google sign-in timed out. Please try again.', const Duration(seconds: 30));
+            },
+          );
+
+      // Check if user has existing profile
+      final profiles = await profileService.readBy('userId', user.id!);
+      
+      if (profiles.isEmpty) {
+        // New user - create profile and follow signup flow
+        log('New Google user detected, creating profile');
+        final now = DateTime.now().toUtc().toIso8601String();
+        final xploraProfile = XploraProfile(
+          id: user.id,
+          userId: user.id!,
+          experience: 0,
+          categories: [],
+          avatarUrl: '',
+          username: '', // Will be set later in complete profile
+          preferredLanguage: '',
+          country: '',
+          city: '',
+          birthdayMonth: '',
+          birthdayYear: '',
+          gender: '',
+          primaryInterestCategory: '',
+          createdAt: now,
+          updatedAt: now,
+        );
+        await profileService.create(xploraProfile);
+        
+        // Create default settings for new user
+        await _createDefaultSettings(user.id!);
+        
+        // Note: New Google users will need to complete their profile
+        // The app should navigate to complete profile page after this
+      } else {
+        // Existing user - just fetch their settings
+        log('Existing Google user detected, fetching settings');
+        await _fetchUserSettings(user.id!);
+      }
+      
+      state = state.copyWith(isLoading: false);
+      
+    } on TimeoutException catch (e) {
+      log('Google sign-in timeout: ${e.message}');
+      state = state.copyWith(
+        errors: ['Sign-in timed out. Please check your connection and try again.'],
+        isLoading: false,
+      );
+    } on UnimplementedError catch (e) {
+      log('Google sign-in not implemented: ${e.message}');
+      state = state.copyWith(
+        errors: ['Google Sign-In is not yet available. Please use email and password.'],
+        isLoading: false,
+      );
+    } catch (e) {
+      log('Google sign-in error: ${e.toString()}');
+      String errorMessage = 'Error signing in with Google. Please try again.';
+      
+      // Parse Google Sign-In specific errors
+      if (e.toString().contains('sign_in_canceled')) {
+        errorMessage = 'Sign-in was canceled. Please try again.';
+      } else if (e.toString().contains('sign_in_failed')) {
+        errorMessage = 'Google sign-in failed. Please try again.';
+      } else if (e.toString().contains('network_error')) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (e.toString().contains('account_exists_with_different_credential')) {
+        errorMessage = 'An account already exists with this email using a different sign-in method.';
+      } else if (e.toString().contains('invalid_credential')) {
+        errorMessage = 'Invalid Google credentials. Please try again.';
+      } else if (e.toString().contains('user_disabled')) {
+        errorMessage = 'This Google account has been disabled.';
+      } else if (e.toString().contains('too_many_requests')) {
+        errorMessage = 'Too many sign-in attempts. Please try again later.';
+      }
+      
+      state = state.copyWith(
+        errors: [errorMessage],
+        isLoading: false,
+      );
+    }
   }
 
   /// Fetches user settings after successful login

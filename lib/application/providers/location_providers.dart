@@ -123,9 +123,9 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
   final authService = ref.watch(authServiceProvider);
   final isSignedIn = await authService.isSignedInFuture();
 
-  if (isSignedIn) {
-    final location = Location();
+  final location = Location();
 
+  if (isSignedIn) {
     // Check if location services are enabled
     bool serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
@@ -190,7 +190,31 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
       print('🗺️ autoEnableLocationTrackingProvider: Unknown permission status: $permission');
     }
   } else {
-    print('🗺️ autoEnableLocationTrackingProvider: User is not authenticated, not checking location services');
+    print('🗺️ autoEnableLocationTrackingProvider: User is not authenticated, only checking location service');
+
+    // Check if location services are enabled
+    bool serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      print('🗺️ autoEnableLocationTrackingProvider: Location services are not enabled, requesting...');
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        print('🗺️ autoEnableLocationTrackingProvider: User declined to enable location services');
+        return;
+      }
+    }
+
+    // Check current permission status
+    PermissionStatus permission = await location.hasPermission();
+
+    if (permission == PermissionStatus.granted ||
+        permission == PermissionStatus.grantedLimited) {
+      // Permission already granted, enable tracking
+      print('🗺️ autoEnableLocationTrackingProvider: User has location permission, enabling tracking');
+      ref.read(locationTrackingEnabledProvider.notifier).state = true;
+      ref.read(locationProvider.notifier).initializeLocationTracking();
+    }else{
+      print('🗺️ autoEnableLocationTrackingProvider: User has no location permission');
+    }
   }
 });
 

@@ -3,23 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../application/providers/location_providers.dart';
-import '../../domain/models/adventure.dart';
+import '../../domain/models/quest.dart';
 import '../../theme.dart';
-import '../pages/adventure_detail.dart';
+import '../../utils/snackbar_utils.dart';
 import 'carousel_card.dart';
 
-class AdventuresCarouselCard extends ConsumerWidget {
-  final Adventure adventure;
-  const AdventuresCarouselCard(this.adventure, {super.key});
+class QuestsCarouselCard extends ConsumerWidget {
+  final Quest quest;
+  const QuestsCarouselCard(this.quest, {super.key});
 
   String _getDistance(WidgetRef ref) {
     final location = ref.watch(locationProvider);
-    if (location.position != null) {
+    if (location.position != null &&
+        quest.stepLatitude != null &&
+        quest.stepLongitude != null) {
       final distance = Geolocator.distanceBetween(
         location.position!.latitude,
         location.position!.longitude,
-        adventure.latitude,
-        adventure.longitude,
+        quest.stepLatitude!,
+        quest.stepLongitude!,
       );
       if (distance < 1000) {
         return '${distance.toStringAsFixed(0)}m';
@@ -33,15 +35,12 @@ class AdventuresCarouselCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CarouselCard(
-      imageUrl: adventure.imageUrl,
-      title: adventure.title,
-      heroTag: 'adventure-image-${adventure.id}-carousel',
+      imageUrl: quest.imageUrl,
+      title: quest.title,
+      heroTag: 'quest-image-${quest.id}-carousel',
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => AdventureDetail('carousel', adventure),
-          ),
-        );
+        // TODO: Navigate to quest detail page
+        showXploraSnackBar(context, 'TODO: Implement quest detail page for ${quest.title}', isInfo: true);
       },
       bottomContent: Row(
         children: [
@@ -57,7 +56,7 @@ class AdventuresCarouselCard extends ConsumerWidget {
                 const SizedBox(width: 2),
                 Flexible(
                   child: Text(
-                    '${adventure.experience.toInt()} XP',
+                    '${quest.experience.toInt()} XP',
                     style: bodyTextStyle.copyWith(
                       fontSize: 11,
                       color: textPrimary,

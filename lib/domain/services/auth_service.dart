@@ -25,4 +25,6 @@ abstract class AuthService {
   Future<void> updateName(String name);
 
   Future<void> updateEmail(String email);
+
+  Future<XploraUser> signInWithGoogle();
 }

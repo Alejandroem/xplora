@@ -8,6 +8,8 @@ import '../widgets/adventures_carousel.dart';
 import '../widgets/categories_chips.dart';
 import '../widgets/email_verification_banner.dart';
 import '../widgets/featured_adventure.dart';
+import '../widgets/quests_carousel.dart';
+import '../widgets/smooth_filter_scroll_row.dart';
 import 'quest_components.dart';
 
 // Provider for selected filter
@@ -152,7 +154,9 @@ class _FeedComponentsState extends ConsumerState<FeedComponents> {
         ],
         // FeaturedAdventure(),
         const NearestAdventures(),
+        const SizedBox(height: 8),
         const CategoriesChips(),
+        const NearbyQuests(),
         const QuestComponents(),
         const SizedBox(
           height: 90,

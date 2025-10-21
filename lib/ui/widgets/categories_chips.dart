@@ -1,155 +1,131 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/category_providers.dart';
 import '../../application/providers/navigation_providers.dart';
+import '../../domain/models/category.dart';
 import '../../theme.dart';
-import 'filter_bubble.dart';
+import 'bouncing_carousel.dart';
+import 'carousel_card.dart';
 
-class CategoriesChips extends ConsumerStatefulWidget {
+class CategoriesChips extends ConsumerWidget {
   const CategoriesChips({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CategoriesChipsState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 8.0),
+            child: Row(
+              children: [
+                Text(
+                  'Activities',
+                  style: h2Style.copyWith(
+                      fontSize: 20, fontWeight: FontWeight.w400),
+                ),
+                const Spacer(),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 200,
+            child: Consumer(
+              builder: (context, ref, child) {
+                return ref.watch(allCategories).when(
+                      data: (categories) {
+                        final filteredCategories = categories
+                            .where((category) => category.name != 'All')
+                            .toList();
+
+                        if (filteredCategories.isNotEmpty) {
+                          const maxCards = 20;
+                          final displayedCategories =
+                              filteredCategories.take(maxCards).toList();
+                          final hasMore = filteredCategories.length > maxCards;
+
+                          final selectedCategory =
+                              ref.watch(selectedCategoriesProvider);
+
+                          // Find the index of the selected category
+                          final selectedIndex = selectedCategory.isNotEmpty
+                              ? displayedCategories.indexWhere(
+                                  (category) => category.id == selectedCategory)
+                              : -1;
+
+                          return GenericBouncingCarousel<Category>(
+                            items: displayedCategories,
+                            itemBuilder: (category, index) =>
+                                CategoryCarouselCard(
+                              category,
+                              isSelected: selectedCategory == category.id,
+                            ),
+                            hasMore: hasMore,
+                            scrollToIndex: selectedIndex >= 0 ? selectedIndex : null,
+                            onSeeMoreTap: () {
+                              ref
+                                  .read(bottomNavigationBarProvider.notifier)
+                                  .state = NavigationItem.search;
+                            },
+                          );
+                        } else {
+                          return Center(
+                            child: Text(
+                              'No activities found',
+                              style:
+                                  bodyTextStyle.copyWith(color: textSecondary),
+                            ),
+                          );
+                        }
+                      },
+                      loading: () {
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                      error: (error, stack) => Center(
+                        child: Text(
+                          'Error: $error',
+                          style: bodyTextStyle.copyWith(color: feedbackAlert),
+                        ),
+                      ),
+                    );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _CategoriesChipsState extends ConsumerState<CategoriesChips> {
-  bool selected = false;
+/// Category Carousel Card
+class CategoryCarouselCard extends ConsumerWidget {
+  final Category category;
+  final bool isSelected;
+
+  const CategoryCarouselCard(
+    this.category, {
+    super.key,
+    this.isSelected = false,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    final selectedCategory = ref.watch(selectedCategoriesProvider);
-
-    return ref.watch(allCategories).when(
-          data: (categories) {
-            // Split categories into two parts
-            final half = (categories.length / 2).ceil();
-            final firstHalfCategories = categories.sublist(0, half);
-            final secondHalfCategories = categories.sublist(half);
-
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 6),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.directions_run,
-                          color: iconColor,
-                        ),
-                        const SizedBox(width: 4.0),
-                        Text(
-                          'Activities',
-                          style: h3Style.copyWith(color: textPrimary),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: firstHalfCategories.map((category) {
-                        if (category.name == 'All') {
-                          return Container();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Hero(
-                            tag: category.id,
-                            child: FilterBubble(
-                              text: category.name,
-                              isSelected: false,
-                              onTap: () {
-                                // Update the selected categories based on the user's selection
-                                ref.read(selectedCategoriesProvider.notifier).state = category.id;
-
-                                //change to search page
-                                ref.watch(bottomNavigationBarProvider.notifier).state = NavigationItem.search;
-                              },
-                              icon: CachedNetworkImage(
-                                imageUrl: category.imageUrl,
-                                height: 20,
-                                width: 20,
-                                color: textSecondary,
-                                errorWidget: (context, url, error) => Icon(
-                                  Icons.error,
-                                  color: textSecondary,
-                                  size: 20,
-                                ),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              borderRadius: 20,
-                              fontSize: 14,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 8.0), // Space between rows
-
-                  // Second scrollable row
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: secondHalfCategories.map((category) {
-                        final isSelected = selectedCategory == category.id;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Hero(
-                            tag: category.id,
-                            child: FilterBubble(
-                              text: category.name,
-                              isSelected: isSelected,
-                              onTap: () {
-                                // Update the selected categories based on the user's selection
-                                ref.read(selectedCategoriesProvider.notifier).state = isSelected ? '' : category.id;
-
-                                if (!isSelected) {
-                                  //change to search page
-                                  ref.watch(bottomNavigationBarProvider.notifier).state = NavigationItem.search;
-                                }
-                              },
-                              icon: CachedNetworkImage(
-                                imageUrl: category.imageUrl,
-                                height: 20,
-                                width: 20,
-                                color: isSelected ? textPrimary : textSecondary,
-                                errorWidget: (context, url, error) => Icon(
-                                  Icons.error,
-                                  color: isSelected ? textPrimary : textSecondary,
-                                  size: 20,
-                                ),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              borderRadius: 20,
-                              fontSize: 14,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-          loading: () => const SizedBox(
-            height: 100,
-              child: Center(child: CircularProgressIndicator())),
-          error: (error, stackTrace) => Text('Error: $error'),
-        );
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CarouselCard(
+      imageUrl: category.imageUrl,
+      title: category.name,
+      backgroundColor: Colors.white,
+      imagePadding: const EdgeInsets.all(16.0),
+      imageFit: BoxFit.contain,
+      isSelected: isSelected,
+      onTap: () {
+        ref.read(selectedCategoriesProvider.notifier).state = category.id;
+        ref.read(bottomNavigationBarProvider.notifier).state =
+            NavigationItem.search;
+      },
+    );
   }
 }

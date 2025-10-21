@@ -117,6 +117,7 @@ final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
       }
 
       final user = await authService.getAuthUser();
+      print('user: $user');
       if (user == null) {
         yield adventures;
         continue;

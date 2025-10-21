@@ -48,7 +48,7 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
       // If permission is permanently denied, show settings dialog
       if (permissionGranted == PermissionStatus.deniedForever) {
         if (mounted) {
-          await showLocationPermanentlyDeniedDialog(context);
+          // await showLocationPermanentlyDeniedDialog(context);
           // Update settings - location denied
           final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
           await settingsNotifier.setLocationEnabled(false);
@@ -63,7 +63,7 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
         // Check if it became permanently denied after requesting
         if (permissionGranted == PermissionStatus.deniedForever) {
           if (mounted) {
-            await showLocationPermanentlyDeniedDialog(context);
+            // await showLocationPermanentlyDeniedDialog(context);
             // Update settings - location denied
             final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
             await settingsNotifier.setLocationEnabled(false);

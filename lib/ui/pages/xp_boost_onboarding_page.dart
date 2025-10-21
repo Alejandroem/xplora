@@ -7,14 +7,14 @@ import '../../utils/snackbar_utils.dart';
 import '../dialogs/first_session_dialog.dart';
 import '../dialogs/invite_friends_dialog.dart';
 
-class XpOnboardingPage extends ConsumerStatefulWidget {
-  const XpOnboardingPage({super.key});
+class XpBoostOnboardingPage extends ConsumerStatefulWidget {
+  const XpBoostOnboardingPage({super.key});
 
   @override
-  ConsumerState<XpOnboardingPage> createState() => _XpOnboardingPageState();
+  ConsumerState<XpBoostOnboardingPage> createState() => _XpOnboardingPageState();
 }
 
-class _XpOnboardingPageState extends ConsumerState<XpOnboardingPage> {
+class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _instagramController = TextEditingController();
   final TextEditingController _twitterController = TextEditingController();
@@ -94,6 +94,7 @@ class _XpOnboardingPageState extends ConsumerState<XpOnboardingPage> {
                     ),
                     const SizedBox(height: 12),
                     XploraTextField(
+                      textCapitalization: TextCapitalization.sentences,
                       controller: _bioController,
                       labelText: 'Tell us about yourself',
                       hintText:
