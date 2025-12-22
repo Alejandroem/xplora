@@ -239,3 +239,18 @@ Future<String?> showFirstSessionDialog(BuildContext context) async {
     },
   );
 }
+
+/// Helper function to show the first session dialog if location is enabled
+Future<void> showFirstSessionDialogIfLocationEnabled(
+    BuildContext context, WidgetRef ref) async {
+  final isLocationEnabled = ref.read(locationTrackingEnabledProvider);
+  if (isLocationEnabled) {
+    final overlayContext = Navigator.of(context).overlay?.context;
+    if (overlayContext != null) {
+      // Show dialog on previous screen after this screen is popped
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showFirstSessionDialog(overlayContext);
+      });
+    }
+  }
+}

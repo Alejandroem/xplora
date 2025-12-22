@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -114,7 +113,7 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       // Fetch user settings after successful login
       await _fetchUserSettings(user.id!);
     } catch (e) {
-      log(e.toString());
+      print(e.toString());
       String errorMessage = 'Error logging in, please try again.';
       
       // Parse Firebase Auth specific errors
@@ -140,29 +139,26 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       );
       throw Exception(errorMessage);
     }
-    state = state.copyWith(isLoading: false);
+    // state = state.copyWith(isLoading: false);
   }
 
-  /// Google Sign-In with timeout and proper error handling
+  /// Google Sign-In with proper error handling
   Future<void> loginWithGoogle() async {
     state = state.copyWith(isLoading: true, errors: []);
-    
-    try {
-      // Set up timeout for Google sign-in (30 seconds)
-      final user = await authenticationService.signInWithGoogle()
-          .timeout(
-            const Duration(seconds: 30),
-            onTimeout: () {
-              throw TimeoutException('Google sign-in timed out. Please try again.', const Duration(seconds: 30));
-            },
-          );
 
-      // Check if user has existing profile
-      final profiles = await profileService.readBy('userId', user.id!);
-      
-      if (profiles.isEmpty) {
+    try {
+      // Sign in with Google (Google SDK handles its own timeouts)
+      // Returns both the user and whether this is a new Firebase Auth user
+      final result = await authenticationService.signInWithGoogle();
+      final user = result.user;
+      final isNewUser = result.isNewUser;
+
+      print('user: ${user.id}');
+      print('isNewUser (from Firebase): $isNewUser');
+
+      if (isNewUser) {
         // New user - create profile and follow signup flow
-        log('New Google user detected, creating profile');
+        print('New Google user detected, creating profile');
         final now = DateTime.now().toUtc().toIso8601String();
         final xploraProfile = XploraProfile(
           id: user.id,
@@ -182,53 +178,54 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
           updatedAt: now,
         );
         await profileService.create(xploraProfile);
-        
+
         // Create default settings for new user
         await _createDefaultSettings(user.id!);
-        
-        // Note: New Google users will need to complete their profile
-        // The app should navigate to complete profile page after this
       } else {
         // Existing user - just fetch their settings
-        log('Existing Google user detected, fetching settings');
+        print('Existing Google user detected, fetching settings');
         await _fetchUserSettings(user.id!);
       }
-      
-      state = state.copyWith(isLoading: false);
-      
-    } on TimeoutException catch (e) {
-      log('Google sign-in timeout: ${e.message}');
+
+      // Keep isLoading: true on success - the UI will navigate away and the login notifier will be auto disposed
+      // Setting it to false would briefly show "Sign in" button before navigation
       state = state.copyWith(
-        errors: ['Sign-in timed out. Please check your connection and try again.'],
-        isLoading: false,
+        needsProfileCompletion: isNewUser,
       );
+
     } on UnimplementedError catch (e) {
-      log('Google sign-in not implemented: ${e.message}');
+      print('Google sign-in not implemented: ${e.message}');
       state = state.copyWith(
         errors: ['Google Sign-In is not yet available. Please use email and password.'],
         isLoading: false,
       );
     } catch (e) {
-      log('Google sign-in error: ${e.toString()}');
-      String errorMessage = 'Error signing in with Google. Please try again.';
-      
-      // Parse Google Sign-In specific errors
+      print('Google sign-in error: ${e.toString()}');
+
+      // If user canceled the sign-in, don't show any error message
       if (e.toString().contains('sign_in_canceled')) {
-        errorMessage = 'Sign-in was canceled. Please try again.';
-      } else if (e.toString().contains('sign_in_failed')) {
+        print('User canceled Google sign-in');
+        state = state.copyWith(isLoading: false);
+        return;
+      }
+
+      // For all other errors, show appropriate error messages
+      String errorMessage = 'Error signing in with Google. Please try again.';
+
+      if (e.toString().contains('sign_in_failed')) {
         errorMessage = 'Google sign-in failed. Please try again.';
-      } else if (e.toString().contains('network_error')) {
+      } else if (e.toString().contains('network_error') || e.toString().contains('network-request-failed')) {
         errorMessage = 'Network error. Please check your connection.';
-      } else if (e.toString().contains('account_exists_with_different_credential')) {
+      } else if (e.toString().contains('account-exists-with-different-credential')) {
         errorMessage = 'An account already exists with this email using a different sign-in method.';
-      } else if (e.toString().contains('invalid_credential')) {
+      } else if (e.toString().contains('invalid-credential')) {
         errorMessage = 'Invalid Google credentials. Please try again.';
-      } else if (e.toString().contains('user_disabled')) {
+      } else if (e.toString().contains('user-disabled')) {
         errorMessage = 'This Google account has been disabled.';
-      } else if (e.toString().contains('too_many_requests')) {
+      } else if (e.toString().contains('too-many-requests')) {
         errorMessage = 'Too many sign-in attempts. Please try again later.';
       }
-      
+
       state = state.copyWith(
         errors: [errorMessage],
         isLoading: false,
@@ -249,13 +246,13 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       
       // If user has no settings, create default ones
       if (settings == null || settings.isEmpty) {
-        log('No settings found for user $userId, creating default settings');
+        print('No settings found for user $userId, creating default settings');
         await _createDefaultSettings(userId);
       } else {
-        log('Fetched ${settings.length} settings for user $userId');
+        print('Fetched ${settings.length} settings for user $userId');
       }
     } catch (e) {
-      log('Error fetching user settings: $e');
+      print('Error fetching user settings: $e');
     }
   }
 
@@ -301,9 +298,9 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
         await settingsService.create(setting);
       }
       
-      log('Created default settings for user $userId');
+      print('Created default settings for user $userId');
     } catch (e) {
-      log('Error creating default settings: $e');
+      print('Error creating default settings: $e');
     }
   }
 }

@@ -85,7 +85,7 @@ final createOrReadProfileStreamProvider = StreamProvider.autoDispose((ref) {
 });
 
 final loginFormNotifierProvider =
-    StateNotifierProvider<LoginFormNotifier, LoginForm>((ref) {
+    StateNotifierProvider.autoDispose<LoginFormNotifier, LoginForm>((ref) {
   final authService = ref.watch(authServiceProvider);
   final profileService = ref.watch(profileServiceProvider);
   final settingsService = ref.watch(settingsCrudServiceProvider);

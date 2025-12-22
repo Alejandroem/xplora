@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
+import '../../application/providers/location_providers.dart';
 import '../../domain/services/country_city_data_service.dart';
 import '../../theme.dart';
 import '../../application/providers/complete_profile_providers.dart';
 import '../../utils/snackbar_utils.dart';
 import '../dialogs/bottom_avatar_selection_card.dart';
+import '../dialogs/first_session_dialog.dart';
 import '../dialogs/location_permission_dialog.dart';
 
 class CompleteProfilePage extends ConsumerStatefulWidget {
@@ -104,6 +106,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
     return WillPopScope(
       onWillPop: () async {
         ref.invalidate(completeProfileFormNotifierProvider);
+        showFirstSessionDialogIfLocationEnabled(context, ref);
         return true;
       },
       child: Scaffold(

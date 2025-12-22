@@ -27,6 +27,7 @@ mixin _$LoginForm {
   bool get obscureText => throw _privateConstructorUsedError;
   List<String> get errors => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
+  bool get needsProfileCompletion => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -46,7 +47,8 @@ abstract class $LoginFormCopyWith<$Res> {
       bool touchedPassword,
       bool obscureText,
       List<String> errors,
-      bool isLoading});
+      bool isLoading,
+      bool needsProfileCompletion});
 }
 
 /// @nodoc
@@ -69,6 +71,7 @@ class _$LoginFormCopyWithImpl<$Res, $Val extends LoginForm>
     Object? obscureText = null,
     Object? errors = null,
     Object? isLoading = null,
+    Object? needsProfileCompletion = null,
   }) {
     return _then(_value.copyWith(
       email: null == email
@@ -99,6 +102,10 @@ class _$LoginFormCopyWithImpl<$Res, $Val extends LoginForm>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      needsProfileCompletion: null == needsProfileCompletion
+          ? _value.needsProfileCompletion
+          : needsProfileCompletion // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -118,7 +125,8 @@ abstract class _$$LoginFormImplCopyWith<$Res>
       bool touchedPassword,
       bool obscureText,
       List<String> errors,
-      bool isLoading});
+      bool isLoading,
+      bool needsProfileCompletion});
 }
 
 /// @nodoc
@@ -139,6 +147,7 @@ class __$$LoginFormImplCopyWithImpl<$Res>
     Object? obscureText = null,
     Object? errors = null,
     Object? isLoading = null,
+    Object? needsProfileCompletion = null,
   }) {
     return _then(_$LoginFormImpl(
       email: null == email
@@ -169,6 +178,10 @@ class __$$LoginFormImplCopyWithImpl<$Res>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      needsProfileCompletion: null == needsProfileCompletion
+          ? _value.needsProfileCompletion
+          : needsProfileCompletion // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -183,7 +196,8 @@ class _$LoginFormImpl implements _LoginForm {
       required this.touchedPassword,
       required this.obscureText,
       required final List<String> errors,
-      required this.isLoading})
+      required this.isLoading,
+      this.needsProfileCompletion = false})
       : _errors = errors;
 
   factory _$LoginFormImpl.fromJson(Map<String, dynamic> json) =>
@@ -209,10 +223,13 @@ class _$LoginFormImpl implements _LoginForm {
 
   @override
   final bool isLoading;
+  @override
+  @JsonKey()
+  final bool needsProfileCompletion;
 
   @override
   String toString() {
-    return 'LoginForm(email: $email, touchedEmail: $touchedEmail, password: $password, touchedPassword: $touchedPassword, obscureText: $obscureText, errors: $errors, isLoading: $isLoading)';
+    return 'LoginForm(email: $email, touchedEmail: $touchedEmail, password: $password, touchedPassword: $touchedPassword, obscureText: $obscureText, errors: $errors, isLoading: $isLoading, needsProfileCompletion: $needsProfileCompletion)';
   }
 
   @override
@@ -231,7 +248,9 @@ class _$LoginFormImpl implements _LoginForm {
                 other.obscureText == obscureText) &&
             const DeepCollectionEquality().equals(other._errors, _errors) &&
             (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading));
+                other.isLoading == isLoading) &&
+            (identical(other.needsProfileCompletion, needsProfileCompletion) ||
+                other.needsProfileCompletion == needsProfileCompletion));
   }
 
   @JsonKey(ignore: true)
@@ -244,7 +263,8 @@ class _$LoginFormImpl implements _LoginForm {
       touchedPassword,
       obscureText,
       const DeepCollectionEquality().hash(_errors),
-      isLoading);
+      isLoading,
+      needsProfileCompletion);
 
   @JsonKey(ignore: true)
   @override
@@ -268,7 +288,8 @@ abstract class _LoginForm implements LoginForm {
       required final bool touchedPassword,
       required final bool obscureText,
       required final List<String> errors,
-      required final bool isLoading}) = _$LoginFormImpl;
+      required final bool isLoading,
+      final bool needsProfileCompletion}) = _$LoginFormImpl;
 
   factory _LoginForm.fromJson(Map<String, dynamic> json) =
       _$LoginFormImpl.fromJson;
@@ -287,6 +308,8 @@ abstract class _LoginForm implements LoginForm {
   List<String> get errors;
   @override
   bool get isLoading;
+  @override
+  bool get needsProfileCompletion;
   @override
   @JsonKey(ignore: true)
   _$$LoginFormImplCopyWith<_$LoginFormImpl> get copyWith =>

@@ -18,10 +18,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        final isLocationEnabled = ref.read(locationTrackingEnabledProvider);
-        if (isLocationEnabled) {
-          showFirstSessionDialog(context);
-        }
+        showFirstSessionDialogIfLocationEnabled(context, ref);
         return true;
       },
       child: GradientBackground(

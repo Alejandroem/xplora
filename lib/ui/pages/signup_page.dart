@@ -167,7 +167,6 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                             final signUpNotifier =
                                 ref.read(signupFormNotifierProvider.notifier);
 
-
                             // Perform sign up
                             await signUpNotifier.signUp();
 

@@ -40,10 +40,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
       onWillPop: () async {
         ref.invalidate(
             xpOnboardingFormNotifierProvider);
-        final isLocationEnabled = ref.read(locationTrackingEnabledProvider);
-        if (isLocationEnabled) {
-          showFirstSessionDialog(context);
-        }
+        showFirstSessionDialogIfLocationEnabled(context, ref);
         return true;
       },
       child: GradientBackground(

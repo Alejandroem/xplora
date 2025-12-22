@@ -12,6 +12,7 @@ import '../../application/providers/local_storage_providers.dart';
 import '../../infrastructure/services/firebase_auth_service.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
+import '../dialogs/first_session_dialog.dart';
 import '../dialogs/invite_friends_dialog.dart';
 
 class ChooseCategories extends ConsumerStatefulWidget {
@@ -40,100 +41,106 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
 
   @override
   Widget build(BuildContext context) {
-    return GradientBackground(
-      child: Scaffold(
-        appBar: const GlassAppBar(title: 'logo', centerTitle: true),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Choose interests for personalized feed and quest recommendations',
-                  textAlign: TextAlign.center, style: h2Style),
-              const SizedBox(height: 22),
-              ref.watch(allCategories).when(
-                    data: (categories) {
-                      return Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: categories.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final category = entry.value;
-                          return AnimatedOpacity(
-                            opacity: chipOpacity,
-                            duration: Duration(milliseconds: index * 200),
-                            curve: Curves.easeIn,
-                            child: FilterBubble(
-                              onTap: () {
-                                setState(() {
-                                  if (selectedCategories.contains(category.id)) {
-                                    selectedCategories.remove(category.id);
-                                  } else {
-                                    selectedCategories.add(category.id);
-                                  }
-                                });
-                              },
-                              text: category.name,
-                              isSelected:
-                                  selectedCategories.contains(category.id),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
-                    loading: () => const CircularProgressIndicator(),
-                    error: (error, _) => Text('Error: $error'),
-                  ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: MediaQuery.sizeOf(context).width * 0.3,
-                child: PrimaryButton(
-                  // height: 50,
-                  onPressed: _isLoading || selectedCategories.isEmpty ? null : () async {
-                    final localStorage = ref.read(localStorageProvider);
-                    // final profileService = ref.read(profileServiceProvider);
+    return WillPopScope(
+      onWillPop: () async {
+        showFirstSessionDialogIfLocationEnabled(context, ref);
+        return true;
+      },
+      child: GradientBackground(
+        child: Scaffold(
+          appBar: const GlassAppBar(title: 'logo', centerTitle: true),
+          body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Choose interests for personalized feed and quest recommendations',
+                    textAlign: TextAlign.center, style: h2Style),
+                const SizedBox(height: 22),
+                ref.watch(allCategories).when(
+                      data: (categories) {
+                        return Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: categories.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final category = entry.value;
+                            return AnimatedOpacity(
+                              opacity: chipOpacity,
+                              duration: Duration(milliseconds: index * 200),
+                              curve: Curves.easeIn,
+                              child: FilterBubble(
+                                onTap: () {
+                                  setState(() {
+                                    if (selectedCategories.contains(category.id)) {
+                                      selectedCategories.remove(category.id);
+                                    } else {
+                                      selectedCategories.add(category.id);
+                                    }
+                                  });
+                                },
+                                text: category.name,
+                                isSelected:
+                                    selectedCategories.contains(category.id),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                      loading: () => const CircularProgressIndicator(),
+                      error: (error, _) => Text('Error: $error'),
+                    ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width * 0.3,
+                  child: PrimaryButton(
+                    // height: 50,
+                    onPressed: _isLoading || selectedCategories.isEmpty ? null : () async {
+                      final localStorage = ref.read(localStorageProvider);
+                      // final profileService = ref.read(profileServiceProvider);
 
-                    //TODO tie this to a user anonymous id
-                    /* await profileService.create(
-                      XploraProfile(categories: categories),
-                    ); */
+                      //TODO tie this to a user anonymous id
+                      /* await profileService.create(
+                        XploraProfile(categories: categories),
+                      ); */
 
-                    setState(() {
-                      _isLoading = true;
-                    });
-
-                    await FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(FirebaseAuth.instance.currentUser!.uid)
-                        .collection('profile')
-                        .doc('data')
-                        .update({'categories': selectedCategories});
-
-                    await localStorage.save(
-                      kHasSelectedInitialCategoriesKey,
-                      'true',
-                    );
-
-                    if (context.mounted) {
                       setState(() {
-                        _isLoading = false;
+                        _isLoading = true;
                       });
 
-                      // Show invite friends dialog after saving categories
-                      await showInviteFriendsDialog(context);
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .collection('profile')
+                          .doc('data')
+                          .update({'categories': selectedCategories});
 
-                      // TODO: Assign first quest
+                      await localStorage.save(
+                        kHasSelectedInitialCategoriesKey,
+                        'true',
+                      );
 
-                      // Navigate to welcome mission screen after dialog is dismissed
                       if (context.mounted) {
-                        Navigator.of(context).pushReplacementNamed('/welcome-mission');
+                        setState(() {
+                          _isLoading = false;
+                        });
+
+                        // Show invite friends dialog after saving categories
+                        await showInviteFriendsDialog(context);
+
+                        // TODO: Assign first quest
+
+                        // Navigate to welcome mission screen after dialog is dismissed
+                        if (context.mounted) {
+                          Navigator.of(context).pushReplacementNamed('/welcome-mission');
+                        }
                       }
-                    }
-                  },
-                  text: _isLoading ? 'Saving...' : 'Save',
+                    },
+                    text: _isLoading ? 'Saving...' : 'Save',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

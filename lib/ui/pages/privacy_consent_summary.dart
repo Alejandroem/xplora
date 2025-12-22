@@ -27,10 +27,7 @@ class _PrivacyConsentSummaryState extends ConsumerState<PrivacyConsentSummary> {
 
     return WillPopScope(
       onWillPop: () async {
-        final isLocationEnabled = ref.read(locationTrackingEnabledProvider);
-        if (isLocationEnabled) {
-          showFirstSessionDialog(context);
-        }
+        showFirstSessionDialogIfLocationEnabled(context, ref);
         return true;
       },
       child: GradientBackground(
@@ -150,9 +147,21 @@ class _PrivacyConsentSummaryState extends ConsumerState<PrivacyConsentSummary> {
                           // If user chose "Let's Go!", navigate to XP onboarding screen
                           if (shouldContinue == true) {
                             Navigator.of(context).pushReplacementNamed('/xp-onboarding');
-                          }else{
-                            // If user skipped, close this screen
-                            Navigator.of(context).pop();
+                          } else {
+                            // User skipped - close screen then show first session dialog
+                            final isLocationEnabled = ref.read(locationTrackingEnabledProvider);
+                            final navigator = Navigator.of(context);
+                            final overlayContext = navigator.overlay?.context;
+
+                            // Pop the screen first
+                            navigator.pop();
+
+                            // Show dialog on the previous screen after pop completes
+                            if (isLocationEnabled && overlayContext != null) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                showFirstSessionDialog(overlayContext);
+                              });
+                            }
                           }
                         }
                       },

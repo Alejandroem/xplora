@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/secondary_button.dart';
@@ -7,11 +6,11 @@ import '../widgets/total_xp_badge.dart';
 import 'base_dialog.dart';
 
 /// XP Boost Onboarding Dialog - Encourages users to complete additional profile setup
-class XpBoostOnboardingDialog extends ConsumerWidget {
+class XpBoostOnboardingDialog extends StatelessWidget {
   const XpBoostOnboardingDialog({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return BaseDialog(
       icon: Container(
         width: 100,

@@ -12,7 +12,12 @@
           "package_name": "com.xplra.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "441929013315-5hn4injuddnk537u0vl532t2pl3i973b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBSLbMKMPZfns0MkLMveGBkVHD5wZ8npEw"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441929013315-5hn4injuddnk537u0vl532t2pl3i973b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "441929013315-dl9q6pv5pnk4kpig7n6vp5uajbqsenb9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.xplra.mobile"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +48,28 @@
           "package_name": "com.xplra.mobile"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "441929013315-gkthl1b0qv79e59v75sqdf04hme1uuni.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xplra.mobile",
+            "certificate_hash": "3ec8e77775afdf404ea3e6a999b369ad26102cd9"
+          }
+        },
+        {
+          "client_id": "441929013315-t0cgnvqou8m8i6hgcrr21qtsg9lvksbe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xplra.mobile",
+            "certificate_hash": "3832c998e97116357ed8b62d0f93710e79c0e71b"
+          }
+        },
+        {
+          "client_id": "441929013315-5hn4injuddnk537u0vl532t2pl3i973b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBSLbMKMPZfns0MkLMveGBkVHD5wZ8npEw"
@@ -39,7 +77,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441929013315-5hn4injuddnk537u0vl532t2pl3i973b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "441929013315-dl9q6pv5pnk4kpig7n6vp5uajbqsenb9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.xplra.mobile"
+              }
+            }
+          ]
         }
       }
     }

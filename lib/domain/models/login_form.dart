@@ -13,6 +13,7 @@ abstract class LoginForm with _$LoginForm {
     required bool obscureText,
     required List<String> errors,
     required bool isLoading,
+    @Default(false) bool needsProfileCompletion,
   }) = _LoginForm;
 
   factory LoginForm.fromJson(Map<String, dynamic> json) =>
