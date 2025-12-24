@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import '../../application/providers/location_providers.dart';
@@ -9,6 +10,7 @@ import '../../utils/snackbar_utils.dart';
 import '../dialogs/bottom_avatar_selection_card.dart';
 import '../dialogs/first_session_dialog.dart';
 import '../dialogs/location_permission_dialog.dart';
+import '../widgets/custom_dropdown.dart';
 
 class CompleteProfilePage extends ConsumerStatefulWidget {
   const CompleteProfilePage({super.key});
@@ -35,9 +37,11 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
   @override
   void initState() {
     super.initState();
-    // Load countries using the notifier
+    // Load countries and existing profile data (e.g., Google photo) using the notifier
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(completeProfileFormNotifierProvider.notifier).loadCountries();
+      final notifier = ref.read(completeProfileFormNotifierProvider.notifier);
+      notifier.loadCountries();
+      notifier.loadExistingProfile();
     });
   }
 
@@ -163,24 +167,28 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                           ),
                           onChanged: (value) {
                             final trimmedValue = value.trim();
-                            final profileNotifier =
-                                ref.read(completeProfileFormNotifierProvider.notifier);
+                            final profileNotifier = ref.read(
+                                completeProfileFormNotifierProvider.notifier);
                             profileNotifier.setUsername(trimmedValue);
 
                             // Check username availability (debounced)
-                            profileNotifier.checkUsernameAvailability(trimmedValue);
+                            profileNotifier
+                                .checkUsernameAvailability(trimmedValue);
                           },
                         ),
                         Consumer(
                           builder: (context, ref, child) {
                             final username = ref.watch(
-                              completeProfileFormNotifierProvider.select((state) => state.username),
+                              completeProfileFormNotifierProvider
+                                  .select((state) => state.username),
                             );
                             final isCheckingUsername = ref.watch(
-                              completeProfileFormNotifierProvider.select((state) => state.isCheckingUsername),
+                              completeProfileFormNotifierProvider
+                                  .select((state) => state.isCheckingUsername),
                             );
                             final isUsernameUnique = ref.watch(
-                              completeProfileFormNotifierProvider.select((state) => state.isUsernameUnique),
+                              completeProfileFormNotifierProvider
+                                  .select((state) => state.isUsernameUnique),
                             );
 
                             if (username.isNotEmpty && username.length >= 6) {
@@ -190,11 +198,13 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                   children: [
                                     if (isCheckingUsername)
                                       const SizedBox(
-                                        width: 16,
-                                        height: 16,
+                                        width: 14,
+                                        height: 14,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.blue),
                                         ),
                                       )
                                     else if (isUsernameUnique)
@@ -251,10 +261,13 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                         Center(
                           child: GestureDetector(
                             onTap: () async {
-                              final currentAvatarUrl = ref.read(completeProfileFormNotifierProvider).avatarUrl;
+                              final currentAvatarUrl = ref
+                                  .read(completeProfileFormNotifierProvider)
+                                  .avatarUrl;
                               // Request focus on dummy node to prevent text field focus
                               _dummyFocusNode.requestFocus();
-                              await Future.delayed(const Duration(milliseconds: 100));
+                              await Future.delayed(
+                                  const Duration(milliseconds: 100));
                               showBottomAvatarSelectionCard(
                                 context: context,
                                 currentAvatarUrl: currentAvatarUrl,
@@ -264,7 +277,8 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                     _selectedImagePath = imagePath;
                                   });
                                   ref
-                                      .read(completeProfileFormNotifierProvider.notifier)
+                                      .read(completeProfileFormNotifierProvider
+                                          .notifier)
                                       .setAvatarUrl(imagePath);
                                 },
                               );
@@ -285,10 +299,11 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                       borderRadius: BorderRadius.circular(100),
                                       child: Image.file(
                                         File(_selectedImagePath!),
-                                        width: 100,
-                                        height: 100,
+                                        width: 130,
+                                        height: 130,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
                                           return Icon(
                                             Icons.person,
                                             color: textSecondary,
@@ -309,15 +324,17 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     Consumer(
                       builder: (context, ref, child) {
                         final preferredLanguage = ref.watch(
-                          completeProfileFormNotifierProvider.select((state) => state.preferredLanguage),
+                          completeProfileFormNotifierProvider
+                              .select((state) => state.preferredLanguage),
                         );
-                        return _buildDropdownField(
+                        return CustomDropdown(
                           label: 'Preferred Language',
                           value: preferredLanguage,
                           items: _languages,
                           onChanged: (value) {
                             ref
-                                .read(completeProfileFormNotifierProvider.notifier)
+                                .read(completeProfileFormNotifierProvider
+                                    .notifier)
                                 .setPreferredLanguage(value);
                           },
                           icon: Icons.language,
@@ -352,22 +369,24 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     Consumer(
                       builder: (context, ref, child) {
                         final birthdayMonth = ref.watch(
-                          completeProfileFormNotifierProvider.select((state) => state.birthdayMonth),
+                          completeProfileFormNotifierProvider
+                              .select((state) => state.birthdayMonth),
                         );
                         final birthdayYear = ref.watch(
-                          completeProfileFormNotifierProvider.select((state) => state.birthdayYear),
+                          completeProfileFormNotifierProvider
+                              .select((state) => state.birthdayYear),
                         );
                         return Row(
                           children: [
                             Expanded(
-                              child: _buildDropdownField(
+                              child: CustomDropdown(
                                 label: 'Month',
                                 value: birthdayMonth,
                                 items: _months,
                                 onChanged: (value) {
                                   ref
-                                      .read(
-                                          completeProfileFormNotifierProvider.notifier)
+                                      .read(completeProfileFormNotifierProvider
+                                          .notifier)
                                       .setBirthdayMonth(value);
                                 },
                                 icon: Icons.calendar_month,
@@ -375,14 +394,14 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: _buildDropdownField(
+                              child: CustomDropdown(
                                 label: 'Year',
                                 value: birthdayYear,
                                 items: _years,
                                 onChanged: (value) {
                                   ref
-                                      .read(
-                                          completeProfileFormNotifierProvider.notifier)
+                                      .read(completeProfileFormNotifierProvider
+                                          .notifier)
                                       .setBirthdayYear(value);
                                 },
                                 icon: Icons.calendar_today,
@@ -398,15 +417,17 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     Consumer(
                       builder: (context, ref, child) {
                         final gender = ref.watch(
-                          completeProfileFormNotifierProvider.select((state) => state.gender),
+                          completeProfileFormNotifierProvider
+                              .select((state) => state.gender),
                         );
-                        return _buildDropdownField(
+                        return CustomDropdown(
                           label: 'Gender (Optional)',
                           value: gender,
                           items: _genders,
                           onChanged: (value) {
                             ref
-                                .read(completeProfileFormNotifierProvider.notifier)
+                                .read(completeProfileFormNotifierProvider
+                                    .notifier)
                                 .setGender(value);
                           },
                           icon: Icons.person,
@@ -420,15 +441,17 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     Consumer(
                       builder: (context, ref, child) {
                         final primaryInterestCategory = ref.watch(
-                          completeProfileFormNotifierProvider.select((state) => state.primaryInterestCategory),
+                          completeProfileFormNotifierProvider
+                              .select((state) => state.primaryInterestCategory),
                         );
-                        return _buildDropdownField(
+                        return CustomDropdown(
                           label: 'Primary Interest Category',
                           value: primaryInterestCategory,
                           items: _interestCategories,
                           onChanged: (value) {
                             ref
-                                .read(completeProfileFormNotifierProvider.notifier)
+                                .read(completeProfileFormNotifierProvider
+                                    .notifier)
                                 .setPrimaryInterestCategory(value);
                           },
                           icon: Icons.favorite,
@@ -444,20 +467,23 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                       child: Consumer(
                         builder: (ctx, ref, child) {
                           final isLoading = ref.watch(
-                            completeProfileFormNotifierProvider.select((state) => state.isLoading),
+                            completeProfileFormNotifierProvider
+                                .select((state) => state.isLoading),
                           );
                           final isButtonLoading = isLoading || _isShowingDialog;
 
                           return PrimaryButton(
-                            text: isButtonLoading ? 'Completing profile...' : 'Complete Profile',
+                            text: isButtonLoading
+                                ? 'Completing profile...'
+                                : 'Complete Profile',
                             onPressed: isButtonLoading
                                 ? null
                                 : () async {
                                     final profileNotifier = ref.read(
                                         completeProfileFormNotifierProvider
                                             .notifier);
-                                    final profileState = ref
-                                        .read(completeProfileFormNotifierProvider);
+                                    final profileState = ref.read(
+                                        completeProfileFormNotifierProvider);
 
                                     // Check if username is unique (only if username was entered and is valid)
                                     if (profileState.username.isNotEmpty &&
@@ -475,8 +501,8 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                     await profileNotifier.completeProfile();
 
                                     // Check for errors
-                                    final finalState = ref
-                                        .read(completeProfileFormNotifierProvider);
+                                    final finalState = ref.read(
+                                        completeProfileFormNotifierProvider);
                                     if (finalState.errors.isNotEmpty) {
                                       if (context.mounted) {
                                         showXploraSnackBar(
@@ -494,17 +520,20 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                         });
 
                                         // Show location permission dialog
-                                        await showLocationPermissionDialog(context);
+                                        await showLocationPermissionDialog(
+                                            context);
 
                                         // Clear state after dialog closes
                                         if (mounted) {
                                           setState(() {
                                             _isShowingDialog = false;
                                           });
-                                          ref.invalidate(completeProfileFormNotifierProvider);
+                                          ref.invalidate(
+                                              completeProfileFormNotifierProvider);
 
                                           // Navigate to categories
-                                          Navigator.pushReplacementNamed(context, '/categories');
+                                          Navigator.pushReplacementNamed(
+                                              context, '/categories');
                                         }
                                       }
                                     }
@@ -524,12 +553,12 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
     );
   }
 
-
   Widget _buildAvatarFromUrl() {
     return Consumer(
       builder: (context, ref, child) {
         final avatarUrl = ref.watch(
-          completeProfileFormNotifierProvider.select((state) => state.avatarUrl),
+          completeProfileFormNotifierProvider
+              .select((state) => state.avatarUrl),
         );
 
         if (avatarUrl.isEmpty) {
@@ -541,12 +570,12 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
         }
 
         return ClipRRect(
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(100),
           child: avatarUrl.startsWith('http')
               ? Image.network(
                   avatarUrl,
-                  width: 100,
-                  height: 100,
+                  width: 130,
+                  height: 130,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Icon(
@@ -572,11 +601,11 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
           size: 40,
         );
       }
-      
+
       return Image.file(
         file,
-        width: 100,
-        height: 100,
+        width: 130,
+        height: 130,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Icon(
@@ -595,303 +624,17 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
     }
   }
 
-  Widget _buildCountryDropdown() {
-    return Consumer(
-      builder: (context, ref, child) {
-        // Cache state once at the beginning
-        final profileState = ref.watch(completeProfileFormNotifierProvider);
-        final selectedCountry = profileState.country.isEmpty ? null : profileState.country;
-        final countries = profileState.countries;
-        final isLoading = profileState.isLoadingCountries;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Country',
-              style: h3Style.copyWith(
-                color: textPrimary,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: midSurface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: cardContainerBorder,
-                  width: 1,
-                ),
-              ),
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  canvasColor: const Color(0xff121212),
-                  focusColor: accentPrimary.withOpacity(0.1),
-                  hoverColor: accentPrimary.withOpacity(0.05),
-                  highlightColor: accentPrimary.withOpacity(0.1),
-                  splashColor: accentPrimary.withOpacity(0.05),
-                  dividerColor: Colors.transparent,
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    value: selectedCountry,
-                    hint: Text(
-                      isLoading ? 'Loading...' : 'Select Country',
-                      style: bodyTextStyle.copyWith(
-                        color: textSecondary,
-                        fontSize: 16,
-                      ),
-                    ),
-                    icon: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: textSecondary,
-                    ),
-                    isExpanded: true,
-                    dropdownColor: const Color(0xff121212),
-                    style: bodyTextStyle.copyWith(
-                      color: textPrimary,
-                      fontSize: 16,
-                    ),
-                    selectedItemBuilder: (BuildContext context) {
-                      return countries.map<Widget>((Country country) {
-                        return Container(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.flag,
-                                color: textSecondary,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  country.name,
-                                  style: bodyTextStyle.copyWith(
-                                    color: textPrimary,
-                                    fontSize: 16,
-                                    height: 1.3,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList();
-                    },
-                    items: countries.map((Country country) {
-                      return DropdownMenuItem<String>(
-                        value: country.name,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Icon(
-                                  Icons.flag,
-                                  color: textSecondary,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  country.name,
-                                  style: bodyTextStyle.copyWith(
-                                    color: textPrimary,
-                                    fontSize: 16,
-                                    height: 1.3,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) async {
-                      if (newValue != null) {
-                        ref
-                            .read(completeProfileFormNotifierProvider.notifier)
-                            .selectCountry(newValue);
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildCityDropdown() {
-    return Consumer(
-      builder: (context, ref, child) {
-        // Cache state once at the beginning
-        final profileState = ref.watch(completeProfileFormNotifierProvider);
-        final selectedCity = profileState.city.isEmpty ? null : profileState.city;
-        final cities = profileState.cities;
-        final isCountrySelected = profileState.country.isNotEmpty;
-        final hasCities = cities.isNotEmpty;
-        final isLoadingCities = profileState.isLoadingCities;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'City',
-              style: h3Style.copyWith(
-                color: textPrimary,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: midSurface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: cardContainerBorder,
-                  width: 1,
-                ),
-              ),
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  canvasColor: const Color(0xff121212),
-                  focusColor: accentPrimary.withOpacity(0.1),
-                  hoverColor: accentPrimary.withOpacity(0.05),
-                  highlightColor: accentPrimary.withOpacity(0.1),
-                  splashColor: accentPrimary.withOpacity(0.05),
-                  dividerColor: Colors.transparent,
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    value: selectedCity,
-                    hint: Text(
-                      !isCountrySelected
-                          ? 'Select Country First'
-                          : isLoadingCities
-                              ? 'Loading cities...'
-                              : !hasCities
-                                  ? 'No Cities Available'
-                                  : 'Select City',
-                      style: bodyTextStyle.copyWith(
-                        color: textSecondary,
-                        fontSize: 16,
-                      ),
-                    ),
-                    icon: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: textSecondary,
-                    ),
-                    isExpanded: true,
-                    dropdownColor: const Color(0xff121212),
-                    style: bodyTextStyle.copyWith(
-                      color: textPrimary,
-                      fontSize: 16,
-                    ),
-                    selectedItemBuilder: (BuildContext context) {
-                      return cities.map<Widget>((City city) {
-                        return Container(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.location_city,
-                                color: textSecondary,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  city.name,
-                                  style: bodyTextStyle.copyWith(
-                                    color: textPrimary,
-                                    fontSize: 16,
-                                    height: 1.3,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList();
-                    },
-                    items: cities.map((City city) {
-                      return DropdownMenuItem<String>(
-                        value: city.name,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Icon(
-                                  Icons.location_city,
-                                  color: textSecondary,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  city.name,
-                                  style: bodyTextStyle.copyWith(
-                                    color: textPrimary,
-                                    fontSize: 16,
-                                    height: 1.3,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: !isCountrySelected || !hasCities || isLoadingCities
-                        ? null
-                        : (String? newValue) {
-                            if (newValue != null) {
-                              ref
-                                  .read(completeProfileFormNotifierProvider.notifier)
-                                  .setCity(newValue);
-                            }
-                          },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildDropdownField({
+  Widget _buildSearchableDropdown<T extends Object>({
     required String label,
-    required String value,
-    required List<String> items,
-    required Function(String) onChanged,
+    required String hintText,
     required IconData icon,
-    bool isOptional = false,
+    required List<T> items,
+    required String Function(T) displayStringForOption,
+    required String selectedValue,
+    required void Function(T) onSelected,
+    required void Function() onClear,
+    required bool enabled,
+    bool clearOnEmpty = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -904,110 +647,201 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: midSurface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: cardContainerBorder,
-              width: 1,
-            ),
-          ),
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              canvasColor: const Color(0xff121212),
-              focusColor: accentPrimary.withOpacity(0.1),
-              hoverColor: accentPrimary.withOpacity(0.05),
-              highlightColor: accentPrimary.withOpacity(0.1),
-              splashColor: accentPrimary.withOpacity(0.05),
-              dividerColor: Colors.transparent,
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                value: value.isEmpty ? null : value,
-                hint: Text(
-                  'Select $label',
-                  style: bodyTextStyle.copyWith(
-                    color: textSecondary,
-                    fontSize: 16,
-                  ),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: textSecondary,
-                ),
-                isExpanded: true,
-                dropdownColor: const Color(0xff121212),
-                style: bodyTextStyle.copyWith(
-                  color: textPrimary,
-                  fontSize: 16,
-                ),
-                selectedItemBuilder: (BuildContext context) {
-                  return items.map<Widget>((String item) {
-                    return Container(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          Icon(
-                            icon,
-                            color: textSecondary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              item,
-                              style: bodyTextStyle.copyWith(
-                                color: textPrimary,
-                                fontSize: 16,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Autocomplete<T>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (!enabled || items.isEmpty) {
+                  return const Iterable<Never>.empty();
+                }
+                if (textEditingValue.text.isEmpty) {
+                  return items.take(50);
+                }
+                return items.where((T item) {
+                  return displayStringForOption(item)
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase());
+                }).take(50);
+              },
+              displayStringForOption: displayStringForOption,
+              onSelected: onSelected,
+              optionsMaxHeight: 200,
+              optionsViewBuilder: (context, onSelectedOption, options) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    color: const Color(0xff121212),
+                    elevation: 4,
+                    borderRadius: BorderRadius.circular(12),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth,
+                        maxHeight: 200,
                       ),
-                    );
-                  }).toList();
-                },
-                items: items.map((String item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Row(
-                        children: [
-                          Icon(
-                            icon,
-                            color: textSecondary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              item,
-                              style: bodyTextStyle.copyWith(
-                                color: textPrimary,
-                                fontSize: 16,
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemCount: options.length,
+                        itemBuilder: (context, index) {
+                          final item = options.elementAt(index);
+                          return InkWell(
+                            onTap: () => onSelectedOption(item),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    icon,
+                                    color: textSecondary,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      displayStringForOption(item),
+                                      style: bodyTextStyle.copyWith(
+                                        fontSize: 16,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    onChanged(newValue);
-                  }
-                },
-              ),
-            ),
-          ),
+                  ),
+                );
+              },
+              fieldViewBuilder:
+                  (context, textController, focusNode, onFieldSubmitted) {
+                // Sync the text controller with selected value
+                if (selectedValue.isNotEmpty &&
+                    textController.text != selectedValue) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    textController.text = selectedValue;
+                  });
+                } else if (clearOnEmpty &&
+                    selectedValue.isEmpty &&
+                    textController.text.isNotEmpty) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    textController.clear();
+                  });
+                }
+
+                return XploraTextField(
+                  textCapitalization: TextCapitalization.words,
+                  // onTapOutside: (event) {
+                  //   focusNode.unfocus();
+                  // },
+                  onTapOutside: (event) => {},
+                  controller: textController,
+                  focusNode: focusNode,
+                  enabled: enabled,
+                  hintText: hintText,
+                  prefixIcon: Icon(
+                    icon,
+                    color: textSecondary,
+                    size: 20,
+                  ),
+                  style: bodyTextStyle.copyWith(
+                    color: textPrimary,
+                    fontSize: 15,
+                  ),
+                  suffixIcon: Icon(
+                    Icons.search,
+                    color: textSecondary,
+                    size: 20,
+                  ),
+                  onChanged: (value) {
+                    if (selectedValue.isNotEmpty && value != selectedValue) {
+                      onClear();
+                    }
+                  },
+                );
+              },
+            );
+          },
         ),
       ],
+    );
+  }
+
+  Widget _buildCountryDropdown() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final profileState = ref.watch(completeProfileFormNotifierProvider);
+        final isLoading = profileState.isLoadingCountries;
+
+        return _buildSearchableDropdown<Country>(
+          label: 'Country',
+          hintText: isLoading ? 'Loading...' : 'Search country...',
+          icon: Icons.flag,
+          items: profileState.countries,
+          displayStringForOption: (country) => country.name,
+          selectedValue: profileState.country,
+          onSelected: (country) {
+            ref
+                .read(completeProfileFormNotifierProvider.notifier)
+                .selectCountry(country.name);
+            FocusScope.of(context).unfocus();
+          },
+          onClear: () {
+            ref
+                .read(completeProfileFormNotifierProvider.notifier)
+                .setCountry('');
+          },
+          enabled: !isLoading,
+        );
+      },
+    );
+  }
+
+  Widget _buildCityDropdown() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final profileState = ref.watch(completeProfileFormNotifierProvider);
+        final isCountrySelected = profileState.country.isNotEmpty;
+        final hasCities = profileState.cities.isNotEmpty;
+        final isLoadingCities = profileState.isLoadingCities;
+
+        String hintText;
+        if (!isCountrySelected) {
+          hintText = 'Select Country First';
+        } else if (isLoadingCities) {
+          hintText = 'Loading cities...';
+        } else if (!hasCities) {
+          hintText = 'No Cities Available';
+        } else {
+          hintText = 'Search city...';
+        }
+
+        return _buildSearchableDropdown<City>(
+          label: 'City',
+          hintText: hintText,
+          icon: Icons.location_city,
+          items: profileState.cities,
+          displayStringForOption: (city) => city.name,
+          selectedValue: profileState.city,
+          onSelected: (city) {
+            ref
+                .read(completeProfileFormNotifierProvider.notifier)
+                .setCity(city.name);
+            FocusScope.of(context).unfocus();
+          },
+          onClear: () {
+            ref.read(completeProfileFormNotifierProvider.notifier).setCity('');
+          },
+          enabled: isCountrySelected && !isLoadingCities,
+          clearOnEmpty: true,
+        );
+      },
     );
   }
 }

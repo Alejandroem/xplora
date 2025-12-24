@@ -20,6 +20,8 @@ class XploraTextField extends StatelessWidget {
   final TextStyle? style;
   final EdgeInsetsGeometry? contentPadding;
   final int? maxLength;
+  final FocusNode? focusNode;
+  final void Function(PointerEvent)? onTapOutside;
 
   const XploraTextField({
     super.key,
@@ -39,12 +41,15 @@ class XploraTextField extends StatelessWidget {
     this.style,
     this.contentPadding,
     this.maxLength,
+    this.focusNode,
+    this.onTapOutside,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      onTapOutside: (event) {
+      focusNode: focusNode,
+      onTapOutside: onTapOutside ?? (event) {
         FocusScope.of(context).unfocus();
       },
       controller: controller,
@@ -56,12 +61,12 @@ class XploraTextField extends StatelessWidget {
       maxLines: maxLines,
       maxLength: maxLength,
       enabled: enabled,
-      style: style ?? bodyTextStyle.copyWith(color: textPrimary),
+      style: style ?? bodyTextStyle,
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
         labelStyle: bodyTextStyle.copyWith(color: textSecondary),
-        hintStyle: bodyTextStyle.copyWith(color: textSecondary.withOpacity(0.6), fontSize: 14),
+        hintStyle: bodyTextStyle.copyWith(color: textSecondary.withOpacity(0.6), fontSize: 15),
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
         enabledBorder: OutlineInputBorder(

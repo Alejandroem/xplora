@@ -220,7 +220,7 @@ class FirebaseAuthService extends AuthService {
   }
 
   @override
-  Future<({XploraUser user, bool isNewUser})> signInWithGoogle() async {
+  Future<({XploraUser user, bool isNewUser, String? photoUrl})> signInWithGoogle() async {
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -277,7 +277,7 @@ class FirebaseAuthService extends AuthService {
       DocumentSnapshot documentSnapshot =
           await collectionReference.doc(userCredential.user!.uid).get();
 
-      // Return the user and isNewUser flag
+      // Return the user, isNewUser flag, and photoUrl from Google
       final data = documentSnapshot.data() as Map<String, dynamic>;
       return (
         user: XploraUser(
@@ -288,6 +288,7 @@ class FirebaseAuthService extends AuthService {
           isEmailVerified: userCredential.user!.emailVerified,
         ),
         isNewUser: isNewUser,
+        photoUrl: userCredential.user!.photoURL,
       );
     } on GoogleSignInException catch (e) {
       // Handle Google Sign-In specific exceptions

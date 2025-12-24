@@ -148,13 +148,15 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
 
     try {
       // Sign in with Google (Google SDK handles its own timeouts)
-      // Returns both the user and whether this is a new Firebase Auth user
+      // Returns the user, whether this is a new Firebase Auth user, and the Google photo URL
       final result = await authenticationService.signInWithGoogle();
       final user = result.user;
       final isNewUser = result.isNewUser;
+      final photoUrl = result.photoUrl;
 
       print('user: ${user.id}');
       print('isNewUser (from Firebase): $isNewUser');
+      print('Google photo URL: $photoUrl');
 
       if (isNewUser) {
         // New user - create profile and follow signup flow
@@ -165,7 +167,7 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
           userId: user.id!,
           experience: 0,
           categories: [],
-          avatarUrl: '',
+          avatarUrl: photoUrl ?? '', // Save Google photo URL if available
           username: '', // Will be set later in complete profile
           preferredLanguage: '',
           country: '',

@@ -174,7 +174,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                         Navigator.of(context).pushReplacementNamed('/privacy-consent-summary');
                       },
                       text: 'Continue',
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
                   ),
                 ],

@@ -4,6 +4,7 @@ import '../../theme.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../utils/snackbar_utils.dart';
+import '../widgets/social_icon_button.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -230,7 +231,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildSocialIconButton(
+                      SocialIconButton(
                         iconPath: 'assets/png/google-icon.png',
                         onPressed: () {
                           // TODO: Implement Google sign up
@@ -240,7 +241,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                           );
                         },
                       ),
-                      _buildSocialIconButton(
+                      SocialIconButton(
                         icon: Icons.apple,
                         onPressed: () {
                           // TODO: Implement Apple sign up
@@ -250,7 +251,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                           );
                         },
                       ),
-                      _buildSocialIconButton(
+                      SocialIconButton(
                         iconPath: 'assets/png/github-icon.png',
                         onPressed: () {
                           // TODO: Implement GitHub sign up
@@ -300,42 +301,6 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           ),
         ),
       );
-  }
-
-  Widget _buildSocialIconButton({
-    IconData? icon,
-    String? iconPath,
-    required VoidCallback onPressed,
-  }) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(27),
-          border: Border.all(
-            color: accentPrimary.withOpacity(0.5),
-            width: 1,
-          ),
-        ),
-        child: iconPath != null
-            ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: Image.asset(
-                  iconPath,
-                  width: 40,
-                  height: 40,
-                ),
-              )
-            : Icon(
-                icon!,
-                color: textPrimary,
-                size: 32,
-              ),
-      ),
-    );
   }
 }
 

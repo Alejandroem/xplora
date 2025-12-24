@@ -23,6 +23,25 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
     super.dispose();
   }
 
+  /// Load existing profile data (e.g., Google photo URL) when initializing the page
+  Future<void> loadExistingProfile() async {
+    try {
+      final currentUser = await authService.getAuthUser();
+      if (currentUser == null) return;
+
+      final profiles = await profileService.readBy('userId', currentUser.id!);
+      if (profiles.isNotEmpty) {
+        final profile = profiles.first;
+        // Pre-populate avatar URL if it exists (e.g., from Google Sign-In)
+        if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
+          state = state.copyWith(avatarUrl: profile.avatarUrl!);
+        }
+      }
+    } catch (e) {
+      print('Error loading existing profile: $e');
+    }
+  }
+
   void setUsername(String username) {
     if (username.isEmpty) {
       state = state

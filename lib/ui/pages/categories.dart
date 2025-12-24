@@ -54,8 +54,10 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Choose interests for personalized feed and quest recommendations',
-                    textAlign: TextAlign.center, style: h2Style),
+                Text(
+                    'Choose interests for personalized feed and quest recommendations',
+                    textAlign: TextAlign.center,
+                    style: h2Style),
                 const SizedBox(height: 22),
                 ref.watch(allCategories).when(
                       data: (categories) {
@@ -72,7 +74,8 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                               child: FilterBubble(
                                 onTap: () {
                                   setState(() {
-                                    if (selectedCategories.contains(category.id)) {
+                                    if (selectedCategories
+                                        .contains(category.id)) {
                                       selectedCategories.remove(category.id);
                                     } else {
                                       selectedCategories.add(category.id);
@@ -91,53 +94,81 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                       error: (error, _) => Text('Error: $error'),
                     ),
                 const SizedBox(height: 32),
-                SizedBox(
-                  width: MediaQuery.sizeOf(context).width * 0.3,
-                  child: PrimaryButton(
-                    // height: 50,
-                    onPressed: _isLoading || selectedCategories.isEmpty ? null : () async {
-                      final localStorage = ref.read(localStorageProvider);
-                      // final profileService = ref.read(profileServiceProvider);
+                Row(
+                  children: [
+                    Expanded(
+                      child: SecondaryButton(
+                        height: 48,
+                        onPressed: _isLoading
+                            ? null
+                            : () async {
+                          // Show invite friends dialog after saving categories
+                          await showInviteFriendsDialog(context);
 
-                      //TODO tie this to a user anonymous id
-                      /* await profileService.create(
-                        XploraProfile(categories: categories),
-                      ); */
+                          // TODO: Assign first quest
 
-                      setState(() {
-                        _isLoading = true;
-                      });
+                          // Navigate to welcome mission screen after dialog is dismissed
+                          if (context.mounted) {
+                            Navigator.of(context)
+                                .pushReplacementNamed('/welcome-mission');
+                          }
+                        },
+                        text: 'Skip',
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      flex: 2,
+                      child: PrimaryButton(
+                        height: 48,
+                        onPressed: _isLoading || selectedCategories.isEmpty
+                            ? null
+                            : () async {
+                                final localStorage = ref.read(localStorageProvider);
+                                // final profileService = ref.read(profileServiceProvider);
 
-                      await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .collection('profile')
-                          .doc('data')
-                          .update({'categories': selectedCategories});
+                                //TODO tie this to a user anonymous id
+                                /* await profileService.create(
+                            XploraProfile(categories: categories),
+                          ); */
 
-                      await localStorage.save(
-                        kHasSelectedInitialCategoriesKey,
-                        'true',
-                      );
+                                setState(() {
+                                  _isLoading = true;
+                                });
 
-                      if (context.mounted) {
-                        setState(() {
-                          _isLoading = false;
-                        });
+                                await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .collection('profile')
+                                    .doc('data')
+                                    .update({'categories': selectedCategories});
 
-                        // Show invite friends dialog after saving categories
-                        await showInviteFriendsDialog(context);
+                                await localStorage.save(
+                                  kHasSelectedInitialCategoriesKey,
+                                  'true',
+                                );
 
-                        // TODO: Assign first quest
+                                if (context.mounted) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
 
-                        // Navigate to welcome mission screen after dialog is dismissed
-                        if (context.mounted) {
-                          Navigator.of(context).pushReplacementNamed('/welcome-mission');
-                        }
-                      }
-                    },
-                    text: _isLoading ? 'Saving...' : 'Save',
-                  ),
+                                  // Show invite friends dialog after saving categories
+                                  await showInviteFriendsDialog(context);
+
+                                  // TODO: Assign first quest
+
+                                  // Navigate to welcome mission screen after dialog is dismissed
+                                  if (context.mounted) {
+                                    Navigator.of(context)
+                                        .pushReplacementNamed('/welcome-mission');
+                                  }
+                                }
+                              },
+                        text: _isLoading ? 'Saving...' : 'Save',
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

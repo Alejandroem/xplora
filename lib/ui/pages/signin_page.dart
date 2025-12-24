@@ -7,6 +7,7 @@ import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../utils/snackbar_utils.dart';
+import '../widgets/social_icon_button.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -219,7 +220,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildSocialIconButton(
+                        SocialIconButton(
                           iconPath: 'assets/png/google-icon.png',
                           onPressed: isLoading
                               ? null
@@ -283,7 +284,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                   }
                                 },
                         ),
-                        _buildSocialIconButton(
+                        SocialIconButton(
                           icon: Icons.apple,
                           onPressed: isLoading
                               ? null
@@ -295,7 +296,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                   );
                                 },
                         ),
-                        _buildSocialIconButton(
+                        SocialIconButton(
                           iconPath: 'assets/png/github-icon.png',
                           onPressed: isLoading
                               ? null
@@ -347,42 +348,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSocialIconButton({
-    IconData? icon,
-    String? iconPath,
-    dynamic onPressed,
-  }) {
-    return GestureDetector(
-      onTap: onPressed ?? () {},
-      child: Container(
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(32),
-          border: Border.all(
-            color: accentPrimary.withOpacity(0.5),
-            width: 1,
-          ),
-        ),
-        child: iconPath != null
-            ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: Image.asset(
-                  iconPath,
-                  width: 40,
-                  height: 40,
-                ),
-              )
-            : Icon(
-                icon!,
-                color: textPrimary,
-                size: 32,
-              ),
       ),
     );
   }
