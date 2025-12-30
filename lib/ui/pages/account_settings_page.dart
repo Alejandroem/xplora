@@ -86,7 +86,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     height: MediaQuery.of(context).size.height * 0.2,
                     child: Center(
                       child: CircularProgressIndicator(
-                        color: accentPrimary,
+                        color: brandPrimary,
                       ),
                     ),
                   )
@@ -96,7 +96,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     Center(
                       child: Text(
                         'Error: $error',
-                        style: bodyTextStyle.copyWith(color: feedbackAlert),
+                        style: bodyTextStyle.copyWith(color: errorColor),
                       ),
                     ),
                   ];
@@ -173,7 +173,7 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
                             'Display name updated',
                             style: bodyTextStyle.copyWith(color: textPrimary),
                           ),
-                          backgroundColor: accentPrimary,
+                          backgroundColor: brandPrimary,
                         ),
                       );
                       Navigator.of(context).pop();
@@ -186,7 +186,7 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
                             'Failed to update display name: $e',
                             style: bodyTextStyle.copyWith(color: textPrimary),
                           ),
-                          backgroundColor: feedbackAlert,
+                          backgroundColor: errorColor,
                         ),
                       );
                     }
@@ -266,7 +266,7 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
                             'Email updated',
                             style: bodyTextStyle.copyWith(color: textPrimary),
                           ),
-                          backgroundColor: accentPrimary,
+                          backgroundColor: brandPrimary,
                         ),
                       );
                       Navigator.of(context).pop();
@@ -279,7 +279,7 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
                             'Failed to update email: $e',
                             style: bodyTextStyle.copyWith(color: textPrimary),
                           ),
-                          backgroundColor: feedbackAlert,
+                          backgroundColor: errorColor,
                         ),
                       );
                     }

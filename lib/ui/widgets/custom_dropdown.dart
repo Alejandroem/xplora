@@ -28,7 +28,7 @@ class CustomDropdown extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: midSurface,
+            color: bgSecondary,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: cardContainerBorder,
@@ -37,11 +37,11 @@ class CustomDropdown extends StatelessWidget {
           ),
           child: Theme(
             data: Theme.of(context).copyWith(
-              canvasColor: const Color(0xff121212),
-              focusColor: accentPrimary.withOpacity(0.1),
-              hoverColor: accentPrimary.withOpacity(0.05),
-              highlightColor: accentPrimary.withOpacity(0.1),
-              splashColor: accentPrimary.withOpacity(0.05),
+              canvasColor: bgTertiary,
+              focusColor: brandPrimary.withOpacity(0.1),
+              hoverColor: brandPrimary.withOpacity(0.05),
+              highlightColor: brandPrimary.withOpacity(0.1),
+              splashColor: brandPrimary.withOpacity(0.05),
               dividerColor: Colors.transparent,
             ),
             child: DropdownButtonHideUnderline(
@@ -60,7 +60,7 @@ class CustomDropdown extends StatelessWidget {
                   color: textSecondary,
                 ),
                 isExpanded: true,
-                dropdownColor: const Color(0xff121212),
+                dropdownColor: bgTertiary,
                 style: bodyTextStyle.copyWith(
                   fontSize: 16,
                 ),

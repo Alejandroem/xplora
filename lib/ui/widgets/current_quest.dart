@@ -138,7 +138,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: accentPrimary.withOpacity(0.2),
+                  color: brandPrimary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
@@ -147,14 +147,14 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                     Icon(
                       Icons.refresh,
                       size: 14,
-                      color: accentPrimary,
+                      color: brandPrimary,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Test',
                       style: bodyTextStyle.copyWith(
                         fontSize: 10,
-                        color: accentPrimary,
+                        color: brandPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -268,7 +268,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                           'Suggested',
                           style: bodyTextStyle.copyWith(
                             fontSize: 10,
-                            color: textSecondary,
+                            color: textTertiary,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.5,
                           ),
@@ -423,7 +423,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                       boxShadow: _isCollecting
                           ? [
                               BoxShadow(
-                                color: accentSecondary
+                                color: brandSecondary
                                     .withOpacity(0.6 * _glowAnimation.value),
                                 blurRadius: 15 * _glowAnimation.value,
                                 spreadRadius: 3 * _glowAnimation.value,
@@ -496,7 +496,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: accentSecondary.withOpacity(0.15),
+                    color: xpColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Row(
@@ -504,7 +504,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                     children: [
                       Icon(
                         Icons.stars_rounded,
-                        color: accentSecondary,
+                        color: xpColor,
                         size: 14,
                       ),
                       const SizedBox(width: 3),
@@ -513,7 +513,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                         style: bodyTextStyle.copyWith(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: accentSecondary,
+                          color: xpColor,
                         ),
                       ),
                     ],
@@ -552,8 +552,8 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               padding: const EdgeInsets.all(0),
               lineHeight: 8.0,
               percent: completeness / 100,
-              backgroundColor: strokeDivider,
-              progressColor: accentSecondary,
+              backgroundColor: border,
+              progressColor: brandSecondary,
               barRadius: const Radius.circular(4),
             ),
             const SizedBox(height: 12),
@@ -564,10 +564,10 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                 decoration: BoxDecoration(
-                  color: accentPrimary.withOpacity(0.12),
+                  color: brandPrimary.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
-                    color: accentPrimary.withOpacity(0.25),
+                    color: brandPrimary.withOpacity(0.25),
                     width: 1,
                   ),
                 ),
@@ -577,7 +577,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                     Icon(
                       Icons.queue,
                       size: 18,
-                      color: accentPrimary,
+                      color: brandPrimary,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -585,7 +585,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                       style: bodyTextStyle.copyWith(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: accentPrimary,
+                        color: brandPrimary,
                       ),
                     ),
                   ],

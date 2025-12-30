@@ -33,7 +33,7 @@ class ReusableBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: accentPrimary.withOpacity(0.3),
+            color: brandPrimary.withOpacity(0.3),
             width: 2,
           ),
         ),
@@ -72,7 +72,7 @@ class ReusableBottomSheet extends StatelessWidget {
                     child: isLoading
                         ? Center(
                             child: CircularProgressIndicator(
-                              color: accentPrimary,
+                              color: brandPrimary,
                             ),
                           )
                         : PrimaryButton(
@@ -86,7 +86,7 @@ class ReusableBottomSheet extends StatelessWidget {
               isLoading
                   ? Center(
                       child: CircularProgressIndicator(
-                        color: accentPrimary,
+                        color: brandPrimary,
                       ),
                     )
                   : PrimaryButton(

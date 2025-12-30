@@ -208,9 +208,9 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                         ),
                                       )
                                     else if (isUsernameUnique)
-                                      const Icon(
+                                      Icon(
                                         Icons.check_circle,
-                                        color: Colors.green,
+                                        color: successColor,
                                         size: 16,
                                       )
                                     else
@@ -230,7 +230,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                         color: isCheckingUsername
                                             ? Colors.blue
                                             : isUsernameUnique
-                                                ? Colors.green
+                                                ? successColor
                                                 : Colors.red,
                                         fontSize: 12,
                                       ),
@@ -287,10 +287,10 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                               width: 130,
                               height: 130,
                               decoration: BoxDecoration(
-                                color: midSurface,
+                                color: bgSecondary,
                                 borderRadius: BorderRadius.circular(100),
                                 border: Border.all(
-                                  color: accentPrimary.withOpacity(0.3),
+                                  color: brandPrimary.withOpacity(0.3),
                                   width: 2,
                                 ),
                               ),
@@ -670,7 +670,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                 return Align(
                   alignment: Alignment.topLeft,
                   child: Material(
-                    color: const Color(0xff121212),
+                    color: bgTertiary,
                     elevation: 4,
                     borderRadius: BorderRadius.circular(12),
                     child: ConstrainedBox(

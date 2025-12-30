@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/colors.dart';
+
 /// Shows a reusable snackbar with error or success styling
 void showXploraSnackBar(
   BuildContext context,
@@ -18,7 +20,7 @@ void showXploraSnackBar(
           fontWeight: FontWeight.w500,
         ),
       ),
-      backgroundColor: isError ? Colors.red : isInfo ? Colors.blue : Colors.green,
+      backgroundColor: isError ? errorColor : isInfo ? Colors.blue : successColor,
       duration: duration,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(

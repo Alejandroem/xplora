@@ -83,7 +83,7 @@ class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.0),
                                 ),
-                                tileColor: whiteSmoke,
+                                tileColor: bgSecondary,
                                 leading: Image.network(
                                   adventure.imageUrl,
                                   width: 50,

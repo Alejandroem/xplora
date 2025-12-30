@@ -43,7 +43,7 @@ class _BottomNavigationBarState
             shape: BoxShape.circle,
             border: Border.all(
               color: currentIndex == NavigationItem.xpc
-                  ? accentPrimary
+                  ? brandPrimary
                   : textSecondary,
               width: 2,
             ),
@@ -55,7 +55,7 @@ class _BottomNavigationBarState
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
                 color: currentIndex == NavigationItem.xpc
-                    ? accentPrimary
+                    ? brandPrimary
                     : textSecondary,
               ),
             ),

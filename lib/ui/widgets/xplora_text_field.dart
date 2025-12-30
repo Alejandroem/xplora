@@ -71,26 +71,26 @@ class XploraTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: strokeDivider.withOpacity(0.3), width: 1),
+          borderSide: BorderSide(color: border.withOpacity(0.3), width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: accentPrimary, width: 1),
+          borderSide: BorderSide(color: brandPrimary, width: 1),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: accentPrimary.withOpacity(0.2), width: 1),
+          borderSide: BorderSide(color: textDisabled.withOpacity(0.3), width: 1),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: feedbackAlert, width: 1),
+          borderSide: BorderSide(color: errorColor, width: 1),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: feedbackAlert, width: 1),
+          borderSide: BorderSide(color: errorColor, width: 1),
         ),
         filled: true,
-        fillColor: midSurface,
+        fillColor: bgSecondary,
         contentPadding: contentPadding ?? const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,

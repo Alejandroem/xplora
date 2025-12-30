@@ -30,14 +30,14 @@ class _LoraAiAssistantState extends ConsumerState<LoraAiAssistant> {
                 height: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: accentPrimary,
+                  color: brandPrimary,
                   border: Border.all(
-                    color: accentPrimary.withOpacity(0.5),
+                    color: brandPrimary.withOpacity(0.5),
                     width: 2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: accentPrimary.withOpacity(0.4),
+                      color: brandPrimary.withOpacity(0.4),
                       blurRadius: 20,
                       spreadRadius: 5,
                     ),
@@ -63,10 +63,10 @@ class _LoraAiAssistantState extends ConsumerState<LoraAiAssistant> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: accentPrimary.withOpacity(0.2),
+                  color: brandPrimary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: accentPrimary.withOpacity(0.5),
+                    color: brandPrimary.withOpacity(0.5),
                     width: 1,
                   ),
                 ),

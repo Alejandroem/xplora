@@ -214,19 +214,19 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                               ),
                                               decoration: BoxDecoration(
                                                 color: ref.watch(selectedCategoriesProvider) == category.id
-                                                    ? accentPrimary
+                                                    ? brandPrimary
                                                     : Colors.transparent,
                                                 borderRadius: BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: ref.watch(selectedCategoriesProvider) == category.id
-                                                      ? accentPrimary
-                                                      : accentPrimary.withOpacity(0.3),
+                                                      ? brandPrimary
+                                                      : brandPrimary.withOpacity(0.3),
                                                   width: 1,
                                                 ),
                                                 boxShadow: ref.watch(selectedCategoriesProvider) == category.id
                                                     ? [
                                                         BoxShadow(
-                                                          color: accentPrimary.withOpacity(0.3),
+                                                          color: brandPrimary.withOpacity(0.3),
                                                           blurRadius: 8,
                                                           spreadRadius: 0,
                                                         ),

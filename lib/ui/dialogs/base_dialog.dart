@@ -99,10 +99,10 @@ class BaseDialog extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: iconColor.withOpacity(0.1),
+                        color: elevated.withOpacity(0.3),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: iconColor.withOpacity(0.2),
+                          color: elevated.withOpacity(0.5),
                           width: 1,
                         ),
                       ),

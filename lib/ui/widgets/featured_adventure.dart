@@ -163,7 +163,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                           width: currentImageIndex == index ? 24 : 8,
                           decoration: BoxDecoration(
                             color: currentImageIndex == index
-                                ? accentPrimary
+                                ? brandPrimary
                                 : textSecondary,
                             borderRadius: BorderRadius.circular(4),
                           ),

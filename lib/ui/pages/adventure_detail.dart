@@ -219,20 +219,20 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                   
                   return Container(
                     height: 200,
-                    color: midSurface,
+                    color: bgSecondary,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.error_outline,
-                          color: feedbackAlert,
+                          color: errorColor,
                           size: 48,
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Failed to load image',
                           style: bodyTextStyle.copyWith(
-                            color: feedbackAlert,
+                            color: errorColor,
                             fontSize: 14,
                           ),
                         ),
@@ -242,10 +242,10 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                 },
                 placeholder: (context, url) => Container(
                   height: 200,
-                  color: midSurface,
+                  color: bgSecondary,
                   child: Center(
                     child: CircularProgressIndicator(
-                      color: accentPrimary,
+                      color: brandPrimary,
                     ),
                   ),
                 ),

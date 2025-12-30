@@ -32,7 +32,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: accentPrimary.withOpacity(0.3),
+            color: brandPrimary.withOpacity(0.3),
 
             /// Thin purple divider at bottom
             width: 1,
@@ -40,7 +40,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: accentPrimary.withOpacity(0.1),
+            color: brandPrimary.withOpacity(0.1),
             blurRadius: 8,
             spreadRadius: 0,
             offset: const Offset(0, 2),

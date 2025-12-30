@@ -32,10 +32,10 @@ class _EconomyHubState extends ConsumerState<EconomyHub> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: accentPrimary.withOpacity(0.2),
+              color: brandPrimary.withOpacity(0.2),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: accentPrimary.withOpacity(0.5),
+                color: brandPrimary.withOpacity(0.5),
                 width: 1,
               ),
             ),
@@ -175,7 +175,7 @@ class _EconomyHubState extends ConsumerState<EconomyHub> {
                   description,
                   style: bodyTextStyle.copyWith(
                     fontSize: 13,
-                    color: textSecondary,
+                    color: textTertiary,
                   ),
                 ),
               ],

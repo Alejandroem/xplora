@@ -82,7 +82,7 @@ class _PrivacyConsentSummaryState extends ConsumerState<PrivacyConsentSummary> {
                     );
                   },
                   loading: () => Center(
-                    child: CircularProgressIndicator(color: accentPrimary),
+                    child: CircularProgressIndicator(color: brandPrimary),
                   ),
                   error: (_, __) {
                     // On error, just show Terms & Privacy and XP rules
@@ -200,11 +200,11 @@ class _ConsentItem extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: isChecked ? accentPrimary : Colors.transparent,
+              color: isChecked ? brandPrimary : Colors.transparent,
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
                 color:
-                    isChecked ? accentPrimary : textSecondary.withOpacity(0.5),
+                    isChecked ? brandPrimary : textSecondary.withOpacity(0.5),
                 width: 2,
               ),
             ),
@@ -221,7 +221,7 @@ class _ConsentItem extends StatelessWidget {
           // Icon
           Icon(
             icon,
-            color: accentPrimary,
+            color: brandPrimary,
             size: 24,
           ),
           const SizedBox(width: 12),

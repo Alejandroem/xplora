@@ -73,7 +73,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                       child: Text(
                         'Complete your profile and unlock bonus rewards',
                         style: bodyTextStyle.copyWith(
-                          color: textSecondary,
+                          color: textTertiary,
                           fontSize: 16,
                         ),
                         textAlign: TextAlign.center,
@@ -322,7 +322,7 @@ class _ActionButton extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isCompleted
-                  ? accentPrimary.withOpacity(0.2)
+                  ? brandPrimary.withOpacity(0.2)
                   : iconColor.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
@@ -381,7 +381,7 @@ class _ActionButton extends StatelessWidget {
                   description,
                   style: bodyTextStyle.copyWith(
                     fontSize: 13,
-                    color: textSecondary,
+                    color: textTertiary,
                   ),
                 ),
               ],
@@ -395,7 +395,7 @@ class _ActionButton extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: accentPrimary.withOpacity(0.2),
+                color: xpColor.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -411,7 +411,7 @@ class _ActionButton extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: accentPrimary.withOpacity(0.2),
+                color: brandPrimary.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -429,7 +429,7 @@ class _ActionButton extends StatelessWidget {
               height: 40,
               padding: const EdgeInsets.all(8),
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(accentPrimary),
+                valueColor: AlwaysStoppedAnimation<Color>(brandPrimary),
               ),
             )
           else

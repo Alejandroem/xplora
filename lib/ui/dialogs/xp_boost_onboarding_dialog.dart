@@ -17,9 +17,9 @@ class XpBoostOnboardingDialog extends StatelessWidget {
         height: 100,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: accentPrimary.withOpacity(0.2),
+          color: brandPrimary.withOpacity(0.2),
           border: Border.all(
-            color: accentPrimary.withOpacity(0.5),
+            color: brandPrimary.withOpacity(0.5),
             width: 2,
           ),
         ),
@@ -211,7 +211,7 @@ class _BoostItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: accentPrimary.withOpacity(0.2),
+                color: xpColor.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

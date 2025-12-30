@@ -233,7 +233,7 @@ class SeeMoreCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.search,
-                  color: accentSecondary,
+                  color: brandSecondary,
                   size: 40,
                 ),
                 Text(

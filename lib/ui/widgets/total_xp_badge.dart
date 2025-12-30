@@ -13,10 +13,10 @@ class TotalXpBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: accentPrimary.withOpacity(0.1),
+        color: xpColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: accentPrimary.withOpacity(0.3),
+          color: xpColor.withOpacity(0.3),
           width: 1,
         ),
       ),

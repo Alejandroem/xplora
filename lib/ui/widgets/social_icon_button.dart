@@ -20,7 +20,7 @@ class SocialIconButton extends StatelessWidget {
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(32),
           border: Border.all(
-            color: accentPrimary.withOpacity(0.5),
+            color: brandPrimary.withOpacity(0.5),
             width: 1,
           ),
         ),

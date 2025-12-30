@@ -35,9 +35,9 @@ class FirstSessionDialog extends ConsumerWidget {
         height: 100,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: accentPrimary.withOpacity(0.2),
+          color: brandPrimary.withOpacity(0.2),
           border: Border.all(
-            color: accentPrimary.withOpacity(0.5),
+            color: brandPrimary.withOpacity(0.5),
             width: 2,
           ),
         ),
@@ -156,7 +156,7 @@ class _NearbyPlaceCard extends StatelessWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: accentSecondary.withOpacity(0.2),
+              color: brandSecondary.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: ClipRRect(
@@ -169,7 +169,7 @@ class _NearbyPlaceCard extends StatelessWidget {
                         child: Transform.scale(
                           scale: 0.5,
                           child: CircularProgressIndicator(
-                            color: accentPrimary,
+                            color: brandPrimary,
                           ),
                         ),
                       ),

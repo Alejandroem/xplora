@@ -56,7 +56,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
               'Error picking image: $e',
               style: bodyTextStyle.copyWith(color: textPrimary),
             ),
-            backgroundColor: feedbackAlert,
+            backgroundColor: errorColor,
           ),
         );
       }
@@ -123,11 +123,11 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xff121212), // Solid background to prevent text interference
+        color: bgTertiary, // Solid background to prevent text interference
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: accentPrimary.withOpacity(0.3),
+            color: brandPrimary.withOpacity(0.3),
             width: 2,
           ),
         ),
@@ -151,17 +151,17 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: midSurface,
+                color: bgSecondary,
                 borderRadius: BorderRadius.circular(60),
                 border: Border.all(
-                  color: accentPrimary.withOpacity(0.3),
+                  color: brandPrimary.withOpacity(0.3),
                   width: 2,
                 ),
               ),
               child: _isLoading
                   ? Center(
                       child: CircularProgressIndicator(
-                        color: accentPrimary,
+                        color: brandPrimary,
                       ),
                     )
                   : _selectedImagePath != null
@@ -234,7 +234,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
                 child: _isLoading
                     ? Center(
                         child: CircularProgressIndicator(
-                          color: accentPrimary,
+                          color: brandPrimary,
                         ),
                       )
                     : PrimaryButton(
@@ -260,10 +260,10 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: midSurface,
+          color: bgSecondary,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDestructive ? feedbackAlert.withOpacity(0.3) : accentPrimary.withOpacity(0.3),
+            color: isDestructive ? errorColor.withOpacity(0.3) : brandPrimary.withOpacity(0.3),
             width: 1,
           ),
         ),
@@ -272,14 +272,14 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
           children: [
             Icon(
               icon,
-              color: isDestructive ? feedbackAlert : textPrimary,
+              color: isDestructive ? errorColor : textPrimary,
               size: 32,
             ),
             const SizedBox(height: 8),
             Text(
               label,
               style: bodyTextStyle.copyWith(
-                color: isDestructive ? feedbackAlert : textPrimary,
+                color: isDestructive ? errorColor : textPrimary,
                 fontSize: 12,
               ),
             ),

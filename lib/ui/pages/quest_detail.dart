@@ -31,7 +31,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
             Text(
               '${widget.quest.experience} XP',
               style: TextStyle(
-                color: springBud,
+                color: xpColor,
               ),
             ),
           ],
@@ -81,13 +81,13 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                             Container(
                               height: 160,
                               width: 4,
-                              color: majjoreleBlue,
+                              color: brandPrimary,
                             ),
                             Icon(
                               widget.quest.userId != null
                                   ? Icons.check_circle
                                   : Icons.circle,
-                              color: springBud,
+                              color: successColor,
                             ),
                           ],
                         ),
@@ -111,7 +111,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                                   IconButton(
                                     icon: Icon(
                                       Icons.map,
-                                      color: springBud,
+                                      color: brandSecondary,
                                     ),
                                     onPressed: () {},
                                   ),
@@ -119,7 +119,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                                   IconButton(
                                     icon: Icon(
                                       Icons.qr_code,
-                                      color: springBud,
+                                      color: brandSecondary,
                                     ),
                                     onPressed: () {},
                                   ),
@@ -128,7 +128,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                                   IconButton(
                                     icon: Icon(
                                       Icons.hourglass_bottom,
-                                      color: springBud,
+                                      color: brandSecondary,
                                     ),
                                     onPressed: () {},
                                   ),

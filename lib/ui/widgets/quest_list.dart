@@ -98,10 +98,10 @@ class _QuestListState extends ConsumerState<QuestList> {
                   padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
                   child: Row(
                     children: [
-                      Icon(Icons.flag, color: raisingBlack),
+                      Icon(Icons.flag, color: iconColor),
                       Text(
                         'Quest',
-                        style: TextStyle(fontSize: 20, color: raisingBlack),
+                        style: TextStyle(fontSize: 20, color: textPrimary),
                       ),
                     ],
                   ),
@@ -172,13 +172,13 @@ class _QuestListState extends ConsumerState<QuestList> {
                                   if (quest.stepType == QuestType.location)
                                     Icon(
                                       Icons.map,
-                                      color: raisingBlack,
+                                      color: iconColor,
                                     ),
                                   if (quest.stepType == QuestType.qr)
-                                    Icon(Icons.qr_code, color: raisingBlack),
+                                    Icon(Icons.qr_code, color: iconColor),
                                   if (quest.stepType == QuestType.timeLocation)
                                     Icon(Icons.hourglass_bottom,
-                                        color: raisingBlack),
+                                        color: iconColor),
                                   const SizedBox(width: 8),
                                   Container(
                                     width: 1,

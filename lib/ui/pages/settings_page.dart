@@ -163,7 +163,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               },
             ),
             Divider(
-              color: dividerMuted,
+              color: border,
               thickness: 1,
             ),
             ListTile(
@@ -193,7 +193,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               },
             ),
             Divider(
-              color: dividerMuted,
+              color: border,
               thickness: 1,
             ),
             ListTile(

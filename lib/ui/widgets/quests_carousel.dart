@@ -96,7 +96,7 @@ class NearbyQuests extends ConsumerWidget {
                       error: (error, stack) => Center(
                         child: Text(
                           'Error: $error',
-                          style: bodyTextStyle.copyWith(color: feedbackAlert),
+                          style: bodyTextStyle.copyWith(color: errorColor),
                         ),
                       ),
                     );

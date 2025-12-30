@@ -91,7 +91,7 @@ class _CarouselCardState extends State<CarouselCard>
                 width: 160,
                 child: GlassContainer(
                   border: widget.isSelected ? Border.all(
-                    color: accentPrimary,
+                    color: brandPrimary,
                     width: 3,
                   ) : null,
                   borderRadius: widget.isSelected ? 14.5 : null,
@@ -128,7 +128,7 @@ class _CarouselCardState extends State<CarouselCard>
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: accentPrimary,
+                              color: brandPrimary,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -203,7 +203,7 @@ class _CarouselCardState extends State<CarouselCard>
         errorWidget: (context, url, error) {
           return Container(
             padding: const EdgeInsets.only(bottom: 40),
-            color: widget.backgroundColor ?? const Color(0xff121212),
+            color: widget.backgroundColor ?? bgPrimary,
             child: Center(
               child: Icon(
                 Icons.image_not_supported,

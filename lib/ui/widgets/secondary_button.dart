@@ -53,14 +53,14 @@ class _SecondaryButtonState extends State<SecondaryButton> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: widget.isEnabled 
-                  ? accentPrimary.withOpacity(_isHovered ? 0.8 : 0.5) /// Purple border with hover effect
-                  : accentPrimary.withOpacity(0.3), /// Dimmed when disabled
+                  ? brandPrimary.withOpacity(_isHovered ? 0.8 : 0.5) /// Purple border with hover effect
+                  : brandPrimary.withOpacity(0.3), /// Dimmed when disabled
               width: 1, /// Thin border
             ),
             boxShadow: widget.isEnabled && _isHovered
                 ? [
                     BoxShadow(
-                      color: accentPrimary.withOpacity(0.2),
+                      color: brandPrimary.withOpacity(0.2),
                       blurRadius: 8,
                       spreadRadius: 1,
                     ),
@@ -80,9 +80,9 @@ class _SecondaryButtonState extends State<SecondaryButton> {
                   style: bodyTextStyle.copyWith(
                     fontSize: widget.fontSize ?? 14,
                     fontWeight: FontWeight.bold,
-                    color: widget.isEnabled 
+                    color: widget.isEnabled
                         ? textPrimary /// White text when enabled
-                        : textSecondary, /// Gray text when disabled
+                        : textDisabled, /// Gray text when disabled
                   ),
                 ),
               ],

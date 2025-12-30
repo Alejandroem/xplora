@@ -47,7 +47,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                               child: Transform.scale(
                                 scale: 0.9,
                                 child: CircleAvatar(
-                                  backgroundColor: whiteSmoke,
+                                  backgroundColor: bgSecondary,
                                   radius: 18.0,
                                   child: profile!.avatarUrl != null &&
                                           profile.avatarUrl!.isNotEmpty
@@ -66,7 +66,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                         )
                                       : Icon(
                                           Icons.person,
-                                          color: raisingBlack,
+                                          color: iconColor,
                                         ),
                                 ),
                               ),
@@ -86,11 +86,11 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                 child: Transform.scale(
                                   scale: 0.9,
                                   child: CircleAvatar(
-                                    backgroundColor: whiteSmoke,
+                                    backgroundColor: bgSecondary,
                                     radius: 18.0,
                                     child: Icon(
                                       Icons.person,
-                                      color: raisingBlack,
+                                      color: iconColor,
                                     ),
                                   ),
                                 ),
@@ -116,11 +116,11 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     return Transform.scale(
       scale: 0.9,
       child: CircleAvatar(
-        backgroundColor: whiteSmoke,
+        backgroundColor: bgSecondary,
         radius: 16.0,
         child: Icon(
           Icons.person,
-          color: raisingBlack,
+          color: iconColor,
         ),
       ),
     );

@@ -64,9 +64,9 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                                 height: 120,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: accentPrimary.withOpacity(0.2),
+                                  color: brandPrimary.withOpacity(0.2),
                                   border: Border.all(
-                                    color: accentPrimary.withOpacity(0.5),
+                                    color: brandPrimary.withOpacity(0.5),
                                     width: 2,
                                   ),
                                 ),
@@ -130,7 +130,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
 
                             // Divider
                             Divider(
-                              color: strokeDivider,
+                              color: border,
                               thickness: 1,
                             ),
 
@@ -154,7 +154,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                             // Badge Reward
                             _buildRewardItem(
                               icon: Icons.military_tech_rounded,
-                              iconColor: accentPrimary,
+                              iconColor: brandPrimary,
                               text: '"Explorer\'s First Step" badge',
                             ),
                           ],
@@ -197,7 +197,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: accentPrimary.withOpacity(0.2),
+              color: brandPrimary.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(

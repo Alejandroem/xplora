@@ -22,7 +22,7 @@ class GlassBottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: accentPrimary.withOpacity(0.3), /// Thin purple divider on top
+            color: brandPrimary.withOpacity(0.3), /// Thin purple divider on top
             width: 1,
           ),
         ),
@@ -38,7 +38,7 @@ class GlassBottomNavBar extends StatelessWidget {
             onTap: onTap,
             items: items,
             backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4), /// More transparent for light feel
-            selectedItemColor: accentPrimary, /// Lime green for active states
+            selectedItemColor: brandPrimary, /// Lime green for active states
             unselectedItemColor: textSecondary, /// Gray for inactive icons
             type: BottomNavigationBarType.fixed, /// Keeps items fixed width
             elevation: 0, /// No shadow, using blur instead

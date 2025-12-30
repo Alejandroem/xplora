@@ -83,7 +83,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 color: textSecondary,
                               ),
                               filled: true,
-                              fillColor: midSurface,
+                              fillColor: bgSecondary,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(
@@ -101,7 +101,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(
-                                  color: accentPrimary,
+                                  color: brandPrimary,
                                   width: 1,
                                 ),
                               ),
@@ -161,7 +161,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             : IconButton(
                                 icon: Icon(
                                   _isUnique ? Icons.check_circle : Icons.error,
-                                  color: _isUnique ? Colors.green : Colors.red,
+                                  color: _isUnique ? successColor : Colors.red,
                                 ),
                                 onPressed: _isUnique
                                     ? () async {
@@ -254,7 +254,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               height: 25,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: strokeDivider,
+                  color: border,
                 ),
                 borderRadius: BorderRadius.circular(32),
               ),
@@ -264,7 +264,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     widthFactor: profile.experienceProgress(),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: accentPrimary,
+                        color: xpColor,
                         borderRadius: BorderRadius.circular(32),
                       ),
                     ),
@@ -299,7 +299,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
             const SizedBox(height: 10.0),
             Divider(
-              color: dividerMuted,
+              color: border,
               thickness: 1,
             ),
             Padding(
@@ -358,10 +358,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                       width: 80,
                                       height: 80,
                                       decoration: BoxDecoration(
-                                        color: accentPrimary.withOpacity(0.2),
+                                        color: brandPrimary.withOpacity(0.2),
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: accentPrimary.withOpacity(0.3),
+                                          color: brandPrimary.withOpacity(0.3),
                                           width: 1,
                                         ),
                                       ),
@@ -405,7 +405,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
             ),
             Divider(
-              color: dividerMuted,
+              color: border,
               thickness: 1,
             ),
             Padding(

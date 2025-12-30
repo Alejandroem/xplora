@@ -24,9 +24,9 @@ ThemeData getTheme() {
       //backgroundColor: raisingBlack,
       elevation: 0,
     ),
-    primaryColor: majjoreleBlue,
+    primaryColor: brandPrimary,
     //scaffoldBackgroundColor: raisingBlack,
-    secondaryHeaderColor: springBud,
+    secondaryHeaderColor: brandSecondary,
     fontFamily: 'Jura',
     // Add more theme properties as needed
     scaffoldBackgroundColor: Colors.white,
@@ -46,9 +46,9 @@ ThemeData getDarkTheme() {
 
     scaffoldBackgroundColor: Colors.transparent,
 
-    primaryColor: accentPrimary, /// Brand color used for primary elements (purple #8A2BE2)
+    primaryColor: brandPrimary, /// Brand color used for primary elements (purple #8A2BE2)
 
-    secondaryHeaderColor: accentSecondary, /// Secondary accent color for CTAs (lime green #A4E959)
+    secondaryHeaderColor: brandSecondary, /// Secondary accent color for CTAs (lime green #A4E959)
 
     fontFamily: 'Satoshi', /// Default font family for the entire app
 
@@ -59,13 +59,13 @@ ThemeData getDarkTheme() {
     ),
 
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: midSurface, /// Bottom nav background with transparency (cards/navbar color)
-      selectedItemColor: accentSecondary, /// Color for selected nav item (lime green for active states)
+      backgroundColor: bgSecondary, /// Bottom nav background with transparency (cards/navbar color)
+      selectedItemColor: brandSecondary, /// Color for selected nav item (lime green for active states)
       unselectedItemColor: textSecondary, /// Color for unselected nav items (gray #A0A0A0 for inactive labels)
     ),
 
     cardTheme: CardThemeData(
-      color: midSurface, /// Card background color with transparency (18,18,18 at 0.65 opacity)
+      color: bgSecondary, /// Card background color with transparency (18,18,18 at 0.65 opacity)
       elevation: 0, /// No shadow on cards (using blur instead)
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12), /// Rounded corners for cards
@@ -73,7 +73,7 @@ ThemeData getDarkTheme() {
       ),
     ),
 
-    dividerColor: strokeDivider, /// Color for dividers and subtle borders (#2A2A2A)
+    dividerColor: border, /// Color for dividers and subtle borders (#2A2A2A)
 
     textTheme: TextTheme(
       displayLarge: h1Style.copyWith(color: textPrimary), /// Large hero titles (Orbitron 32px bold) in light color
@@ -85,10 +85,10 @@ ThemeData getDarkTheme() {
     ),
 
     colorScheme: ColorScheme.dark(
-      primary: accentPrimary, /// Primary brand color (purple for highlights and active states)
-      secondary: accentSecondary, /// Secondary color (lime green for CTAs)
-      error: feedbackAlert, /// Error color (red #FF3615 for alerts and urgent actions)
-      surface: midSurface, /// Surface color for cards and modals
+      primary: brandPrimary, /// Primary brand color (purple for highlights and active states)
+      secondary: brandSecondary, /// Secondary color (lime green for CTAs)
+      error: errorColor, /// Error color (red #FF3615 for alerts and urgent actions)
+      surface: bgSecondary, /// Surface color for cards and modals
       onPrimary: textPrimary, /// Text color on primary colored backgrounds
       onSecondary: const Color(0xff121212), /// Text color on secondary colored backgrounds (dark for contrast)
       onSurface: textPrimary, /// Text color on surface backgrounds

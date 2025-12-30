@@ -35,7 +35,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
 
   @override
   Widget build(BuildContext context) {
-    final buttonColor = widget.usePurple ? accentPrimary : accentSecondary;
+    final buttonColor = widget.usePurple ? brandPrimary : brandSecondary;
     final textColor = widget.usePurple ? textPrimary : const Color(0xff121212);
 
     return MouseRegion(

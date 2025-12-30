@@ -112,14 +112,14 @@ class _LoraOrbState extends ConsumerState<LoraOrb>
                 height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: accentPrimary,
+                  color: brandPrimary,
                   border: Border.all(
-                    color: accentPrimary.withOpacity(0.5),
+                    color: brandPrimary.withOpacity(0.5),
                     width: 2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: accentPrimary.withOpacity(glowOpacity),
+                      color: brandPrimary.withOpacity(glowOpacity),
                       blurRadius: 20,
                       spreadRadius: 5,
                     ),

@@ -138,8 +138,8 @@ class FiltersPage extends ConsumerWidget {
                             min: 1000,
                             max: 500000,
                             divisions: 100,
-                            activeColor: accentPrimary,
-                            inactiveColor: strokeDivider,
+                            activeColor: brandPrimary,
+                            inactiveColor: border,
                             onChanged: (value) {
                               ref.read(filtersStateProvider.notifier).state =
                                   filtersState.copyWith(
@@ -183,8 +183,8 @@ class FiltersPage extends ConsumerWidget {
                             return Theme(
                               data: ThemeData(
                                 colorScheme: ColorScheme.dark(
-                                  primary: accentPrimary,
-                                  secondary: accentPrimary,
+                                  primary: brandPrimary,
+                                  secondary: brandPrimary,
                                   onPrimary: textPrimary,
                                   onSecondary: textPrimary,
                                 ),

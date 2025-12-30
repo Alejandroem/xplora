@@ -36,18 +36,18 @@ class FilterBubble extends StatelessWidget {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? accentPrimary : Colors.transparent,
+          color: isSelected ? brandPrimary : Colors.transparent,
           borderRadius: BorderRadius.circular(borderRadius ?? 20),
           border: Border.all(
             color: isSelected 
-                ? accentPrimary 
-                : accentPrimary.withOpacity(0.3),
+                ? brandPrimary 
+                : brandPrimary.withOpacity(0.3),
             width: 1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: accentPrimary.withOpacity(0.3),
+                    color: brandPrimary.withOpacity(0.3),
                     blurRadius: 8,
                     spreadRadius: 0,
                   ),

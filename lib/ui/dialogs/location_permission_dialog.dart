@@ -134,16 +134,16 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
         width: 80,
         height: 80,
         decoration: BoxDecoration(
-          color: accentPrimary.withOpacity(0.2),
+          color: brandPrimary.withOpacity(0.2),
           borderRadius: BorderRadius.circular(40),
           border: Border.all(
-            color: accentPrimary.withOpacity(0.3),
+            color: brandPrimary.withOpacity(0.3),
             width: 2,
           ),
         ),
         child: Icon(
           Icons.location_on,
-          color: accentPrimary,
+          color: brandPrimary,
           size: 40,
         ),
       ),
@@ -152,10 +152,10 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
       warningWidget: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: feedbackAlert.withOpacity(0.1),
+          color: errorColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: feedbackAlert.withOpacity(0.2),
+            color: errorColor.withOpacity(0.2),
             width: 1,
           ),
         ),
@@ -163,7 +163,7 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
           children: [
             Icon(
               Icons.warning_amber_rounded,
-              color: feedbackAlert,
+              color: errorColor,
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -171,7 +171,7 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
               child: Text(
                 'Some XP features won\'t work without location.',
                 style: bodyTextStyle.copyWith(
-                  color: feedbackAlert,
+                  color: errorColor,
                   fontSize: 14,
                   height: 1.4,
                 ),
@@ -215,7 +215,7 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
                 onPressed: _isRequesting ? null : _requestLocationPermission,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: accentPrimary,
+                  backgroundColor: brandPrimary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

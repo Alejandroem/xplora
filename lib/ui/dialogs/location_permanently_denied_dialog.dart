@@ -15,16 +15,16 @@ class LocationPermanentlyDeniedDialog extends StatelessWidget {
         width: 80,
         height: 80,
         decoration: BoxDecoration(
-          color: feedbackAlert.withOpacity(0.2),
+          color: errorColor.withOpacity(0.2),
           borderRadius: BorderRadius.circular(40),
           border: Border.all(
-            color: feedbackAlert.withOpacity(0.3),
+            color: errorColor.withOpacity(0.3),
             width: 2,
           ),
         ),
         child: Icon(
           Icons.location_off,
-          color: feedbackAlert,
+          color: errorColor,
           size: 40,
         ),
       ),
@@ -33,10 +33,10 @@ class LocationPermanentlyDeniedDialog extends StatelessWidget {
       warningWidget: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: accentPrimary.withOpacity(0.1),
+          color: brandPrimary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: accentPrimary.withOpacity(0.2),
+            color: brandPrimary.withOpacity(0.2),
             width: 1,
           ),
         ),

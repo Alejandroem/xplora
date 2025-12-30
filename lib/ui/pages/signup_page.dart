@@ -203,7 +203,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     children: [
                       Expanded(
                         child: Divider(
-                          color: strokeDivider,
+                          color: border,
                           thickness: 1,
                         ),
                       ),
@@ -219,7 +219,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       ),
                       Expanded(
                         child: Divider(
-                          color: strokeDivider,
+                          color: border,
                           thickness: 1,
                         ),
                       ),
@@ -285,7 +285,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                             TextSpan(
                               text: 'Sign in',
                               style: bodyTextStyle.copyWith(
-                                color: accentPrimary,
+                                color: brandPrimary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

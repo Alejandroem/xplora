@@ -53,7 +53,7 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
               style: bodyTextStyle.copyWith(color: textPrimary),
             ),
             duration: const Duration(seconds: 2),
-            backgroundColor: feedbackAlert,
+            backgroundColor: errorColor,
           ),
         );
       }
@@ -111,10 +111,10 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: midSurface.withOpacity(0.5),
+              color: bgSecondary.withOpacity(0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: strokeDivider.withOpacity(0.2),
+                color: border.withOpacity(0.2),
                 width: 1,
               ),
             ),

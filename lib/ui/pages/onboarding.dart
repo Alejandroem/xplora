@@ -97,7 +97,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         color: _currentPage == index
-                            ? accentPrimary
+                            ? brandPrimary
                             : textSecondary,
                       ),
                     ),

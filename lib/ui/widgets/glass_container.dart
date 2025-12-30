@@ -32,7 +32,7 @@ class GlassContainer extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: midSurface, /// rgba(18,18,18,0.65)
+            color: bgSecondary, /// rgba(18,18,18,0.65)
             borderRadius: BorderRadius.circular(borderRadius ?? 12),
             border: border ?? Border.all(
               color: cardContainerBorder, /// #8A2BE2 at 10% opacity

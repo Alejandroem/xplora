@@ -6,35 +6,49 @@ Color springBud = const Color(0xffAFF500);
 Color raisingBlack = const Color(0xff232632);
 Color whiteSmoke = const Color(0xfff5F5F5);
 
-// Primary colors
-Color accentPrimary = const Color(0xff8A2BE2); /// Brand, highlights, active states (Purple)
-Color accentSecondary = const Color(0xffA4E959); /// Primary CTAs (Lime green)
-Color feedbackAlert = const Color(0xffFF3615); /// Alerts, urgent actions only (Red)
+// ============================================================================
+// DARK MODE COLOR SYSTEM
+// ============================================================================
 
-// Text colors
-Color textPrimary = const Color(0xffF5F5F5); /// Main text, headers (White)
-Color textSecondary = const Color(0xffA0A0A0); /// Subtext, hints, inactive labels (Gray)
+// SURFACE COLORS
+Color bgPrimary = const Color(0xff1A1A1A); /// Primary background
+Color bgSecondary = const Color(0xff2D2C2F); /// Secondary background, cards
+Color bgTertiary = const Color(0xff363538); /// Tertiary background
+Color border = const Color(0xff4C4B4D); /// Borders and dividers
+Color elevated = const Color(0xff5F5F5F); /// Elevated surfaces
 
-// Surface colors
-Color midSurface = const Color.fromRGBO(18, 18, 18, 0.65); /// Cards, modals, chat bubbles, navbar
-Color strokeDivider = const Color(0xff2A2A2A); /// Lines, subtle borders
-Color dividerMuted = const Color(0xff3A3A3A); /// Muted gray dividers, subtle separators
+// TEXT COLORS
+Color textPrimary = const Color(0xffF5F5F5); /// Primary text
+Color textSecondary = const Color(0xffEFEFEF); /// Secondary text
+Color textTertiary = const Color(0xffDDDCDC); /// Tertiary text
+Color textDisabled = const Color(0xffCBACAA); /// Disabled text
+
+// BRAND COLORS
+/// Identity, XP visuals, highlights, active states, progress accents
+Color brandPrimary = const Color(0xffA855F7); /// Purple - Primary brand color
+/// Exploration, discovery, secondary highlights, map/places/navigation accents
+Color brandSecondary = const Color(0xff32E1F1); /// Teal - Secondary brand color
+
+// SYSTEM COLORS
+Color xpColor = const Color(0xff8B47FF); /// XP and progression
+Color successColor = const Color(0xff97E959); /// Success states
+Color warningColor = const Color(0xffFF5715); /// Warning states
+Color errorColor = const Color(0xffE00808); /// Error states
+
+// ============================================================================
+// UTILITY & EFFECTS
+// ============================================================================
 
 // Border colors
-Color cardContainerBorder = const Color(0xff8A2BE2).withOpacity(0.1); /// Purple border at 10% opacity
-
-// Additional utility colors
-Color purple = Colors.purple; /// Brand identity; Active states, portal effects, highlights
-Color green = Colors.green; /// Action / CTA; Primary buttons, main interactive elements
-Color red = Colors.red; /// Alerts / urgency only; Error messages, critical notifications
+Color cardContainerBorder = brandPrimary.withOpacity(0.1); /// Purple border at 10% opacity
 
 // Gradient
-Gradient baseBackground = const LinearGradient(
+Gradient baseBackground = LinearGradient(
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
   colors: [
-    Color(0xff000014),
-    Color(0xff121212),
+    const Color(0xff000014),
+    bgPrimary,
   ],
 ); /// Page backgrounds, global layers
 

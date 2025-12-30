@@ -36,11 +36,11 @@ class _BottomChangePasswordCardState
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xff121212), /// Solid background to prevent text interference
+        color: bgTertiary, /// Solid background to prevent text interference
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: accentPrimary.withOpacity(0.3),
+            color: brandPrimary.withOpacity(0.3),
             width: 2,
           ),
         ),
@@ -115,7 +115,7 @@ class _BottomChangePasswordCardState
           isLoading
               ? Center(
                   child: CircularProgressIndicator(
-                    color: accentPrimary,
+                    color: brandPrimary,
                   ),
                 )
               : PrimaryButton(
@@ -130,7 +130,7 @@ class _BottomChangePasswordCardState
                             'New passwords do not match',
                             style: bodyTextStyle.copyWith(color: textPrimary),
                           ),
-                          backgroundColor: feedbackAlert,
+                          backgroundColor: errorColor,
                         ),
                       );
                       return;
@@ -155,7 +155,7 @@ class _BottomChangePasswordCardState
                               'Password changed successfully',
                               style: bodyTextStyle.copyWith(color: textPrimary),
                             ),
-                            backgroundColor: accentPrimary,
+                            backgroundColor: brandPrimary,
                           ),
                         );
                         Navigator.of(context).pop();
@@ -168,7 +168,7 @@ class _BottomChangePasswordCardState
                               'Failed to change password: $e',
                               style: bodyTextStyle.copyWith(color: textPrimary),
                             ),
-                            backgroundColor: feedbackAlert,
+                            backgroundColor: errorColor,
                           ),
                         );
                       }
