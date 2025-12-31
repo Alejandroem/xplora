@@ -37,7 +37,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                 const SizedBox(width: 8),
                 Text(
                   questInProgress == null ? 'Nearby Quests' : 'Active Quest',
-                  style: h3Style.copyWith(color: textPrimary),
+                  style: h3Style,
                 ),
               ],
             ),

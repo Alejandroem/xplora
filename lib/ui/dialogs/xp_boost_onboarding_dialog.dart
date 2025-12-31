@@ -160,11 +160,7 @@ class _BoostItem extends StatelessWidget {
                     Flexible(
                       child: Text(
                         title,
-                        style: subHeadingLabelStyle.copyWith(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
+                        style: bodySmallStyle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),

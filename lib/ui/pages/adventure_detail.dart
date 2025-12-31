@@ -288,7 +288,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Xp. ${widget.adventure.experience.toStringAsFixed(2)}',
-                    style: h3Style.copyWith(color: textPrimary),
+                    style: h3Style,
                   ),
                 ),
               ),

@@ -197,9 +197,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           (profile.username ?? '').isNotEmpty
                               ? profile.username!
                               : 'Pick Username',
-                          style: h2Style.copyWith(
-                            color: textPrimary,
-                          ),
+                          style: h2Style,
                         ),
                         const SizedBox(width: 10.0),
                         const Icon(Icons.edit),

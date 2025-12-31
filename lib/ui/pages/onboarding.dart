@@ -165,9 +165,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           Text(
             text,
             textAlign: TextAlign.center,
-            style: h1Style.copyWith(
-              color: textPrimary,
-            ),
+            style: h1Style,
           ),
         ],
       ),

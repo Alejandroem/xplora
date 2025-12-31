@@ -40,7 +40,7 @@ Color errorColor = const Color(0xffE00808); /// Error states
 // ============================================================================
 
 // Border colors
-Color cardContainerBorder = brandPrimary.withOpacity(0.1); /// Purple border at 10% opacity
+Color cardContainerBorder = border; /// Consistent border color for cards and containers
 
 // Gradient
 Gradient baseBackground = LinearGradient(
@@ -59,3 +59,85 @@ int modalOverlayBlur = 18; /// Modal overlay blur
 // Icons values
 Color iconColor = Colors.white; /// Main icon color (White)
 
+// Standard colors
+Color whiteClr = Colors.white;
+
+// ============================================================================
+// BUTTON STATE SYSTEM
+// ============================================================================
+// STATE RULES:
+// • Only one primary action per screen
+// • Disabled elements do not receive elevation
+// • Active = temporary, Selected = persistent
+// • XP color is NOT used for buttons (use brand-primary)
+// • Buttons → brand-primary (fill)
+// • Selection indicators → xp (border or accent only)
+// • Success → green
+// • Warnings → orange
+
+// Default State
+Color buttonDefault = brandPrimary; /// #A855F7
+BoxShadow buttonDefaultShadow = const BoxShadow(
+  color: Color(0x33000000), /// #00000033
+  offset: Offset(0, 4),
+  blurRadius: 12,
+  spreadRadius: 0,
+);
+
+// Hover State
+Color buttonHover = xpColor; /// #8B47FF
+Color buttonHoverOverlay = const Color(0x12FFFFFF); /// #FFFFFF12
+BoxShadow buttonHoverShadow = const BoxShadow(
+  color: Color(0x4D000000), /// #0000004D
+  offset: Offset(0, 8),
+  blurRadius: 24,
+  spreadRadius: 0,
+);
+
+// Active State (pressed)
+Color buttonActive = brandPrimary; /// #A855F7
+BoxShadow buttonActiveShadow = const BoxShadow(
+  color: Color(0x40000000), /// #00000040
+  offset: Offset(0, 0),
+  blurRadius: 0,
+  spreadRadius: 0,
+); /// No visible shadow
+
+// Selected State
+Color buttonSelected = brandPrimary; /// #A855F7
+Color buttonSelectedBorder = xpColor; /// #8B47FF - 1px solid
+BoxShadow buttonSelectedShadow = const BoxShadow(
+  color: Color(0x33000000), /// #00000033
+  offset: Offset(0, 4),
+  blurRadius: 12,
+  spreadRadius: 0,
+);
+
+// Disabled State
+Color buttonDisabled = bgTertiary; /// No elevation/shadow
+
+// ============================================================================
+// BORDER SYSTEM
+// ============================================================================
+// BORDER RULES:
+// • Default border width: 1px
+// • Dividers only use borders (no shadows)
+// • Borders use border token (Color(0xff4C4B4D))
+// • No borders on primary buttons
+
+// Border Width
+const double borderWidthDefault = 1.0; /// Default border width for all borders and dividers
+
+// ============================================================================
+// CORNER RADIUS SYSTEM
+// ============================================================================
+// RADIUS RULES:
+// • Small elements (chips, inputs): 8px
+// • Buttons & cards: 12px
+// • Large containers / modals: 16px
+// • Do not mix radius sizes within a component
+
+// Corner Radius
+const double radiusSmall = 8.0; /// Small elements (chips, inputs)
+const double radiusMedium = 12.0; /// Buttons & cards
+const double radiusLarge = 16.0; /// Large containers / modals

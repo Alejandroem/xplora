@@ -25,7 +25,7 @@ class TermsAndConditionsPage extends StatelessWidget {
                       children: [
                         Text(
                           'XPLRA App - Terms and Conditions',
-                          style: h2Style.copyWith(color: textPrimary),
+                          style: h2Style,
                         ),
                         const SizedBox(height: 10),
                         Text(

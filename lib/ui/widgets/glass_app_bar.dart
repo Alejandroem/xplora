@@ -15,7 +15,13 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Optional action buttons
   final Widget? leading;
 
-  /// Optional leading widget
+  /// Optional leading width
+  final double? leadingWidth;
+
+  /// Optional AppBar height
+  final double? height;
+
+  /// Optional center title
   final bool centerTitle;
 
   const GlassAppBar({
@@ -23,6 +29,8 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.actions,
     this.leading,
+    this.leadingWidth,
+    this.height,
     this.centerTitle = false,
   });
 
@@ -32,9 +40,9 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: brandPrimary.withOpacity(0.3),
+            color: border,
 
-            /// Thin purple divider at bottom
+            /// Thin divider at bottom
             width: 1,
           ),
         ),
@@ -62,27 +70,30 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             child: AppBar(
               scrolledUnderElevation: 0,
+              toolbarHeight: height ?? kToolbarHeight,
               leading: leading,
+              leadingWidth: leadingWidth,
               title: title == 'logo'
-                  ? Row(
+                  ? Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          'assets/png/xplora-logo.png',
-                          height: 24,
-                          width: 24,
-                        ),
-                        const SizedBox(width: 8),
                         Text(
-                          'Xplra',
+                          'XPLRA',
                           style: h2Style.copyWith(
-                            color: textPrimary,
                             fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          'San Juan, PR',
+                          style: bodySmallStyle.copyWith(
+                            fontSize: 12,
+                            color: textTertiary,
                           ),
                         ),
                       ],
                     )
-                  : title!=null ? Text(title!, style: h2Style.copyWith(fontSize: 20)) : null,
+                  : title!=null ? Text(title!, style: h2Style) : null,
               centerTitle: centerTitle,
               actions: actions,
               // backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4),
@@ -103,5 +114,5 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(height ?? kToolbarHeight);
 }

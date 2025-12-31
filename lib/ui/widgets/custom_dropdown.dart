@@ -20,10 +20,7 @@ class CustomDropdown extends StatelessWidget {
       children: [
         Text(
           label,
-          style: h3Style.copyWith(
-            color: textPrimary,
-            fontSize: 14,
-          ),
+          style: bodySmallStyle
         ),
         const SizedBox(height: 8),
         Container(
@@ -38,7 +35,7 @@ class CustomDropdown extends StatelessWidget {
           child: Theme(
             data: Theme.of(context).copyWith(
               canvasColor: bgTertiary,
-              focusColor: brandPrimary.withOpacity(0.1),
+              focusColor: brandPrimary,
               hoverColor: brandPrimary.withOpacity(0.05),
               highlightColor: brandPrimary.withOpacity(0.1),
               splashColor: brandPrimary.withOpacity(0.05),
@@ -46,14 +43,11 @@ class CustomDropdown extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 value: value.isEmpty ? null : value,
                 hint: Text(
                   'Select $label',
-                  style: bodyTextStyle.copyWith(
-                    color: textSecondary,
-                    fontSize: 16,
-                  ),
+                  style: captionStyle
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
@@ -61,9 +55,7 @@ class CustomDropdown extends StatelessWidget {
                 ),
                 isExpanded: true,
                 dropdownColor: bgTertiary,
-                style: bodyTextStyle.copyWith(
-                  fontSize: 16,
-                ),
+                style: bodyTextStyle,
                 selectedItemBuilder: (BuildContext context) {
                   return items.map<Widget>((String item) {
                     return Container(
@@ -79,9 +71,7 @@ class CustomDropdown extends StatelessWidget {
                           Expanded(
                             child: Text(
                               item,
-                              style: bodyTextStyle.copyWith(
-                                fontSize: 16,
-                              ),
+                              style: bodyTextStyle,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -107,9 +97,7 @@ class CustomDropdown extends StatelessWidget {
                           Expanded(
                             child: Text(
                               item,
-                              style: bodyTextStyle.copyWith(
-                                fontSize: 16,
-                              ),
+                              style: bodyTextStyle,
                             ),
                           ),
                         ],

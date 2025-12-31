@@ -14,8 +14,6 @@ class NearbyQuests extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedActivityTypes = ref.watch(selectedActivityTypesProvider);
-
     // Check if location tracking is enabled
     final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
 
@@ -34,8 +32,7 @@ class NearbyQuests extends ConsumerWidget {
               children: [
                 Text(
                   'Quests',
-                  style: h2Style.copyWith(
-                      fontSize: 20, fontWeight: FontWeight.w400),
+                  style: h2Style,
                 ),
                 const Spacer(),
               ],
@@ -47,25 +44,11 @@ class NearbyQuests extends ConsumerWidget {
               builder: (context, ref, child) {
                 return ref.watch(nearbyQuestProvider).when(
                       data: (quests) {
-                        // Filter quests based on selected activity types
-                        List<Quest> filteredQuests = quests;
-
-                        if (selectedActivityTypes.isNotEmpty) {
-                          filteredQuests = quests
-                              .where((quest) =>
-                                  quest.category != null &&
-                                  selectedActivityTypes.contains(quest.category))
-                              .toList();
-                        }
-
-                        // TODO: Implement 'For You' and 'Following' filter logic
-                        // For now, all filters use nearby quests
-
-                        if (filteredQuests.isNotEmpty) {
+                        if (quests.isNotEmpty) {
                           const maxCards = 20;
                           final displayedQuests =
-                              filteredQuests.take(maxCards).toList();
-                          final hasMore = filteredQuests.length > maxCards;
+                          quests.take(maxCards).toList();
+                          final hasMore = quests.length > maxCards;
 
                           return GenericBouncingCarousel<Quest>(
                             items: displayedQuests,
@@ -80,10 +63,7 @@ class NearbyQuests extends ConsumerWidget {
                           );
                         } else {
                           return Center(
-                            child: Text(
-                              selectedActivityTypes.isNotEmpty
-                                  ? 'No quests found for selected activity types'
-                                  : 'No quests found nearby',
+                            child: Text( 'No quests found nearby',
                               style:
                                   bodyTextStyle.copyWith(color: textSecondary),
                             ),

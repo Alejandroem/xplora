@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 // Export theme modules
 export 'theme/colors.dart';
 export 'theme/typography.dart';
+export 'theme/spacing.dart';
+export 'theme/iconography.dart';
 export 'theme/widgets.dart';
 
 // Import theme modules
@@ -24,9 +26,9 @@ ThemeData getTheme() {
       //backgroundColor: raisingBlack,
       elevation: 0,
     ),
-    primaryColor: brandPrimary,
+    primaryColor: majjoreleBlue,
     //scaffoldBackgroundColor: raisingBlack,
-    secondaryHeaderColor: brandSecondary,
+    secondaryHeaderColor: springBud,
     fontFamily: 'Jura',
     // Add more theme properties as needed
     scaffoldBackgroundColor: Colors.white,
@@ -76,12 +78,12 @@ ThemeData getDarkTheme() {
     dividerColor: border, /// Color for dividers and subtle borders (#2A2A2A)
 
     textTheme: TextTheme(
-      displayLarge: h1Style.copyWith(color: textPrimary), /// Large hero titles (Orbitron 32px bold) in light color
-      displayMedium: h2Style.copyWith(color: textPrimary), /// Medium section titles (Orbitron 24px bold) in light color
-      displaySmall: h3Style.copyWith(color: textPrimary), /// Small headings (Orbitron 18px bold) in light color
+      displayLarge: h1Style, /// Large hero titles (Orbitron 32px bold) in light color
+      displayMedium: h2Style, /// Medium section titles (Orbitron 24px bold) in light color
+      displaySmall: h3Style, /// Small headings (Orbitron 18px bold) in light color
       bodyLarge: bodyTextStyle.copyWith(color: textPrimary), /// Main body text (Inter) in light color
       bodyMedium: bodyTextStyle.copyWith(color: textSecondary), /// Secondary body text (Inter) in gray
-      labelLarge: subHeadingLabelStyle.copyWith(color: textPrimary), /// UI labels and navigation (Satoshi) in light color
+      labelLarge: bodyTextStyle, /// UI labels and navigation (Inter 16px) in light color
     ),
 
     colorScheme: ColorScheme.dark(

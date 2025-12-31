@@ -35,10 +35,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 Center(
                   child: Text(
                     'Sign In',
-                    style: h1Style.copyWith(
-                      color: textPrimary,
-                      fontSize: 36,
-                    ),
+                    style: h1Style,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -46,10 +43,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 Center(
                   child: Text(
                     'Welcome back! Sign in to continue your adventure',
-                    style: bodyTextStyle.copyWith(
-                      color: textSecondary,
-                      fontSize: 16,
-                    ),
+                    style: bodyTextStyle,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -327,12 +321,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                         children: [
                           TextSpan(
                             text: "Don't have an account? ",
-                            style: bodyTextStyle.copyWith(
-                              color: textSecondary,
-                            ),
+                            style: bodyTextStyle
                           ),
                           TextSpan(
-                            text: 'Sign Up',
+                            text: 'Sign up',
                             style: bodyTextStyle.copyWith(
                               color: brandPrimary,
                               fontWeight: FontWeight.bold,

@@ -41,7 +41,7 @@ class FilterBubble extends StatelessWidget {
           border: Border.all(
             color: isSelected 
                 ? brandPrimary 
-                : brandPrimary.withOpacity(0.3),
+                : border,
             width: 1,
           ),
           boxShadow: isSelected

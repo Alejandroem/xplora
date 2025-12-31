@@ -61,10 +61,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                     Center(
                       child: Text(
                         'Boost Your XP!',
-                        style: h1Style.copyWith(
-                          color: textPrimary,
-                          fontSize: 32,
-                        ),
+                        style: h1Style,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -79,7 +76,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 30),
 
                     // Bio Section
                     Text(
@@ -103,7 +100,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                         formNotifier.setBio(value);
                       },
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 10),
 
                     // Social Links Section
                     Text(
@@ -344,11 +341,7 @@ class _ActionButton extends StatelessWidget {
                     Flexible(
                       child: Text(
                         title,
-                        style: subHeadingLabelStyle.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
+                        style: bodyTextStyle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),

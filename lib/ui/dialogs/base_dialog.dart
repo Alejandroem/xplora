@@ -47,10 +47,7 @@ class BaseDialog extends StatelessWidget {
                         // Title
                         Text(
                           title,
-                          style: h1Style.copyWith(
-                            color: textPrimary,
-                            fontSize: 24,
-                          ),
+                          style: h1Style,
                           textAlign: TextAlign.center,
                         ),
 

@@ -44,7 +44,7 @@ class _PrivacyConsentSummaryState extends ConsumerState<PrivacyConsentSummary> {
                 Center(
                   child: Text(
                     'Privacy & Consent Summary',
-                    style: h1Style.copyWith(fontSize: 28),
+                    style: h1Style,
                     textAlign: TextAlign.center,
                   ),
                 ),

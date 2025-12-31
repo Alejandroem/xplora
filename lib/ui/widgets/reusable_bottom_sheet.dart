@@ -33,7 +33,7 @@ class ReusableBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: brandPrimary.withOpacity(0.3),
+            color: border,
             width: 2,
           ),
         ),

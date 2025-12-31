@@ -220,7 +220,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                                 border: Border.all(
                                                   color: ref.watch(selectedCategoriesProvider) == category.id
                                                       ? brandPrimary
-                                                      : brandPrimary.withOpacity(0.3),
+                                                      : border,
                                                   width: 1,
                                                 ),
                                                 boxShadow: ref.watch(selectedCategoriesProvider) == category.id
@@ -461,11 +461,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                               }),
                               title: Text(
                                 item.title,
-                                style: subHeadingLabelStyle.copyWith(
-                                  color: textPrimary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                                style: bodyTextStyle,
                               ),
                               subtitle: Text(
                                 'Quest',
@@ -508,11 +504,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                 ListTile(
                                   title: Text(
                                     item.title,
-                                    style: subHeadingLabelStyle.copyWith(
-                                      color: textPrimary,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
+                                    style: bodyTextStyle,
                                   ),
                                   subtitle: Text(
                                     'Adventure',

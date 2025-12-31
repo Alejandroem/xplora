@@ -10,6 +10,7 @@ class GlassContainer extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double? blur; /// Backdrop blur amount (default: 12px)
   final Border? border;
+  final Color? bgColor;
 
   const GlassContainer({
     super.key,
@@ -18,6 +19,7 @@ class GlassContainer extends StatelessWidget {
     this.padding,
     this.blur,
     this.border,
+    this.bgColor
   });
 
   @override
@@ -32,7 +34,7 @@ class GlassContainer extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: bgSecondary, /// rgba(18,18,18,0.65)
+            color: bgColor ?? bgSecondary, /// rgba(18,18,18,0.65)
             borderRadius: BorderRadius.circular(borderRadius ?? 12),
             border: border ?? Border.all(
               color: cardContainerBorder, /// #8A2BE2 at 10% opacity

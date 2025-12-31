@@ -159,11 +159,7 @@ class _CarouselCardState extends State<CarouselCard>
                             children: [
                               Text(
                                 widget.title,
-                                style: subHeadingLabelStyle.copyWith(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimary,
-                                ),
+                                style: bodySmallStyle,
                                 maxLines:
                                     widget.bottomContent != null ? 1 : 2,
                                 overflow: TextOverflow.ellipsis,

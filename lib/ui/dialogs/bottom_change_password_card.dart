@@ -53,7 +53,7 @@ class _BottomChangePasswordCardState
           // Title
           Text(
             'Change Password',
-            style: h3Style.copyWith(color: textPrimary),
+            style: h3Style,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24.0),

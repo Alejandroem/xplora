@@ -197,11 +197,7 @@ class _LoraAiAssistantState extends ConsumerState<LoraAiAssistant> {
               children: [
                 Text(
                   title,
-                  style: subHeadingLabelStyle.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: textPrimary,
-                  ),
+                  style: bodyTextStyle,
                 ),
                 const SizedBox(height: 4),
                 Text(

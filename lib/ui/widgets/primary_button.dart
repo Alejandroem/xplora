@@ -7,7 +7,7 @@ import '../../theme/typography.dart';
 class PrimaryButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
-  final bool usePurple; /// If true, uses purple; if false, uses green (default)
+  final bool useSecondary; /// If true, uses secondary; if false, uses primary
   final double? fontSize;
   final EdgeInsetsGeometry? padding;
   final double? height;
@@ -18,7 +18,7 @@ class PrimaryButton extends StatefulWidget {
     super.key,
     required this.text,
     this.onPressed,
-    this.usePurple = false,
+    this.useSecondary = false,
     this.fontSize,
     this.padding,
     this.height,
@@ -35,8 +35,8 @@ class _PrimaryButtonState extends State<PrimaryButton> {
 
   @override
   Widget build(BuildContext context) {
-    final buttonColor = widget.usePurple ? brandPrimary : brandSecondary;
-    final textColor = widget.usePurple ? textPrimary : const Color(0xff121212);
+    final buttonColor = widget.useSecondary ? brandSecondary : brandPrimary;
+    final textColor = widget.useSecondary ? textPrimary : null;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -53,9 +53,9 @@ class _PrimaryButtonState extends State<PrimaryButton> {
               vertical: 8,
             ),
             decoration: BoxDecoration(
-              color: widget.onPressed == null ? textSecondary : buttonColor,
+              color: widget.onPressed == null ? bgSecondary : buttonColor,
               borderRadius: BorderRadius.circular(8),
-              boxShadow: [
+              boxShadow: widget.onPressed==null ? [] : [
                 BoxShadow(
                   color: buttonColor.withOpacity(_isHovered ? 0.6 : 0.3),
                   blurRadius: _isHovered ? 12 : 6,
@@ -66,10 +66,9 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             child: Center(
               child: Text(
                 widget.text,
-                style: bodyTextStyle.copyWith(
-                  fontSize: widget.fontSize ?? 14,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
+                style: buttonTextStyle.copyWith(
+                  fontSize: widget.fontSize,
+                  color: textColor
                 ),
                 textAlign: TextAlign.center,
                 maxLines: widget.maxLines,

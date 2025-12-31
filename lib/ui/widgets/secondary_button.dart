@@ -53,8 +53,8 @@ class _SecondaryButtonState extends State<SecondaryButton> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: widget.isEnabled 
-                  ? brandPrimary.withOpacity(_isHovered ? 0.8 : 0.5) /// Purple border with hover effect
-                  : brandPrimary.withOpacity(0.3), /// Dimmed when disabled
+                  ? border
+                  : border.withOpacity(0.3), /// Dimmed when disabled
               width: 1, /// Thin border
             ),
             boxShadow: widget.isEnabled && _isHovered

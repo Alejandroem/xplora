@@ -65,13 +65,13 @@ class XploraTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
-        labelStyle: bodyTextStyle.copyWith(color: textSecondary),
-        hintStyle: bodyTextStyle.copyWith(color: textSecondary.withOpacity(0.6), fontSize: 15),
+        labelStyle: bodySmallStyle,
+        hintStyle: captionStyle,
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: border.withOpacity(0.3), width: 1),
+          borderSide: BorderSide(color: border, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -79,7 +79,7 @@ class XploraTextField extends StatelessWidget {
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: textDisabled.withOpacity(0.3), width: 1),
+          borderSide: BorderSide(color: border, width: 1),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -91,10 +91,7 @@ class XploraTextField extends StatelessWidget {
         ),
         filled: true,
         fillColor: bgSecondary,
-        contentPadding: contentPadding ?? const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
+        contentPadding: contentPadding ?? const EdgeInsets.all(16)
       ),
     );
   }

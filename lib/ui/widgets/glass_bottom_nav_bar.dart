@@ -22,7 +22,7 @@ class GlassBottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: brandPrimary.withOpacity(0.3), /// Thin purple divider on top
+            color: border, /// Thin divider on top
             width: 1,
           ),
         ),

@@ -64,9 +64,7 @@ class _LoadingScreen extends StatelessWidget {
               // const SizedBox(height: 24),
               Text(
                 'XPLRA',
-                style: h1Style.copyWith(
-                  color: textPrimary,
-                ),
+                style: h1Style,
               ),
             ],
           ),

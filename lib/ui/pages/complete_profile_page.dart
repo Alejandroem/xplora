@@ -131,10 +131,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     Center(
                       child: Text(
                         'Complete Your Profile',
-                        style: h1Style.copyWith(
-                          color: textPrimary,
-                          fontSize: 32,
-                        ),
+                        style: h1Style,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -142,10 +139,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     Center(
                       child: Text(
                         'Tell us more about yourself to personalize your experience',
-                        style: bodyTextStyle.copyWith(
-                          color: textSecondary,
-                          fontSize: 16,
-                        ),
+                        style: bodyTextStyle,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -252,10 +246,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                       children: [
                         Text(
                           'Avatar (Optional)',
-                          style: h3Style.copyWith(
-                            color: textPrimary,
-                            fontSize: 16,
-                          ),
+                          style: bodySmallStyle,
                         ),
                         const SizedBox(height: 12),
                         Center(
@@ -290,7 +281,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                 color: bgSecondary,
                                 borderRadius: BorderRadius.circular(100),
                                 border: Border.all(
-                                  color: brandPrimary.withOpacity(0.3),
+                                  color: border,
                                   width: 2,
                                 ),
                               ),
@@ -305,7 +296,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                         errorBuilder:
                                             (context, error, stackTrace) {
                                           return Icon(
-                                            Icons.person,
+                                            Icons.add_a_photo,
                                             color: textSecondary,
                                             size: 40,
                                           );
@@ -360,10 +351,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                     // Birthday fields
                     Text(
                       'Birthday',
-                      style: h3Style.copyWith(
-                        color: textPrimary,
-                        fontSize: 16,
-                      ),
+                      style: bodySmallStyle
                     ),
                     const SizedBox(height: 12),
                     Consumer(
@@ -475,7 +463,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                           return PrimaryButton(
                             text: isButtonLoading
                                 ? 'Completing profile...'
-                                : 'Complete Profile',
+                                : 'Complete profile',
                             onPressed: isButtonLoading
                                 ? null
                                 : () async {
@@ -579,7 +567,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Icon(
-                      Icons.person,
+                      Icons.add_a_photo,
                       color: textSecondary,
                       size: 40,
                     );
@@ -596,7 +584,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
       final file = File(filePath);
       if (!file.existsSync()) {
         return Icon(
-          Icons.person,
+          Icons.add_a_photo,
           color: textSecondary,
           size: 40,
         );
@@ -609,7 +597,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Icon(
-            Icons.person,
+            Icons.add_a_photo,
             color: textSecondary,
             size: 40,
           );
@@ -617,7 +605,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
       );
     } catch (e) {
       return Icon(
-        Icons.person,
+        Icons.add_a_photo,
         color: textSecondary,
         size: 40,
       );
@@ -641,10 +629,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
       children: [
         Text(
           label,
-          style: h3Style.copyWith(
-            color: textPrimary,
-            fontSize: 14,
-          ),
+          style: bodySmallStyle
         ),
         const SizedBox(height: 8),
         LayoutBuilder(
@@ -838,7 +823,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
           onClear: () {
             ref.read(completeProfileFormNotifierProvider.notifier).setCity('');
           },
-          enabled: isCountrySelected && !isLoadingCities,
+          enabled: isCountrySelected && !isLoadingCities && hasCities,
           clearOnEmpty: true,
         );
       },

@@ -25,8 +25,7 @@ class CategoriesChips extends ConsumerWidget {
               children: [
                 Text(
                   'Activities',
-                  style: h2Style.copyWith(
-                      fontSize: 20, fontWeight: FontWeight.w400),
+                  style: h2Style,
                 ),
                 const Spacer(),
               ],

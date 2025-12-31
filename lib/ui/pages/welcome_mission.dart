@@ -35,7 +35,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                       // Title
                       Text(
                         'Welcome Mission',
-                        style: h1Style.copyWith(fontSize: 32),
+                        style: h1Style,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
@@ -43,10 +43,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                       // Subtitle
                       Text(
                         'Complete your first quest to get started!',
-                        style: bodyTextStyle.copyWith(
-                          color: textSecondary,
-                          fontSize: 16,
-                        ),
+                        style: bodyTextStyle,
                         textAlign: TextAlign.center,
                       ),
 
@@ -64,14 +61,15 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                                 height: 120,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: brandPrimary.withOpacity(0.2),
+                                  color: bgTertiary,
                                   border: Border.all(
-                                    color: brandPrimary.withOpacity(0.5),
+                                    color: border,
                                     width: 2,
                                   ),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.rocket,
+                                  color: iconColor,
                                   size: 60,
                                 ),
                               ),
@@ -83,7 +81,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                             Center(
                               child: Text(
                                 'First Quest',
-                                style: h2Style.copyWith(fontSize: 28),
+                                style: h2Style,
                               ),
                             ),
 
@@ -92,10 +90,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                             // Quest Description
                             Text(
                               'To begin your adventure, you need to:',
-                              style: bodyTextStyle.copyWith(
-                                fontSize: 16,
-                                color: textPrimary,
-                              ),
+                              style: bodyTextStyle
                             ),
 
                             const SizedBox(height: 20),
@@ -154,7 +149,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                             // Badge Reward
                             _buildRewardItem(
                               icon: Icons.military_tech_rounded,
-                              iconColor: brandPrimary,
+                              iconColor: iconColor,
                               text: '"Explorer\'s First Step" badge',
                             ),
                           ],
@@ -191,13 +186,14 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
     required String text,
   }) {
     return GlassContainer(
+      bgColor: bgTertiary,
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: brandPrimary.withOpacity(0.2),
+              color: bgTertiary,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -229,10 +225,10 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.1),
+        color: bgTertiary,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: iconColor.withOpacity(0.3),
+          color: border,
           width: 1,
         ),
       ),
@@ -247,11 +243,7 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
           Flexible(
             child: Text(
               text,
-              style: bodyTextStyle.copyWith(
-                fontSize: 16,
-                color: textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: bodyTextStyle
             ),
           ),
         ],

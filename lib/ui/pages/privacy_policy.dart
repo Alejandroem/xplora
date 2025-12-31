@@ -21,7 +21,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             children: [
               Text(
                 'Privacy Policy\nXPLRA App - Privacy Policy',
-                style: h2Style.copyWith(color: textPrimary),
+                style: h2Style,
               ),
               const SizedBox(height: 16),
               Text(

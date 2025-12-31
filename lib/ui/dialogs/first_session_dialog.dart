@@ -193,11 +193,7 @@ class _NearbyPlaceCard extends StatelessWidget {
               children: [
                 Text(
                   placeName,
-                  style: subHeadingLabelStyle.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: textPrimary,
-                  ),
+                  style: bodyTextStyle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

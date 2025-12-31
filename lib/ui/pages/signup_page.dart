@@ -36,10 +36,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                   Center(
                     child: Text(
                       'Sign Up',
-                      style: h1Style.copyWith(
-                        color: textPrimary,
-                        fontSize: 36,
-                      ),
+                      style: h1Style,
                     ),
                   ),
                   const SizedBox(height: 8),

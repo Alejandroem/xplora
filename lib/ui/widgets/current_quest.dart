@@ -236,14 +236,10 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               const SizedBox(height: 12),
               Text(
                 'Start Quest',
-                style: subHeadingLabelStyle.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
+                style: bodyTextStyle,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               // Suggested Quest Preview
               nearbyAdventures.when(
                 data: (adventures) {
@@ -279,11 +275,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                             Expanded(
                               child: Text(
                                 suggestedQuest.title,
-                                style: subHeadingLabelStyle.copyWith(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimary,
-                                ),
+                                style: bodySmallStyle,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -399,11 +391,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
                 adventure?.title ?? 'Quest Title',
-                style: subHeadingLabelStyle.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
+                style: bodyTextStyle,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -482,11 +470,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               children: [
                 Text(
                   adventure?.title ?? 'Quest Title',
-                  style: subHeadingLabelStyle.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: textPrimary,
-                  ),
+                  style: bodySmallStyle,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

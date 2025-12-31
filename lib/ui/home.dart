@@ -231,7 +231,9 @@ class _HomeState extends ConsumerState<Home> {
   PreferredSizeWidget? getAppBar() {
     final bottomBar = ref.watch(bottomNavigationBarProvider);
     if (bottomBar != NavigationItem.notifications && bottomBar!=NavigationItem.search) {
-      return const XplorAppBar();
+      return XplorAppBar(
+        height: bottomBar == NavigationItem.home ? 72.0 : null,
+      );
     }
     return null;
   }
@@ -386,10 +388,7 @@ class _HomeState extends ConsumerState<Home> {
                           Center(
                             child: Text(
                               'Coming Soon',
-                              style: h3Style.copyWith(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: h2Style,
                             ),
                           ),
                           const SizedBox(height: 23),

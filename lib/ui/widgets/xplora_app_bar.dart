@@ -11,10 +11,12 @@ import '../dialogs/bottom_login_card.dart';
 import '../pages/profile_page.dart';
 
 class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  const XplorAppBar({super.key});
+  final double? height;
+
+  const XplorAppBar({super.key, this.height});
 
   @override
-  Size get preferredSize => const Size.fromHeight(56.0);
+  Size get preferredSize => Size.fromHeight(height ?? kToolbarHeight);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,26 +29,33 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
           : bottomBar == NavigationItem.xpc
               ? 'Economy Hub'
               : 'Store',
+      height: height,
       centerTitle: true,
-      actions: bottomBar == NavigationItem.home
+      leadingWidth: bottomBar == NavigationItem.home ? 90 : null,
+      leading: bottomBar == NavigationItem.home
           ? isAuthenticatedAsyncValue.when(
               data: (isAuthenticated) {
-                return <Widget>[
-                  isAuthenticated
-                      ? ref.watch(createOrReadCurrentUserProfile).when(
-                          data: (profile) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ProfilePage(profile),
-                                  ),
-                                );
-                              },
-                              child: Transform.scale(
-                                scale: 0.9,
-                                child: CircleAvatar(
+                if (isAuthenticated) {
+                  return ref.watch(createOrReadCurrentUserProfile).when(
+                      data: (profile) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: spacing8),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfilePage(profile),
+                                ),
+                              );
+                            },
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Positioned(
+                                  left: 10,
+                                  top: 15,
+                                  child: CircleAvatar(
                                   backgroundColor: bgSecondary,
                                   radius: 18.0,
                                   child: profile!.avatarUrl != null &&
@@ -54,74 +63,132 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                       ? ClipOval(
                                           child: CachedNetworkImage(
                                             imageUrl: profile.avatarUrl!,
-                                            width: 40.0,
-                                            height: 40.0,
+                                            width: 36.0,
+                                            height: 36.0,
                                             fit: BoxFit.cover,
                                             errorWidget: (ctx, err, _) =>
-                                                const Icon(Icons.error),
+                                                Icon(Icons.error, size: iconSizeMedium, color: errorColor),
                                             placeholder: (ctx, loading) =>
-                                                ShimmerWidgets.circleShimmer(
-                                                    radius: 18),
+                                                ShimmerWidgets.circleShimmer(radius: 18),
                                           ),
                                         )
                                       : Icon(
                                           Icons.person,
                                           color: iconColor,
+                                          size: iconSizeMedium,
                                         ),
                                 ),
                               ),
-                            );
-                          },
-                          loading: () => placeholderIcon(),
-                          error: (error, stackTrace) => placeholderIcon())
-                      : StreamBuilder<bool>(
-                          stream: ref.read(authServiceProvider).isSignedIn,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData && snapshot.data == false) {
-                              return GestureDetector(
-                                onTap: () {
-                                  // showBottomLoginCard(context);
-                                  Navigator.of(context).pushNamed('/signin');
-                                },
-                                child: Transform.scale(
-                                  scale: 0.9,
+                              Positioned(
+                                top: 8,
+                                right: 12,
+                                child: Text(
+                                  'Lvl 7',
+                                  style: captionStyle.copyWith(
+                                    color: textSecondary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                                                        ),
+                          ),
+                        );
+                      },
+                      loading: () => placeholderIcon(),
+                      error: (error, stackTrace) => placeholderIcon());
+                } else {
+                  return StreamBuilder<bool>(
+                    stream: ref.read(authServiceProvider).isSignedIn,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data == false) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: spacing8),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pushNamed('/signin');
+                            },
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Positioned(
+                                  left: 10,
+                                  top: 15,
                                   child: CircleAvatar(
                                     backgroundColor: bgSecondary,
-                                    radius: 18.0,
+                                    radius: 19.0,
                                     child: Icon(
                                       Icons.person,
                                       color: iconColor,
+                                      size: iconSizeMedium,
                                     ),
                                   ),
                                 ),
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          },
-                        ),
-                  Container(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: const SizedBox.shrink(),
-                  ),
-                ];
+                                Positioned(
+                                  top: 8,
+                                  right: 12,
+                                  child: Opacity(
+                                  opacity: 0,
+                                  child: Text(
+                                    'Lvl 7',
+                                    style: captionStyle.copyWith(
+                                      color: textSecondary,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                                                        ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  );
+                }
               },
-              loading: () => [const SizedBox.shrink()],
-              error: (error, stackTrace) => [const SizedBox.shrink()],
+              loading: () => const SizedBox.shrink(),
+              error: (error, stackTrace) => const SizedBox.shrink(),
             )
           : null,
     );
   }
 
   Widget placeholderIcon() {
-    return Transform.scale(
-      scale: 0.9,
-      child: CircleAvatar(
-        backgroundColor: bgSecondary,
-        radius: 16.0,
-        child: Icon(
-          Icons.person,
-          color: iconColor,
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(left: spacing8),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 10,
+            top: 13,
+            child: CircleAvatar(
+              backgroundColor: bgSecondary,
+              radius: 19.0,
+              child: Icon(
+                Icons.person,
+                color: iconColor,
+                size: iconSizeMedium,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 6,
+            right: 22,
+            child: Text(
+              '...',
+              style: captionStyle.copyWith(
+                color: textSecondary,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

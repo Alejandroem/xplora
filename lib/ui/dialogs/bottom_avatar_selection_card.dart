@@ -22,12 +22,18 @@ class BottomAvatarSelectionCard extends StatefulWidget {
 class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
   final ImagePicker _picker = ImagePicker();
   String? _selectedImagePath;
+  String? _initialImagePath;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    _initialImagePath = widget.selectedImagePath;
     _selectedImagePath = widget.selectedImagePath;
+  }
+
+  bool get _hasChanges {
+    return _selectedImagePath != _initialImagePath;
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -91,12 +97,12 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
       final file = File(filePath);
       if (!file.existsSync()) {
         return Icon(
-          Icons.person,
+          Icons.add_a_photo,
           color: textSecondary,
-          size: 60,
+          size: 40,
         );
       }
-      
+
       return Image.file(
         file,
         width: 120,
@@ -104,17 +110,17 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Icon(
-            Icons.person,
+            Icons.add_a_photo,
             color: textSecondary,
-            size: 60,
+            size: 40,
           );
         },
       );
     } catch (e) {
       return Icon(
-        Icons.person,
+        Icons.add_a_photo,
         color: textSecondary,
-        size: 60,
+        size: 40,
       );
     }
   }
@@ -127,7 +133,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: brandPrimary.withOpacity(0.3),
+            color: border,
             width: 2,
           ),
         ),
@@ -140,7 +146,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
           // Title
           Text(
             'Select Avatar',
-            style: h3Style.copyWith(color: textPrimary),
+            style: h3Style,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24.0),
@@ -154,7 +160,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
                 color: bgSecondary,
                 borderRadius: BorderRadius.circular(60),
                 border: Border.all(
-                  color: brandPrimary.withOpacity(0.3),
+                  color: border,
                   width: 2,
                 ),
               ),
@@ -179,17 +185,17 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Icon(
-                                    Icons.person,
+                                    Icons.add_a_photo,
                                     color: textSecondary,
-                                    size: 60,
+                                    size: 40,
                                   );
                                 },
                               ),
                             )
                           : Icon(
-                              Icons.person,
+                              Icons.add_a_photo,
                               color: textSecondary,
-                              size: 60,
+                              size: 40,
                             ),
             ),
           ),
@@ -225,6 +231,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
             children: [
               Expanded(
                 child: SecondaryButton(
+                  height: 50,
                   text: 'Cancel',
                   onPressed: () => Navigator.of(context).pop(),
                 ),
@@ -238,8 +245,9 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
                         ),
                       )
                     : PrimaryButton(
+                        height: 50,
                         text: 'Confirm',
-                        onPressed: _selectedImagePath != null ? _confirmSelection : null,
+                        onPressed: _hasChanges ? _confirmSelection : null,
                       ),
               ),
             ],
@@ -263,7 +271,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
           color: bgSecondary,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDestructive ? errorColor.withOpacity(0.3) : brandPrimary.withOpacity(0.3),
+            color: isDestructive ? errorColor : border,
             width: 1,
           ),
         ),
@@ -278,9 +286,8 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
             const SizedBox(height: 8),
             Text(
               label,
-              style: bodyTextStyle.copyWith(
-                color: isDestructive ? errorColor : textPrimary,
-                fontSize: 12,
+              style: bodySmallStyle.copyWith(
+                color: isDestructive ? errorColor : textPrimary
               ),
             ),
           ],

@@ -111,10 +111,10 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: bgSecondary.withOpacity(0.5),
+              color: bgTertiary,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: border.withOpacity(0.2),
+                color: border,
                 width: 1,
               ),
             ),

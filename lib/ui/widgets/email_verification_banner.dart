@@ -72,37 +72,42 @@ class _EmailVerificationBannerState
                 if (user == null || user.isEmailVerified) {
                   return const SizedBox();
                 }
-                return Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 54,
-                  color: warningColor,
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.warning),
-                      const SizedBox(width: 8),
-                      const Text('Please verify your email'),
-                      const Spacer(),
-                      _isButtonDisabled
-                          ? OutlinedButton(
-                              onPressed: null,
-                              child: Text('Retry in $_remainingSeconds s', style: TextStyle(color: textDisabled)),
-                            )
-                          : OutlinedButton(
-                              onPressed: () async {
-                                ref
-                                    .read(authServiceProvider)
-                                    .sendEmailVerification();
-                                await localStorage.save(
-                                  'lastDateEmailSent',
-                                  DateTime.now().toIso8601String(),
-                                );
-                                _startTimer();
-                              },
-                              child: const Text('Resend'),
-                            ),
-                    ],
-                  ),
+                return Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 54,
+                      color: warningColor,
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.warning),
+                          const SizedBox(width: 8),
+                          const Text('Please verify your email'),
+                          const Spacer(),
+                          _isButtonDisabled
+                              ? OutlinedButton(
+                                  onPressed: null,
+                                  child: Text('Retry in $_remainingSeconds s', style: TextStyle(color: textDisabled)),
+                                )
+                              : OutlinedButton(
+                                  onPressed: () async {
+                                    ref
+                                        .read(authServiceProvider)
+                                        .sendEmailVerification();
+                                    await localStorage.save(
+                                      'lastDateEmailSent',
+                                      DateTime.now().toIso8601String(),
+                                    );
+                                    _startTimer();
+                                  },
+                                  child: const Text('Resend'),
+                                ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 );
               },
               loading: () => const SizedBox(),
@@ -115,6 +120,7 @@ class _EmailVerificationBannerState
                       Icon(Icons.error),
                       SizedBox(width: 8),
                       Text('An error occurred'),
+                      SizedBox(height: 20),
                     ],
                   ),
                 );

@@ -238,11 +238,7 @@ class SeeMoreCard extends StatelessWidget {
                 ),
                 Text(
                   'See more',
-                  style: subHeadingLabelStyle.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: textPrimary,
-                  ),
+                  style: bodyTextStyle,
                 ),
               ],
             ),
