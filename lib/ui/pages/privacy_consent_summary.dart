@@ -204,7 +204,7 @@ class _ConsentItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
                 color:
-                    isChecked ? brandPrimary : textSecondary.withOpacity(0.5),
+                    isChecked ? brandPrimary : context.colors.textSecondary.withOpacity(0.5),
                 width: 2,
               ),
             ),
@@ -231,7 +231,7 @@ class _ConsentItem extends StatelessWidget {
             child: Text(
               text,
               style: bodyTextStyle.copyWith(
-                color: textPrimary,
+                color: context.colors.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),

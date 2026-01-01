@@ -1,13 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../theme.dart';
-import '../../theme/colors.dart';
 
 /// Transparent AppBar with glass effect, thin purple divider at bottom, and logo in Orbitron
 /// Light, floating feel with backdrop blur
 class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String? title;
+  final dynamic title;
 
   /// Optional title text (String) or widget in Orbitron
   final List<Widget>? actions;
@@ -40,32 +38,28 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: border,
+            color: context.colors.border,
 
             /// Thin divider at bottom
-            width: 1,
+            width: borderWidthDefault,
           ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: brandPrimary.withOpacity(0.1),
-            blurRadius: 8,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
-          ),
+        boxShadow: const [
+          elevation1,
         ],
       ),
       child: ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(
-            sigmaX: 12,
+            sigmaX: spacing12,
 
             /// Light blur for floating feel
-            sigmaY: 12,
+            sigmaY: spacing12,
           ),
           child: Container(
             decoration: BoxDecoration(
-              gradient: baseBackground,
+              gradient:
+                  context.isDarkMode ? baseBackgroundDark : baseBackgroundLight,
               // color: Colors.white.withOpacity(0.5),
             ),
             child: AppBar(
@@ -73,27 +67,24 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
               toolbarHeight: height ?? kToolbarHeight,
               leading: leading,
               leadingWidth: leadingWidth,
-              title: title == 'logo'
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'XPLRA',
-                          style: h2Style.copyWith(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          'San Juan, PR',
-                          style: bodySmallStyle.copyWith(
-                            fontSize: 12,
-                            color: textTertiary,
-                          ),
-                        ),
-                      ],
-                    )
-                  : title!=null ? Text(title!, style: h2Style) : null,
+              title: title is Widget
+                  ? title
+                  : title is String
+                      ? title == 'logo'
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/png/xplora-logo.png',
+                                  height: 24,
+                                  width: 24,
+                                ),
+                                const SizedBox(width: 8),
+                                Text('Xplra', style: h3Style),
+                              ],
+                            )
+                          : Text(title, style: h2Style)
+                      : null,
               centerTitle: centerTitle,
               actions: actions,
               // backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4),
@@ -103,7 +94,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
               elevation: 0,
 
               /// No shadow, using blur instead
-              iconTheme: IconThemeData(color: textPrimary),
+              iconTheme: IconThemeData(color: context.colors.textPrimary),
 
               /// Icon color
             ),

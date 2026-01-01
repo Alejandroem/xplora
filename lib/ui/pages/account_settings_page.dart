@@ -31,7 +31,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                       Center(
                         child: Text(
                           'User not found',
-                          style: bodyTextStyle.copyWith(color: textSecondary),
+                          style: bodyTextStyle.copyWith(color: context.colors.textSecondary),
                         ),
                       ),
                     ];
@@ -40,11 +40,11 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     ListTile(
                       title: Text(
                         'Email',
-                        style: bodyTextStyle.copyWith(color: textPrimary),
+                        style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                       ),
                       subtitle: Text(
                         user.email,
-                        style: bodyTextStyle.copyWith(color: textSecondary),
+                        style: bodyTextStyle.copyWith(color: context.colors.textSecondary),
                       ),
                       onTap: () {
                         Navigator.of(context).push(
@@ -55,17 +55,17 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                       },
                       trailing: Icon(
                         Icons.arrow_forward_ios,
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                       ),
                     ),
                     ListTile(
                       title: Text(
                         'Display Name',
-                        style: bodyTextStyle.copyWith(color: textPrimary),
+                        style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                       ),
                       subtitle: Text(
                         user.displayName,
-                        style: bodyTextStyle.copyWith(color: textSecondary),
+                        style: bodyTextStyle.copyWith(color: context.colors.textSecondary),
                       ),
                       onTap: () {
                         Navigator.of(context).push(
@@ -76,7 +76,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                       },
                       trailing: Icon(
                         Icons.arrow_forward_ios,
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                       ),
                     ),
                   ];
@@ -171,7 +171,7 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
                         SnackBar(
                           content: Text(
                             'Display name updated',
-                            style: bodyTextStyle.copyWith(color: textPrimary),
+                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                           ),
                           backgroundColor: brandPrimary,
                         ),
@@ -184,7 +184,7 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
                         SnackBar(
                           content: Text(
                             'Failed to update display name: $e',
-                            style: bodyTextStyle.copyWith(color: textPrimary),
+                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                           ),
                           backgroundColor: errorColor,
                         ),
@@ -264,7 +264,7 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
                         SnackBar(
                           content: Text(
                             'Email updated',
-                            style: bodyTextStyle.copyWith(color: textPrimary),
+                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                           ),
                           backgroundColor: brandPrimary,
                         ),
@@ -277,7 +277,7 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
                         SnackBar(
                           content: Text(
                             'Failed to update email: $e',
-                            style: bodyTextStyle.copyWith(color: textPrimary),
+                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                           ),
                           backgroundColor: errorColor,
                         ),

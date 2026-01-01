@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'application/providers/auth_providers.dart';
+import 'application/providers/settings_providers.dart';
 import 'theme.dart';
 import 'ui/home.dart';
 import 'ui/initial_route_handler.dart';
@@ -32,18 +34,23 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final settingsProvider = ref.watch(settingsStateNotifierProvider);
+    // Watch the settings state (not .notifier) to rebuild when settings change
+    final settings = ref.watch(settingsStateNotifierProvider);
+
+    // Get dark mode preference from settings
+    final isDarkModeSetting = settings.where((s) => s.key == 'isDarkMode').firstOrNull;
+    final isDarkMode = isDarkModeSetting?.value as bool?;
+
+    print('isDarkMode: $isDarkMode');
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Xplra',
-      theme: () {
-        return getDarkTheme();
-        // final index = settingsProvider
-        //     .indexWhere((setting) => setting.key == 'isDarkMode');
-        // return index >= 0 && (settingsProvider[index].value as bool)
-        //     ? getDarkTheme()
-        //     : getTheme();
-      }(),
+      theme: getTheme(), // Light theme
+      darkTheme: getDarkTheme(), // Dark theme
+      themeMode: isDarkMode == null
+          ? ThemeMode.system // No preference - follow system
+          : (isDarkMode ? ThemeMode.dark : ThemeMode.light),
       routes: {
         '/': (context) => const InitialRouteHandler(),
         '/home': (context) => const Home(),

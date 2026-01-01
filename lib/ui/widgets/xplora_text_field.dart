@@ -71,7 +71,7 @@ class XploraTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: border, width: 1),
+          borderSide: BorderSide(color: context.colors.border, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -79,7 +79,7 @@ class XploraTextField extends StatelessWidget {
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: border, width: 1),
+          borderSide: BorderSide(color: context.colors.border, width: 1),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -90,7 +90,7 @@ class XploraTextField extends StatelessWidget {
           borderSide: BorderSide(color: errorColor, width: 1),
         ),
         filled: true,
-        fillColor: bgSecondary,
+        fillColor: context.colors.bgSecondary,
         contentPadding: contentPadding ?? const EdgeInsets.all(16)
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/colors.dart';
-import '../../theme/typography.dart';
+import '../../theme.dart';
 
 /// Reusable filter bubble widget with consistent styling
 /// Used for category chips, filter options, and other selectable items
@@ -39,9 +38,9 @@ class FilterBubble extends StatelessWidget {
           color: isSelected ? brandPrimary : Colors.transparent,
           borderRadius: BorderRadius.circular(borderRadius ?? 20),
           border: Border.all(
-            color: isSelected 
-                ? brandPrimary 
-                : border,
+            color: isSelected
+                ? brandPrimary
+                : context.colors.border,
             width: 1,
           ),
           boxShadow: isSelected
@@ -64,7 +63,7 @@ class FilterBubble extends StatelessWidget {
                 fontWeight: isSelected 
                     ? FontWeight.bold 
                     : FontWeight.normal,
-                color: isSelected ? textPrimary : textPrimary,
+                color: isSelected ? context.colors.textPrimary : context.colors.textPrimary,
               ),
             ),
             if (icon != null) ...[
@@ -83,7 +82,7 @@ class FilterBubble extends StatelessWidget {
                 fontWeight: isSelected 
                     ? FontWeight.bold 
                     : FontWeight.normal,
-                color: isSelected ? textPrimary : textPrimary,
+                color: isSelected ? context.colors.textPrimary : context.colors.textPrimary,
               ),
             ),
           ],

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/colors.dart';
-import '../../theme/typography.dart';
+import '../../theme.dart';
 
 /// Reusable primary button with green/purple background and glow effect
 /// Hover state increases glow intensity
@@ -36,7 +35,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
   @override
   Widget build(BuildContext context) {
     final buttonColor = widget.useSecondary ? brandSecondary : brandPrimary;
-    final textColor = widget.useSecondary ? textPrimary : null;
+    final textColor = widget.useSecondary ? context.colors.textPrimary : null;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -53,7 +52,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
               vertical: 8,
             ),
             decoration: BoxDecoration(
-              color: widget.onPressed == null ? bgSecondary : buttonColor,
+              color: widget.onPressed == null ? context.colors.bgSecondary : buttonColor,
               borderRadius: BorderRadius.circular(8),
               boxShadow: widget.onPressed==null ? [] : [
                 BoxShadow(

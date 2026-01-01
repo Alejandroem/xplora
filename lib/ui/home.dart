@@ -240,22 +240,6 @@ class _HomeState extends ConsumerState<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final settingsProvider = ref.watch(settingsStateNotifierProvider);
-    final index = settingsProvider
-        .indexWhere((setting) => setting.key == 'isDarkMode');
-    final isDarkTheme = index >= 0 && (settingsProvider[index].value as bool);
-    ref.listen(bottomNavigationBarProvider, (previous, next) {
-      if (next == NavigationItem.xpc || next == NavigationItem.store || next == NavigationItem.notifications) {
-        // after user logs in the dark theme is false (needs to be fixed)
-        print('isDarkTheme: $isDarkTheme');
-        SystemChrome.setSystemUIOverlayStyle(
-          SystemUiOverlayStyle(
-            statusBarIconBrightness: isDarkTheme ? Brightness.light : Brightness.dark,
-          ),
-        );
-      }
-    });
-
     ref.listen(currentAuthUserIdStreamProvider, (previous, next) {
       if (next.value != null) {
         ref.watch(notificationsServiceProvider).saveToken(next.value!);

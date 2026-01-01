@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/colors.dart';
-import '../../theme/typography.dart';
+import '../../theme.dart';
 
 /// Reusable secondary button with transparent background and purple thin border
 /// Used for secondary actions like "Clear Filters"
@@ -52,9 +51,9 @@ class _SecondaryButtonState extends State<SecondaryButton> {
             color: Colors.transparent, /// Transparent background
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: widget.isEnabled 
-                  ? border
-                  : border.withOpacity(0.3), /// Dimmed when disabled
+              color: widget.isEnabled
+                  ? context.colors.border
+                  : context.colors.border.withOpacity(0.3), /// Dimmed when disabled
               width: 1, /// Thin border
             ),
             boxShadow: widget.isEnabled && _isHovered
@@ -81,8 +80,8 @@ class _SecondaryButtonState extends State<SecondaryButton> {
                     fontSize: widget.fontSize ?? 14,
                     fontWeight: FontWeight.bold,
                     color: widget.isEnabled
-                        ? textPrimary /// White text when enabled
-                        : textDisabled, /// Gray text when disabled
+                        ? context.colors.textPrimary /// White text when enabled
+                        : context.colors.textDisabled, /// Gray text when disabled
                   ),
                 ),
               ],

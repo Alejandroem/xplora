@@ -7,12 +7,6 @@ import '../widgets/email_verification_banner.dart';
 import '../widgets/quests_carousel.dart';
 import 'quest_components.dart';
 
-// Provider for selected filter
-final selectedCarouselFilterProvider = StateProvider<String>((ref) => 'Nearby');
-
-// Provider for selected activity types (multiple)
-final selectedActivityTypesProvider = StateProvider<List<String>>((ref) => []);
-
 class FeedComponents extends ConsumerWidget {
   const FeedComponents({super.key});
 

@@ -32,10 +32,10 @@ class _EconomyHubState extends ConsumerState<EconomyHub> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: bgSecondary,
+              color: context.colors.bgSecondary,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: border,
+                color: context.colors.border,
                 width: 1,
               ),
             ),
@@ -139,7 +139,7 @@ class _EconomyHubState extends ConsumerState<EconomyHub> {
     required String description,
     Color? color,
   }) {
-    color = iconColor;
+    color = context.colors.iconColor;
     return GlassContainer(
       borderRadius: 12,
       padding: const EdgeInsets.all(20),
@@ -171,7 +171,7 @@ class _EconomyHubState extends ConsumerState<EconomyHub> {
                   description,
                   style: bodyTextStyle.copyWith(
                     fontSize: 13,
-                    color: textTertiary,
+                    color: context.colors.textTertiary,
                   ),
                 ),
               ],

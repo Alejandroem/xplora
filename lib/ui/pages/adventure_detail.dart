@@ -219,7 +219,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                   
                   return Container(
                     height: 200,
-                    color: bgSecondary,
+                    color: context.colors.bgSecondary,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -242,7 +242,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                 },
                 placeholder: (context, url) => Container(
                   height: 200,
-                  color: bgSecondary,
+                  color: context.colors.bgSecondary,
                   child: Center(
                     child: CircularProgressIndicator(
                       color: brandPrimary,
@@ -260,7 +260,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     widget.adventure.shortDescription,
-                    style: bodyTextStyle.copyWith(color: textPrimary, fontSize: 16),
+                    style: bodyTextStyle.copyWith(color: context.colors.textPrimary, fontSize: 16),
                   ),
                 ),
               ),
@@ -274,7 +274,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     widget.adventure.longDescription,
-                    style: bodyTextStyle.copyWith(color: textPrimary, fontSize: 16),
+                    style: bodyTextStyle.copyWith(color: context.colors.textPrimary, fontSize: 16),
                   ),
                 ),
               ),
@@ -300,7 +300,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                   text: 'Open in Google Maps',
                   icon: Icon(
                     Icons.map,
-                    color: textPrimary,
+                    color: context.colors.textPrimary,
                     size: 20,
                   ),
                   onPressed: () async {

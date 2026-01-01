@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/colors.dart';
+import '../../theme.dart';
 
 class SocialIconButton extends StatelessWidget {
   SocialIconButton({super.key, this.icon, this.iconPath, this.onPressed});
@@ -35,7 +35,7 @@ class SocialIconButton extends StatelessWidget {
         )
             : Icon(
           icon!,
-          color: textPrimary,
+          color: context.colors.textPrimary,
           size: 32,
         ),
       ),

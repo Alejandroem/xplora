@@ -42,11 +42,11 @@ class QuestProgressIndicator extends ConsumerWidget {
                 style: bodyTextStyle.copyWith(
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               progressColor: brandSecondary,
-              backgroundColor: border,
+              backgroundColor: context.colors.border,
               circularStrokeCap: CircularStrokeCap.round,
             ),
             const SizedBox(width: 8),
@@ -61,7 +61,7 @@ class QuestProgressIndicator extends ConsumerWidget {
                     'Active Quest',
                     style: bodyTextStyle.copyWith(
                       fontSize: 9,
-                      color: textTertiary,
+                      color: context.colors.textTertiary,
                     ),
                   ),
                   Text(
@@ -69,7 +69,7 @@ class QuestProgressIndicator extends ConsumerWidget {
                     style: bodyTextStyle.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

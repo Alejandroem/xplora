@@ -45,7 +45,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     child: Text(
                       'Create your account and start exploring',
                       style: bodyTextStyle.copyWith(
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                         fontSize: 16,
                       ),
                       textAlign: TextAlign.center,
@@ -65,7 +65,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         textCapitalization: TextCapitalization.words,
                         prefixIcon: Icon(
                           Icons.person_outline,
-                          color: textSecondary,
+                          color: context.colors.textSecondary,
                           size: 20,
                         ),
                         onChanged: (value) {
@@ -86,7 +86,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     textInputAction: TextInputAction.next,
                     prefixIcon: Icon(
                       Icons.email_outlined,
-                      color: textSecondary,
+                      color: context.colors.textSecondary,
                       size: 20,
                     ),
                     onChanged: (value) {
@@ -102,7 +102,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     obscureText: _obscurePassword,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: textSecondary,
+                      color: context.colors.textSecondary,
                       size: 20,
                     ),
                     suffixIcon: IconButton(
@@ -113,7 +113,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       },
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                         size: 20,
                       ),
                     ),
@@ -130,7 +130,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     obscureText: _obscureConfirmPassword,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: textSecondary,
+                      color: context.colors.textSecondary,
                       size: 20,
                     ),
                     suffixIcon: IconButton(
@@ -141,7 +141,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       },
                       icon: Icon(
                         _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                         size: 20,
                       ),
                     ),
@@ -200,7 +200,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     children: [
                       Expanded(
                         child: Divider(
-                          color: border,
+                          color: context.colors.border,
                           thickness: 1,
                         ),
                       ),
@@ -209,14 +209,14 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         child: Text(
                           'or continue with',
                           style: bodyTextStyle.copyWith(
-                            color: textSecondary,
+                            color: context.colors.textSecondary,
                             fontSize: 14,
                           ),
                         ),
                       ),
                       Expanded(
                         child: Divider(
-                          color: border,
+                          color: context.colors.border,
                           thickness: 1,
                         ),
                       ),
@@ -276,7 +276,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                             TextSpan(
                               text: 'Already have an account? ',
                               style: bodyTextStyle.copyWith(
-                                color: textSecondary,
+                                color: context.colors.textSecondary,
                               ),
                             ),
                             TextSpan(

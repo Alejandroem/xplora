@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../theme/colors.dart';
+import '../../theme.dart';
 
 /// Bottom navbar with transparent glass effect and thin purple divider on top
 /// Light, floating feel with backdrop blur
@@ -22,7 +22,7 @@ class GlassBottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: border, /// Thin divider on top
+            color: context.colors.border, /// Thin divider on top
             width: 1,
           ),
         ),
@@ -39,7 +39,7 @@ class GlassBottomNavBar extends StatelessWidget {
             items: items,
             backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4), /// More transparent for light feel
             selectedItemColor: brandPrimary, /// Lime green for active states
-            unselectedItemColor: textSecondary, /// Gray for inactive icons
+            unselectedItemColor: context.colors.textSecondary, /// Gray for inactive icons
             type: BottomNavigationBarType.fixed, /// Keeps items fixed width
             elevation: 0, /// No shadow, using blur instead
             showSelectedLabels: false, /// No labels, only icons

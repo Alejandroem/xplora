@@ -57,7 +57,7 @@ class BaseDialog extends StatelessWidget {
                           Text(
                             description,
                             style: bodyTextStyle.copyWith(
-                              color: textSecondary,
+                              color: context.colors.textSecondary,
                               fontSize: 16,
                               height: 1.5,
                             ),
@@ -96,16 +96,16 @@ class BaseDialog extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: elevated.withOpacity(0.3),
+                        color: context.colors.elevated.withOpacity(0.3),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: elevated.withOpacity(0.5),
+                          color: context.colors.elevated.withOpacity(0.5),
                           width: 1,
                         ),
                       ),
                       child: Icon(
                         Icons.close,
-                        color: iconColor,
+                        color: context.colors.iconColor,
                         size: 20,
                       ),
                     ),

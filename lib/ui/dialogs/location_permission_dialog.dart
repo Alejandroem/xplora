@@ -190,7 +190,7 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   side: BorderSide(
-                    color: textSecondary.withOpacity(0.3),
+                    color: context.colors.textSecondary.withOpacity(0.3),
                     width: 1,
                   ),
                   shape: RoundedRectangleBorder(
@@ -200,7 +200,7 @@ class _LocationPermissionDialogState extends ConsumerState<LocationPermissionDia
                 child: Text(
                   'Skip',
                   style: bodyTextStyle.copyWith(
-                    color: textSecondary,
+                    color: context.colors.textSecondary,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),

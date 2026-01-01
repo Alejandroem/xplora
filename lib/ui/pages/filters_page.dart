@@ -34,7 +34,7 @@ class FiltersPage extends ConsumerWidget {
                     Text(
                       'What do you want to explore?',
                       style: h3Style.copyWith(
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                   ],
@@ -50,7 +50,7 @@ class FiltersPage extends ConsumerWidget {
                       icon: Icon(
                         Icons.all_inclusive,
                         size: 20,
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                       isSelected: filtersState.selectedType == 'All',
                       onTap: () {
@@ -69,7 +69,7 @@ class FiltersPage extends ConsumerWidget {
                       icon: Icon(
                         Icons.explore,
                         size: 20,
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                       isSelected: filtersState.selectedType == 'Adventure',
                       onTap: () {
@@ -86,7 +86,7 @@ class FiltersPage extends ConsumerWidget {
                       icon: Icon(
                         Icons.flag,
                         size: 20,
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                       isSelected: filtersState.selectedType == 'Quest',
                       onTap: () {
@@ -109,7 +109,7 @@ class FiltersPage extends ConsumerWidget {
                       child: Text(
                         'How far do you want to travel?',
                         style: h3Style.copyWith(
-                          color: textPrimary,
+                          color: context.colors.textPrimary,
                         ),
                       ),
                     ),
@@ -125,7 +125,7 @@ class FiltersPage extends ConsumerWidget {
                       padding: const EdgeInsets.only(top: 12.0),
                       child: Icon(
                         Icons.location_on,
-                        color: iconColor,
+                        color: context.colors.iconColor,
                         size: 25,
                       ),
                     ),
@@ -139,7 +139,7 @@ class FiltersPage extends ConsumerWidget {
                             max: 500000,
                             divisions: 100,
                             activeColor: brandPrimary,
-                            inactiveColor: border,
+                            inactiveColor: context.colors.border,
                             onChanged: (value) {
                               ref.read(filtersStateProvider.notifier).state =
                                   filtersState.copyWith(
@@ -149,7 +149,7 @@ class FiltersPage extends ConsumerWidget {
                           Text(
                             '${(filtersState.minimumDistance / 1000).round()} km',
                             style: bodyTextStyle.copyWith(
-                              color: textPrimary,
+                              color: context.colors.textPrimary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -167,7 +167,7 @@ class FiltersPage extends ConsumerWidget {
                     Text(
                       'Which category interests you?',
                       style: h3Style.copyWith(
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -185,8 +185,8 @@ class FiltersPage extends ConsumerWidget {
                                 colorScheme: ColorScheme.dark(
                                   primary: brandPrimary,
                                   secondary: brandPrimary,
-                                  onPrimary: textPrimary,
-                                  onSecondary: textPrimary,
+                                  onPrimary: context.colors.textPrimary,
+                                  onSecondary: context.colors.textPrimary,
                                 ),
                               ),
                               child: Wrap(
@@ -198,7 +198,7 @@ class FiltersPage extends ConsumerWidget {
                                     icon: Icon(
                                       Icons.category_outlined,
                                       size: 20,
-                                      color: textPrimary,
+                                      color: context.colors.textPrimary,
                                     ),
                                     isSelected: ref.watch(selectedCategoriesProvider) == '',
                                     onTap: () {
@@ -222,7 +222,7 @@ class FiltersPage extends ConsumerWidget {
                                       category.imageUrl,
                                       height: 20,
                                       width: 20,
-                                      color: textPrimary,
+                                      color: context.colors.textPrimary,
                                     ),
                                     isSelected: ref.watch(selectedCategoriesProvider) == category.id,
                                     onTap: () {

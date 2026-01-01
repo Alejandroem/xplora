@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/colors.dart';
-import '../../theme/typography.dart';
+import '../../theme.dart';
 
 class TotalXpBadge extends StatelessWidget {
   TotalXpBadge({super.key, required this.xp});
@@ -13,10 +12,10 @@ class TotalXpBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       decoration: BoxDecoration(
-        color: bgTertiary,
+        color: context.colors.bgTertiary,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: border,
+          color: context.colors.border,
           width: 1,
         ),
       ),
@@ -25,7 +24,7 @@ class TotalXpBadge extends StatelessWidget {
         children: [
           Icon(
             Icons.star,
-            color: iconColor,
+            color: context.colors.iconColor,
             size: 20,
           ),
           const SizedBox(width: 14),

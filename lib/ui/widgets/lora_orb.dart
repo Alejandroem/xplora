@@ -134,7 +134,7 @@ class _LoraOrbState extends ConsumerState<LoraOrb>
                 child: Center(
                   child: Icon(
                     Icons.auto_awesome,
-                    color: textPrimary,
+                    color: context.colors.textPrimary,
                     size: 30,
                   ),
                 ),

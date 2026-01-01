@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 // ============================================================================
 // ICONOGRAPHY SYSTEM (MVP)
 // ============================================================================
@@ -13,3 +15,16 @@
 const double iconSizeSmall = 16.0; /// Small icons (e.g., inline with text)
 const double iconSizeMedium = 20.0; /// Medium icons (e.g., buttons, form fields)
 const double iconSizeLarge = 24.0; /// Large icons (e.g., prominent actions)
+
+// NOTE: Icons do not have separate colors
+// Icons inherit text color tokens based on hierarchy:
+// • Primary icons → textPrimary
+// • Secondary icons → textSecondary
+// • Tertiary icons → textTertiary
+
+// ============================================================================
+// AVATAR SIZES
+// ============================================================================
+// Avatar/Profile Picture Sizes
+const double avatarRadiusSmall = 18.0; /// Small avatar radius (used in CircleAvatar)
+const double avatarSizeSmall = 36.0; /// Small avatar diameter (width/height for images)

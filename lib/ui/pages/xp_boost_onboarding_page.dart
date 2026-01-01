@@ -70,7 +70,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                       child: Text(
                         'Complete your profile and unlock bonus rewards',
                         style: bodyTextStyle.copyWith(
-                          color: textTertiary,
+                          color: context.colors.textTertiary,
                           fontSize: 16,
                         ),
                         textAlign: TextAlign.center,
@@ -82,7 +82,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                     Text(
                       'Bio',
                       style: h3Style.copyWith(
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                         fontSize: 16,
                       ),
                     ),
@@ -106,7 +106,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                     Text(
                       'Social Links',
                       style: h3Style.copyWith(
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                         fontSize: 16,
                       ),
                     ),
@@ -120,7 +120,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                       textInputAction: TextInputAction.next,
                       prefixIcon: Icon(
                         Icons.camera_alt_outlined,
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                         size: 20,
                       ),
                       onChanged: (value) {
@@ -137,7 +137,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                       textInputAction: TextInputAction.next,
                       prefixIcon: Icon(
                         Icons.tag,
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                         size: 20,
                       ),
                       onChanged: (value) {
@@ -155,7 +155,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                       textInputAction: TextInputAction.done,
                       prefixIcon: Icon(
                         Icons.facebook,
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                         size: 20,
                       ),
                       onChanged: (value) {
@@ -168,7 +168,7 @@ class _XpOnboardingPageState extends ConsumerState<XpBoostOnboardingPage> {
                     Text(
                       'Quick Actions',
                       style: h3Style.copyWith(
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                         fontSize: 16,
                       ),
                     ),
@@ -320,12 +320,12 @@ class _ActionButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: isCompleted
                   ? brandPrimary.withOpacity(0.2)
-                  : iconColor.withOpacity(0.15),
+                  : context.colors.iconColor.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(
               isCompleted ? Icons.check_circle : icon,
-              color: iconColor,
+              color: context.colors.iconColor,
               size: 24,
             ),
           ),
@@ -354,14 +354,14 @@ class _ActionButton extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: textSecondary.withOpacity(0.2),
+                          color: context.colors.textSecondary.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           'Soon',
                           style: bodyTextStyle.copyWith(
                             fontSize: 10,
-                            color: textSecondary,
+                            color: context.colors.textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -374,7 +374,7 @@ class _ActionButton extends StatelessWidget {
                   description,
                   style: bodyTextStyle.copyWith(
                     fontSize: 13,
-                    color: textTertiary,
+                    color: context.colors.textTertiary,
                   ),
                 ),
               ],
@@ -396,7 +396,7 @@ class _ActionButton extends StatelessWidget {
                 style: bodyTextStyle.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
             )
@@ -412,7 +412,7 @@ class _ActionButton extends StatelessWidget {
                 style: bodyTextStyle.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
             )

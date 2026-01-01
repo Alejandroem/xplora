@@ -50,7 +50,7 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
           SnackBar(
             content: Text(
               'Unable to share',
-              style: bodyTextStyle.copyWith(color: textPrimary),
+              style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
             ),
             duration: const Duration(seconds: 2),
             backgroundColor: errorColor,
@@ -71,16 +71,16 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
         width: 80,
         height: 80,
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
+          color: context.colors.iconColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(40),
           border: Border.all(
-            color: iconColor.withOpacity(0.2),
+            color: context.colors.iconColor.withOpacity(0.2),
             width: 2,
           ),
         ),
         child: Icon(
           Icons.card_giftcard,
-          color: iconColor,
+          color: context.colors.iconColor,
           size: 40,
         ),
       ),
@@ -111,10 +111,10 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: bgTertiary,
+              color: context.colors.bgTertiary,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: border,
+                color: context.colors.border,
                 width: 1,
               ),
             ),
@@ -124,7 +124,7 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
                 Text(
                   'Your invite link',
                   style: bodyTextStyle.copyWith(
-                    color: textSecondary,
+                    color: context.colors.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -136,7 +136,7 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
                       child: Text(
                         _inviteLink,
                         style: bodyTextStyle.copyWith(
-                          color: textPrimary,
+                          color: context.colors.textPrimary,
                           fontSize: 14,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -148,13 +148,13 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: iconColor.withOpacity(0.2),
+                          color: context.colors.iconColor.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
                           _linkCopied ? Icons.check : Icons.copy,
                           size: 18,
-                          color: iconColor,
+                          color: context.colors.iconColor,
                         ),
                       ),
                     ),

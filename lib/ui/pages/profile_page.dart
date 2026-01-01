@@ -72,29 +72,29 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         Expanded(
                           child: TextField(
                             style: bodyTextStyle.copyWith(
-                              color: textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                             decoration: InputDecoration(
                               labelText: 'Username',
                               labelStyle: bodyTextStyle.copyWith(
-                                color: textSecondary,
+                                color: context.colors.textSecondary,
                               ),
                               hintStyle: bodyTextStyle.copyWith(
-                                color: textSecondary,
+                                color: context.colors.textSecondary,
                               ),
                               filled: true,
-                              fillColor: bgSecondary,
+                              fillColor: context.colors.bgSecondary,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(
-                                  color: cardContainerBorder,
+                                  color: context.colors.cardContainerBorder,
                                   width: 1,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(
-                                  color: cardContainerBorder,
+                                  color: context.colors.cardContainerBorder,
                                   width: 1,
                                 ),
                               ),
@@ -240,7 +240,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 Text(
                   'Level ${profile.profileLevel()}',
                   style: bodyTextStyle.copyWith(
-                    color: textPrimary,
+                    color: context.colors.textPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -252,7 +252,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               height: 25,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: border,
+                  color: context.colors.border,
                 ),
                 borderRadius: BorderRadius.circular(32),
               ),
@@ -271,7 +271,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     child: Text(
                       '${profile.experience} / ${profile.experienceForNextLevel()} XP',
                       style: bodyTextStyle.copyWith(
-                        color: textPrimary,
+                        color: context.colors.textPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
@@ -289,7 +289,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 Text(
                   'XP ${profile.experience}',
                   style: bodyTextStyle.copyWith(
-                    color: textPrimary,
+                    color: context.colors.textPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -297,7 +297,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
             const SizedBox(height: 10.0),
             Divider(
-              color: border,
+              color: context.colors.border,
               thickness: 1,
             ),
             Padding(
@@ -310,7 +310,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   Text(
                     'Achievements',
                     style: h3Style.copyWith(
-                      color: textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                 ],
@@ -335,7 +335,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                     Text(
                                       'No achievements yet!',
                                       style: bodyTextStyle.copyWith(
-                                        color: textSecondary,
+                                        color: context.colors.textSecondary,
                                       ),
                                     ),
                                     const SizedBox(height: 5.0),
@@ -373,13 +373,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                             iconsMap[achievement.icon] ??
                                                 Icons.emoji_events,
                                             size: 35.0,
-                                            color: textPrimary,
+                                            color: context.colors.textPrimary,
                                           ),
                                           const SizedBox(height: 10.0),
                                           Text(
                                             achievement.title,
                                             style: bodyTextStyle.copyWith(
-                                              color: textPrimary,
+                                              color: context.colors.textPrimary,
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -403,7 +403,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
             ),
             Divider(
-              color: border,
+              color: context.colors.border,
               thickness: 1,
             ),
             Padding(
@@ -416,7 +416,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   Text(
                     'Bookmarks',
                     style: h3Style.copyWith(
-                      color: textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                 ],

@@ -33,7 +33,7 @@ class ReusableBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: border,
+            color: context.colors.border,
             width: 2,
           ),
         ),
@@ -46,7 +46,7 @@ class ReusableBottomSheet extends StatelessWidget {
           // Title
           Text(
             title,
-            style: h3Style.copyWith(color: textPrimary),
+            style: h3Style.copyWith(color: context.colors.textPrimary),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24.0),

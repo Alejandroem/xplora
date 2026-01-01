@@ -133,7 +133,7 @@ class _CarouselCardState extends State<CarouselCard>
                             ),
                             child: Icon(
                               Icons.check,
-                              color: textPrimary,
+                              color: context.colors.textPrimary,
                               size: 16,
                             ),
                           ),
@@ -199,12 +199,12 @@ class _CarouselCardState extends State<CarouselCard>
         errorWidget: (context, url, error) {
           return Container(
             padding: const EdgeInsets.only(bottom: 40),
-            color: widget.backgroundColor ?? bgPrimary,
+            color: widget.backgroundColor ?? context.colors.bgPrimary,
             child: Center(
               child: Icon(
                 Icons.image_not_supported,
                 size: 50,
-                color: textSecondary,
+                color: context.colors.textSecondary,
               ),
             ),
           );

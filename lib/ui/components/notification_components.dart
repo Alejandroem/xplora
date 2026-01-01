@@ -56,7 +56,7 @@ class _NotificationComponentsState
                                 SizedBox(
                                   height: MediaQuery.of(context).size.height*0.8,
                                   child: Center(
-                                    child: Text('No notifications found', style: bodyTextStyle.copyWith(color: textSecondary, fontSize: 16)),
+                                    child: Text('No notifications found', style: bodyTextStyle.copyWith(color: context.colors.textSecondary, fontSize: 16)),
                                   ),
                                 ),
                               ];

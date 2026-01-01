@@ -65,7 +65,7 @@ class NearbyQuests extends ConsumerWidget {
                           return Center(
                             child: Text( 'No quests found nearby',
                               style:
-                                  bodyTextStyle.copyWith(color: textSecondary),
+                                  bodyTextStyle.copyWith(color: context.colors.textSecondary),
                             ),
                           );
                         }

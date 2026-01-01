@@ -51,7 +51,7 @@ class _LoraAiAssistantState extends ConsumerState<LoraAiAssistant> {
                 child: Center(
                   child: Icon(
                     Icons.auto_awesome,
-                    color: textPrimary,
+                    color: context.colors.textPrimary,
                     size: 50,
                   ),
                 ),
@@ -172,7 +172,7 @@ class _LoraAiAssistantState extends ConsumerState<LoraAiAssistant> {
     required String description,
     Color? color,
   }) {
-    color = iconColor;
+    color = context.colors.iconColor;
     return GlassContainer(
       borderRadius: 12,
       padding: const EdgeInsets.all(20),
@@ -204,7 +204,7 @@ class _LoraAiAssistantState extends ConsumerState<LoraAiAssistant> {
                   description,
                   style: bodyTextStyle.copyWith(
                     fontSize: 13,
-                    color: textSecondary,
+                    color: context.colors.textSecondary,
                   ),
                 ),
               ],

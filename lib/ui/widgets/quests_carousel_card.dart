@@ -50,7 +50,7 @@ class QuestsCarouselCard extends ConsumerWidget {
               children: [
                 Icon(
                   Icons.star,
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   size: 12,
                 ),
                 const SizedBox(width: 2),
@@ -59,7 +59,7 @@ class QuestsCarouselCard extends ConsumerWidget {
                     '${quest.experience.toInt()} XP',
                     style: bodyTextStyle.copyWith(
                       fontSize: 11,
-                      color: textPrimary,
+                      color: context.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -76,7 +76,7 @@ class QuestsCarouselCard extends ConsumerWidget {
               children: [
                 Icon(
                   Icons.location_on,
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   size: 12,
                 ),
                 Flexible(
@@ -84,7 +84,7 @@ class QuestsCarouselCard extends ConsumerWidget {
                     _getDistance(ref),
                     style: bodyTextStyle.copyWith(
                       fontSize: 11,
-                      color: textPrimary,
+                      color: context.colors.textPrimary,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,

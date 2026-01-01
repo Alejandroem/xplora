@@ -60,7 +60,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
           SnackBar(
             content: Text(
               'Error picking image: $e',
-              style: bodyTextStyle.copyWith(color: textPrimary),
+              style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
             ),
             backgroundColor: errorColor,
           ),
@@ -98,7 +98,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
       if (!file.existsSync()) {
         return Icon(
           Icons.add_a_photo,
-          color: textSecondary,
+          color: context.colors.textSecondary,
           size: 40,
         );
       }
@@ -111,7 +111,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
         errorBuilder: (context, error, stackTrace) {
           return Icon(
             Icons.add_a_photo,
-            color: textSecondary,
+            color: context.colors.textSecondary,
             size: 40,
           );
         },
@@ -119,7 +119,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
     } catch (e) {
       return Icon(
         Icons.add_a_photo,
-        color: textSecondary,
+        color: context.colors.textSecondary,
         size: 40,
       );
     }
@@ -129,11 +129,11 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: bgTertiary, // Solid background to prevent text interference
+        color: context.colors.bgTertiary, // Solid background to prevent text interference
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
-            color: border,
+            color: context.colors.border,
             width: 2,
           ),
         ),
@@ -157,10 +157,10 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: bgSecondary,
+                color: context.colors.bgSecondary,
                 borderRadius: BorderRadius.circular(60),
                 border: Border.all(
-                  color: border,
+                  color: context.colors.border,
                   width: 2,
                 ),
               ),
@@ -186,7 +186,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
                                 errorBuilder: (context, error, stackTrace) {
                                   return Icon(
                                     Icons.add_a_photo,
-                                    color: textSecondary,
+                                    color: context.colors.textSecondary,
                                     size: 40,
                                   );
                                 },
@@ -194,7 +194,7 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
                             )
                           : Icon(
                               Icons.add_a_photo,
-                              color: textSecondary,
+                              color: context.colors.textSecondary,
                               size: 40,
                             ),
             ),
@@ -268,10 +268,10 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: bgSecondary,
+          color: context.colors.bgSecondary,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDestructive ? errorColor : border,
+            color: isDestructive ? errorColor : context.colors.border,
             width: 1,
           ),
         ),
@@ -280,14 +280,14 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
           children: [
             Icon(
               icon,
-              color: isDestructive ? errorColor : textPrimary,
+              color: isDestructive ? errorColor : context.colors.textPrimary,
               size: 32,
             ),
             const SizedBox(height: 8),
             Text(
               label,
               style: bodySmallStyle.copyWith(
-                color: isDestructive ? errorColor : textPrimary
+                color: isDestructive ? errorColor : context.colors.textPrimary
               ),
             ),
           ],

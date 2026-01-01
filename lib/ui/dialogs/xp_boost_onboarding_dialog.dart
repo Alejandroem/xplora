@@ -26,7 +26,7 @@ class XpBoostOnboardingDialog extends StatelessWidget {
         child: Center(
           child: Icon(
             Icons.rocket_launch,
-            color: textPrimary,
+            color: context.colors.textPrimary,
             size: 45,
           ),
         ),
@@ -139,12 +139,12 @@ class _BoostItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.15),
+              color: context.colors.iconColor.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
-              color: iconColor,
+              color: context.colors.iconColor,
               size: 22,
             ),
           ),
@@ -173,14 +173,14 @@ class _BoostItem extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: textSecondary.withOpacity(0.2),
+                          color: context.colors.textSecondary.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           'Soon',
                           style: bodyTextStyle.copyWith(
                             fontSize: 10,
-                            color: textSecondary,
+                            color: context.colors.textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -193,7 +193,7 @@ class _BoostItem extends StatelessWidget {
                   description,
                   style: bodyTextStyle.copyWith(
                     fontSize: 12,
-                    color: textSecondary,
+                    color: context.colors.textSecondary,
                   ),
                 ),
               ],

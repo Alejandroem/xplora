@@ -12,17 +12,13 @@ import '../../theme.dart';
 class SmoothFilterScrollRow extends StatefulWidget {
   final List<String> filters;
   final String selectedFilter;
-  final List<String> selectedActivityTypes;
   final Function(String) onFilterTap;
-  final Future<void> Function() onActivityTypesTap;
 
   const SmoothFilterScrollRow({
     super.key,
     required this.filters,
     required this.selectedFilter,
-    required this.selectedActivityTypes,
     required this.onFilterTap,
-    required this.onActivityTypesTap,
   });
 
   @override
@@ -42,9 +38,6 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
   // Track if we're performing an animation (to prevent conflicts)
   bool _isAnimating = false;
 
-  // Track if activity types modal was recently opened
-  bool _activityTypesModalOpened = false;
-
   @override
   void initState() {
     super.initState();
@@ -52,49 +45,14 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
     // Initialize ScrollController with custom physics for smooth scrolling
     _scrollController = ScrollController();
 
-    // Create GlobalKeys for each filter bubble (including activity types)
+    // Create GlobalKeys for each filter bubble
     _filterKeys.clear();
-    for (int i = 0; i < widget.filters.length + 1; i++) {
+    for (int i = 0; i < widget.filters.length; i++) {
       _filterKeys.add(GlobalKey());
     }
 
     // Listen for scroll events to detect when user stops scrolling
     _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void didUpdateWidget(SmoothFilterScrollRow oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // Check if activity types changed (items added or removed)
-    final activityTypesChanged =
-        oldWidget.selectedActivityTypes.length != widget.selectedActivityTypes.length;
-
-    if (activityTypesChanged) {
-      // Center the appropriate bubble after a brief delay to allow rebuild
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          // If activity types were just cleared, center the active filter
-          if (widget.selectedActivityTypes.isEmpty && oldWidget.selectedActivityTypes.isNotEmpty) {
-            _activityTypesModalOpened = false;
-            _centerActiveFilter();
-          } else {
-            // Otherwise, center the activity types bubble to show the count
-            _activityTypesModalOpened = false;
-            _centerActivityTypesBubble();
-          }
-        }
-      });
-    } else if (_activityTypesModalOpened && widget.selectedActivityTypes.isEmpty) {
-      // Modal was opened but no activity types are selected
-      // This handles the case where user opened modal but didn't select anything
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _activityTypesModalOpened = false;
-          _centerActiveFilter();
-        }
-      });
-    }
   }
 
   @override
@@ -111,13 +69,6 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
     if (activeFilterIndex != -1) {
       _centerItem(activeFilterIndex);
     }
-  }
-
-  /// Centers the activity types bubble (last item in the list)
-  void _centerActivityTypesBubble() {
-    // The activity types bubble is always the last item
-    final activityTypesIndex = widget.filters.length;
-    _centerItem(activityTypesIndex);
   }
 
   /// Handles scroll events and triggers snap behavior when scrolling stops
@@ -283,43 +234,6 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
                 ),
               );
             }),
-
-            // Activity Types dropdown bubble
-            Padding(
-              key: _filterKeys[widget.filters.length],
-              padding: const EdgeInsets.only(right: 8.0),
-              child: FilterBubble(
-                text: widget.selectedActivityTypes.isEmpty
-                    ? 'Specific'
-                    : 'Specific (${widget.selectedActivityTypes.length})',
-                isSelected: widget.selectedActivityTypes.isNotEmpty,
-                onTap: () async {
-                  // Mark that modal is being opened
-                  _activityTypesModalOpened = true;
-
-                  // Animate to center before showing modal
-                  _centerItem(widget.filters.length);
-
-                  // Show modal and wait for it to close
-                  await widget.onActivityTypesTap();
-
-                  // Wait a brief moment for any state updates to propagate
-                  await Future.delayed(const Duration(milliseconds: 50));
-
-                  // If modal was closed and no activity types are selected, center active filter
-                  if (mounted && _activityTypesModalOpened && widget.selectedActivityTypes.isEmpty) {
-                    _activityTypesModalOpened = false;
-                    _centerActiveFilter();
-                  }
-                },
-                icon: Icon(
-                  Icons.arrow_drop_down,
-                  size: 18,
-                  color: textPrimary,
-                ),
-                iconAtEnd: true,
-              ),
-            ),
           ],
         ),
       ),

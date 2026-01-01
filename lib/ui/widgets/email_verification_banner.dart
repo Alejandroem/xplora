@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/local_storage_providers.dart';
-import '../../theme/colors.dart';
+import '../../theme.dart';
 
 class EmailVerificationBanner extends ConsumerStatefulWidget {
   const EmailVerificationBanner({super.key});
@@ -88,7 +88,7 @@ class _EmailVerificationBannerState
                           _isButtonDisabled
                               ? OutlinedButton(
                                   onPressed: null,
-                                  child: Text('Retry in $_remainingSeconds s', style: TextStyle(color: textDisabled)),
+                                  child: Text('Retry in $_remainingSeconds s', style: TextStyle(color: context.colors.textDisabled)),
                                 )
                               : OutlinedButton(
                                   onPressed: () async {

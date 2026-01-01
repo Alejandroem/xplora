@@ -36,7 +36,7 @@ class _BottomChangePasswordCardState
 
     return Container(
       decoration: BoxDecoration(
-        color: bgTertiary, /// Solid background to prevent text interference
+        color: context.colors.bgTertiary, /// Solid background to prevent text interference
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           top: BorderSide(
@@ -65,7 +65,7 @@ class _BottomChangePasswordCardState
             suffixIcon: IconButton(
               icon: Icon(
                 obscureOldPassword ? Icons.visibility : Icons.visibility_off,
-                color: textSecondary,
+                color: context.colors.textSecondary,
               ),
               onPressed: () {
                 setState(() {
@@ -83,7 +83,7 @@ class _BottomChangePasswordCardState
             suffixIcon: IconButton(
               icon: Icon(
                 obscureNewPassword ? Icons.visibility : Icons.visibility_off,
-                color: textSecondary,
+                color: context.colors.textSecondary,
               ),
               onPressed: () {
                 setState(() {
@@ -101,7 +101,7 @@ class _BottomChangePasswordCardState
             suffixIcon: IconButton(
               icon: Icon(
                 obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-                color: textSecondary,
+                color: context.colors.textSecondary,
               ),
               onPressed: () {
                 setState(() {
@@ -128,7 +128,7 @@ class _BottomChangePasswordCardState
                         SnackBar(
                           content: Text(
                             'New passwords do not match',
-                            style: bodyTextStyle.copyWith(color: textPrimary),
+                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                           ),
                           backgroundColor: errorColor,
                         ),
@@ -153,7 +153,7 @@ class _BottomChangePasswordCardState
                           SnackBar(
                             content: Text(
                               'Password changed successfully',
-                              style: bodyTextStyle.copyWith(color: textPrimary),
+                              style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                             ),
                             backgroundColor: brandPrimary,
                           ),
@@ -166,7 +166,7 @@ class _BottomChangePasswordCardState
                           SnackBar(
                             content: Text(
                               'Failed to change password: $e',
-                              style: bodyTextStyle.copyWith(color: textPrimary),
+                              style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
                             ),
                             backgroundColor: errorColor,
                           ),

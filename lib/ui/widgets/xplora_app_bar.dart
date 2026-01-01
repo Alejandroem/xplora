@@ -25,7 +25,16 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
     return GlassAppBar(
       title: bottomBar == NavigationItem.home
-          ? 'logo'
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'XPLRA',
+                  style: h3Style,
+                ),
+                Text('San Juan, PR', style: bodySmallStyle),
+              ],
+            )
           : bottomBar == NavigationItem.xpc
               ? 'Economy Hub'
               : 'Store',
@@ -38,111 +47,60 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 if (isAuthenticated) {
                   return ref.watch(createOrReadCurrentUserProfile).when(
                       data: (profile) {
-                        return Padding(
-                          padding: const EdgeInsets.only(left: spacing8),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProfilePage(profile),
-                                ),
-                              );
-                            },
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Positioned(
-                                  left: 10,
-                                  top: 15,
-                                  child: CircleAvatar(
-                                  backgroundColor: bgSecondary,
-                                  radius: 18.0,
-                                  child: profile!.avatarUrl != null &&
-                                          profile.avatarUrl!.isNotEmpty
-                                      ? ClipOval(
-                                          child: CachedNetworkImage(
-                                            imageUrl: profile.avatarUrl!,
-                                            width: 36.0,
-                                            height: 36.0,
-                                            fit: BoxFit.cover,
-                                            errorWidget: (ctx, err, _) =>
-                                                Icon(Icons.error, size: iconSizeMedium, color: errorColor),
-                                            placeholder: (ctx, loading) =>
-                                                ShimmerWidgets.circleShimmer(radius: 18),
-                                          ),
-                                        )
-                                      : Icon(
-                                          Icons.person,
-                                          color: iconColor,
-                                          size: iconSizeMedium,
-                                        ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 12,
-                                child: Text(
-                                  'Lvl 7',
-                                  style: captionStyle.copyWith(
-                                    color: textSecondary,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
+                        return _buildAvatarWithBadge(
+                          context: context,
+                          avatarChild: profile!.avatarUrl != null &&
+                                  profile.avatarUrl!.isNotEmpty
+                              ? ClipOval(
+                                  child: CachedNetworkImage(
+                                    imageUrl: profile.avatarUrl!,
+                                    width: avatarSizeSmall,
+                                    height: avatarSizeSmall,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (ctx, err, _) => Icon(
+                                      Icons.error,
+                                      size: iconSizeMedium,
+                                      color: errorColor,
+                                    ),
+                                    placeholder: (ctx, loading) =>
+                                        ShimmerWidgets.circleShimmer(radius: avatarRadiusSmall),
                                   ),
+                                )
+                              : Icon(
+                                  Icons.person,
+                                  color: context.colors.iconColor,
+                                  size: iconSizeMedium,
                                 ),
+                          badgeText: 'Lvl 7',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfilePage(profile),
                               ),
-                            ],
-                                                        ),
-                          ),
+                            );
+                          },
                         );
                       },
-                      loading: () => placeholderIcon(),
-                      error: (error, stackTrace) => placeholderIcon());
+                      loading: () => placeholderIcon(context),
+                      error: (error, stackTrace) => placeholderIcon(context));
                 } else {
                   return StreamBuilder<bool>(
                     stream: ref.read(authServiceProvider).isSignedIn,
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data == false) {
-                        return Padding(
-                          padding: const EdgeInsets.only(left: spacing8),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pushNamed('/signin');
-                            },
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Positioned(
-                                  left: 10,
-                                  top: 15,
-                                  child: CircleAvatar(
-                                    backgroundColor: bgSecondary,
-                                    radius: 19.0,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: iconColor,
-                                      size: iconSizeMedium,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  right: 12,
-                                  child: Opacity(
-                                  opacity: 0,
-                                  child: Text(
-                                    'Lvl 7',
-                                    style: captionStyle.copyWith(
-                                      color: textSecondary,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                                                        ),
+                        return _buildAvatarWithBadge(
+                          context: context,
+                          avatarChild: Icon(
+                            Icons.person,
+                            color: context.colors.iconColor,
+                            size: iconSizeMedium,
                           ),
+                          badgeText: 'Lvl 7',
+                          showBadge: false,
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/signin');
+                          },
                         );
                       }
                       return const SizedBox.shrink();
@@ -157,39 +115,74 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget placeholderIcon() {
-    return Padding(
+  Widget placeholderIcon(BuildContext context) {
+    return _buildAvatarWithBadge(
+      context: context,
+      avatarChild: Icon(
+        Icons.person,
+        color: context.colors.iconColor,
+        size: iconSizeMedium,
+      ),
+      badgeText: '...',
+      topPosition: 6,
+      rightPosition: 22
+    );
+  }
+
+  /// Reusable avatar with badge widget
+  Widget _buildAvatarWithBadge({
+    required BuildContext context,
+    required Widget avatarChild,
+    required String badgeText,
+    double topPosition = 8,
+    double rightPosition = 12,
+    bool showBadge = true,
+    VoidCallback? onTap,
+  }) {
+    final avatarWidget = Padding(
       padding: const EdgeInsets.only(left: spacing8),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           Positioned(
             left: 10,
-            top: 13,
+            top: 15,
             child: CircleAvatar(
-              backgroundColor: bgSecondary,
-              radius: 19.0,
-              child: Icon(
-                Icons.person,
-                color: iconColor,
-                size: iconSizeMedium,
-              ),
+              backgroundColor: context.colors.bgSecondary,
+              radius: avatarRadiusSmall,
+              child: avatarChild,
             ),
           ),
           Positioned(
-            top: 6,
-            right: 22,
-            child: Text(
-              '...',
-              style: captionStyle.copyWith(
-                color: textSecondary,
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            top: topPosition,
+            right: rightPosition,
+            child: showBadge
+                ? Text(
+                    badgeText,
+                    style: levelBadgeStyle.copyWith(
+                      color: context.colors.textSecondary,
+                    ),
+                  )
+                : Opacity(
+                    opacity: 0,
+                    child: Text(
+                      badgeText,
+                      style: levelBadgeStyle.copyWith(
+                        color: context.colors.textSecondary,
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
     );
+
+    if (onTap != null) {
+      return GestureDetector(
+        onTap: onTap,
+        child: avatarWidget,
+      );
+    }
+    return avatarWidget;
   }
 }

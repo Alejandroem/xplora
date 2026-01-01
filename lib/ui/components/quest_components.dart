@@ -31,7 +31,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
               children: [
                 Icon(
                   Icons.explore,
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -70,7 +70,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                                 children: [
                                   Icon(
                                     Icons.list_alt,
-                                    color: iconColor,
+                                    color: context.colors.iconColor,
                                     size: 30,
                                   ),
                                   const SizedBox(height: 4),
@@ -79,7 +79,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                                     style: bodyTextStyle.copyWith(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: textPrimary,
+                                      color: context.colors.textPrimary,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -100,7 +100,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                               children: [
                                 Icon(
                                   Icons.smart_toy_outlined,
-                                  color: iconColor,
+                                  color: context.colors.iconColor,
                                   size: 30,
                                 ),
                                 const SizedBox(height: 4),
@@ -109,14 +109,14 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
                                   style: bodyTextStyle.copyWith(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: textPrimary,
+                                    color: context.colors.textPrimary,
                                   ),
                                 ),
                                 Text(
                                   'Coming Soon',
                                   style: bodyTextStyle.copyWith(
                                     fontSize: 10,
-                                    color: textSecondary,
+                                    color: context.colors.textSecondary,
                                   ),
                                 ),
                               ],

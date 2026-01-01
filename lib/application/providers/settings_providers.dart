@@ -50,13 +50,13 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
     state = settings ?? [];
   }
 
-  bool isDarkMode() {
+  bool? isDarkMode() {
     final darkModeIndex = state.indexWhere(
       (setting) => setting.key == _kIsDarkMode,
     );
 
     if (darkModeIndex == -1) {
-      return false;
+      return null; // No preference set - will use system theme
     }
 
     return state[darkModeIndex].value as bool;

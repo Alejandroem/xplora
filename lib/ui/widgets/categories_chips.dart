@@ -76,7 +76,7 @@ class CategoriesChips extends ConsumerWidget {
                             child: Text(
                               'No activities found',
                               style:
-                                  bodyTextStyle.copyWith(color: textSecondary),
+                                  bodyTextStyle.copyWith(color: context.colors.textSecondary),
                             ),
                           );
                         }

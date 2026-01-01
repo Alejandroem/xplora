@@ -230,7 +230,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
             children: [
               Icon(
                 Icons.add_circle_outlined,
-                color: iconColor,
+                color: context.colors.iconColor,
                 size: 48,
               ),
               const SizedBox(height: 12),
@@ -248,7 +248,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                       'No quests available nearby',
                       style: bodyTextStyle.copyWith(
                         fontSize: 11,
-                        color: textSecondary.withOpacity(0.7),
+                        color: context.colors.textSecondary.withOpacity(0.7),
                       ),
                       textAlign: TextAlign.center,
                     );
@@ -264,7 +264,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                           'Suggested',
                           style: bodyTextStyle.copyWith(
                             fontSize: 10,
-                            color: textTertiary,
+                            color: context.colors.textTertiary,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.5,
                           ),
@@ -282,7 +282,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                             ),
                             Icon(
                               Icons.chevron_right,
-                              color: textSecondary,
+                              color: context.colors.textSecondary,
                               size: 18,
                             ),
                           ],
@@ -297,7 +297,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: textSecondary,
+                      color: context.colors.textSecondary,
                     ),
                   ),
                 ),
@@ -308,14 +308,14 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                         'Browse available quests',
                         style: bodyTextStyle.copyWith(
                           fontSize: 11,
-                          color: textSecondary.withOpacity(0.7),
+                          color: context.colors.textSecondary.withOpacity(0.7),
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                     Icon(
                       Icons.chevron_right,
-                      color: textSecondary,
+                      color: context.colors.textSecondary,
                       size: 18,
                     ),
                   ],
@@ -350,12 +350,12 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.15),
+                      color: context.colors.iconColor.withOpacity(0.15),
                       shape: BoxShape.circle,
                       boxShadow: _isCollecting
                           ? [
                               BoxShadow(
-                                color: iconColor
+                                color: context.colors.iconColor
                                     .withOpacity(0.5 * _glowAnimation.value),
                                 blurRadius: 20 * _glowAnimation.value,
                                 spreadRadius: 5 * _glowAnimation.value,
@@ -365,7 +365,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                     ),
                     child: Icon(
                       Icons.check_circle_rounded,
-                      color: iconColor,
+                      color: context.colors.iconColor,
                       size: 40,
                     ),
                   ),
@@ -380,7 +380,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               style: bodyTextStyle.copyWith(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: textSecondary,
+                color: context.colors.textSecondary,
                 letterSpacing: 0.5,
               ),
             ),
@@ -515,7 +515,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                   'Progress:',
                   style: bodyTextStyle.copyWith(
                     fontSize: 12,
-                    color: textSecondary,
+                    color: context.colors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -524,7 +524,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                   style: bodyTextStyle.copyWith(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
               ],
@@ -536,7 +536,7 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
               padding: const EdgeInsets.all(0),
               lineHeight: 8.0,
               percent: completeness / 100,
-              backgroundColor: border,
+              backgroundColor: context.colors.border,
               progressColor: brandSecondary,
               barRadius: const Radius.circular(4),
             ),

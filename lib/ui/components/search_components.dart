@@ -44,11 +44,11 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
         setState(() => _showSearchBar = true);
       }
     });
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
+    // SystemChrome.setSystemUIOverlayStyle(
+    //   const SystemUiOverlayStyle(
+    //     statusBarIconBrightness: Brightness.light,
+    //   ),
+    // );
   }
 
   @override
@@ -121,12 +121,12 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                               });
                             },
                             style: bodyTextStyle.copyWith(
-                              color: textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                               hintText: 'Find your next adventure',
                               prefixIcon: Icon(
-                                Icons.search, 
-                                color: textSecondary,
+                                Icons.search,
+                                color: context.colors.textSecondary,
                                 size: 20,
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -141,7 +141,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                             IconButton(
                               icon: Icon(
                                 Icons.filter_list,
-                                color: textPrimary,
+                                color: context.colors.textPrimary,
                                 size: 24,
                               ),
                               onPressed: () {
@@ -220,7 +220,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                                 border: Border.all(
                                                   color: ref.watch(selectedCategoriesProvider) == category.id
                                                       ? brandPrimary
-                                                      : border,
+                                                      : context.colors.border,
                                                   width: 1,
                                                 ),
                                                 boxShadow: ref.watch(selectedCategoriesProvider) == category.id
@@ -242,16 +242,16 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                                     width: 24,
                                                     fit: BoxFit.cover,
                                                     color: ref.watch(selectedCategoriesProvider) == category.id
-                                                        ? textPrimary
-                                                        : textSecondary,
+                                                        ? context.colors.textPrimary
+                                                        : context.colors.textSecondary,
                                                   ),
                                                   const SizedBox(height: 4),
                                                   Text(
                                                     category.name,
                                                     style: bodyTextStyle.copyWith(
                                                       color: ref.watch(selectedCategoriesProvider) == category.id
-                                                          ? textPrimary
-                                                          : textSecondary,
+                                                          ? context.colors.textPrimary
+                                                          : context.colors.textSecondary,
                                                       fontSize: 10,
                                                       fontWeight: ref.watch(selectedCategoriesProvider) == category.id
                                                           ? FontWeight.bold
@@ -397,7 +397,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                       child: Text(
                         'No adventures found',
                         style: bodyTextStyle.copyWith(
-                          color: textSecondary,
+                          color: context.colors.textSecondary,
                           fontSize: 16,
                         ),
                       ),
@@ -466,7 +466,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                               subtitle: Text(
                                 'Quest',
                                 style: bodyTextStyle.copyWith(
-                                  color: textSecondary,
+                                  color: context.colors.textSecondary,
                                   fontSize: 14,
                                 ),
                               ),
@@ -509,7 +509,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                                   subtitle: Text(
                                     'Adventure',
                                     style: bodyTextStyle.copyWith(
-                                      color: textSecondary,
+                                      color: context.colors.textSecondary,
                                       fontSize: 14,
                                     ),
                                   ),

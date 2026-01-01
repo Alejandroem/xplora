@@ -44,7 +44,7 @@ class _BottomNavigationBarState
             border: Border.all(
               color: currentIndex == NavigationItem.xpc
                   ? brandPrimary
-                  : textSecondary,
+                  : context.colors.textSecondary,
               width: 2,
             ),
           ),
@@ -56,7 +56,7 @@ class _BottomNavigationBarState
                 fontWeight: FontWeight.bold,
                 color: currentIndex == NavigationItem.xpc
                     ? brandPrimary
-                    : textSecondary,
+                    : context.colors.textSecondary,
               ),
             ),
           ),

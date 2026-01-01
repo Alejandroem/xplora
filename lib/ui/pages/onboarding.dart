@@ -98,7 +98,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         borderRadius: BorderRadius.circular(4),
                         color: _currentPage == index
                             ? brandPrimary
-                            : textSecondary,
+                            : context.colors.textSecondary,
                       ),
                     ),
                   ),
@@ -149,7 +149,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               child: SvgPicture.asset(
                 svgAsset,
                 colorFilter: ColorFilter.mode(
-                  iconColor,
+                  context.colors.iconColor,
                   BlendMode.srcIn,
                 ),
               ),
@@ -158,7 +158,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             Icon(
               icon,
               size: iconSize,
-              color: iconColor,
+              color: context.colors.iconColor,
             ),
           const SizedBox(height: 50),
           // Text

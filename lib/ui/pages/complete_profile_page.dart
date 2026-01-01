@@ -156,7 +156,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                           textInputAction: TextInputAction.next,
                           prefixIcon: Icon(
                             Icons.person_outlined,
-                            color: textSecondary,
+                            color: context.colors.textSecondary,
                             size: 20,
                           ),
                           onChanged: (value) {
@@ -278,10 +278,10 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                               width: 130,
                               height: 130,
                               decoration: BoxDecoration(
-                                color: bgSecondary,
+                                color: context.colors.bgSecondary,
                                 borderRadius: BorderRadius.circular(100),
                                 border: Border.all(
-                                  color: border,
+                                  color: context.colors.border,
                                   width: 2,
                                 ),
                               ),
@@ -297,7 +297,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                             (context, error, stackTrace) {
                                           return Icon(
                                             Icons.add_a_photo,
-                                            color: textSecondary,
+                                            color: context.colors.textSecondary,
                                             size: 40,
                                           );
                                         },
@@ -552,7 +552,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
         if (avatarUrl.isEmpty) {
           return Icon(
             Icons.add_a_photo,
-            color: textSecondary,
+            color: context.colors.textSecondary,
             size: 40,
           );
         }
@@ -568,7 +568,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                   errorBuilder: (context, error, stackTrace) {
                     return Icon(
                       Icons.add_a_photo,
-                      color: textSecondary,
+                      color: context.colors.textSecondary,
                       size: 40,
                     );
                   },
@@ -585,7 +585,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
       if (!file.existsSync()) {
         return Icon(
           Icons.add_a_photo,
-          color: textSecondary,
+          color: context.colors.textSecondary,
           size: 40,
         );
       }
@@ -598,7 +598,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
         errorBuilder: (context, error, stackTrace) {
           return Icon(
             Icons.add_a_photo,
-            color: textSecondary,
+            color: context.colors.textSecondary,
             size: 40,
           );
         },
@@ -606,7 +606,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
     } catch (e) {
       return Icon(
         Icons.add_a_photo,
-        color: textSecondary,
+        color: context.colors.textSecondary,
         size: 40,
       );
     }
@@ -655,7 +655,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                 return Align(
                   alignment: Alignment.topLeft,
                   child: Material(
-                    color: bgTertiary,
+                    color: context.colors.bgTertiary,
                     elevation: 4,
                     borderRadius: BorderRadius.circular(12),
                     child: ConstrainedBox(
@@ -680,7 +680,7 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                                 children: [
                                   Icon(
                                     icon,
-                                    color: textSecondary,
+                                    color: context.colors.textSecondary,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 12),
@@ -732,16 +732,16 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                   hintText: hintText,
                   prefixIcon: Icon(
                     icon,
-                    color: textSecondary,
+                    color: context.colors.textSecondary,
                     size: 20,
                   ),
                   style: bodyTextStyle.copyWith(
-                    color: textPrimary,
+                    color: context.colors.textPrimary,
                     fontSize: 15,
                   ),
                   suffixIcon: Icon(
                     Icons.search,
-                    color: textSecondary,
+                    color: context.colors.textSecondary,
                     size: 20,
                   ),
                   onChanged: (value) {

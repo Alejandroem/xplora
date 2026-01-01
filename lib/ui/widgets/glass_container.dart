@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../theme/colors.dart';
+import '../../theme.dart';
 
 /// Reusable widget for cards and containers with glassmorphism effect
 /// Uses rgba(18,18,18,0.65) background, backdrop blur, and subtle purple border
@@ -34,10 +34,10 @@ class GlassContainer extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: bgColor ?? bgSecondary, /// rgba(18,18,18,0.65)
+            color: bgColor ?? context.colors.bgSecondary, /// rgba(18,18,18,0.65)
             borderRadius: BorderRadius.circular(borderRadius ?? 12),
             border: border ?? Border.all(
-              color: cardContainerBorder, /// #8A2BE2 at 10% opacity
+              color: context.colors.cardContainerBorder, /// #8A2BE2 at 10% opacity
               width: 1,
             ),
             boxShadow: [

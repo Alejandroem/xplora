@@ -45,7 +45,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Account',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -62,7 +62,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Change Password',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -75,11 +75,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Dark Mode',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              value: settingsProviderNotifier.isDarkMode(),
+              value: settingsProviderNotifier.isDarkMode() ?? false,
               onChanged: (bool value) {
                 settingsProviderNotifier.toggleDarkMode();
               },
@@ -88,7 +88,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Notifications',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -101,7 +101,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Location',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -114,7 +114,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Privacy',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -131,7 +131,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Terms of Service',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -148,7 +148,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Support',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -163,7 +163,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               },
             ),
             Divider(
-              color: border,
+              color: context.colors.border,
               thickness: 1,
             ),
             ListTile(
@@ -171,7 +171,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Logout',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -193,7 +193,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               },
             ),
             Divider(
-              color: border,
+              color: context.colors.border,
               thickness: 1,
             ),
             ListTile(
@@ -202,7 +202,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               title: Text(
                 'Delete Account',
                 style: bodyTextStyle.copyWith(
-                  color: textPrimary,
+                  color: context.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),

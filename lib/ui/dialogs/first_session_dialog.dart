@@ -202,7 +202,7 @@ class _NearbyPlaceCard extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.navigation_rounded,
-                      color: textSecondary,
+                      color: context.colors.textSecondary,
                       size: 14,
                     ),
                     const SizedBox(width: 4),
@@ -210,7 +210,7 @@ class _NearbyPlaceCard extends StatelessWidget {
                       distance,
                       style: bodyTextStyle.copyWith(
                         fontSize: 14,
-                        color: textSecondary,
+                        color: context.colors.textSecondary,
                       ),
                     ),
                   ],

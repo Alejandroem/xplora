@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/colors.dart';
-import '../../theme/typography.dart';
+import '../../theme.dart';
 
 class CustomDropdown extends StatelessWidget {
   CustomDropdown({super.key, required this.label, required this.value, required this.items, required this.onChanged, required this.icon, this.isOptional = false});
@@ -25,16 +24,16 @@ class CustomDropdown extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: bgSecondary,
+            color: context.colors.bgSecondary,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: cardContainerBorder,
+              color: context.colors.cardContainerBorder,
               width: 1,
             ),
           ),
           child: Theme(
             data: Theme.of(context).copyWith(
-              canvasColor: bgTertiary,
+              canvasColor: context.colors.bgTertiary,
               focusColor: brandPrimary,
               hoverColor: brandPrimary.withOpacity(0.05),
               highlightColor: brandPrimary.withOpacity(0.1),
@@ -51,10 +50,10 @@ class CustomDropdown extends StatelessWidget {
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: textSecondary,
+                  color: context.colors.textSecondary,
                 ),
                 isExpanded: true,
-                dropdownColor: bgTertiary,
+                dropdownColor: context.colors.bgTertiary,
                 style: bodyTextStyle,
                 selectedItemBuilder: (BuildContext context) {
                   return items.map<Widget>((String item) {
@@ -64,7 +63,7 @@ class CustomDropdown extends StatelessWidget {
                         children: [
                           Icon(
                             icon,
-                            color: textSecondary,
+                            color: context.colors.textSecondary,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -90,7 +89,7 @@ class CustomDropdown extends StatelessWidget {
                         children: [
                           Icon(
                             icon,
-                            color: textSecondary,
+                            color: context.colors.textSecondary,
                             size: 20,
                           ),
                           const SizedBox(width: 12),

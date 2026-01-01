@@ -82,13 +82,13 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                       children: [
                         Icon(
                           Icons.star,
-                          color: textPrimary,
+                          color: context.colors.textPrimary,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Featured Adventures',
-                          style: h3Style.copyWith(color: textPrimary),
+                          style: h3Style.copyWith(color: context.colors.textPrimary),
                         ),
                       ],
                     ),
@@ -164,7 +164,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                           decoration: BoxDecoration(
                             color: currentImageIndex == index
                                 ? brandPrimary
-                                : textSecondary,
+                                : context.colors.textSecondary,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
