@@ -85,98 +85,86 @@ class _CarouselCardState extends State<CarouselCard>
           scale: _scaleAnimation,
           child: InkWell(
             onTap: widget.onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: SizedBox(
-                width: 160,
-                child: GlassContainer(
-                  border: widget.isSelected ? Border.all(
-                    color: brandPrimary,
-                    width: 3,
-                  ) : null,
-                  borderRadius: widget.isSelected ? 14.5 : null,
-                  padding: const EdgeInsets.all(0),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: widget.heroTag != null
-                            ? Hero(
-                                tag: widget.heroTag!,
-                                child: _buildImage(),
-                              )
-                            : _buildImage(),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.7),
-                            ],
-                            stops: const [0.4, 1.0],
-                          ),
-                        ),
-                      ),
-                      if (widget.isSelected)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: brandPrimary,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.check,
-                              color: context.colors.textPrimary,
-                              size: 16,
-                            ),
-                          ),
-                        ),
+            child: SizedBox(
+              width: 150,
+              child: GlassContainer(
+                border: widget.isSelected
+                    ? Border.all(
+                        color: brandPrimary,
+                        width: borderWidthDefault,
+                      )
+                    : null,
+                borderRadius: widget.isSelected ? radiusLarge : null,
+                padding: EdgeInsets.zero,
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(radiusMedium),
+                          topRight: Radius.circular(radiusMedium)),
+                      child: widget.heroTag != null
+                          ? Hero(
+                              tag: widget.heroTag!,
+                              child: _buildImage(),
+                            )
+                          : _buildImage(),
+                    ),
+                    if (widget.isSelected)
                       Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
+                        top: spacing8,
+                        right: spacing8,
                         child: Container(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(spacing4),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(12),
-                              bottomRight: Radius.circular(12),
-                            ),
+                            color: brandPrimary,
+                            shape: BoxShape.circle,
                           ),
-                          child: Column(
-                            crossAxisAlignment: widget.bottomContent != null
-                                ? CrossAxisAlignment.start
-                                : CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                widget.title,
-                                style: bodySmallStyle,
-                                maxLines:
-                                    widget.bottomContent != null ? 1 : 2,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: widget.bottomContent != null
-                                    ? TextAlign.start
-                                    : TextAlign.center,
-                              ),
-                              if (widget.bottomContent != null) ...[
-                                const SizedBox(height: 4),
-                                widget.bottomContent!,
-                              ],
-                            ],
+                          child: Icon(
+                            Icons.check,
+                            color: context.colors.textPrimary,
+                            size: iconSizeSmall,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(spacing8),
+                        decoration: BoxDecoration(
+                          color: context.colors.bgSecondary,
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(radiusMedium),
+                            bottomRight: Radius.circular(radiusMedium),
+                          ),
+                          boxShadow: const [elevation1],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: widget.bottomContent != null
+                              ? CrossAxisAlignment.start
+                              : CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              widget.title,
+                              style: bodyTextStyle.copyWith(
+                                  color: context.colors.textPrimary),
+                              maxLines: widget.bottomContent != null ? 1 : 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: widget.bottomContent != null
+                                  ? TextAlign.start
+                                  : TextAlign.center,
+                            ),
+                            if (widget.bottomContent != null) ...[
+                              const SizedBox(height: spacing4),
+                              widget.bottomContent!,
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -186,24 +174,21 @@ class _CarouselCardState extends State<CarouselCard>
 
   Widget _buildImage() {
     return Container(
-      color: widget.backgroundColor ?? Colors.transparent,
-      height: 200,
+      color: widget.backgroundColor,
+      height: 140,
       width: 160,
       child: CachedNetworkImage(
         imageUrl: widget.imageUrl,
-        height: 200,
-        width: 160,
         fit: widget.imageFit ?? BoxFit.cover,
         placeholder: (context, url) =>
-            ShimmerWidgets.adventureCardShimmer(width: 160, height: 200),
+            ShimmerWidgets.imageShimmer(width: 160, height: 140, context: context),
         errorWidget: (context, url, error) {
           return Container(
-            padding: const EdgeInsets.only(bottom: 40),
             color: widget.backgroundColor ?? context.colors.bgPrimary,
             child: Center(
               child: Icon(
                 Icons.image_not_supported,
-                size: 50,
+                size: iconSizeLarge,
                 color: context.colors.textSecondary,
               ),
             ),

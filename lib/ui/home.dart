@@ -230,9 +230,9 @@ class _HomeState extends ConsumerState<Home> {
 
   PreferredSizeWidget? getAppBar() {
     final bottomBar = ref.watch(bottomNavigationBarProvider);
-    if (bottomBar != NavigationItem.notifications && bottomBar!=NavigationItem.search) {
+    if (bottomBar != NavigationItem.notifications) {
       return XplorAppBar(
-        height: bottomBar == NavigationItem.home ? 72.0 : null,
+        height: bottomBar == NavigationItem.home ? 72.0 :  bottomBar == NavigationItem.search ? 80.0 : null,
       );
     }
     return null;

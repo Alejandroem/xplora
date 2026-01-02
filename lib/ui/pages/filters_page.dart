@@ -180,39 +180,29 @@ class FiltersPage extends ConsumerWidget {
                               );
                             }
                             categories.sort((a, b) => a.name.compareTo(b.name));
-                            return Theme(
-                              data: ThemeData(
-                                colorScheme: ColorScheme.dark(
-                                  primary: brandPrimary,
-                                  secondary: brandPrimary,
-                                  onPrimary: context.colors.textPrimary,
-                                  onSecondary: context.colors.textPrimary,
-                                ),
-                              ),
-                              child: Wrap(
-                                spacing: 8.0,
-                                runSpacing: 8.0,
-                                children: [
-                                  FilterBubble(
-                                    text: 'All',
-                                    icon: Icon(
-                                      Icons.category_outlined,
-                                      size: 20,
-                                      color: context.colors.textPrimary,
-                                    ),
-                                    isSelected: ref.watch(selectedCategoriesProvider) == '',
-                                    onTap: () {
-                                      ref
-                                          .read(selectedCategoriesProvider
-                                              .notifier)
-                                          .state = '';
-                                    },
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                    fontSize: 12,
+                            return Wrap(
+                              spacing: spacing8,
+                              runSpacing: spacing8,
+                              children: [
+                                FilterBubble(
+                                  text: 'All',
+                                  icon: Icon(
+                                    Icons.category_outlined,
+                                    size: 20,
+                                    color: context.colors.textPrimary,
                                   ),
+                                  isSelected: ref.watch(selectedCategoriesProvider) == '',
+                                  onTap: () {
+                                    ref
+                                        .read(selectedCategoriesProvider
+                                            .notifier)
+                                        .state = '';
+                                  },
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: spacing12,
+                                    vertical: spacing8,
+                                  ),
+                                ),
                                 ...categories
                                     .where((c) => c.id != 'All')
                                     .map((category) {
@@ -232,14 +222,12 @@ class FiltersPage extends ConsumerWidget {
                                           .state = category.id;
                                     },
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
+                                      horizontal: spacing12,
+                                      vertical: spacing8,
                                     ),
-                                    fontSize: 12,
                                   );
                                 }),
                               ],
-                            ),
                             );
                           },
                           loading: () => const CircularProgressIndicator(),

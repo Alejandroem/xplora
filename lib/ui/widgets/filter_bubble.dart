@@ -31,60 +31,40 @@ class FilterBubble extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: padding ?? const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 8,
+          horizontal: spacing16,
+          vertical: spacing8,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? brandPrimary : Colors.transparent,
-          borderRadius: BorderRadius.circular(borderRadius ?? 20),
+          color: isSelected ? brandPrimary : null,
+          borderRadius: BorderRadius.circular(borderRadius ?? radiusLarge),
           border: Border.all(
             color: isSelected
                 ? brandPrimary
                 : context.colors.border,
-            width: 1,
+            width: borderWidthDefault,
           ),
           boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: brandPrimary.withOpacity(0.3),
-                    blurRadius: 8,
-                    spreadRadius: 0,
-                  ),
-                ]
+              ? [elevation1]
               : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: iconAtEnd ? [
-            Text(
-              text,
-              style: bodyTextStyle.copyWith(
-                fontSize: fontSize ?? 13,
-                fontWeight: isSelected 
-                    ? FontWeight.bold 
-                    : FontWeight.normal,
-                color: isSelected ? context.colors.textPrimary : context.colors.textPrimary,
-              ),
-            ),
-            if (icon != null) ...[
-              const SizedBox(width: 6),
+          children: [
+            if (icon != null && !iconAtEnd) ...[
               icon!,
-            ],
-          ] : [
-            if (icon != null) ...[
-              icon!,
-              const SizedBox(width: 6),
+              const SizedBox(width: spacing4),
             ],
             Text(
               text,
-              style: bodyTextStyle.copyWith(
-                fontSize: fontSize ?? 13,
-                fontWeight: isSelected 
-                    ? FontWeight.bold 
-                    : FontWeight.normal,
-                color: isSelected ? context.colors.textPrimary : context.colors.textPrimary,
+              style: bodySmallStyle.copyWith(
+                fontSize: fontSize,
+                color: isSelected ? whiteClr : context.colors.textPrimary,
               ),
             ),
+            if (icon != null && iconAtEnd) ...[
+              const SizedBox(width: spacing4),
+              icon!,
+            ],
           ],
         ),
       ),

@@ -30,7 +30,9 @@ class TotalXpBadge extends StatelessWidget {
           const SizedBox(width: 14),
           Text(
             'Earn up to $xp XP',
-            style: xpNumberStyle
+            style: bodyTextStyle.copyWith(
+              color: xpColor,
+            ),
           ),
         ],
       ),

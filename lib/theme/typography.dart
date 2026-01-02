@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'colors.dart';
+
 // ============================================================================
 // TYPOGRAPHY RULES:
 // • Colors are set by the theme, not hardcoded here
@@ -71,7 +73,7 @@ final bodySmallStyle = GoogleFonts.inter(
 /// Inter, 400, 12px, line height 16px
 /// Color should be set by theme (typically textTertiary)
 final captionStyle = GoogleFonts.inter(
-  fontSize: 15,
+  fontSize: 14,
   fontWeight: FontWeight.w400,
   height: 16 / 12,
 );
@@ -80,7 +82,7 @@ final captionStyle = GoogleFonts.inter(
 /// Inter, 400, 12px, line height 16px
 /// Color should be set by theme (typically textPrimary or white)
 final buttonTextStyle = GoogleFonts.inter(
-  fontSize: 15,
+  fontSize: 14,
   fontWeight: FontWeight.w400,
   height: 16 / 12,
 );
@@ -90,19 +92,10 @@ final buttonTextStyle = GoogleFonts.inter(
 // ============================================================================
 
 /// XP/Numeric - XP values (e.g., "+50 XP")
-/// Questrial, 400, 20px, line height 28px
-/// Color should be set by theme (use xpColor)
+/// Questrial, 400, line height 28px
+/// Color use xpColor
 final xpNumberStyle = GoogleFonts.questrial(
-  fontSize: 20,
   fontWeight: FontWeight.w400,
   height: 28 / 20,
-);
-
-/// Level Badge - Small badge text (e.g., "Lvl 7")
-/// Inter, 600, 10px, line height 14px
-/// Color should be set by theme (typically textSecondary)
-final levelBadgeStyle = GoogleFonts.inter(
-  fontSize: 10,
-  fontWeight: FontWeight.w600,
-  height: 14 / 10,
+  color: xpColor,
 );

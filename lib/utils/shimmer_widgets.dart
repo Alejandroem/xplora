@@ -9,59 +9,33 @@ class ShimmerWidgets {
 
   /// Base shimmer wrapper with app theme colors
   static Widget baseShimmer({
+    required BuildContext context,
     required Widget child,
     Color? baseColor,
     Color? highlightColor,
   }) {
     return Shimmer.fromColors(
-      baseColor: baseColor ?? const Color(0xff1a1a1a),
-      highlightColor: highlightColor ?? const Color(0xff2a2a2a),
+      baseColor: baseColor ?? context.colors.bgSecondary,
+      highlightColor: highlightColor ?? context.colors.bgTertiary,
       child: child,
     );
   }
 
   /// Shimmer container for image placeholders
   static Widget imageShimmer({
+    required BuildContext context,
     double? width,
     double? height,
     BorderRadius? borderRadius,
-    Color? baseColor,
-    Color? highlightColor,
   }) {
     return baseShimmer(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
+      context: context,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: borderRadius ?? BorderRadius.circular(0),
-        ),
-      ),
-    );
-  }
-
-  /// Shimmer for cached network image placeholder
-  static Widget cachedImageShimmer({
-    double? width,
-    double? height,
-    BorderRadius? borderRadius,
-  }) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: borderRadius ?? BorderRadius.circular(0),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: const Color(0xff121212),
-        highlightColor: const Color(0xff2a2a2a),
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xff1a1a1a),
-            borderRadius: borderRadius ?? BorderRadius.circular(0),
-          ),
+          color: context.colors.bgTertiary,
+          borderRadius: borderRadius ?? BorderRadius.zero,
         ),
       ),
     );
@@ -69,17 +43,19 @@ class ShimmerWidgets {
 
   /// Shimmer for text placeholders
   static Widget textShimmer({
+    required BuildContext context,
     double width = 100,
-    double height = 16,
+    double height = spacing16,
     BorderRadius? borderRadius,
   }) {
     return baseShimmer(
+      context: context,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: borderRadius ?? BorderRadius.circular(4),
+          color: context.colors.bgTertiary,
+          borderRadius: borderRadius ?? BorderRadius.circular(radiusSmall),
         ),
       ),
     );
@@ -87,121 +63,130 @@ class ShimmerWidgets {
 
   /// Shimmer for card placeholders
   static Widget cardShimmer({
+    required BuildContext context,
     double? width,
     double? height,
     BorderRadius? borderRadius,
     EdgeInsets? padding,
     Widget? child,
   }) {
-    return Container(
-      width: width,
-      height: height,
-      padding: padding ?? const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: borderRadius ?? BorderRadius.circular(12),
+    return baseShimmer(
+      context: context,
+      child: Container(
+        width: width,
+        height: height,
+        padding: padding ?? const EdgeInsets.all(spacing16),
+        decoration: BoxDecoration(
+          color: context.colors.bgTertiary,
+          borderRadius: borderRadius ?? BorderRadius.circular(radiusMedium),
+        ),
+        child: child,
       ),
-      child: baseShimmer(
-        child: child ??
-            Container(
+    );
+  }
+
+  /// Adventure card shimmer (matches CarouselCard design)
+  static Widget adventureCardShimmer({
+    required BuildContext context,
+  }) {
+    return Container(
+      width: 150,
+      decoration: BoxDecoration(
+        color: context.colors.bgSecondary,
+        borderRadius: BorderRadius.circular(radiusMedium),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Image shimmer (top section)
+          baseShimmer(
+            context: context,
+            child: Container(
+              height: 140,
+              width: 150,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: borderRadius ?? BorderRadius.circular(12),
+                color: context.colors.bgTertiary,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(radiusMedium),
+                  topRight: Radius.circular(radiusMedium),
+                ),
               ),
             ),
-      ),
-    );
-  }
-
-  /// Shimmer for circular/avatar placeholders
-  static Widget circleShimmer({
-    double radius = 40,
-  }) {
-    return baseShimmer(
-      child: Container(
-        width: radius * 2,
-        height: radius * 2,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-        ),
-      ),
-    );
-  }
-
-  /// Adventure card shimmer (specific to carousel cards)
-  static Widget adventureCardShimmer({
-    double width = 160,
-    double height = 200,
-  }) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: const Color(0xff121212),
-        highlightColor: const Color(0xff2a2a2a),
-        period: const Duration(milliseconds: 1500),
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xff1a1a1a),
-            borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          // Bottom content section
+          Container(
+            padding: const EdgeInsets.all(spacing8),
+            decoration: BoxDecoration(
+              color: context.colors.bgSecondary,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(radiusMedium),
+                bottomRight: Radius.circular(radiusMedium),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title shimmer
+                baseShimmer(
+                  context: context,
+                  child: Container(
+                    width: 100,
+                    height: spacing16,
+                    decoration: BoxDecoration(
+                      color: context.colors.bgTertiary,
+                      borderRadius: BorderRadius.circular(radiusSmall),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: spacing4),
+                // City/State shimmer
+                baseShimmer(
+                  context: context,
+                  child: Container(
+                    width: 70,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: context.colors.bgTertiary,
+                      borderRadius: BorderRadius.circular(radiusSmall),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: spacing4),
+                // Category and XP row
+                Row(
                   children: [
-                    Container(
-                      width: width * 0.7,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: const Color(0xff2a2a2a),
-                        borderRadius: BorderRadius.circular(4),
+                    // Category shimmer
+                    baseShimmer(
+                      context: context,
+                      child: Container(
+                        width: 60,
+                        height: 13,
+                        decoration: BoxDecoration(
+                          color: context.colors.bgTertiary,
+                          borderRadius: BorderRadius.circular(radiusSmall),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: const Color(0xff2a2a2a),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+                    const Spacer(),
+                    // XP shimmer
+                    baseShimmer(
+                      context: context,
+                      child: Container(
+                        width: 50,
+                        height: 13,
+                        decoration: BoxDecoration(
+                          color: context.colors.bgTertiary,
+                          borderRadius: BorderRadius.circular(radiusSmall),
                         ),
-                        const Spacer(),
-                        Container(
-                          width: 40,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: const Color(0xff2a2a2a),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: width * 0.9,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: const Color(0xff2a2a2a),
-                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

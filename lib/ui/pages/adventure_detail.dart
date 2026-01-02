@@ -140,7 +140,6 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
     return GradientBackground(
       child: Scaffold(
         appBar: GlassAppBar(
-          title: widget.adventure.title,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {

@@ -2,12 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
+import '../../application/providers/filters_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
+import '../components/search_components.dart';
 import '../dialogs/bottom_login_card.dart';
+import '../pages/filters_page.dart';
 import '../pages/profile_page.dart';
 
 class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -35,9 +39,11 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 Text('San Juan, PR', style: bodySmallStyle),
               ],
             )
-          : bottomBar == NavigationItem.xpc
-              ? 'Economy Hub'
-              : 'Store',
+          : bottomBar == NavigationItem.search
+              ? const SearchHeader()
+              : bottomBar == NavigationItem.xpc
+                  ? 'Economy Hub'
+                  : 'Store',
       height: height,
       centerTitle: true,
       leadingWidth: bottomBar == NavigationItem.home ? 90 : null,
@@ -63,7 +69,10 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                       color: errorColor,
                                     ),
                                     placeholder: (ctx, loading) =>
-                                        ShimmerWidgets.circleShimmer(radius: avatarRadiusSmall),
+                                        ShimmerWidgets.imageShimmer(
+                                            borderRadius: BorderRadius.circular(
+                                                avatarRadiusSmall),
+                                            context: context),
                                   ),
                                 )
                               : Icon(
@@ -117,16 +126,15 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   Widget placeholderIcon(BuildContext context) {
     return _buildAvatarWithBadge(
-      context: context,
-      avatarChild: Icon(
-        Icons.person,
-        color: context.colors.iconColor,
-        size: iconSizeMedium,
-      ),
-      badgeText: '...',
-      topPosition: 6,
-      rightPosition: 22
-    );
+        context: context,
+        avatarChild: Icon(
+          Icons.person,
+          color: context.colors.iconColor,
+          size: iconSizeMedium,
+        ),
+        badgeText: '...',
+        topPosition: 6,
+        rightPosition: 22);
   }
 
   /// Reusable avatar with badge widget
@@ -159,16 +167,18 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
             child: showBadge
                 ? Text(
                     badgeText,
-                    style: levelBadgeStyle.copyWith(
+                    style: bodySmallStyle.copyWith(
                       color: context.colors.textSecondary,
+                      fontSize: 10,
                     ),
                   )
                 : Opacity(
                     opacity: 0,
                     child: Text(
                       badgeText,
-                      style: levelBadgeStyle.copyWith(
+                      style: bodySmallStyle.copyWith(
                         color: context.colors.textSecondary,
+                        fontSize: 10,
                       ),
                     ),
                   ),
@@ -186,3 +196,79 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     return avatarWidget;
   }
 }
+
+class SearchHeader extends ConsumerWidget {
+  const SearchHeader({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: XploraTextField(
+            onChanged: (value) {
+              ref.read(searchQueryProvider.notifier).state = value;
+            },
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textPrimary,
+            ),
+            hintText: 'Search places...',
+            prefixIcon: Icon(
+              Icons.search,
+              color: context.colors.textSecondary,
+              size: iconSizeMedium,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: spacing16,
+              vertical: spacing12,
+            ),
+          ),
+        ),
+        //icon to toggle filters
+        Stack(
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.filter_list,
+                color: context.colors.textPrimary,
+                size: iconSizeLarge,
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const FiltersPage(),
+                  ),
+                );
+              },
+            ),
+            if (ref
+                .watch(filtersStateProvider.notifier)
+                .state
+                .selectedType !=
+                'All' ||
+                ref
+                    .watch(filtersStateProvider.notifier)
+                    .state
+                    .minimumDistance !=
+                    500000 ||
+                ref.watch(selectedCategoriesProvider) != '')
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
