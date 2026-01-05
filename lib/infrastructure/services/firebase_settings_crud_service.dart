@@ -224,4 +224,14 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
     throw UnimplementedError(
         'getStream(id) is not supported. Use listenBy with userId.');
   }
+
+  @override
+  Future<List<Setting>?> readPaginated({
+    required int limit,
+    Setting? startAfter,
+    List<Map<String, dynamic>>? filters,
+  }) async {
+    throw UnimplementedError(
+        'readPaginated is not supported for Settings. Settings are stored in a single document per user.');
+  }
 }

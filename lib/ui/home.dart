@@ -352,40 +352,42 @@ class _HomeState extends ConsumerState<Home> {
         bottomNavigationBar: const XploraBottomNavigationBar(),
         body: Stack(
           children: [
-            GradientBackground(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
-                      const FeedComponents(),
-                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.search)
-                      const SearchComponents(),
-                    if (ref.watch(bottomNavigationBarProvider) ==
-                        NavigationItem.notifications)
-                      const NotificationComponents(),
-                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc)
-                      const EconomyHub(),
-                    if (ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
-                      Column(
-                        children: [
-                          const SizedBox(height: 100),
-                          Center(
-                            child: Text(
-                              'Coming Soon',
-                              style: h2Style,
+            // Search tab handles its own scrolling
+            if (ref.watch(bottomNavigationBarProvider) == NavigationItem.search)
+              const SearchComponents()
+            else
+              GradientBackground(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
+                        const FeedComponents(),
+                      if (ref.watch(bottomNavigationBarProvider) ==
+                          NavigationItem.notifications)
+                        const NotificationComponents(),
+                      if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc)
+                        const EconomyHub(),
+                      if (ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
+                        Column(
+                          children: [
+                            const SizedBox(height: 100),
+                            Center(
+                              child: Text(
+                                'Coming Soon',
+                                style: h2Style,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 23),
-                          const Icon(
-                            Icons.store,
-                            size: 100,
-                          ),
-                        ],
-                      ),
-                  ],
+                            const SizedBox(height: 23),
+                            const Icon(
+                              Icons.store,
+                              size: 100,
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
             const QuestProgressIndicator(),
             const LoraOrb(),
           ],

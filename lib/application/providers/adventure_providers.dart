@@ -7,6 +7,7 @@ import '../../domain/models/adventure_in_progress.dart';
 import '../../domain/services/adventure_crud_service.dart';
 import '../../infrastructure/services/firebase_adventure_crud_service.dart';
 import '../notifiers/adventure_in_progress.dart';
+import '../notifiers/paginated_adventures_notifier.dart';
 import 'achievements_providers.dart';
 import 'auth_service_providers.dart';
 import 'location_providers.dart';
@@ -193,6 +194,35 @@ final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
     }
   }
 });
+
+final allAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
+  final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
+
+  // Stream all available adventures
+  final allAvailableAdventuresStream = adventureCrudService.streamByFilters([]);
+
+  await for (final adventures in allAvailableAdventuresStream) {
+    if (adventures == null || adventures.isEmpty) {
+      yield [];
+      continue;
+    }
+
+    // Remove adventures that have a userId set (user-created adventures)
+    final filteredAdventures = adventures.where(
+      (adventure) => adventure.userId == null || adventure.userId == '',
+    ).toList();
+
+    yield filteredAdventures;
+  }
+});
+
+final paginatedAdventuresProvider =
+    StateNotifierProvider<PaginatedAdventuresNotifier, PaginatedAdventuresState>(
+  (ref) {
+    final adventureCrudService = ref.watch(adventuresCrudServiceProvider);
+    return PaginatedAdventuresNotifier(adventureCrudService);
+  },
+);
 
 final selectedCategoriesProvider = StateProvider<String>((ref) {
   return '';

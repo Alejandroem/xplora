@@ -88,9 +88,11 @@ class ShimmerWidgets {
   /// Adventure card shimmer (matches CarouselCard design)
   static Widget adventureCardShimmer({
     required BuildContext context,
+    double? width = 150,
+    double? imageHeight = 140,
   }) {
     return Container(
-      width: 150,
+      width: width,
       decoration: BoxDecoration(
         color: context.colors.bgSecondary,
         borderRadius: BorderRadius.circular(radiusMedium),
@@ -102,8 +104,8 @@ class ShimmerWidgets {
           baseShimmer(
             context: context,
             child: Container(
-              height: 140,
-              width: 150,
+              height: imageHeight,
+              width: double.infinity,
               decoration: BoxDecoration(
                 color: context.colors.bgTertiary,
                 borderRadius: const BorderRadius.only(

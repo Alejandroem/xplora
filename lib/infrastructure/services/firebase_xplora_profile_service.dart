@@ -162,4 +162,14 @@ class FirebaseXploraProfileCrudService implements XploraProfileService {
     }
     throw UnimplementedError('Listen by $field is not supported for user subcollections');
   }
+
+  @override
+  Future<List<XploraProfile>?> readPaginated({
+    required int limit,
+    XploraProfile? startAfter,
+    List<Map<String, dynamic>>? filters,
+  }) async {
+    throw UnimplementedError(
+        'readPaginated is not supported for user subcollections. Profiles are stored as individual documents per user.');
+  }
 }

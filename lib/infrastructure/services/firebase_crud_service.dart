@@ -173,4 +173,35 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
+
+  @override
+  Future<List<T>?> readPaginated({
+    required int limit,
+    T? startAfter,
+    List<Map<String, dynamic>>? filters,
+  }) async {
+    var query = filters != null && filters.isNotEmpty
+        ? getQueryFromFilters(filters)
+        : collection as Query<T>;
+
+    // Order by document ID for consistent pagination
+    query = query.orderBy(FieldPath.documentId);
+
+    // If we have a startAfter document, use it for pagination
+    if (startAfter != null) {
+      // Get the document ID from the entity
+      final docId = (startAfter as dynamic).id as String?;
+      if (docId != null) {
+        final docSnapshot = await collection.doc(docId).get();
+        if (docSnapshot.exists) {
+          query = query.startAfterDocument(docSnapshot);
+        }
+      }
+    }
+
+    query = query.limit(limit);
+
+    final querySnapshot = await query.get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
 }

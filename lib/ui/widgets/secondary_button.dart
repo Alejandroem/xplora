@@ -74,14 +74,18 @@ class _SecondaryButtonState extends State<SecondaryButton> {
                   widget.icon!,
                   const SizedBox(width: 8),
                 ],
-                Text(
-                  widget.text,
-                  style: bodyTextStyle.copyWith(
-                    fontSize: widget.fontSize ?? 14,
-                    fontWeight: FontWeight.bold,
-                    color: widget.isEnabled
-                        ? context.colors.textPrimary /// White text when enabled
-                        : context.colors.textDisabled, /// Gray text when disabled
+                Flexible(
+                  child: Text(
+                    widget.text,
+                    style: bodyTextStyle.copyWith(
+                      fontSize: widget.fontSize ?? 14,
+                      fontWeight: FontWeight.bold,
+                      color: widget.isEnabled
+                          ? context.colors.textPrimary /// White text when enabled
+                          : context.colors.textDisabled, /// Gray text when disabled
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

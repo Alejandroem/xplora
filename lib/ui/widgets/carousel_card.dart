@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
-import 'glass_container.dart';
 
 /// Generic Carousel Card with fade-in and scale animations
 class CarouselCard extends StatefulWidget {
@@ -15,6 +14,8 @@ class CarouselCard extends StatefulWidget {
   final EdgeInsetsGeometry? imagePadding;
   final BoxFit? imageFit;
   final bool isSelected;
+  final double? width;
+  final double? imageHeight;
 
   const CarouselCard({
     super.key,
@@ -27,6 +28,8 @@ class CarouselCard extends StatefulWidget {
     this.imagePadding,
     this.imageFit,
     this.isSelected = false,
+    this.width,
+    this.imageHeight,
   });
 
   @override
@@ -79,15 +82,7 @@ class _CarouselCardState extends State<CarouselCard>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-        opacity: _fadeAnimation,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: InkWell(
-            onTap: widget.onTap,
-            child: SizedBox(
-              width: 150,
-              child: GlassContainer(
+    final cardChild = GlassContainer(
                 border: widget.isSelected
                     ? Border.all(
                         color: brandPrimary,
@@ -166,22 +161,36 @@ class _CarouselCardState extends State<CarouselCard>
                     ),
                   ],
                 ),
-              ),
-            ),
-          ),
-        ));
+              );
+
+    final wrappedCard = widget.width != null
+        ? SizedBox(width: widget.width, child: cardChild)
+        : cardChild;
+
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: InkWell(
+          onTap: widget.onTap,
+          child: wrappedCard,
+        ),
+      ),
+    );
   }
 
   Widget _buildImage() {
+    final height = widget.imageHeight ?? 140;
+
     return Container(
       color: widget.backgroundColor,
-      height: 140,
-      width: 160,
+      height: height,
+      width: double.infinity,
       child: CachedNetworkImage(
         imageUrl: widget.imageUrl,
         fit: widget.imageFit ?? BoxFit.cover,
         placeholder: (context, url) =>
-            ShimmerWidgets.imageShimmer(width: 160, height: 140, context: context),
+            ShimmerWidgets.imageShimmer(height: height, context: context),
         errorWidget: (context, url, error) {
           return Container(
             color: widget.backgroundColor ?? context.colors.bgPrimary,
@@ -198,8 +207,7 @@ class _CarouselCardState extends State<CarouselCard>
           final image = Image(
             image: imageProvider,
             fit: widget.imageFit ?? BoxFit.cover,
-            height: 200,
-            width: 160,
+            width: double.infinity,
           );
 
           return widget.imagePadding != null

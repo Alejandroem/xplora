@@ -10,7 +10,13 @@ import 'carousel_card.dart';
 
 class PlaceCard extends ConsumerWidget {
   final Adventure adventure;
-  const PlaceCard(this.adventure, {super.key});
+  final bool isInGrid;
+
+  const PlaceCard(
+    this.adventure, {
+    super.key,
+    this.isInGrid = false,
+  });
 
   String _getDistance(WidgetRef ref) {
     final location = ref.watch(locationProvider);
@@ -35,11 +41,16 @@ class PlaceCard extends ConsumerWidget {
     return CarouselCard(
       imageUrl: adventure.imageUrl,
       title: adventure.title,
-      heroTag: 'adventure-image-${adventure.id}-carousel',
+      heroTag: 'adventure-image-${adventure.id}-${isInGrid ? 'grid' : 'carousel'}',
+      width: isInGrid ? null : 150,
+      imageHeight: isInGrid ? 155 : 140,
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => AdventureDetail('carousel', adventure),
+            builder: (context) => AdventureDetail(
+              isInGrid ? 'grid' : 'carousel',
+              adventure,
+            ),
           ),
         );
       },

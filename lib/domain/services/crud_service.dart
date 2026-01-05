@@ -11,4 +11,9 @@ abstract class CrudService<T> {
   Future<List<T>> list();
   Future<List<T>?> readByFilters(List<Map<String, dynamic>> filters);
   Stream<List<T>?> streamByFilters(List<Map<String, dynamic>> filters);
+  Future<List<T>?> readPaginated({
+    required int limit,
+    T? startAfter,
+    List<Map<String, dynamic>>? filters,
+  });
 }

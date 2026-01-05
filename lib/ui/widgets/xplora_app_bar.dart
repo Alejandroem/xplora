@@ -197,32 +197,79 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 }
 
-class SearchHeader extends ConsumerWidget {
+class SearchHeader extends ConsumerStatefulWidget {
   const SearchHeader({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SearchHeader> createState() => _SearchHeaderState();
+}
+
+class _SearchHeaderState extends ConsumerState<SearchHeader> {
+  late TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controller with current search query value
+    final currentQuery = ref.read(searchQueryProvider);
+    _searchController = TextEditingController(text: currentQuery);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Listen to provider changes and update controller if needed
+    ref.listen<String>(searchQueryProvider, (previous, next) {
+      if (_searchController.text != next) {
+        _searchController.text = next;
+      }
+    });
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(
-          child: XploraTextField(
-            onChanged: (value) {
-              ref.read(searchQueryProvider.notifier).state = value;
-            },
-            style: bodyTextStyle.copyWith(
-              color: context.colors.textPrimary,
-            ),
-            hintText: 'Search places...',
-            prefixIcon: Icon(
-              Icons.search,
-              color: context.colors.textSecondary,
-              size: iconSizeMedium,
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: spacing16,
-              vertical: spacing12,
-            ),
+          child: Consumer(
+            builder: (context, ref, child) {
+              final searchQuery = ref.watch(searchQueryProvider);
+              return XploraTextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  ref.read(searchQueryProvider.notifier).state = value.trim();
+                },
+                style: bodyTextStyle.copyWith(
+                  color: context.colors.textPrimary,
+                ),
+                hintText: 'Search places...',
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: context.colors.textSecondary,
+                  size: iconSizeMedium,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: spacing16,
+                  vertical: spacing12,
+                ),
+                textCapitalization: TextCapitalization.sentences,
+                suffixIcon: searchQuery.trim().isNotEmpty ? IconButton(
+                  onPressed: () {
+                    _searchController.clear();
+                    ref.read(searchQueryProvider.notifier).state = '';
+                    FocusScope.of(context).unfocus();
+                  },
+                  icon: Icon(
+                    Icons.clear,
+                    color: context.colors.textSecondary,
+                    size: iconSizeMedium,
+                  ),
+                ) : const SizedBox.shrink(),
+              );
+            }
           ),
         ),
         //icon to toggle filters
