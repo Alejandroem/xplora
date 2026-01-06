@@ -161,15 +161,23 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
         ),
         const SizedBox(height: spacing16),
         SizedBox(
-          height: 230,
+          height: 231,
           child: Consumer(
             builder: (context, ref, child) {
+              // Show "Coming soon" for 'For You' and 'Following' filters
+              if (selectedFilter == 'For You' || selectedFilter == 'Following') {
+                return _buildComingSoon(
+                  context: context,
+                  icon: selectedFilter == 'For You'
+                      ? Icons.auto_awesome
+                      : Icons.people_outline,
+                  title: selectedFilter,
+                );
+              }
+
+              // Show nearby adventures for 'Nearby' filter
               return ref.watch(nearbyAdventuresProvider).when(
                     data: (adventures) {
-                      // TODO: Implement 'For You' and 'Following' filter logic
-                      // For now, all filters use nearby adventures
-                      // selectedFilter can be used here to implement different logic
-
                       /*
                       // Filter adventures based on selected activity types
                         List<Adventure> filteredAdventures = adventures;
@@ -231,6 +239,40 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Common "Coming soon" placeholder (matching search screen pattern)
+  Widget _buildComingSoon({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+  }) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: iconSizeLarge * 2,
+            color: context.colors.textSecondary,
+          ),
+          const SizedBox(height: spacing16),
+          Text(
+            title,
+            style: h3Style.copyWith(
+              color: context.colors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: spacing8),
+          Text(
+            'Coming soon',
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textSecondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

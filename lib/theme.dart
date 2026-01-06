@@ -75,7 +75,7 @@ ThemeData getTheme() {
       elevation: 0, /// Using box shadows instead
       margin: const EdgeInsets.all(spacing16), /// Default card margin
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radiusMedium), /// 12px for cards
+        borderRadius: BorderRadius.circular(radiusCard), /// 24px for cards
         side: BorderSide(
           color: cardContainerBorderLight, /// #C8C8C8
           width: borderWidthDefault, /// 1px
@@ -193,11 +193,11 @@ ThemeData getTheme() {
       contentTextStyle: bodyTextStyle.copyWith(color: textSecondaryLight),
     ),
 
-    // Chip theme - using radiusSmall for chips
+    // Chip theme - using radiusPill for pill-shaped chips
     chipTheme: ChipThemeData(
       backgroundColor: bgTertiaryLight, /// #DADADA
       deleteIconColor: textSecondaryLight,
-      disabledColor: bgTertiaryLight.withOpacity(0.5),
+      disabledColor: bgTertiaryLight.withValues(alpha: 0.5),
       selectedColor: brandPrimary,
       secondarySelectedColor: brandSecondary,
       labelPadding: const EdgeInsets.symmetric(horizontal: spacing8),
@@ -206,7 +206,7 @@ ThemeData getTheme() {
         vertical: spacing8,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radiusSmall), /// 8px for chips
+        borderRadius: BorderRadius.circular(radiusPill), /// Pill-shaped for chips
         side: BorderSide(
           color: borderLight,
           width: borderWidthDefault,
@@ -297,7 +297,7 @@ ThemeData getDarkTheme() {
       elevation: 0, /// Using box shadows instead
       margin: const EdgeInsets.all(spacing16), /// Default card margin
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radiusMedium), /// 12px for cards
+        borderRadius: BorderRadius.circular(radiusCard), /// 24px for cards
         side: BorderSide(
           color: cardContainerBorderDark, /// #4C4B4D
           width: borderWidthDefault, /// 1px
@@ -415,11 +415,11 @@ ThemeData getDarkTheme() {
       contentTextStyle: bodyTextStyle.copyWith(color: textSecondaryDark),
     ),
 
-    // Chip theme - using radiusSmall for chips
+    // Chip theme - using radiusPill for pill-shaped chips
     chipTheme: ChipThemeData(
       backgroundColor: bgTertiaryDark, /// #363538
       deleteIconColor: textSecondaryDark,
-      disabledColor: bgTertiaryDark.withOpacity(0.5),
+      disabledColor: bgTertiaryDark.withValues(alpha: 0.5),
       selectedColor: brandPrimary,
       secondarySelectedColor: brandSecondary,
       labelPadding: const EdgeInsets.symmetric(horizontal: spacing8),
@@ -428,7 +428,7 @@ ThemeData getDarkTheme() {
         vertical: spacing8,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radiusSmall), /// 8px for chips
+        borderRadius: BorderRadius.circular(radiusPill), /// Pill-shaped for chips
         side: BorderSide(
           color: borderDark,
           width: borderWidthDefault,

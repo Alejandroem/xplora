@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
-/// Reusable primary button with green/purple background and glow effect
-/// Hover state increases glow intensity
+/// Primary button following the design system
+/// - Uses brand colors (primary/secondary)
+/// - Implements proper button states (default, hover, disabled)
+/// - Uses design system spacing, radius, and elevation
+/// - No customization parameters to ensure consistency
 class PrimaryButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
   final bool useSecondary; /// If true, uses secondary; if false, uses primary
-  final double? fontSize;
-  final EdgeInsetsGeometry? padding;
-  final double? height;
-  final double? width;
-  final int? maxLines;
+  final int? maxLines; /// Optional max lines for text overflow
 
   const PrimaryButton({
     super.key,
     required this.text,
     this.onPressed,
     this.useSecondary = false,
-    this.fontSize,
-    this.padding,
-    this.height,
-    this.width,
-    this.maxLines
+    this.maxLines,
   });
 
   @override
@@ -34,45 +29,77 @@ class _PrimaryButtonState extends State<PrimaryButton> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDisabled = widget.onPressed == null;
     final buttonColor = widget.useSecondary ? brandSecondary : brandPrimary;
-    final textColor = widget.useSecondary ? context.colors.textPrimary : null;
+
+    // Determine button background color based on state
+    final Color backgroundColor;
+    if (isDisabled) {
+      backgroundColor = context.isDarkMode
+          ? buttonDisabledDark
+          : buttonDisabledLight;
+    } else {
+      backgroundColor = buttonColor;
+    }
+
+    // Determine text color based on state and button type
+    final Color textColor;
+    if (isDisabled) {
+      textColor = context.isDarkMode
+          ? textDisabledDark
+          : textDisabledLight;
+    } else if (widget.useSecondary) {
+      // Secondary button has dark text on teal background
+      textColor = context.colors.textPrimary;
+    } else {
+      // Primary button has white text on purple background
+      textColor = whiteClr;
+    }
+
+    // Determine shadow based on state
+    final List<BoxShadow> shadows;
+    if (isDisabled) {
+      shadows = []; // No shadow for disabled state
+    } else if (_isHovered) {
+      shadows = [buttonHoverShadow];
+    } else {
+      shadows = [buttonDefaultShadow];
+    }
 
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      onEnter: (_) {
+        if (!isDisabled) {
+          setState(() => _isHovered = true);
+        }
+      },
+      onExit: (_) {
+        if (!isDisabled) {
+          setState(() => _isHovered = false);
+        }
+      },
       child: GestureDetector(
         onTap: widget.onPressed,
-        child: SizedBox(
-          height: widget.height,
-          width: widget.width,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: widget.padding ?? const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              color: widget.onPressed == null ? context.colors.bgSecondary : buttonColor,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: widget.onPressed==null ? [] : [
-                BoxShadow(
-                  color: buttonColor.withOpacity(_isHovered ? 0.6 : 0.3),
-                  blurRadius: _isHovered ? 12 : 6,
-                  spreadRadius: _isHovered ? 2 : 0,
-                ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                widget.text,
-                style: buttonTextStyle.copyWith(
-                  fontSize: widget.fontSize,
-                  color: textColor
-                ),
-                textAlign: TextAlign.center,
-                maxLines: widget.maxLines,
-                overflow: widget.maxLines!=null ? TextOverflow.ellipsis : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacing16,
+            vertical: spacing12,
+          ),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(radiusMedium),
+            boxShadow: shadows,
+          ),
+          child: Center(
+            child: Text(
+              widget.text,
+              style: buttonTextStyle.copyWith(
+                color: textColor,
               ),
+              textAlign: TextAlign.center,
+              maxLines: widget.maxLines,
+              overflow: widget.maxLines != null ? TextOverflow.ellipsis : null,
             ),
           ),
         ),

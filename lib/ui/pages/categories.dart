@@ -98,7 +98,6 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                   children: [
                     Expanded(
                       child: SecondaryButton(
-                        height: 48,
                         onPressed: _isLoading
                             ? null
                             : () async {
@@ -120,7 +119,6 @@ class _ChooseCategoriesState extends ConsumerState<ChooseCategories> {
                     Expanded(
                       flex: 2,
                       child: PrimaryButton(
-                        height: 48,
                         onPressed: _isLoading || selectedCategories.isEmpty
                             ? null
                             : () async {

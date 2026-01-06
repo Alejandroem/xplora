@@ -156,7 +156,6 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
               ),
               const SizedBox(height: 24.0),
               PrimaryButton(
-                height: 50,
                 text: 'Save',
                 onPressed: () async {
                   final newDisplayName = displayNameController.text.trim();
@@ -250,7 +249,6 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
               ),
               const SizedBox(height: 24.0),
               PrimaryButton(
-                height: 50,
                 text: 'Save',
                 onPressed: () async {
                   try {

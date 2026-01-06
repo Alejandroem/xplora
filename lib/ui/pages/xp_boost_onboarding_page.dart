@@ -426,12 +426,8 @@ class _ActionButton extends StatelessWidget {
               ),
             )
           else
-            PrimaryButton(
-              height: 40,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              onPressed: onPressed,
+            PrimaryButton(onPressed: onPressed,
               text: buttonText,
-              fontSize: 14,
             ),
         ],
       ),

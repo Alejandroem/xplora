@@ -115,7 +115,7 @@ class _LoraOrbState extends ConsumerState<LoraOrb>
                   color: brandPrimary,
                   border: Border.all(
                     color: brandPrimary.withOpacity(0.5),
-                    width: 2,
+                    width: borderWidthDefault,
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -134,7 +134,7 @@ class _LoraOrbState extends ConsumerState<LoraOrb>
                 child: Center(
                   child: Icon(
                     Icons.auto_awesome,
-                    color: context.colors.textPrimary,
+                    color: whiteClr,
                     size: 30,
                   ),
                 ),

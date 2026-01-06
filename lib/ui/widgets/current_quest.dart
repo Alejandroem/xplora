@@ -421,8 +421,6 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                     ),
                     child: PrimaryButton(
                       // width: MediaQuery.sizeOf(context).width*0.33,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 6),
                       onPressed: _isCollecting
                           ? null
                           : () async {
@@ -430,7 +428,6 @@ class _CurrentQuestState extends ConsumerState<CurrentQuest>
                               await _collectReward(ref, questInProgress);
                             },
                       text: 'Collect +${adventure?.experience.toInt()} XP',
-                      fontSize: 12,
                     ),
                   ),
                 );

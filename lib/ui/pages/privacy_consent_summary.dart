@@ -111,7 +111,6 @@ class _PrivacyConsentSummaryState extends ConsumerState<PrivacyConsentSummary> {
                   child: SizedBox(
                     width: MediaQuery.sizeOf(context).width * 0.83,
                     child: PrimaryButton(
-                      height: 50,
                       onPressed: _isLoading ? null : () async {
                         // setState(() {
                         //   _isLoading = true;

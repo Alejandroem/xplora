@@ -59,10 +59,6 @@ class FiltersPage extends ConsumerWidget {
                           selectedType: 'All',
                         );
                       },
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
                     ),
                     FilterBubble(
                       text: 'Adventure',
@@ -76,10 +72,6 @@ class FiltersPage extends ConsumerWidget {
                         ref.read(filtersStateProvider.notifier).state =
                             filtersState.copyWith(selectedType: 'Adventure');
                       },
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
                     ),
                     FilterBubble(
                       text: 'Quest',
@@ -93,10 +85,6 @@ class FiltersPage extends ConsumerWidget {
                         ref.read(filtersStateProvider.notifier).state =
                             filtersState.copyWith(selectedType: 'Quest');
                       },
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
                     ),
                   ],
                 ),
@@ -198,10 +186,6 @@ class FiltersPage extends ConsumerWidget {
                                             .notifier)
                                         .state = '';
                                   },
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: spacing12,
-                                    vertical: spacing8,
-                                  ),
                                 ),
                                 ...categories
                                     .where((c) => c.id != 'All')
@@ -221,10 +205,6 @@ class FiltersPage extends ConsumerWidget {
                                               .notifier)
                                           .state = category.id;
                                     },
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: spacing12,
-                                      vertical: spacing8,
-                                    ),
                                   );
                                 }),
                               ],

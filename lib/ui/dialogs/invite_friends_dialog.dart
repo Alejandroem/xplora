@@ -174,7 +174,6 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
               children: [
                 Expanded(
                   child: SecondaryButton(
-                    height: 50,
                       text: 'Done',
                       onPressed: () {
                         Navigator.pop(context);
@@ -183,7 +182,6 @@ class _InviteFriendsDialogState extends ConsumerState<InviteFriendsDialog> {
                 Expanded(
                   flex: 2,
                   child: PrimaryButton(
-                    height: 50,
                     onPressed: _shareLink,
                     text: 'Share Link',
                   ),

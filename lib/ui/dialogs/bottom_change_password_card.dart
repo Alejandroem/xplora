@@ -119,7 +119,6 @@ class _BottomChangePasswordCardState
                   ),
                 )
               : PrimaryButton(
-                  height: 50,
                   text: 'Change Password',
                   onPressed: () async {
                     if (newPasswordController.text !=

@@ -72,6 +72,28 @@ final createOrReadCurrentUserProfile = StreamProvider((ref) async* {
   }
 });
 
+/// Provider that formats user location from profile as "City, State/Country"
+/// Returns null if user has no city/country set or is not authenticated
+final userLocationStringProvider = StreamProvider<String?>((ref) async* {
+  await for (final profile in ref.watch(createOrReadCurrentUserProfile.stream)) {
+    if (profile == null) {
+      yield null;
+      continue;
+    }
+
+    final city = profile.city;
+    final country = profile.country;
+
+    // Only return location if both city and country/state are available
+    if (city != null && city.isNotEmpty &&
+        country != null && country.isNotEmpty) {
+      yield '$city, $country';
+    } else {
+      yield null;
+    }
+  }
+});
+
 //provides an instance of XploraProfile based on the auth user
 final createOrReadProfileStreamProvider = StreamProvider.autoDispose((ref) {
   final authService = ref.watch(authServiceProvider);

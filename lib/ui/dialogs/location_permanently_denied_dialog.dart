@@ -67,8 +67,6 @@ class LocationPermanentlyDeniedDialog extends StatelessWidget {
               child: SecondaryButton(
                 text: 'Cancel',
                 onPressed: () => Navigator.of(context).pop(false),
-                fontSize: 16,
-                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
             const SizedBox(width: 16),
@@ -93,8 +91,6 @@ class LocationPermanentlyDeniedDialog extends StatelessWidget {
                     Navigator.of(context).pop(true);
                   }
                 },
-                fontSize: 16,
-                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
           ],

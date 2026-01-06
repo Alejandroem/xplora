@@ -19,7 +19,7 @@ class StreakWidget extends StatelessWidget {
         // STREAK heading
         Text(
           'Streak',
-          style: h2Style
+          style: h2Style.copyWith(color: context.colors.textPrimary)
         ),
         const SizedBox(height: spacing8),
         GlassContainer(

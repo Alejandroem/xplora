@@ -231,7 +231,6 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
             children: [
               Expanded(
                 child: SecondaryButton(
-                  height: 50,
                   text: 'Cancel',
                   onPressed: () => Navigator.of(context).pop(),
                 ),
@@ -245,7 +244,6 @@ class _BottomAvatarSelectionCardState extends State<BottomAvatarSelectionCard> {
                         ),
                       )
                     : PrimaryButton(
-                        height: 50,
                         text: 'Confirm',
                         onPressed: _hasChanges ? _confirmSelection : null,
                       ),

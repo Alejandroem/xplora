@@ -16,8 +16,9 @@ import '../pages/profile_page.dart';
 
 class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final double? height;
+  final String? userLocation; /// Format: "City, State" (e.g., "San Juan, PR")
 
-  const XplorAppBar({super.key, this.height});
+  const XplorAppBar({super.key, this.height, this.userLocation});
 
   @override
   Size get preferredSize => Size.fromHeight(height ?? kToolbarHeight);
@@ -34,9 +35,17 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
               children: [
                 Text(
                   'XPLRA',
-                  style: h3Style,
+                  style: h3Style.copyWith(
+                    color: context.colors.textPrimary,
+                  ),
                 ),
-                Text('San Juan, PR', style: bodySmallStyle),
+                if (userLocation != null)
+                  Text(
+                    userLocation!,
+                    style: bodySmallStyle.copyWith(
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
               ],
             )
           : bottomBar == NavigationItem.search

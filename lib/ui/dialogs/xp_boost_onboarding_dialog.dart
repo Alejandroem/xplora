@@ -85,8 +85,6 @@ class XpBoostOnboardingDialog extends StatelessWidget {
             Expanded(
               child: SecondaryButton(
                 text: 'Skip',
-                fontSize: 16,
-                height: 50,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -98,7 +96,6 @@ class XpBoostOnboardingDialog extends StatelessWidget {
             Expanded(
               flex: 2,
               child: PrimaryButton(
-                height: 50,
                 onPressed: () {
                   Navigator.of(context).pop(true);
                 },

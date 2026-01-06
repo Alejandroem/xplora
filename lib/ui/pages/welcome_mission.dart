@@ -163,13 +163,11 @@ class _WelcomeMissionPageState extends ConsumerState<WelcomeMissionPage> {
                   SizedBox(
                     width: double.infinity,
                     child: PrimaryButton(
-                      height: 56,
                       onPressed: () {
                         // Navigate to privacy consent summary
                         Navigator.of(context).pushReplacementNamed('/privacy-consent-summary');
                       },
                       text: 'Continue',
-                      fontSize: 16,
                     ),
                   ),
                 ],

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
-/// Reusable filter bubble widget with consistent styling
-/// Used for category chips, filter options, and other selectable items
+/// Filter bubble widget following the design system
+/// - Pill-shaped with radiusPill for fully circular ends
+/// - Uses design system spacing, colors, and elevation
+/// - Implements proper selected/unselected states
+/// - No customization parameters to ensure consistency
 class FilterBubble extends StatelessWidget {
   final String text;
   final bool isSelected;
   final VoidCallback onTap;
   final Widget? icon;
-  final EdgeInsetsGeometry? padding;
-  final double? borderRadius;
-  final double? fontSize;
   final bool iconAtEnd;
 
   const FilterBubble({
@@ -19,9 +19,6 @@ class FilterBubble extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     this.icon,
-    this.padding,
-    this.borderRadius,
-    this.fontSize,
     this.iconAtEnd = false,
   });
 
@@ -30,13 +27,13 @@ class FilterBubble extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: padding ?? const EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: spacing16,
           vertical: spacing8,
         ),
         decoration: BoxDecoration(
           color: isSelected ? brandPrimary : null,
-          borderRadius: BorderRadius.circular(borderRadius ?? radiusLarge),
+          borderRadius: BorderRadius.circular(radiusPill),
           border: Border.all(
             color: isSelected
                 ? brandPrimary
@@ -57,7 +54,6 @@ class FilterBubble extends StatelessWidget {
             Text(
               text,
               style: bodySmallStyle.copyWith(
-                fontSize: fontSize,
                 color: isSelected ? whiteClr : context.colors.textPrimary,
               ),
             ),

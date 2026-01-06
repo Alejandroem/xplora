@@ -14,12 +14,16 @@ const double borderWidthDefault = 1.0; /// Default border width for all borders 
 // CORNER RADIUS SYSTEM
 // ============================================================================
 // RADIUS RULES:
-// • Small elements (chips, inputs): 8px
-// • Buttons & cards: 12px
+// • Small elements (inputs): 8px
+// • Buttons: 12px
 // • Large containers / modals: 16px
+// • Cards (carousel, profile, featured): 24px
+// • Chips & bubbles: pill-shaped (fully circular)
 // • Do not mix radius sizes within a component
 
 // Corner Radius
-const double radiusSmall = 8.0; /// Small elements (chips, inputs)
-const double radiusMedium = 12.0; /// Buttons & cards
+const double radiusSmall = 8.0; /// Small elements (inputs)
+const double radiusMedium = 12.0; /// Buttons
 const double radiusLarge = 16.0; /// Large containers / modals
+const double radiusCard = 24.0; /// Cards (carousel, profile, featured cards)
+const double radiusPill = 100.0; /// Pill-shaped / fully circular elements (chips, filter bubbles, tags)

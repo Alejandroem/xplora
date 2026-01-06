@@ -95,7 +95,7 @@ class ShimmerWidgets {
       width: width,
       decoration: BoxDecoration(
         color: context.colors.bgSecondary,
-        borderRadius: BorderRadius.circular(radiusMedium),
+        borderRadius: BorderRadius.circular(radiusCard),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -109,8 +109,8 @@ class ShimmerWidgets {
               decoration: BoxDecoration(
                 color: context.colors.bgTertiary,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(radiusMedium),
-                  topRight: Radius.circular(radiusMedium),
+                  topLeft: Radius.circular(radiusCard),
+                  topRight: Radius.circular(radiusCard),
                 ),
               ),
             ),
@@ -121,8 +121,8 @@ class ShimmerWidgets {
             decoration: BoxDecoration(
               color: context.colors.bgSecondary,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(radiusMedium),
-                bottomRight: Radius.circular(radiusMedium),
+                bottomLeft: Radius.circular(radiusCard),
+                bottomRight: Radius.circular(radiusCard),
               ),
             ),
             child: Column(

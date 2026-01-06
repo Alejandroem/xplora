@@ -10,6 +10,7 @@ import 'ui/initial_route_handler.dart';
 import 'ui/pages/categories.dart';
 import 'ui/pages/lora_ai_assistant.dart';
 import 'ui/pages/onboarding.dart';
+import 'ui/pages/quest_main_screen.dart';
 import 'ui/pages/signin_page.dart';
 import 'ui/pages/signup_page.dart';
 import 'ui/pages/complete_profile_page.dart';
@@ -60,6 +61,7 @@ class MyApp extends ConsumerWidget {
         '/privacy-consent-summary': (context) => const PrivacyConsentSummary(),
         '/xp-onboarding': (context) => const XpBoostOnboardingPage(),
         '/lora-assistant': (context) => const LoraAiAssistant(),
+        '/quest-main': (context) => const QuestMainScreen(),
         '/signin': (context) => const SignInPage(),
         '/signup': (context) => const SignUpPage(),
         '/complete-profile': (context) => const CompleteProfilePage(),

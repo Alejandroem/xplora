@@ -23,7 +23,7 @@ class GlassBottomNavBar extends StatelessWidget {
         border: Border(
           top: BorderSide(
             color: context.colors.border, /// Thin divider on top
-            width: 1,
+            width: borderWidthDefault,
           ),
         ),
       ),
@@ -37,7 +37,7 @@ class GlassBottomNavBar extends StatelessWidget {
             currentIndex: currentIndex,
             onTap: onTap,
             items: items,
-            backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4), /// More transparent for light feel
+            backgroundColor: context.colors.bgPrimary,
             selectedItemColor: brandPrimary, /// Lime green for active states
             unselectedItemColor: context.colors.textSecondary, /// Gray for inactive icons
             type: BottomNavigationBarType.fixed, /// Keeps items fixed width

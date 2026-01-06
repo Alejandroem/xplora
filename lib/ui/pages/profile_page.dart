@@ -225,7 +225,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             Center(
               child: SecondaryButton(
                 text: 'Change Avatar',
-                width: 160,
                 onPressed: () {
                   // Add logic to update the profile
                 },

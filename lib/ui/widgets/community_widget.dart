@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
+// TODO: Community will open community screen after MVP is ready.
+// The emblem (shield/crown) is a badge for the user's club/team.
 class CommunityWidget extends StatelessWidget {
   const CommunityWidget({super.key});
 
@@ -15,7 +17,7 @@ class CommunityWidget extends StatelessWidget {
         // Community heading
         Text(
           'Community',
-          style: h2Style
+          style: h2Style.copyWith(color: context.colors.textPrimary)
         ),
         const SizedBox(height: spacing8),
         SizedBox(
@@ -31,13 +33,13 @@ class CommunityWidget extends StatelessWidget {
                     // Shield background
                     Icon(
                       Icons.shield,
-                      size: spacing48 + spacing16, // 64
+                      size: 64, // 64
                       color: context.colors.textPrimary.withOpacity(0.2),
                     ),
                     // Crown on top
                     Icon(
                       Icons.emoji_events,
-                      size: spacing32,
+                      size: 32,
                       color: context.colors.textPrimary,
                     ),
                   ],
@@ -47,7 +49,7 @@ class CommunityWidget extends StatelessWidget {
                 // Active friends count
                 Text(
                   '$activeFriends Friends Active',
-                  style: bodySmallStyle
+                  style: bodySmallStyle.copyWith(color: context.colors.textSecondary)
                 ),
               ],
             ),

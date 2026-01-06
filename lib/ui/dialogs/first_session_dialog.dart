@@ -107,7 +107,6 @@ class FirstSessionDialog extends ConsumerWidget {
             Expanded(
               child: SecondaryButton(
                 text: 'Explore',
-                padding: const EdgeInsets.symmetric(vertical: 14),
                 onPressed: () {
                   Navigator.of(context).pop('explore');
                 },
@@ -118,7 +117,6 @@ class FirstSessionDialog extends ConsumerWidget {
             // Scan QR button
             Expanded(
               child: PrimaryButton(
-                padding: const EdgeInsets.symmetric(vertical: 14),
                 onPressed: () {
                   Navigator.of(context).pop('scan_qr');
                 },

@@ -2,14 +2,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/boomark_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/bookmark.dart';
 import '../../theme.dart';
-import '../widgets/secondary_button.dart';
-import '../widgets/glass_app_bar.dart';
+
+// TODO: Place Details Screen
+// - Image carousel (1-4 images) with indicators
+// - Back, share, and save icons overlaid on carousel
+// - Place name, location (city, state), distance from user
+// - XP and Directions buttons
+// - Description
+// - Quest accordion (design in progress - placeholder for now)
 
 class AdventureDetail extends ConsumerStatefulWidget {
   final String source;
@@ -21,203 +28,114 @@ class AdventureDetail extends ConsumerStatefulWidget {
       _AdventureDetailState();
 }
 
-class _AdventureDetailState extends ConsumerState<AdventureDetail>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _titleSlideAnimation;
-  late Animation<Offset> _firstSlideAnimation;
-  late Animation<Offset> _secondSlideAnimation;
-  late Animation<Offset> _thirdSlideAnimation;
-  late Animation<double> _titleFadeAnimation;
-  late Animation<double> _firstFadeAnimation;
-  late Animation<double> _secondFadeAnimation;
-  late Animation<double> _thirdFadeAnimation;
+class _AdventureDetailState extends ConsumerState<AdventureDetail> {
   bool creatingBookmark = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
-    // Slide animation for title
-    _titleSlideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 1.0), // Starting from below
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
-      ),
-    );
-
-    // Slide animations with increased offset
-    _firstSlideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 3.0), // Starting further down
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-      ),
-    );
-
-    _secondSlideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 3.0), // Starting further down
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.3, 0.7, curve: Curves.easeOut),
-      ),
-    );
-
-    _thirdSlideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 3.0), // Starting further down
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
-      ),
-    );
-
-    // Fade animations
-    _titleFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.3, curve: Curves.easeIn),
-      ),
-    );
-
-    _firstFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-      ),
-    );
-
-    _secondFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.3, 0.7, curve: Curves.easeIn),
-      ),
-    );
-
-    _thirdFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.6, 1.0, curve: Curves.easeIn),
-      ),
-    );
-
-    // Start the animation after the hero transition completes
-    _controller.forward();
-  }
+  int _currentImageIndex = 0;
+  final PageController _pageController = PageController();
 
   @override
   void dispose() {
-    _controller.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Support multiple images - for now using single image
+    final images = [widget.adventure.imageUrl];
+
     return GradientBackground(
       child: Scaffold(
-        appBar: GlassAppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          actions: [
-            ref
-                .watch(adventureBookmarkProvider(
-                  widget.adventure.id!,
-                ))
-                .when(
-                  data: (bookmarks) {
-                    final bookmark = bookmarks != null && bookmarks.isNotEmpty
-                        ? bookmarks.first
-                        : null;
-                    return IconButton(
-                      icon: Icon(
-                        bookmark != null
-                            ? Icons.bookmark
-                            : Icons.bookmark_border,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image carousel with overlay icons
+                _buildImageCarousel(images),
+
+                // Content section
+                Padding(
+                  padding: const EdgeInsets.all(spacing16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Place name
+                      Text(
+                        widget.adventure.title,
+                        style: h2Style.copyWith(
+                          color: context.colors.textPrimary,
+                        ),
                       ),
-                      onPressed: creatingBookmark
-                          ? null
-                          : () async {
-                              setState(() {
-                                creatingBookmark = true;
-                              });
-                              final bookmarkCrudService =
-                                  ref.read(boomarkCrudServiceProvider);
-                              final authService =
-                                  ref.read(authServiceProvider);
-                              final user = await authService.getAuthUser();
-                              if (user == null) {
-                                return;
-                              }
-                              if (bookmark == null) {
-                                await bookmarkCrudService.create(
-                                  Bookmark(
-                                    id: null,
-                                    type: BookmarkType.adventure,
-                                    entityId: widget.adventure.id!,
-                                    userId: user.id!,
-                                  ),
-                                );
-                              } else {
-                                bookmarkCrudService.delete(bookmark.id!);
-                              }
-                              ref.invalidate(adventureBookmarkProvider(
-                                widget.adventure.id!,
-                              ));
-                              setState(() {
-                                creatingBookmark = false;
-                              });
-                            },
-                    );
-                  },
-                  loading: () => const SizedBox(),
-                  error: (error, stack) => const SizedBox(),
+                      const SizedBox(height: spacing8),
+
+                      // Location (city, state format)
+                      Row(
+                        spacing: spacing24,
+                        children: [
+                          Text(
+                            'Rincon, PR',
+                            style: bodyTextStyle.copyWith(
+                              color: context.colors.textSecondary,
+                            ),
+                          ),
+
+                          // Distance from user (if available)
+                          // TODO: Calculate actual distance from user location
+                          Text(
+                            '1 mi away',
+                            style: bodySmallStyle.copyWith(
+                              color: context.colors.textTertiary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: spacing16),
+
+                      // XP and Directions buttons
+                      _buildActionButtons(),
+                      const SizedBox(height: spacing24),
+
+                      // Description
+                      _buildDescription(),
+                      const SizedBox(height: spacing24),
+
+                      // Quest accordion placeholder
+                      _buildQuestAccordionPlaceholder(),
+                    ],
+                  ),
                 ),
-          ],
+              ],
+            ),
+          ),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Hero(
-              tag: 'adventure-image-${widget.adventure.id}-${widget.source}',
-              child: CachedNetworkImage(
-                imageUrl: widget.adventure.imageUrl,
-                height: 200,
+      ),
+    );
+  }
+
+  Widget _buildImageCarousel(List<String> images) {
+    return SizedBox(
+      height: 350,
+      child: Stack(
+        children: [
+          // Image carousel
+          PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentImageIndex = index;
+              });
+            },
+            itemCount: images.length,
+            itemBuilder: (context, index) {
+              return CachedNetworkImage(
+                imageUrl: images[index],
+                height: 350,
+                width: double.infinity,
                 fit: BoxFit.cover,
                 errorWidget: (context, url, error) {
-                  // Print error details to console
-                  print('Image loading error for URL: $url');
-                  print('Error details: $error');
-                  
                   return Container(
-                    height: 200,
+                    height: 350,
                     color: context.colors.bgSecondary,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -225,14 +143,13 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                         Icon(
                           Icons.error_outline,
                           color: errorColor,
-                          size: 48,
+                          size: iconSizeLarge * 2,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: spacing8),
                         Text(
                           'Failed to load image',
                           style: bodyTextStyle.copyWith(
                             color: errorColor,
-                            fontSize: 14,
                           ),
                         ),
                       ],
@@ -240,7 +157,7 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                   );
                 },
                 placeholder: (context, url) => Container(
-                  height: 200,
+                  height: 350,
                   color: context.colors.bgSecondary,
                   child: Center(
                     child: CircularProgressIndicator(
@@ -248,77 +165,250 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail>
                     ),
                   ),
                 ),
-              ),
-            ),
-            // First padding widget (shortDescription)
-            SlideTransition(
-              position: _firstSlideAnimation,
-              child: FadeTransition(
-                opacity: _firstFadeAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    widget.adventure.shortDescription,
-                    style: bodyTextStyle.copyWith(color: context.colors.textPrimary, fontSize: 16),
+              );
+            },
+          ),
+
+          // Carousel indicators (only show if more than 1 image)
+          if (images.length > 1)
+            Positioned(
+              bottom: spacing16,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  images.length,
+                  (index) => Container(
+                    width: 12,
+                    height: 12,
+                    margin: const EdgeInsets.symmetric(horizontal: spacing4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentImageIndex == index
+                          ? context.colors.textPrimary
+                          : context.colors.textPrimary.withValues(alpha: 0.3),
+                    ),
                   ),
                 ),
               ),
             ),
-            // Second padding widget (longDescription)
-            SlideTransition(
-              position: _secondSlideAnimation,
-              child: FadeTransition(
-                opacity: _secondFadeAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    widget.adventure.longDescription,
-                    style: bodyTextStyle.copyWith(color: context.colors.textPrimary, fontSize: 16),
-                  ),
+
+          // Overlay icons
+          Positioned(
+            top: spacing16,
+            left: spacing16,
+            right: spacing16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Back button
+                _buildIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
-              ),
+
+                Row(
+                  children: [
+                    // Save/Bookmark button
+                    ref
+                        .watch(adventureBookmarkProvider(
+                          widget.adventure.id!,
+                        ))
+                        .when(
+                          data: (bookmarks) {
+                            final bookmark =
+                                bookmarks != null && bookmarks.isNotEmpty
+                                    ? bookmarks.first
+                                    : null;
+                            return _buildIconButton(
+                              icon: bookmark != null
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
+                              onPressed: creatingBookmark
+                                  ? null
+                                  : () async {
+                                      setState(() {
+                                        creatingBookmark = true;
+                                      });
+                                      final bookmarkCrudService =
+                                          ref.read(boomarkCrudServiceProvider);
+                                      final authService =
+                                          ref.read(authServiceProvider);
+                                      final user =
+                                          await authService.getAuthUser();
+                                      if (user == null) {
+                                        setState(() {
+                                          creatingBookmark = false;
+                                        });
+                                        return;
+                                      }
+                                      if (bookmark == null) {
+                                        await bookmarkCrudService.create(
+                                          Bookmark(
+                                            id: null,
+                                            type: BookmarkType.adventure,
+                                            entityId: widget.adventure.id!,
+                                            userId: user.id!,
+                                          ),
+                                        );
+                                      } else {
+                                        bookmarkCrudService
+                                            .delete(bookmark.id!);
+                                      }
+                                      ref.invalidate(adventureBookmarkProvider(
+                                        widget.adventure.id!,
+                                      ));
+                                      setState(() {
+                                        creatingBookmark = false;
+                                      });
+                                    },
+                            );
+                          },
+                          loading: () => _buildIconButton(
+                            icon: Icons.bookmark_border,
+                            onPressed: null,
+                          ),
+                          error: (error, stack) => _buildIconButton(
+                            icon: Icons.bookmark_border,
+                            onPressed: null,
+                          ),
+                        ),
+                    const SizedBox(width: spacing8),
+
+                    // Share button
+                    _buildIconButton(
+                      icon: Icons.share,
+                      onPressed: () {
+                        // TODO: Share place details
+                        Share.share(
+                          'Check out ${widget.adventure.title}!',
+                          subject: widget.adventure.title,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-            // Third padding widget (experience)
-            SlideTransition(
-              position: _thirdSlideAnimation,
-              child: FadeTransition(
-                opacity: _thirdFadeAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Xp. ${widget.adventure.experience.toStringAsFixed(2)}',
-                    style: h3Style,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
-              child: Center(
-                child: SecondaryButton(
-                  text: 'Open in Google Maps',
-                  icon: Icon(
-                    Icons.map,
-                    color: context.colors.textPrimary,
-                    size: 20,
-                  ),
-                  onPressed: () async {
-                    //url launcher to the location
-                    final url = Uri.parse(
-                        'https://www.google.com/maps/search/?api=1&query=${widget.adventure.latitude},${widget.adventure.longitude}');
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url);
-                    } else {
-                      throw 'Could not launch $url';
-                    }
-                  },
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-              ),
-            )
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildIconButton({
+    required IconData icon,
+    required VoidCallback? onPressed,
+  }) {
+    return GlassContainer(
+      borderRadius: 100,
+      child: IconButton(
+        icon: Icon(icon),
+        iconSize: iconSizeLarge,
+        color: context.colors.textPrimary,
+        onPressed: onPressed,
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        // XP display (non-interactive)
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacing16,
+            vertical: spacing12 - 2,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(radiusMedium),
+            border: Border.all(
+              color: context.colors.border,
+              width: borderWidthDefault,
+            ),
+          ),
+          child: Text(
+            '${widget.adventure.experience.toInt()}xp',
+            style: xpNumberStyle,
+          ),
+        ),
+        const SizedBox(width: spacing16),
+
+        // Directions button
+        PrimaryButton(
+          text: 'Directions',
+          onPressed: () async {
+            final url = Uri.parse(
+              'https://www.google.com/maps/search/?api=1&query=${widget.adventure.latitude},${widget.adventure.longitude}',
+            );
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDescription() {
+    return Text(
+      widget.adventure.longDescription.isNotEmpty
+          ? widget.adventure.longDescription
+          : widget.adventure.shortDescription,
+      style: bodyTextStyle.copyWith(
+        color: context.colors.textSecondary,
+      ),
+    );
+  }
+
+  Widget _buildQuestAccordionPlaceholder() {
+    // TODO: Replace with actual Quest accordion widget when design is ready
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Placeholder quest items
+        ...List.generate(3, (index) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: spacing8),
+            padding: const EdgeInsets.all(spacing16),
+            decoration: BoxDecoration(
+              color: context.colors.bgSecondary,
+              borderRadius: BorderRadius.circular(radiusMedium),
+              border: Border.all(
+                color: context.colors.border,
+                width: borderWidthDefault,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Quest ${index + 1}',
+                  style: bodyTextStyle.copyWith(
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+                Text(
+                  '1/${index == 0 ? '1' : '3'}',
+                  style: bodySmallStyle.copyWith(
+                    color: context.colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  String _formatLocation() {
+    // TODO: Parse actual city, state from latitude/longitude or add location field to Adventure model
+    // For now, return coordinates as placeholder
+    return '${widget.adventure.latitude.toStringAsFixed(4)}, ${widget.adventure.longitude.toStringAsFixed(4)}';
   }
 }

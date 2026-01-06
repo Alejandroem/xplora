@@ -4,6 +4,7 @@ import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 
 /// Generic Carousel Card with fade-in and scale animations
+/// Uses Column layout for clean, predictable structure
 class CarouselCard extends StatefulWidget {
   final String imageUrl;
   final String title;
@@ -13,7 +14,6 @@ class CarouselCard extends StatefulWidget {
   final Color? backgroundColor;
   final EdgeInsetsGeometry? imagePadding;
   final BoxFit? imageFit;
-  final bool isSelected;
   final double? width;
   final double? imageHeight;
 
@@ -27,7 +27,6 @@ class CarouselCard extends StatefulWidget {
     this.backgroundColor,
     this.imagePadding,
     this.imageFit,
-    this.isSelected = false,
     this.width,
     this.imageHeight,
   });
@@ -83,85 +82,63 @@ class _CarouselCardState extends State<CarouselCard>
   @override
   Widget build(BuildContext context) {
     final cardChild = GlassContainer(
-                border: widget.isSelected
-                    ? Border.all(
-                        color: brandPrimary,
-                        width: borderWidthDefault,
-                      )
-                    : null,
-                borderRadius: widget.isSelected ? radiusLarge : null,
-                padding: EdgeInsets.zero,
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(radiusMedium),
-                          topRight: Radius.circular(radiusMedium)),
-                      child: widget.heroTag != null
-                          ? Hero(
-                              tag: widget.heroTag!,
-                              child: _buildImage(),
-                            )
-                          : _buildImage(),
-                    ),
-                    if (widget.isSelected)
-                      Positioned(
-                        top: spacing8,
-                        right: spacing8,
-                        child: Container(
-                          padding: const EdgeInsets.all(spacing4),
-                          decoration: BoxDecoration(
-                            color: brandPrimary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.check,
-                            color: context.colors.textPrimary,
-                            size: iconSizeSmall,
-                          ),
-                        ),
-                      ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(spacing8),
-                        decoration: BoxDecoration(
-                          color: context.colors.bgSecondary,
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(radiusMedium),
-                            bottomRight: Radius.circular(radiusMedium),
-                          ),
-                          boxShadow: const [elevation1],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: widget.bottomContent != null
-                              ? CrossAxisAlignment.start
-                              : CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              widget.title,
-                              style: bodyTextStyle.copyWith(
-                                  color: context.colors.textPrimary),
-                              maxLines: widget.bottomContent != null ? 1 : 2,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: widget.bottomContent != null
-                                  ? TextAlign.start
-                                  : TextAlign.center,
-                            ),
-                            if (widget.bottomContent != null) ...[
-                              const SizedBox(height: spacing4),
-                              widget.bottomContent!,
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+      borderRadius: radiusCard,
+      padding: EdgeInsets.zero,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Image section
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(radiusCard),
+              topRight: Radius.circular(radiusCard),
+            ),
+            child: widget.heroTag != null
+                ? Hero(
+                    tag: widget.heroTag!,
+                    child: _buildImage(),
+                  )
+                : _buildImage(),
+          ),
+
+          // Bottom content section
+          Container(
+            padding: const EdgeInsets.all(spacing8),
+            decoration: BoxDecoration(
+              color: context.colors.bgSecondary,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(radiusCard),
+                bottomRight: Radius.circular(radiusCard),
+              ),
+              boxShadow: const [elevation1],
+            ),
+            child: Column(
+              crossAxisAlignment: widget.bottomContent != null
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.title,
+                  style: bodyTextStyle.copyWith(
+                    color: context.colors.textPrimary,
+                  ),
+                  maxLines: widget.bottomContent != null ? 1 : 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: widget.bottomContent != null
+                      ? TextAlign.start
+                      : TextAlign.center,
                 ),
-              );
+                if (widget.bottomContent != null) ...[
+                  const SizedBox(height: spacing4),
+                  widget.bottomContent!,
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
 
     final wrappedCard = widget.width != null
         ? SizedBox(width: widget.width, child: cardChild)

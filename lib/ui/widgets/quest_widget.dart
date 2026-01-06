@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
-/// Quest widget with two states: browse (empty) and in-progress
+// TODO: Quest widget that will change states from browse quest to in-progress.
+// Currently uses hasQuestInProgress boolean to toggle between:
+// - BrowseQuest (State A): Empty state with "Browse Quest" button
+// - InProgressQuest (State B): Active quest with progress bar and action buttons
+//   - QR code scan icon (top right) to confirm and verify e.g. each peak has been completed
+// Note: Radius for "Nearby" quests will be small, 10-20ish meters (TBD)
 class QuestWidget extends StatelessWidget {
   final bool hasQuestInProgress;
   final int availableCount;
@@ -61,43 +66,40 @@ class BrowseQuest extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassContainer(
       padding: const EdgeInsets.all(spacing16),
-      child: Stack(
+      child: Column(
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Center icon
-              Image.asset(
-                'assets/png/xplora-logo.png',
-                width: 100,
-                height: 100,
-              ),
-              const SizedBox(height: spacing32),
-              // Browse Quest button
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: PrimaryButton(
-                  onPressed: onBrowseQuest,
-                  text: 'Browse Quest',
-                ),
-              ),
-            ],
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Quest', style: h3Style),
+              // Center icon
+              Expanded(
+                child: Image.asset(
+                  'assets/png/xplora-logo.png',
+                  width: 100,
+                  height: 100,
+                ),
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('$availableCount Available', style: bodySmallStyle),
-                  Text('$nearbyCount Nearby', style: bodySmallStyle),
+                  Text('$availableCount Available', style: bodySmallStyle.copyWith(color: context.colors.textSecondary)),
+                  Text('$nearbyCount Nearby', style: bodySmallStyle.copyWith(color: context.colors.textSecondary)),
                 ],
               ),
             ],
-          )
+          ),
+          const SizedBox(height: spacing24),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Browse Quest button
+              PrimaryButton(
+                onPressed: onBrowseQuest,
+                text: 'Browse Quest',
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -123,7 +125,7 @@ class InProgressQuest extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassContainer(
-      padding: const EdgeInsets.all(spacing16),
+      padding: const EdgeInsets.fromLTRB(spacing16, spacing4, spacing16, spacing16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,14 +136,14 @@ class InProgressQuest extends StatelessWidget {
             children: [
               Text(
                 'In Progress',
-                style: h3Style,
+                style: h3Style.copyWith(color: context.colors.textPrimary),
               ),
-              GestureDetector(
-                  onTap: () {
+              IconButton(
+                  onPressed: () {
                     print('QR Code Tapped');
                   },
-                  child: Icon(
-                    Icons.qr_code,
+                  icon: Icon(
+                    Icons.qr_code_scanner,
                     color: context.colors.textPrimary,
                   ))
             ],
@@ -150,7 +152,7 @@ class InProgressQuest extends StatelessWidget {
           // Quest title (dummy)
           Text(
             dummyQuestTitle,
-            style: bodyTextStyle,
+            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -176,7 +178,7 @@ class InProgressQuest extends StatelessWidget {
                   const SizedBox(width: spacing16),
                   Text(
                     '$dummyProgress%',
-                    style: bodySmallStyle,
+                    style: bodySmallStyle.copyWith(color: context.colors.textSecondary),
                   ),
                 ],
               ),
@@ -187,31 +189,25 @@ class InProgressQuest extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: SizedBox(
-                  height: 40,
-                  child: SecondaryButton(
-                    text: 'See Quest Details',
-                    onPressed: onSeeQuestDetails,
-                    fontSize: 12,
-                  ),
+                child: SecondaryButton(
+                  maxLines: 1,
+                  text: 'See Quest Details',
+                  onPressed: onSeeQuestDetails,
                 ),
               ),
               const SizedBox(width: spacing8),
-              SizedBox(
-                height: 40,
+              Flexible(
                 child: SecondaryButton(
+                  maxLines: 1,
                   text: 'More Quest',
                   onPressed: onMoreQuest,
-                  fontSize: 12,
                 ),
               ),
               const SizedBox(width: spacing8),
-              SizedBox(
-                height: 40,
+              Flexible(
                 child: SecondaryButton(
                   text: 'Queue',
                   onPressed: onQueue,
-                  fontSize: 12,
                 ),
               ),
             ],

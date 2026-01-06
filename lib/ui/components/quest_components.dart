@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/adventure_providers.dart';
 import '../../domain/models/adventure_in_progress.dart';
 import '../../theme.dart';
-import '../pages/quest_list_page.dart';
 import '../widgets/current_quest.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/primary_button.dart';
@@ -40,20 +39,14 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
           availableCount: 20, // TODO: Replace with actual count from provider
           nearbyCount: 3, // TODO: Replace with actual count from provider
           onBrowseQuest: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const QuestListPage()),
-            );
+            Navigator.of(context).pushNamed('/quest-main');
           },
           onSeeQuestDetails: () {
             // TODO: See quest details opens the quest detail screen.
           },
           onMoreQuest: () {
             // TODO: More quest opens the main quest to-do tab screen.
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const QuestListPage()),
-            );
+            Navigator.of(context).pushNamed('/quest-main');
           },
           onQueue: () {
             // TODO: Queue opens the main quest in progress tab screen.

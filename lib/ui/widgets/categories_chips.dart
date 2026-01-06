@@ -119,7 +119,6 @@ class CategoryCarouselCard extends ConsumerWidget {
       backgroundColor: Colors.white,
       imagePadding: const EdgeInsets.all(16.0),
       imageFit: BoxFit.contain,
-      isSelected: isSelected,
       onTap: () {
         ref.read(selectedCategoriesProvider.notifier).state = category.id;
         ref.read(bottomNavigationBarProvider.notifier).state =
