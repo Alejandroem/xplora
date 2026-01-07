@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../theme.dart';
-import '../widgets/quest_list.dart';
 import '../widgets/streak_summary_widget.dart';
+import '../widgets/quest_tabs.dart';
 
 /// Quest Main Screen - Browse and manage quests
 /// App bar includes back button, title, and QR code scanner
@@ -42,20 +42,27 @@ class QuestMainScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Streak Summary at the top (non-scrollable)
-            Padding(
-              padding: EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
-              child: StreakSummaryWidget(
+        body: const Padding(
+          padding: EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Streak Summary at the top (non-scrollable)
+              StreakSummaryWidget(
                 currentXp: 5787, // TODO: Get from user profile provider
                 totalXp: 8000, // TODO: Get from level calculation
-                dayStreak: 137, // TODO: Get from streak provider
-                weekProgress: [true, true, true, true, false, false, false], // TODO: Get from activity tracking
+                dayStreak: 13, // TODO: Get from streak provider
+                streakStartDayIndex:
+                    2, // 0 = Mon, 1 = Tue, etc. TODO: Get from streak provider
               ),
-            ),
-          ],
+              SizedBox(height: spacing16),
+
+              // Quest tabs + placeholder content
+              Expanded(
+                child: QuestTabs(),
+              ),
+            ],
+          ),
         ),
       ),
     );

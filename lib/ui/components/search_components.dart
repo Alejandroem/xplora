@@ -57,7 +57,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     if (!_scrollController.hasClients) return false;
 
     final position = _scrollController.position;
-    return position.pixels >= position.maxScrollExtent - 350;
+    return position.pixels >= position.maxScrollExtent - 380;
   }
 
   @override

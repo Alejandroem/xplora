@@ -35,7 +35,7 @@ class PaginatedAdventuresNotifier
     extends StateNotifier<PaginatedAdventuresState> {
   final AdventureCrudService _adventureCrudService;
   static const int _initialPageSize = 6; // Load 6 cards initially
-  static const int _pageSize = 2; // Load 2 cards for subsequent loads
+  static const int _pageSize = 6; // Load 6 cards for subsequent loads
   Adventure? _lastDocument;
   bool _isInitialLoad = true;
 

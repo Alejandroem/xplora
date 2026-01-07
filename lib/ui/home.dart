@@ -399,7 +399,7 @@ class _HomeState extends ConsumerState<Home> {
                 ),
               ),
             const QuestProgressIndicator(),
-            const LoraOrb(),
+            // const LoraOrb(),
           ],
         ),
       ),

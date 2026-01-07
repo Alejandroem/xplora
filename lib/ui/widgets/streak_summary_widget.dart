@@ -7,14 +7,15 @@ class StreakSummaryWidget extends StatelessWidget {
   final int currentXp;
   final int totalXp;
   final int dayStreak;
-  final List<bool> weekProgress; // 7 days, true = completed
+  /// Index of the first day of the streak window (0 = Mon, 6 = Sun)
+  final int streakStartDayIndex;
 
   const StreakSummaryWidget({
     super.key,
     required this.currentXp,
     required this.totalXp,
     required this.dayStreak,
-    required this.weekProgress,
+  required this.streakStartDayIndex,
   });
 
   @override
@@ -121,7 +122,7 @@ class StreakSummaryWidget extends StatelessWidget {
 
   /// Builds individual day indicator with circle and label
   Widget _buildDayIndicator(BuildContext context, int index, String label) {
-    final hasProgress = index < weekProgress.length && weekProgress[index];
+    final hasProgress = _isDayInStreakWindow(index);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -157,5 +158,39 @@ class StreakSummaryWidget extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// Returns true if the given [dayIndex] (0 = Mon … 6 = Sun) should be
+  /// marked as completed **in the current calendar week**.
+  ///
+  /// - First (partial) week: we start at [streakStartDayIndex] and fill
+  ///   forward until Sunday as [dayStreak] grows.
+  /// - Once the streak passes the end of that first week, we only ever
+  ///   show progress for the *current* Mon–Sun week: we fill from Monday
+  ///   up to "today" within that week and do NOT keep checkmarks from
+  ///   previous weeks.
+  ///
+  /// Example (start Wed = 2):
+  /// - dayStreak = 5 → Wed–Sun.
+  /// - dayStreak = 6 → only Mon of the new week.
+  bool _isDayInStreakWindow(int dayIndex) {
+    if (dayStreak <= 0) return false;
+
+    // Length of the initial partial week (from start day to Sunday)
+    final firstWeekLen = 7 - streakStartDayIndex;
+
+    // Still in the first (partial) week that started the streak
+    if (dayStreak <= firstWeekLen) {
+      final currentDayIndex = streakStartDayIndex + (dayStreak - 1);
+      return dayIndex >= streakStartDayIndex && dayIndex <= currentDayIndex;
+    }
+
+    // We've moved past the first week. Only show progress for
+    // the *current* Mon–Sun week.
+    final remaining = dayStreak - firstWeekLen;
+    // Position within the current Mon–Sun week (0 = Mon … 6 = Sun)
+    final currentWeekDayIndex = (remaining - 1) % 7;
+
+    return dayIndex >= 0 && dayIndex <= currentWeekDayIndex;
   }
 }

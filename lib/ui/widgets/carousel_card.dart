@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 
-/// Generic Carousel Card with fade-in and scale animations
+/// Generic Carousel Card (no entrance animations)
 /// Uses Column layout for clean, predictable structure
 class CarouselCard extends StatefulWidget {
   final String imageUrl;
@@ -35,49 +35,7 @@ class CarouselCard extends StatefulWidget {
   State<CarouselCard> createState() => _CarouselCardState();
 }
 
-class _CarouselCardState extends State<CarouselCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeOutBack,
-    ));
-
-    Future.delayed(const Duration(milliseconds: 50), () {
-      if (mounted) {
-        _fadeController.forward();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    super.dispose();
-  }
+class _CarouselCardState extends State<CarouselCard> {
 
   @override
   Widget build(BuildContext context) {
@@ -144,15 +102,9 @@ class _CarouselCardState extends State<CarouselCard>
         ? SizedBox(width: widget.width, child: cardChild)
         : cardChild;
 
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: InkWell(
-          onTap: widget.onTap,
-          child: wrappedCard,
-        ),
-      ),
+    return InkWell(
+      onTap: widget.onTap,
+      child: wrappedCard,
     );
   }
 

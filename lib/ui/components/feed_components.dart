@@ -15,30 +15,30 @@ class FeedComponents extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Padding(
-      padding: EdgeInsets.all(spacing16),
-      child: Column(
+    return const Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PlacesSection(),
           SizedBox(height: spacing24),
           // Streak and Community side by side
-          IntrinsicHeight(
-            child: Row(
-              children: [
-                Expanded(child: StreakWidget()),
-                SizedBox(width: spacing12),
-                Expanded(child: CommunityWidget()),
-              ],
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: spacing16),
+            child: IntrinsicHeight(
+              child: Row(
+                children: [
+                  Expanded(child: StreakWidget()),
+                  SizedBox(width: spacing12),
+                  Expanded(child: CommunityWidget()),
+                ],
+              ),
             ),
           ),
           SizedBox(height: spacing24),
-          QuestComponents(),
-          SizedBox(
-            height: (spacing48*2)-6,
+          Padding(
+            padding: EdgeInsets.fromLTRB(spacing16, 0, spacing16, spacing16),
+            child: QuestComponents(),
           )
         ],
-      ),
     );
   }
 }

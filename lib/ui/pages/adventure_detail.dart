@@ -10,6 +10,9 @@ import '../../domain/models/adventure.dart';
 import '../../domain/models/bookmark.dart';
 import '../../theme.dart';
 
+final descriptionExpandedProvider =
+    StateProvider.autoDispose<bool>((ref) => false);
+
 // TODO: Place Details Screen
 // - Image carousel (1-4 images) with indicators
 // - Back, share, and save icons overlaid on carousel
@@ -355,12 +358,51 @@ class _AdventureDetailState extends ConsumerState<AdventureDetail> {
   }
 
   Widget _buildDescription() {
-    return Text(
-      widget.adventure.longDescription.isNotEmpty
-          ? widget.adventure.longDescription
-          : widget.adventure.shortDescription,
-      style: bodyTextStyle.copyWith(
-        color: context.colors.textSecondary,
+    final isExpanded = ref.watch(descriptionExpandedProvider);
+
+    final descriptionText = widget.adventure.longDescription.isNotEmpty
+        ? widget.adventure.longDescription
+        : widget.adventure.shortDescription;
+
+    return GestureDetector(
+      onTap: () {
+        final notifier = ref.read(descriptionExpandedProvider.notifier);
+        notifier.state = !notifier.state;
+      },
+      child: GlassContainer(
+        borderRadius: radiusMedium,
+        padding: const EdgeInsets.all(spacing16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Description',
+                  style: h3Style.copyWith(
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+                Icon(
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: context.colors.textSecondary,
+                ),
+              ],
+            ),
+            if (isExpanded) ...[
+              const SizedBox(height: spacing8),
+              Text(
+                descriptionText,
+                style: bodyTextStyle.copyWith(
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

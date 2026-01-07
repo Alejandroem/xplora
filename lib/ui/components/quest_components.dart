@@ -21,7 +21,7 @@ class QuestComponents extends ConsumerStatefulWidget {
 class _QuestComponentsState extends ConsumerState<QuestComponents> {
   @override
   Widget build(BuildContext context) {
-    final questInProgress = ref.watch(adventureInProgressTrackerProvider);
+    // final questInProgress = ref.watch(adventureInProgressTrackerProvider);
     final hasQuestInProgress = false;
 
     return Column(
@@ -35,7 +35,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
         const SizedBox(height: spacing8),
         // Quest Widget
         QuestWidget(
-          hasQuestInProgress: true,
+          hasQuestInProgress: hasQuestInProgress,
           availableCount: 20, // TODO: Replace with actual count from provider
           nearbyCount: 3, // TODO: Replace with actual count from provider
           onBrowseQuest: () {

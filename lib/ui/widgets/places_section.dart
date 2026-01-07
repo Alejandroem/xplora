@@ -6,8 +6,8 @@ import '../../application/providers/navigation_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
+import 'carousel_widget.dart';
 import 'place_card.dart';
-import 'bouncing_carousel.dart';
 import 'smooth_filter_scroll_row.dart';
 
 /*
@@ -140,24 +140,25 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              'Places',
-              style: h2Style,
-            ),
-            const Spacer(),
-          ],
+        Padding(
+          padding: const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
+          child: Text(
+            'Places',
+            style: h2Style,
+          ),
         ),
         const SizedBox(height: spacing8),
         // Filter Bubble Row
-        SmoothFilterScrollRow(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: spacing16),
+          child: SmoothFilterScrollRow(
           filters: filters,
           selectedFilter: selectedFilter,
           onFilterTap: (filter) {
             ref.read(selectedCarouselFilterProvider.notifier).state =
-                filter;
-          },
+                  filter;
+            },
+          ),
         ),
         const SizedBox(height: spacing16),
         SizedBox(
@@ -196,10 +197,13 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
                             adventures.take(maxCards).toList();
                         final hasMore = adventures.length > maxCards;
 
-                        return GenericBouncingCarousel<Adventure>(
+                        return CarouselWidget<Adventure>(
                           items: displayedAdventures,
                           itemBuilder: (adventure, index) =>
-                              PlaceCard(adventure),
+                              Padding(
+                                padding: EdgeInsets.only(left: index == 0 ? spacing16 : 0),
+                                child: PlaceCard(adventure),
+                              ),
                           hasMore: hasMore,
                           onSeeMoreTap: () {
                             ref
@@ -222,7 +226,10 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
                         height: 230,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) => ShimmerWidgets.adventureCardShimmer(context: context),
+                          itemBuilder: (context, index) => Padding(
+                            padding: EdgeInsets.only(left: index == 0 ? spacing16 : 0, right: index == 3 - 1 ? spacing16 : 0),
+                            child: ShimmerWidgets.adventureCardShimmer(context: context),
+                          ),
                           separatorBuilder: (context, index) => const SizedBox(width: spacing8),
                           itemCount: 3,
                         ),

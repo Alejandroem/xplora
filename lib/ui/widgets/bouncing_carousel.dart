@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 import 'glass_container.dart';
+import 'see_more_card_widget.dart';
 
 /// Generic Bouncing Carousel that can display any type of items
 class GenericBouncingCarousel<T> extends StatefulWidget {
@@ -204,50 +205,6 @@ class _BouncingCardState extends State<BouncingCard>
     return SlideTransition(
       position: _bounceAnimation,
       child: widget.child,
-    );
-  }
-}
-
-/// See More Card for carousels
-class SeeMoreCard extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const SeeMoreCard({
-    super.key,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(spacing4),
-        child: GlassContainer(
-          borderRadius: radiusMedium,
-          padding: const EdgeInsets.all(spacing16),
-          child: SizedBox(
-            width: 120,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.search,
-                  color: context.colors.textSecondary,
-                  size: iconSizeLarge*2,
-                ),
-                Text(
-                  'See more',
-                  style: bodyTextStyle.copyWith(
-                    color: context.colors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
