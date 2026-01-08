@@ -6,7 +6,7 @@
 // DO NOT create custom spacing values - use only these defined constants
 
 /// Spacing/4 - Micro spacing
-/// Use for: Very tight gaps, icon-to-text spacing
+/// Use for: Very tight gaps
 const double spacing4 = 4.0;
 
 /// Spacing/8 - Base unit
@@ -14,7 +14,7 @@ const double spacing4 = 4.0;
 const double spacing8 = 8.0;
 
 /// Spacing/12 - Small spacing
-/// Use for: Small gaps, list item spacing
+/// Use for: Small gaps
 const double spacing12 = 12.0;
 
 /// Spacing/16 - Default padding & margins
@@ -22,7 +22,7 @@ const double spacing12 = 12.0;
 const double spacing16 = 16.0;
 
 /// Spacing/24 - Section separation
-/// Use for: Separating related sections, card spacing
+/// Use for: Separating related sections
 const double spacing24 = 24.0;
 
 /// Spacing/32 - Major layout breaks

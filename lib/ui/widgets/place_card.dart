@@ -41,9 +41,13 @@ class PlaceCard extends ConsumerWidget {
     return CarouselCard(
       imageUrl: adventure.imageUrl,
       title: adventure.title,
-      heroTag: 'adventure-image-${adventure.id}-${isInGrid ? 'grid' : 'carousel'}',
+      heroTag:
+          'adventure-image-${adventure.id}-${isInGrid ? 'grid' : 'carousel'}',
       width: isInGrid ? null : 150,
-      imageHeight: isInGrid ? 155 : 140,
+      // For grid: use expandImage to fill available space
+      // For carousel: use fixed height
+      expandImage: isInGrid,
+      imageHeight: isInGrid ? null : 140,
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -57,10 +61,11 @@ class PlaceCard extends ConsumerWidget {
       bottomContent: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('City, State', style: bodySmallStyle.copyWith(
-            fontSize: 12,
-            color: context.colors.textSecondary,
-          )),
+          Text('City, State',
+              style: bodySmallStyle.copyWith(
+                fontSize: 12,
+                color: context.colors.textSecondary,
+              )),
           const SizedBox(height: spacing4),
           Row(
             children: [

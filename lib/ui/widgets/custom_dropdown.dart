@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 import '../../theme.dart';
 
 class CustomDropdown extends StatelessWidget {
-  CustomDropdown({super.key, required this.label, required this.value, required this.items, required this.onChanged, required this.icon, this.isOptional = false});
+  CustomDropdown(
+      {super.key,
+      required this.label,
+      required this.value,
+      required this.items,
+      required this.onChanged,
+      required this.icon,
+      this.isOptional = false});
 
   String label;
   String value;
@@ -17,10 +24,7 @@ class CustomDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: bodySmallStyle
-        ),
+        Text(label, style: bodySmallStyle),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -42,12 +46,10 @@ class CustomDropdown extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 value: value.isEmpty ? null : value,
-                hint: Text(
-                  'Select $label',
-                  style: captionStyle
-                ),
+                hint: Text('Select $label', style: captionStyle),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
                   color: context.colors.textSecondary,

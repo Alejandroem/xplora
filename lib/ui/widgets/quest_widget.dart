@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'browse_quest_widget.dart';
-import 'in_progress_quest_widget.dart';
+import 'browse_quest.dart';
+import 'in_progress_quest.dart';
 
 // TODO: Quest widget that will change states from browse quest to in-progress.
 // Currently uses hasQuestInProgress boolean to toggle between:
@@ -35,7 +35,7 @@ class QuestWidget extends StatelessWidget {
       const dummyQuestTitle = 'Cerro Minne 3 peak hike';
       const dummyProgress = 30;
 
-      return InProgressQuestWidget(
+      return InProgressQuest(
           dummyQuestTitle: dummyQuestTitle,
           dummyProgress: dummyProgress,
           onSeeQuestDetails: onSeeQuestDetails,
@@ -44,7 +44,7 @@ class QuestWidget extends StatelessWidget {
     }
 
     // Browse Quest State (Empty State)
-    return BrowseQuestWidget(
+    return BrowseQuest(
         onBrowseQuest: onBrowseQuest,
         availableCount: availableCount,
         nearbyCount: nearbyCount);

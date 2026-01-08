@@ -59,3 +59,9 @@ Color buttonDisabledDark = bgTertiaryDark; /// #363538 - No elevation/shadow
 
 // Disabled State (Light Mode)
 Color buttonDisabledLight = bgTertiaryLight; /// #DADADA - No elevation/shadow
+
+// Quest List Tile Splash State (Dark Mode)
+Color questSplashDark = const Color(0xFF414141); /// #414141 - Quest item press overlay
+
+// Quest List Tile Splash State (Light Mode)
+Color questSplashLight = const Color(0x14000000); /// #00000014 - Quest item press overlay

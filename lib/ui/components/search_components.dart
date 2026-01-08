@@ -177,7 +177,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
       padding: const EdgeInsets.only(bottom: spacing16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.745,
+        childAspectRatio: 0.75,
         crossAxisSpacing: spacing12,
         mainAxisSpacing: spacing12,
       ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
-class InProgressQuestWidget extends StatelessWidget {
-  const InProgressQuestWidget({
+class InProgressQuest extends StatelessWidget {
+  const InProgressQuest({
     super.key,
     required this.dummyQuestTitle,
     required this.dummyProgress,

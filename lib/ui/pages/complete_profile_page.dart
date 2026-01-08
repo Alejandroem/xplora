@@ -728,16 +728,12 @@ class _CompleteProfilePageState extends ConsumerState<CompleteProfilePage> {
                   onTapOutside: (event) => {},
                   controller: textController,
                   focusNode: focusNode,
-                  enabled: enabled,
+                  isEnabled: enabled,
                   hintText: hintText,
                   prefixIcon: Icon(
                     icon,
                     color: context.colors.textSecondary,
                     size: 20,
-                  ),
-                  style: bodyTextStyle.copyWith(
-                    color: context.colors.textPrimary,
-                    fontSize: 15,
                   ),
                   suffixIcon: Icon(
                     Icons.search,

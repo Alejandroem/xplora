@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
-class BrowseQuestWidget extends StatelessWidget {
-  const BrowseQuestWidget({
+class BrowseQuest extends StatelessWidget {
+  const BrowseQuest({
     super.key,
     required this.onBrowseQuest,
     required this.availableCount,

@@ -71,6 +71,9 @@ class ContributeSection extends ConsumerWidget {
                       size: iconSizeMedium,
                       color: context.colors.textPrimary,
                     ),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/submit-place');
+                    },
                   ),
                   Divider(
                     height: 1,
@@ -103,25 +106,25 @@ class _ContributeRow extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.trailing,
+    this.onTap,
   });
 
   final String title;
   final String subtitle;
   final Widget trailing;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         overlayColor: MaterialStateProperty.resolveWith((states) {
           if (!states.contains(MaterialState.pressed)) return null;
-
-          if (Theme.of(context).brightness == Brightness.dark) {
-            return const Color(0xFF414141);
-          }
-          return Colors.black.withOpacity(0.08);
+          return isDark ? questSplashDark : questSplashLight;
         }),
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -129,7 +132,7 @@ class _ContributeRow extends StatelessWidget {
             vertical: spacing12,
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
@@ -161,4 +164,3 @@ class _ContributeRow extends StatelessWidget {
     );
   }
 }
-

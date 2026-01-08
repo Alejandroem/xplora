@@ -517,6 +517,8 @@ class _QuestListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEnabled = item.enabled;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Material(
       // Keep transparent so the outer card's border and background
       // remain visible even for disabled items.
@@ -525,14 +527,7 @@ class _QuestListTile extends StatelessWidget {
         onTap: isEnabled ? () {} : null,
         overlayColor: MaterialStateProperty.resolveWith((states) {
           if (!states.contains(MaterialState.pressed)) return null;
-
-          // Dark theme: solid dark grey (design value).
-          if (Theme.of(context).brightness == Brightness.dark) {
-            return const Color(0xFF414141);
-          }
-
-          // Light theme: softer light grey splash.
-          return Colors.black.withOpacity(0.08);
+          return isDark ? questSplashDark : questSplashLight;
         }),
         child: Container(
           // Keep row background transparent so the outer card border

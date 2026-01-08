@@ -141,7 +141,8 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
+          padding:
+              const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
           child: Text(
             'Places',
             style: h2Style,
@@ -152,98 +153,104 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: spacing16),
           child: SmoothFilterScrollRow(
-          filters: filters,
-          selectedFilter: selectedFilter,
-          onFilterTap: (filter) {
-            ref.read(selectedCarouselFilterProvider.notifier).state =
-                  filter;
+            filters: filters,
+            selectedFilter: selectedFilter,
+            onFilterTap: (filter) {
+              ref.read(selectedCarouselFilterProvider.notifier).state = filter;
             },
           ),
         ),
         const SizedBox(height: spacing16),
-        SizedBox(
-          height: 231,
-          child: Consumer(
-            builder: (context, ref, child) {
-              // Show "Coming soon" for 'For You' and 'Following' filters
-              if (selectedFilter == 'For You' || selectedFilter == 'Following') {
-                return _buildComingSoon(
+        Consumer(
+          builder: (context, ref, child) {
+            // Show "Coming soon" for 'For You' and 'Following' filters
+            if (selectedFilter == 'For You' || selectedFilter == 'Following') {
+              return SizedBox(
+                height: 150,
+                child: _buildComingSoon(
                   context: context,
                   icon: selectedFilter == 'For You'
                       ? Icons.auto_awesome
                       : Icons.people_outline,
                   title: selectedFilter,
-                );
-              }
+                ),
+              );
+            }
 
-              // Show nearby adventures for 'Nearby' filter
-              return ref.watch(nearbyAdventuresProvider).when(
-                    data: (adventures) {
-                      /*
-                      // Filter adventures based on selected activity types
-                        List<Adventure> filteredAdventures = adventures;
+            // Show nearby adventures for 'Nearby' filter
+            return ref.watch(nearbyAdventuresProvider).when(
+                  data: (adventures) {
+                    /*
+                    // Filter adventures based on selected activity types
+                      List<Adventure> filteredAdventures = adventures;
 
-                        if (selectedActivityTypes.isNotEmpty) {
-                          filteredAdventures = adventures
-                              .where((adventure) =>
-                                  selectedActivityTypes.contains(adventure.category))
-                              .toList();
-                        }
-                       */
-
-                      if (adventures.isNotEmpty) {
-                        const maxCards = 20;
-                        final displayedAdventures =
-                            adventures.take(maxCards).toList();
-                        final hasMore = adventures.length > maxCards;
-
-                        return CarouselWidget<Adventure>(
-                          items: displayedAdventures,
-                          itemBuilder: (adventure, index) =>
-                              Padding(
-                                padding: EdgeInsets.only(left: index == 0 ? spacing16 : 0),
-                                child: PlaceCard(adventure),
-                              ),
-                          hasMore: hasMore,
-                          onSeeMoreTap: () {
-                            ref
-                                .read(bottomNavigationBarProvider.notifier)
-                                .state = NavigationItem.search;
-                          },
-                        );
-                      } else {
-                        return Center(
-                          child: Text(
-                            'No places found',
-                            style:
-                                bodyTextStyle.copyWith(color: context.colors.textSecondary),
-                          ),
-                        );
+                      if (selectedActivityTypes.isNotEmpty) {
+                        filteredAdventures = adventures
+                            .where((adventure) =>
+                                selectedActivityTypes.contains(adventure.category))
+                            .toList();
                       }
-                    },
-                    loading: () {
-                      return SizedBox(
-                        height: 230,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) => Padding(
-                            padding: EdgeInsets.only(left: index == 0 ? spacing16 : 0, right: index == 3 - 1 ? spacing16 : 0),
-                            child: ShimmerWidgets.adventureCardShimmer(context: context),
-                          ),
-                          separatorBuilder: (context, index) => const SizedBox(width: spacing8),
-                          itemCount: 3,
+                     */
+
+                    if (adventures.isNotEmpty) {
+                      const maxCards = 20;
+                      final displayedAdventures =
+                          adventures.take(maxCards).toList();
+                      final hasMore = adventures.length > maxCards;
+
+                      return CarouselWidget<Adventure>(
+                        items: displayedAdventures,
+                        itemBuilder: (adventure, index) => Padding(
+                          padding:
+                              EdgeInsets.only(left: index == 0 ? spacing16 : 0),
+                          child: PlaceCard(adventure),
+                        ),
+                        hasMore: hasMore,
+                        onSeeMoreTap: () {
+                          ref.read(bottomNavigationBarProvider.notifier).state =
+                              NavigationItem.search;
+                        },
+                      );
+                    } else {
+                      return Center(
+                        child: Text(
+                          'No places found',
+                          style: bodyTextStyle.copyWith(
+                              color: context.colors.textSecondary),
                         ),
                       );
-                    },
-                    error: (error, stack) => Center(
-                      child: Text(
-                        'Error: $error',
-                        style: bodyTextStyle.copyWith(color: errorColor),
+                    }
+                  },
+                  loading: () {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: IntrinsicHeight(
+                        child: Row(
+                          children: [
+                            for (int index = 0; index < 3; index++) ...[
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: index == 0 ? spacing16 : 0,
+                                  right: index == 2 ? spacing16 : 0,
+                                ),
+                                child: ShimmerWidgets.adventureCardShimmer(
+                                    context: context),
+                              ),
+                              if (index < 2) const SizedBox(width: spacing8),
+                            ],
+                          ],
+                        ),
                       ),
+                    );
+                  },
+                  error: (error, stack) => Center(
+                    child: Text(
+                      'Error: $error',
+                      style: bodyTextStyle.copyWith(color: errorColor),
                     ),
-                  );
-            },
-          ),
+                  ),
+                );
+          },
         ),
       ],
     );
@@ -283,6 +290,3 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     );
   }
 }
-
-
-

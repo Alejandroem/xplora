@@ -19,12 +19,10 @@ class CarouselWidget<T> extends StatefulWidget {
   });
 
   @override
-  State<CarouselWidget<T>> createState() =>
-      _CarouselWidgetState<T>();
+  State<CarouselWidget<T>> createState() => _CarouselWidgetState<T>();
 }
 
-class _CarouselWidgetState<T>
-    extends State<CarouselWidget<T>> {
+class _CarouselWidgetState<T> extends State<CarouselWidget<T>> {
   late ScrollController _scrollController;
 
   @override
@@ -41,21 +39,22 @@ class _CarouselWidgetState<T>
 
   @override
   Widget build(BuildContext context) {
-    final itemCount = widget.items.length + (widget.hasMore ? 1 : 0);
-
-    return ListView.separated(
-      separatorBuilder: (context, index) => const SizedBox(width: spacing8),
+    return SingleChildScrollView(
       controller: _scrollController,
-      shrinkWrap: true,
       scrollDirection: Axis.horizontal,
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        if (index == widget.items.length && widget.hasMore) {
-          return SeeMoreCard(onTap: widget.onSeeMoreTap);
-        }
-
-        return widget.itemBuilder(widget.items[index], index);
-      },
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (int index = 0; index < widget.items.length; index++) ...[
+              widget.itemBuilder(widget.items[index], index),
+              if (index < widget.items.length - 1 || widget.hasMore)
+                const SizedBox(width: spacing8),
+            ],
+            if (widget.hasMore) SeeMoreCard(onTap: widget.onSeeMoreTap),
+          ],
+        ),
+      ),
     );
   }
 }

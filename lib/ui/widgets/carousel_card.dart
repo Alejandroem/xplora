@@ -17,6 +17,9 @@ class CarouselCard extends StatefulWidget {
   final double? width;
   final double? imageHeight;
 
+  /// When true, image expands to fill available space (use in grid/constrained layouts)
+  final bool expandImage;
+
   const CarouselCard({
     super.key,
     required this.imageUrl,
@@ -29,6 +32,7 @@ class CarouselCard extends StatefulWidget {
     this.imageFit,
     this.width,
     this.imageHeight,
+    this.expandImage = false,
   });
 
   @override
@@ -36,28 +40,36 @@ class CarouselCard extends StatefulWidget {
 }
 
 class _CarouselCardState extends State<CarouselCard> {
-
   @override
   Widget build(BuildContext context) {
+    // Build the image section
+    Widget imageSection = ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(radiusCard),
+        topRight: Radius.circular(radiusCard),
+      ),
+      child: widget.heroTag != null
+          ? Hero(
+              tag: widget.heroTag!,
+              child: _buildImage(),
+            )
+          : _buildImage(),
+    );
+
+    // Wrap in Expanded if expandImage is true
+    if (widget.expandImage) {
+      imageSection = Expanded(child: imageSection);
+    }
+
     final cardChild = GlassContainer(
       borderRadius: radiusCard,
       padding: EdgeInsets.zero,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        // Use max size when expanding image, min otherwise
+        mainAxisSize: widget.expandImage ? MainAxisSize.max : MainAxisSize.min,
         children: [
           // Image section
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(radiusCard),
-              topRight: Radius.circular(radiusCard),
-            ),
-            child: widget.heroTag != null
-                ? Hero(
-                    tag: widget.heroTag!,
-                    child: _buildImage(),
-                  )
-                : _buildImage(),
-          ),
+          imageSection,
 
           // Bottom content section
           Container(

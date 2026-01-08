@@ -18,6 +18,7 @@ import 'ui/pages/complete_profile_page.dart';
 import 'ui/pages/welcome_mission.dart';
 import 'ui/pages/privacy_consent_summary.dart';
 import 'ui/pages/xp_boost_onboarding_page.dart';
+import 'ui/pages/submit_place_page.dart';
 import 'package:device_preview_plus/device_preview_plus.dart';
 
 void main() async {
@@ -26,7 +27,7 @@ void main() async {
 
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      enabled: false,
       builder: (context) => const ProviderScope(
         child: MyApp(),
       ),
@@ -43,7 +44,8 @@ class MyApp extends ConsumerWidget {
     final settings = ref.watch(settingsStateNotifierProvider);
 
     // Get dark mode preference from settings
-    final isDarkModeSetting = settings.where((s) => s.key == 'isDarkMode').firstOrNull;
+    final isDarkModeSetting =
+        settings.where((s) => s.key == 'isDarkMode').firstOrNull;
     final isDarkMode = isDarkModeSetting?.value as bool?;
 
     print('isDarkMode: $isDarkMode');
@@ -69,6 +71,7 @@ class MyApp extends ConsumerWidget {
         '/signin': (context) => const SignInPage(),
         '/signup': (context) => const SignUpPage(),
         '/complete-profile': (context) => const CompleteProfilePage(),
+        '/submit-place': (context) => const SubmitPlacePage(),
       },
     );
   }

@@ -251,18 +251,11 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
                 onChanged: (value) {
                   ref.read(searchQueryProvider.notifier).state = value.trim();
                 },
-                style: bodyTextStyle.copyWith(
-                  color: context.colors.textPrimary,
-                ),
                 hintText: 'Search places...',
                 prefixIcon: Icon(
                   Icons.search,
                   color: context.colors.textSecondary,
                   size: iconSizeMedium,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: spacing16,
-                  vertical: spacing12,
                 ),
                 textCapitalization: TextCapitalization.sentences,
                 suffixIcon: searchQuery.trim().isNotEmpty ? IconButton(
