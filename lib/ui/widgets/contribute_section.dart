@@ -90,6 +90,9 @@ class ContributeSection extends ConsumerWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/submissions');
+                    },
                   ),
                 ],
               ),

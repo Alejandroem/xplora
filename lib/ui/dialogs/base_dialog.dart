@@ -27,22 +27,22 @@ class BaseDialog extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        color: Colors.black.withOpacity(0.7), // Darker backdrop
+        color: blackClr.withValues(alpha: 0.7),
         child: Center(
           child: Stack(
             children: [
               Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(spacing24),
                 child: GlassContainer(
-                  borderRadius: 20,
-                  padding: const EdgeInsets.all(32.0),
+                  borderRadius: radiusLarge,
+                  padding: const EdgeInsets.all(spacing32),
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         // Icon
                         icon,
-                        const SizedBox(height: 24),
+                        const SizedBox(height: spacing24),
 
                         // Title
                         Text(
@@ -53,13 +53,11 @@ class BaseDialog extends StatelessWidget {
 
                         // Description
                         if (description.isNotEmpty) ...[
-                          const SizedBox(height: 16),
+                          const SizedBox(height: spacing16),
                           Text(
                             description,
                             style: bodyTextStyle.copyWith(
                               color: context.colors.textSecondary,
-                              fontSize: 16,
-                              height: 1.5,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -67,17 +65,17 @@ class BaseDialog extends StatelessWidget {
 
                         // Optional warning widget
                         if (warningWidget != null) ...[
-                          const SizedBox(height: 18),
+                          const SizedBox(height: spacing16),
                           warningWidget!,
                         ],
 
                         // Optional custom content
                         if (content != null) ...[
-                          const SizedBox(height: 24),
+                          const SizedBox(height: spacing24),
                           content!,
                         ],
 
-                        const SizedBox(height: 32),
+                        const SizedBox(height: spacing32),
 
                         // Actions
                         ...actions,
@@ -89,24 +87,24 @@ class BaseDialog extends StatelessWidget {
               // Close button positioned in top-right
               if (showCloseButton)
                 Positioned(
-                  top: 46,
-                  right: 46,
+                  top: spacing48,
+                  right: spacing48,
                   child: InkWell(
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(spacing8),
                       decoration: BoxDecoration(
-                        color: context.colors.elevated.withOpacity(0.3),
+                        color: context.colors.elevated.withValues(alpha: 0.3),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: context.colors.elevated.withOpacity(0.5),
-                          width: 1,
+                          color: context.colors.elevated.withValues(alpha: 0.5),
+                          width: borderWidthDefault,
                         ),
                       ),
                       child: Icon(
                         Icons.close,
                         color: context.colors.iconColor,
-                        size: 20,
+                        size: iconSizeSmall,
                       ),
                     ),
                   ),

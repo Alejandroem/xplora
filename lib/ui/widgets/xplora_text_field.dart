@@ -49,6 +49,36 @@ class _XploraTextFieldState extends State<XploraTextField> {
   String? _errorText;
 
   @override
+  void initState() {
+    super.initState();
+    // Listen to text changes to update counter
+    widget.controller?.addListener(_onTextChanged);
+  }
+
+  @override
+  void didUpdateWidget(XploraTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?.removeListener(_onTextChanged);
+      widget.controller?.addListener(_onTextChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.controller?.removeListener(_onTextChanged);
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    if (mounted) {
+      setState(() {
+        // Rebuild to update counter
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final hasError = _errorText != null && _errorText!.isNotEmpty;
 
@@ -93,11 +123,12 @@ class _XploraTextFieldState extends State<XploraTextField> {
             });
             return error;
           },
-          style: bodyTextStyle,
+          style: bodySmallStyle,
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: captionStyle,
             errorStyle: const TextStyle(height: 0, fontSize: 0), // Hide default error
+            counterText: '', // Hide default counter, we'll show it custom below
             suffixIcon: widget.suffixIcon,
             prefixIcon: widget.prefixIcon,
             enabledBorder: OutlineInputBorder(
@@ -126,14 +157,38 @@ class _XploraTextFieldState extends State<XploraTextField> {
           ),
         ),
 
-        // Custom error text aligned with text field start
-        if (hasError) ...[
+        // Custom error and counter row below text field
+        if (hasError || widget.maxLength != null) ...[
           const SizedBox(height: spacing4),
-          Text(
-            _errorText!,
-            style: captionStyle.copyWith(color: errorColor),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // Error text on the left
+              if (hasError)
+                Expanded(
+                  child: Text(
+                    _errorText!,
+                    style: captionStyle.copyWith(
+                      color: errorColor,
+                      fontSize: 12,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              // Counter on the right
+              if (widget.maxLength != null) ...[
+                if (hasError) const SizedBox(width: spacing8),
+                Text(
+                  '${widget.controller?.text.length ?? 0}/${widget.maxLength}',
+                  style: captionStyle.copyWith(
+                    color: context.colors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ],

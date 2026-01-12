@@ -4,11 +4,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 
 import '../../application/providers/location_providers.dart';
 import '../../theme.dart';
-import '../widgets/primary_button.dart';
 import 'submit_place_page.dart';
+
+/// Providers for drop pin map state
+final _selectedPositionProvider = StateProvider.autoDispose<LatLng>(
+  (ref) => const LatLng(33.5651, 73.0169), // Default: Rawalpindi
+);
+
+final _addressTextProvider = StateProvider.autoDispose<String?>(
+  (ref) => null,
+);
+
+final _hasInitializedProvider = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
+
+final _isInitializingProvider = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
 
 /// Drop Pin Map Page
 /// Full-screen map for selecting a location by dropping a pin
@@ -26,91 +45,175 @@ class DropPinMapPage extends ConsumerStatefulWidget {
 
 class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
   GoogleMapController? _mapController;
-  LatLng _selectedPosition = const LatLng(33.5651, 73.0169); // Default: Rawalpindi
-  String? _addressText;
-  bool _isLoading = false;
-  bool _hasInitialized = false;
+  Timer? _debounceTimer;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  bool _isProgrammaticMove = false;
+  bool _isAddressLocked = false;  // Local state instead of provider
 
   // Rawalpindi default coordinates
   static const LatLng _defaultLocation = LatLng(33.5651, 73.0169);
+  static const String _googleApiKey = 'AIzaSyCPo2aN-lVlnuPj5ujZsbXmiVCQRLoorpk';
 
   @override
   void initState() {
     super.initState();
+
+
     // Set initial position if provided
     if (widget.initialLocation != null) {
-      _selectedPosition = LatLng(
-        widget.initialLocation!.latitude,
-        widget.initialLocation!.longitude,
-      );
-      _addressText = widget.initialLocation!.address;
-      _hasInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(_selectedPositionProvider.notifier).state = LatLng(
+          widget.initialLocation!.latitude,
+          widget.initialLocation!.longitude,
+        );
+        ref.read(_addressTextProvider.notifier).state =
+            widget.initialLocation!.address;
+        ref.read(_hasInitializedProvider.notifier).state = true;
+      });
     } else {
       // Try to get current location if permission granted
-      _initializeLocation();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _initializeLocation();
+      });
     }
   }
 
   Future<void> _initializeLocation() async {
     final hasPermission = await ref.read(locationPermissionProvider.future);
 
-    if (hasPermission && !_hasInitialized) {
+    if (hasPermission && !ref.read(_hasInitializedProvider)) {
+      ref.read(_isInitializingProvider.notifier).state = true;
+
       try {
         Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high,
         );
 
         if (mounted) {
-          setState(() {
-            _selectedPosition = LatLng(position.latitude, position.longitude);
-            _hasInitialized = true;
-          });
+          final currentLocation = LatLng(position.latitude, position.longitude);
+
+          ref.read(_selectedPositionProvider.notifier).state = currentLocation;
+          ref.read(_hasInitializedProvider.notifier).state = true;
+
+          // Fetch address for current location
+          await _fetchAddressFromCoordinates(currentLocation);
 
           // Animate camera to current location when map is ready
+          _isProgrammaticMove = true;
           _mapController?.animateCamera(
-            CameraUpdate.newLatLngZoom(_selectedPosition, 15),
+            CameraUpdate.newLatLngZoom(
+                ref.read(_selectedPositionProvider), 15),
           );
+
+          ref.read(_isInitializingProvider.notifier).state = false;
         }
       } catch (e) {
         // If error getting location, keep default Rawalpindi location
         if (mounted) {
-          setState(() {
-            _hasInitialized = true;
-          });
+          ref.read(_hasInitializedProvider.notifier).state = true;
+          ref.read(_isInitializingProvider.notifier).state = false;
         }
       }
     } else {
       // No permission, use default location
       if (mounted) {
-        setState(() {
-          _hasInitialized = true;
-        });
+        ref.read(_hasInitializedProvider.notifier).state = true;
       }
     }
   }
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    _searchFocusNode.dispose();
     _mapController?.dispose();
     super.dispose();
   }
 
-  Future<void> _moveToCurrentLocation() async {
-    setState(() => _isLoading = true);
+  Future<void> _fetchAddressFromCoordinates(LatLng position) async {
+    // Don't fetch if address is locked (set from search)
+    if (_isAddressLocked) {
+      return;
+    }
+
     try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty && mounted) {
+        // Check again after async operation
+        if (_isAddressLocked) {
+          return;
+        }
+
+        final placemark = placemarks.first;
+        final address = [
+          placemark.street,
+          placemark.locality,
+          placemark.administrativeArea,
+          placemark.country,
+        ].where((e) => e != null && e.isNotEmpty).join(', ');
+
+        ref.read(_addressTextProvider.notifier).state =
+            address.isNotEmpty ? address : null;
+      }
+    } catch (e) {
+      // Error fetching address, keep current address or show coordinates
+    }
+  }
+
+  void _debouncedFetchAddress(LatLng position) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 800), () {
+      _fetchAddressFromCoordinates(position);
+    });
+  }
+
+  Future<void> _moveToCurrentLocation() async {
+    // Prevent multiple simultaneous requests
+    if (ref.read(_isInitializingProvider)) return;
+
+    try {
+      // Fetch position without showing loading yet
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
       final currentLocation = LatLng(position.latitude, position.longitude);
+      final currentSelectedPosition = ref.read(_selectedPositionProvider);
+
+      // Check if already at current location (within ~10 meters)
+      final distance = Geolocator.distanceBetween(
+        currentSelectedPosition.latitude,
+        currentSelectedPosition.longitude,
+        currentLocation.latitude,
+        currentLocation.longitude,
+      );
+
+      if (distance < 10) {
+        // Already at current location, no need to do anything
+        return;
+      }
+
+      // Now show loading since we're actually going to update
+      if (mounted) {
+        ref.read(_isInitializingProvider.notifier).state = true;
+      }
+
+      ref.read(_selectedPositionProvider.notifier).state = currentLocation;
+
+      // Mark as programmatic move
+      _isProgrammaticMove = true;
 
       _mapController?.animateCamera(
         CameraUpdate.newLatLngZoom(currentLocation, 15),
       );
 
-      setState(() {
-        _selectedPosition = currentLocation;
-        _addressText = null; // Will be fetched by reverse geocoding if implemented
-      });
+      // Fetch address for current location
+      await _fetchAddressFromCoordinates(currentLocation);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -118,22 +221,40 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
         );
       }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        ref.read(_isInitializingProvider.notifier).state = false;
+      }
     }
   }
 
   void _onCameraMove(CameraPosition position) {
-    setState(() {
-      _selectedPosition = position.target;
-      _addressText = null; // Clear address when moving map
-    });
+    ref.read(_selectedPositionProvider.notifier).state = position.target;
+    // Only unlock address if this is a manual move (not programmatic)
+    if (!_isProgrammaticMove) {
+      _isAddressLocked = false;
+    }
+  }
+
+  void _onCameraIdle() {
+    // Only fetch address if it's not locked (locked when set from search)
+    if (!_isAddressLocked) {
+      // Fetch address after camera stops moving
+      _debouncedFetchAddress(ref.read(_selectedPositionProvider));
+    }
+
+    // Reset programmatic move flag AFTER checking lock
+    // This prevents late _onCameraMove calls from unlocking the address
+    _isProgrammaticMove = false;
   }
 
   void _confirmLocation() {
+    final selectedPosition = ref.read(_selectedPositionProvider);
+    final addressText = ref.read(_addressTextProvider);
+
     final location = SelectedLocation(
-      latitude: _selectedPosition.latitude,
-      longitude: _selectedPosition.longitude,
-      address: _addressText,
+      latitude: selectedPosition.latitude,
+      longitude: selectedPosition.longitude,
+      address: addressText,
       placeName: null,
     );
     Navigator.pop(context, location);
@@ -148,126 +269,209 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
       error: (_, __) => false,
     );
 
+    final selectedPosition = ref.watch(_selectedPositionProvider);
+    final addressText = ref.watch(_addressTextProvider);
+    final isInitializing = ref.watch(_isInitializingProvider);
+
     return Scaffold(
-      body: Stack(
-        children: [
-          // Google Map
-          GoogleMap(
-            onMapCreated: (controller) {
-              _mapController = controller;
-              // Animate to selected position if it's not default
-              if (_selectedPosition != _defaultLocation) {
-                controller.animateCamera(
-                  CameraUpdate.newLatLngZoom(_selectedPosition, 15),
-                );
-              }
-            },
-            initialCameraPosition: CameraPosition(
-              target: _selectedPosition,
-              zoom: 15,
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        leadingWidth: MediaQuery.of(context).size.width * 0.1,
+        height: 65,
+        title: GooglePlaceAutoCompleteTextField(
+          textEditingController: _searchController,
+          googleAPIKey: _googleApiKey,
+          focusNode: _searchFocusNode,
+          textInputAction: TextInputAction.done,
+          boxDecoration: const BoxDecoration(),
+          containerHorizontalPadding: 0,
+          containerVerticalPadding: 0,
+          isCrossBtnShown: true,
+          formSubmitCallback: () {
+            // Dismiss keyboard when "done" button is pressed
+            _searchFocusNode.unfocus();
+          },
+          inputDecoration: InputDecoration(
+            prefixIcon: Icon(
+              Icons.search,
+              color: context.colors.textSecondary,
+              size: iconSizeMedium,
             ),
-            onCameraMove: _onCameraMove,
-            myLocationEnabled: hasLocationPermission,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-            mapToolbarEnabled: false,
-            compassEnabled: false,
-            buildingsEnabled: true,
-          ),
-
-          // Center pin indicator
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.location_pin,
-                  size: 48,
-                  color: brandPrimary,
-                ),
-                const SizedBox(height: 48), // Offset for visual centering
-              ],
+            hintText: 'Search for a place',
+            hintStyle: captionStyle.copyWith(
+              color: context.colors.textSecondary,
             ),
-          ),
-
-          // Top app bar
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Container(
-                margin: const EdgeInsets.all(spacing16),
-                decoration: BoxDecoration(
-                  color: context.colors.bgPrimary,
-                  borderRadius: BorderRadius.circular(radiusMedium),
-                  border: Border.all(
-                    color: context.colors.border,
-                    width: borderWidthDefault,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: context.colors.textPrimary,
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    Expanded(
-                      child: Text(
-                        'Drop Pin',
-                        style: h3Style.copyWith(
-                          color: context.colors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(radiusMedium),
+              borderSide: BorderSide(
+                color: context.colors.border,
+                width: borderWidthDefault,
               ),
             ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(radiusMedium),
+              borderSide: BorderSide(
+                color: context.colors.border,
+                width: borderWidthDefault,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(radiusMedium),
+              borderSide: BorderSide(
+                color: brandPrimary,
+                width: 2,
+              ),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(radiusMedium),
+              borderSide: BorderSide(
+                color: context.colors.border,
+                width: borderWidthDefault,
+              ),
+            ),
+            filled: true,
+            fillColor: context.colors.bgSecondary,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: spacing16,
+              vertical: spacing12,
+            ),
           ),
+          textStyle: bodyTextStyle.copyWith(
+            color: context.colors.textPrimary,
+          ),
+          debounceTime: 600,
+          isLatLngRequired: true,
+          getPlaceDetailWithLatLng: (Prediction prediction) {
+            // Move map to selected place
+            if (prediction.lat != null && prediction.lng != null) {
+              final location = LatLng(
+                double.parse(prediction.lat!),
+                double.parse(prediction.lng!),
+              );
+
+              // Cancel any pending address fetch timers
+              _debounceTimer?.cancel();
+
+              // CRITICAL: Set programmatic flag FIRST, before anything else!
+              // This prevents any camera move events from unlocking the address
+              _isProgrammaticMove = true;
+
+              // Now lock the address
+              _isAddressLocked = true;
+
+              // Set the address
+              ref.read(_addressTextProvider.notifier).state =
+                  prediction.description;
+
+              // Update position and animate
+              ref.read(_selectedPositionProvider.notifier).state = location;
+
+              _mapController?.animateCamera(
+                CameraUpdate.newLatLngZoom(location, 15),
+              );
+
+              // Dismiss keyboard after selecting location
+              _searchFocusNode.unfocus();
+            }
+          },
+          itemClick: (Prediction prediction) {
+            _searchController.text = prediction.description ?? '';
+            _searchController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _searchController.text.length),
+            );
+
+            // Dismiss keyboard after selecting from suggestions
+            _searchFocusNode.unfocus();
+          },
+        ),
+        centerTitle: false,
+      ),
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard when tapping on map
+          _searchFocusNode.unfocus();
+        },
+        child: Stack(
+          children: [
+            // Google Map
+            GoogleMap(
+              onMapCreated: (controller) {
+                _mapController = controller;
+                // Animate to selected position if it's not default
+                if (selectedPosition != _defaultLocation) {
+                  _isProgrammaticMove = true;
+                  controller.animateCamera(
+                    CameraUpdate.newLatLngZoom(selectedPosition, 15),
+                  );
+                }
+              },
+              initialCameraPosition: CameraPosition(
+                target: selectedPosition,
+                zoom: 15,
+              ),
+              onCameraMove: _onCameraMove,
+              onCameraIdle: _onCameraIdle,
+              myLocationEnabled: hasLocationPermission,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: false,
+              mapToolbarEnabled: false,
+              compassEnabled: false,
+              buildingsEnabled: true,
+            ),
+
+          // Center pin indicator
+          if (!isInitializing)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.location_pin,
+                    size: 48,
+                    color: brandPrimary,
+                  ),
+                  const SizedBox(height: 48), // Offset for visual centering
+                ],
+              ),
+            ),
 
           // Current location button (only if permission granted)
           if (hasLocationPermission)
             Positioned(
-              top: 100,
+              bottom: 220,
               right: spacing16,
-              child: SafeArea(
-                child: Material(
-                  color: context.colors.bgPrimary,
+              child: Material(
+                color: context.colors.bgPrimary,
+                borderRadius: BorderRadius.circular(radiusMedium),
+                elevation: 4,
+                child: InkWell(
+                  onTap: isInitializing ? null : _moveToCurrentLocation,
                   borderRadius: BorderRadius.circular(radiusMedium),
-                  elevation: 4,
-                  child: InkWell(
-                    onTap: _isLoading ? null : _moveToCurrentLocation,
-                    borderRadius: BorderRadius.circular(radiusMedium),
-                    child: Container(
-                      padding: const EdgeInsets.all(spacing12),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: context.colors.border,
-                          width: borderWidthDefault,
-                        ),
-                        borderRadius: BorderRadius.circular(radiusMedium),
+                  child: Container(
+                    padding: const EdgeInsets.all(spacing12),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: context.colors.border,
+                        width: borderWidthDefault,
                       ),
-                      child: _isLoading
-                          ? SizedBox(
-                              width: iconSizeLarge,
-                              height: iconSizeLarge,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  brandPrimary,
-                                ),
-                              ),
-                            )
-                          : Icon(
-                              Icons.my_location,
-                              color: context.colors.textPrimary,
-                              size: iconSizeLarge,
-                            ),
+                      borderRadius: BorderRadius.circular(radiusMedium),
                     ),
+                    child: isInitializing
+                        ? SizedBox(
+                            width: iconSizeMedium,
+                            height: iconSizeMedium,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                brandPrimary,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            Icons.my_location,
+                            color: context.colors.textPrimary,
+                            size: iconSizeLarge,
+                          ),
                   ),
                 ),
               ),
@@ -302,22 +506,46 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
                       ),
                     ),
                     const SizedBox(height: spacing4),
-                    Text(
-                      _addressText ??
-                          '${_selectedPosition.latitude.toStringAsFixed(6)}, ${_selectedPosition.longitude.toStringAsFixed(6)}',
-                      style: bodyTextStyle.copyWith(
-                        color: context.colors.textPrimary,
-                        fontWeight: FontWeight.w600,
+                    if (isInitializing)
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                brandPrimary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: spacing8),
+                          Text(
+                            'Fetching location...',
+                            style: bodyTextStyle.copyWith(
+                              color: context.colors.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      Text(
+                        addressText ??
+                            '${selectedPosition.latitude.toStringAsFixed(6)}, ${selectedPosition.longitude.toStringAsFixed(6)}',
+                        style: bodyTextStyle.copyWith(
+                          color: context.colors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                     const SizedBox(height: spacing16),
 
                     // Confirm button
                     PrimaryButton(
                       text: 'Confirm Location',
-                      onPressed: _confirmLocation,
+                      onPressed: isInitializing ? null : _confirmLocation,
                     ),
                   ],
                 ),
@@ -325,6 +553,7 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
             ),
           ),
         ],
+        ),
       ),
     );
   }

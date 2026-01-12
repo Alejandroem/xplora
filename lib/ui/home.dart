@@ -238,7 +238,9 @@ class _HomeState extends ConsumerState<Home> {
 
       return XplorAppBar(
         height: bottomBar == NavigationItem.home
-            ? userLocation!=null ? 72 : null // Let XplorAppBar calculate dynamic height
+            ? userLocation != null
+                ? 72
+                : null // Let XplorAppBar calculate dynamic height
             : bottomBar == NavigationItem.search
                 ? 80.0
                 : null,
@@ -271,12 +273,12 @@ class _HomeState extends ConsumerState<Home> {
             if (mounted) {
               final result = await showLocationPermanentlyDeniedDialog(context);
 
-              if(result){
+              if (result) {
                 print('User opened settings to enable location permission');
                 // After dialog closes, check if user enabled permission from settings
                 // and re-check the autoEnableLocationTrackingProvider
                 ref.invalidate(autoEnableLocationTrackingProvider);
-              }else{
+              } else {
                 print('User declined to enable location permission');
               }
 
@@ -349,11 +351,11 @@ class _HomeState extends ConsumerState<Home> {
     return WillPopScope(
       onWillPop: () async {
         final item = ref.read(bottomNavigationBarProvider);
-        if(item!=NavigationItem.home){
+        if (item != NavigationItem.home) {
           ref.read(bottomNavigationBarProvider.notifier).state =
-          NavigationItem.home;
+              NavigationItem.home;
           return false;
-        }else{
+        } else {
           return true;
         }
       },
@@ -370,14 +372,17 @@ class _HomeState extends ConsumerState<Home> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      if (ref.watch(bottomNavigationBarProvider) == NavigationItem.home)
+                      if (ref.watch(bottomNavigationBarProvider) ==
+                          NavigationItem.home)
                         const FeedComponents(),
                       if (ref.watch(bottomNavigationBarProvider) ==
                           NavigationItem.notifications)
                         const NotificationComponents(),
-                      if (ref.watch(bottomNavigationBarProvider) == NavigationItem.xpc)
+                      if (ref.watch(bottomNavigationBarProvider) ==
+                          NavigationItem.xpc)
                         const EconomyHub(),
-                      if (ref.watch(bottomNavigationBarProvider) == NavigationItem.store)
+                      if (ref.watch(bottomNavigationBarProvider) ==
+                          NavigationItem.store)
                         Column(
                           children: [
                             const SizedBox(height: 100),

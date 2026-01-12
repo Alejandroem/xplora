@@ -9,7 +9,6 @@ import 'xplorauser_providers.dart';
 import 'settings_crud_providers.dart';
 import 'auth_service_providers.dart';
 
-
 final isAuthenticatedProvider = StreamProvider.autoDispose((ref) {
   final authService = ref.watch(authServiceProvider);
 
@@ -31,67 +30,77 @@ final currentUserProvider = StreamProvider.autoDispose((ref) {
   return authService.getAuthUserStream();
 });
 
-final createOrReadCurrentUserProfile = StreamProvider((ref) async* {
-  final profileService = ref.read(profileServiceProvider);
-  final authenticationService = ref.read(authServiceProvider);
-  final user = await authenticationService.getAuthUser();
-  if (user == null) {
-    yield null;
-    return;
-  }
+final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
+  final profileService = ref.watch(profileServiceProvider);
+  final authenticationService = ref.watch(authServiceProvider);
 
-  // First check if profile exists
-  final existingProfile = await profileService.read(user.id!);
+  // Listen to the auth user stream to react to login/logout events
+  await for (final user in authenticationService.getAuthUserStream()) {
+    if (user == null) {
+      yield null;
+      continue;
+    }
 
-  // Create profile if it doesn't exist
-  if (existingProfile == null) {
-    await profileService.create(
-      XploraProfile(
-        id: null,
-        userId: user.id!,
-        experience: 0,
-        categories: [],
-        avatarUrl: '',
-        username: '',
-        preferredLanguage: '',
-        country: '',
-        city: '',
-        birthdayMonth: '',
-        birthdayYear: '',
-        gender: '',
-        primaryInterestCategory: '',
-        createdAt: '',
-        updatedAt: '',
-      ),
-    );
-  }
+    // First check if profile exists
+    final existingProfile = await profileService.read(user.id!);
 
-  // Now stream the profile
-  await for (final profile in profileService.getStream(user.id!)) {
+    // Create profile if it doesn't exist
+    if (existingProfile == null) {
+      await profileService.create(
+        XploraProfile(
+          id: null,
+          userId: user.id!,
+          experience: 0,
+          categories: [],
+          avatarUrl: '',
+          username: '',
+          preferredLanguage: '',
+          country: '',
+          city: '',
+          birthdayMonth: '',
+          birthdayYear: '',
+          gender: '',
+          primaryInterestCategory: '',
+          createdAt: '',
+          updatedAt: '',
+        ),
+      );
+    }
+
+    // Yield the current profile (read it fresh after potential creation)
+    final profile = await profileService.read(user.id!);
     yield profile;
   }
 });
 
 /// Provider that formats user location from profile as "City, State/Country"
 /// Returns null if user has no city/country set or is not authenticated
-final userLocationStringProvider = StreamProvider<String?>((ref) async* {
-  await for (final profile in ref.watch(createOrReadCurrentUserProfile.stream)) {
-    if (profile == null) {
-      yield null;
-      continue;
-    }
+final userLocationStringProvider =
+    Provider.autoDispose<AsyncValue<String?>>((ref) {
+  final profileAsync = ref.watch(createOrReadCurrentUserProfile);
 
-    final city = profile.city;
-    final country = profile.country;
+  return profileAsync.when(
+    data: (profile) {
+      if (profile == null) {
+        return const AsyncValue.data(null);
+      }
 
-    // Only return location if both city and country/state are available
-    if (city != null && city.isNotEmpty &&
-        country != null && country.isNotEmpty) {
-      yield '$city, $country';
-    } else {
-      yield null;
-    }
-  }
+      final city = profile.city;
+      final country = profile.country;
+
+      // Only return location if both city and country/state are available
+      if (city != null &&
+          city.isNotEmpty &&
+          country != null &&
+          country.isNotEmpty) {
+        return AsyncValue.data('$city, $country');
+      } else {
+        return const AsyncValue.data(null);
+      }
+    },
+    loading: () => const AsyncValue.loading(),
+    error: (error, stack) => AsyncValue.error(error, stack),
+  );
 });
 
 //provides an instance of XploraProfile based on the auth user

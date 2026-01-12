@@ -8,11 +8,122 @@ import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
 import '../widgets/xplora_text_field.dart';
 import '../widgets/secondary_button.dart';
+import '../widgets/category_selection_bottom_sheet.dart';
+import '../dialogs/base_dialog.dart';
 import 'drop_pin_map_page.dart';
 
 /// Provider to manage the list of selected images for place submission.
 final selectedPlaceImagesProvider =
     StateProvider.autoDispose<List<String>>((ref) => []);
+
+/// Provider to manage all category selections
+final categorySelectionsProvider =
+    StateProvider.autoDispose<Map<String, String?>>((ref) => {
+          'Outdoors & Nature': null,
+          'Sports & Fitness': null,
+          'Art & Culture': null,
+          'Entertainment': null,
+          'Other': null,
+          'Group Type': null,
+          'Difficulty': null,
+          'Best Time to Visit': null,
+          'Vibe Tag': null,
+          'Food & Drink': null,
+          'Shopping & Local': null,
+          'Relax & Wellness': null,
+          'Accommodations': null,
+          'Coworking': null,
+        });
+
+/// Category data
+const Map<String, List<String>> categoryData = {
+  'Outdoors & Nature': [
+    'Park',
+    'Beach',
+    'Trail',
+    'Scenic Views',
+    'Nature Reserve',
+    'Camping',
+    'River',
+    'Lake',
+    'Picnic',
+  ],
+  'Sports & Fitness': [
+    'Running',
+    'Hiking',
+    'Walking',
+    'Soccer/Futbol',
+    'Basketball',
+    'Tennis',
+    'Pickleball',
+    'Skateboarding',
+    'Cycling',
+    'Physical Activities',
+    'Gym',
+    'Weightlifting',
+    'Racing',
+  ],
+  'Art & Culture': [
+    'Street Art',
+    'Landmark',
+    'Art Markets',
+    'Fashion',
+  ],
+  'Entertainment': [
+    'Live Music',
+    'Pop-up',
+    'Nightlife',
+    'Event Venue',
+    'Theater',
+    'Comedy',
+    'Poetry',
+  ],
+  'Other': [
+    'Secret Spot',
+    'Family-Friendly',
+    'Spiritual Site',
+    'Public Transport',
+  ],
+  'Group Type': [
+    'Solo',
+    'Couple',
+    'Friends',
+    'Family',
+    'Groups',
+  ],
+  'Cost Range': [
+    /*'Free',
+      'Low',
+      'Medium',
+      'Premium'*/
+  ],
+  'Difficulty': [
+    'Easy',
+    'Moderate',
+    'Hard',
+  ],
+  'Best Time to Visit': [
+    'Morning',
+    'Afternoon',
+    'Evening',
+    'Night',
+  ],
+  'Vibe Tag': [
+    'Chill',
+    'Social',
+    'Adventurous',
+    'High-Energy',
+    'Romantic',
+    'Creative',
+    'Competitive',
+    'Scenic',
+  ],
+  'Food & Drink': [],
+  'Shopping & Local': [],
+  'Relax & Wellness': [],
+  'Accommodations': [],
+  'Coworking': [],
+};
 
 /// Model to store selected location data
 class SelectedLocation {
@@ -68,13 +179,14 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
   }
 
   Future<void> _showImageSourceDialog() async {
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       backgroundColor: context.colors.bgTertiary,
       builder: (context) => Container(
         decoration: BoxDecoration(
           color: context.colors.bgTertiary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(radiusCard)),
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(radiusCard)),
           border: Border(
             top: BorderSide(
               color: context.colors.border,
@@ -119,6 +231,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
         ),
       ),
     );
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   Widget _buildSourceOption({
@@ -217,6 +330,8 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
                 // Image Upload Section
                 _buildImageUploadSection(selectedImages, canAddMore),
 
+                const SizedBox(height: spacing24),
+
                 // Form Fields Section
                 _buildFormFieldsSection(),
               ],
@@ -229,51 +344,48 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
 
   Widget _buildImageUploadSection(List<String> images, bool canAddMore) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(0, spacing16,
-          images.isEmpty ? spacing16 : 0, spacing16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: spacing16),
-          SizedBox(
-            height: 120,
-            child: Row(
-              children: [
-                // Plus button (visible until 4 images are added)
-                if (canAddMore) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(left: spacing16),
-                    child: _buildAddImageButton(),
-                  ),
-                  const SizedBox(width: spacing12),
-                ],
-                // Image containers
-                Expanded(
-                  child: images.isEmpty
-                      ? _buildPlaceholderContainer()
-                      : ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: images.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(width: spacing12),
-                          itemBuilder: (context, index) {
-                            final isFirst = index == 0;
-                            final isLast = index == images.length - 1;
-                            return Padding(
-                              padding: EdgeInsets.only(
-                                left: isFirst && !canAddMore ? spacing16 : 0,
-                                right: isLast ? spacing16 : 0,
-                              ),
-                              child: _buildImageContainer(images[index], index),
-                            );
-                          },
-                        ),
-                ),
-              ],
+      padding: EdgeInsets.fromLTRB(
+        0,
+        spacing16,
+        images.isEmpty ? spacing16 : 0,
+        0,
+      ),
+      child: SizedBox(
+        height: 120,
+        child: Row(
+          children: [
+            // Plus button (visible until 4 images are added)
+            if (canAddMore) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: spacing16),
+                child: _buildAddImageButton(),
+              ),
+              const SizedBox(width: spacing12),
+            ],
+            // Image containers
+            Expanded(
+              child: images.isEmpty
+                  ? _buildPlaceholderContainer()
+                  : ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: images.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(width: spacing12),
+                      itemBuilder: (context, index) {
+                        final isFirst = index == 0;
+                        final isLast = index == images.length - 1;
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            left: isFirst && !canAddMore ? spacing16 : 0,
+                            right: isLast ? spacing16 : 0,
+                          ),
+                          child: _buildImageContainer(images[index], index),
+                        );
+                      },
+                    ),
             ),
-          ),
-          const SizedBox(height: spacing16),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -361,15 +473,15 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
         ),
         // Remove button
         Positioned(
-          top: 4,
-          right: 4,
+          top: spacing4,
+          right: spacing4,
           child: GestureDetector(
             onTap: () => _removeImage(index),
             child: Container(
-              width: 24,
-              height: 24,
+              width: iconSizeMedium,
+              height: iconSizeMedium,
               decoration: BoxDecoration(
-                color: blackClr.withOpacity(0.6),
+                color: blackClr.withValues(alpha: 0.6),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -398,12 +510,16 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.next,
             textCapitalization: TextCapitalization.words,
+            maxLength: 100,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Place name is required';
               }
               if (value.trim().length < 3) {
                 return 'Place name must be at least 3 characters';
+              }
+              if (value.trim().length > 100) {
+                return 'Place name must not exceed 100 characters';
               }
               return null;
             },
@@ -419,12 +535,16 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
             textInputAction: TextInputAction.newline,
             textCapitalization: TextCapitalization.sentences,
             maxLines: 5,
+            maxLength: 500,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Description is required';
               }
               if (value.trim().length < 10) {
                 return 'Description must be at least 10 characters';
+              }
+              if (value.trim().length > 500) {
+                return 'Description must not exceed 500 characters';
               }
               return null;
             },
@@ -433,13 +553,157 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
 
           // Location and Category Section
           _buildLocationCategorySection(),
+
+          const SizedBox(height: spacing24),
+
+          // Submit Button
+          PrimaryButton(
+            text: 'Submit Place',
+            onPressed: _handleSubmit,
+          ),
+
+          const SizedBox(height: spacing12),
+
+          // Review notice
+          Text(
+            '"Your submission will be reviewed by XPLRA team.\nApproved places reward XP."',
+            textAlign: TextAlign.center,
+            style: captionStyle.copyWith(
+              color: context.colors.textSecondary,
+            ),
+          ),
+
+          const SizedBox(height: spacing24),
         ],
       ),
     );
   }
 
+  void _handleSubmit() {
+    // Validate form
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    // Get all form data
+    final selectedImages = ref.read(selectedPlaceImagesProvider);
+    final selectedLocation = ref.read(selectedLocationProvider);
+    final categorySelections = ref.read(categorySelectionsProvider);
+
+    // Validate images (at least 1 required)
+    if (selectedImages.isEmpty) {
+      showXploraSnackBar(
+        context,
+        'Please add at least one image',
+        isError: true,
+      );
+      return;
+    }
+
+    // Validate location
+    if (selectedLocation == null) {
+      showXploraSnackBar(
+        context,
+        'Please select a location',
+        isError: true,
+      );
+      return;
+    }
+
+    // Print all form data
+    print('=== SUBMIT PLACE DATA ===');
+    print('Place Name: ${_placeNameController.text}');
+    print('Description: ${_descriptionController.text}');
+    print('\nImages (${selectedImages.length}):');
+    for (var i = 0; i < selectedImages.length; i++) {
+      print('  Image ${i + 1}: ${selectedImages[i]}');
+    }
+    print('\nLocation:');
+    print('  Latitude: ${selectedLocation.latitude}');
+    print('  Longitude: ${selectedLocation.longitude}');
+    print('  Address: ${selectedLocation.address ?? 'N/A'}');
+    print('  Place Name: ${selectedLocation.placeName ?? 'N/A'}');
+    print('\nCategories:');
+    categorySelections.forEach((parent, child) {
+      if (child != null) {
+        print('  $parent: $child');
+      }
+    });
+    print('=== END SUBMIT DATA ===\n');
+
+    // Show success dialog
+    _showSuccessDialog();
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Non-dismissible
+      builder: (dialogContext) => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) {
+            // Back button was pressed, manually pop both dialog and page
+            Navigator.of(dialogContext).pop();
+            Navigator.of(context).pop();
+          }
+        },
+        child: BaseDialog(
+          icon: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: brandPrimary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.check,
+              size: 48,
+            ),
+          ),
+          title: 'Place Submitted!',
+          description: 'You will receive XP once it\'s approved.',
+          actions: [
+            PrimaryButton(
+              text: 'Back to quests',
+              onPressed: () {
+                // Close dialog
+                Navigator.of(dialogContext).pop();
+                // Close submit place page
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showCategorySelectionBottomSheet() async {
+    final currentSelections = ref.read(categorySelectionsProvider);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CategorySelectionBottomSheet(
+        categoryData: categoryData,
+        initialSelections: currentSelections,
+        onSelectionChanged: (selections) {
+          // Auto-save selections as they change
+          ref.read(categorySelectionsProvider.notifier).state = selections;
+        },
+      ),
+    );
+
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   Widget _buildLocationCategorySection() {
     final selectedLocation = ref.watch(selectedLocationProvider);
+    final categorySelections = ref.watch(categorySelectionsProvider);
+    final selectedCount =
+        categorySelections.values.where((v) => v != null).length;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,11 +722,6 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
               const SizedBox(height: spacing8),
               SecondaryButton(
                 text: selectedLocation == null ? 'Drop Pin' : 'Edit Pin',
-                icon: Icon(
-                  Icons.location_pin,
-                  size: iconSizeMedium,
-                  color: context.colors.textPrimary,
-                ),
                 onPressed: () async {
                   final result = await Navigator.push<SelectedLocation>(
                     context,
@@ -472,6 +731,8 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
                       ),
                     ),
                   );
+
+                  FocusManager.instance.primaryFocus?.unfocus();
 
                   if (result != null) {
                     ref.read(selectedLocationProvider.notifier).state = result;
@@ -501,26 +762,24 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Category',
+                'Categories',
                 style: bodySmallStyle.copyWith(
                   color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: spacing8),
               SecondaryButton(
-                text: 'Choose category',
-                icon: Icon(
-                  Icons.arrow_drop_down,
-                  size: iconSizeMedium,
-                  color: context.colors.textPrimary,
+                text: 'Choose categories',
+                onPressed: _showCategorySelectionBottomSheet,
+              ),
+              const SizedBox(height: spacing4),
+              Text(
+                selectedCount > 0
+                    ? '$selectedCount ${selectedCount == 1 ? 'category' : 'categories'} selected'
+                    : '',
+                style: captionStyle.copyWith(
+                  color: context.colors.textSecondary,
                 ),
-                onPressed: () {
-                  // TODO: Implement category selection
-                  showXploraSnackBar(
-                    context,
-                    'Category selection coming soon',
-                  );
-                },
               ),
             ],
           ),

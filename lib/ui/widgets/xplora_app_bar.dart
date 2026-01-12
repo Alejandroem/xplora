@@ -16,7 +16,9 @@ import '../pages/profile_page.dart';
 
 class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final double? height;
-  final String? userLocation; /// Format: "City, State" (e.g., "San Juan, PR")
+  final String? userLocation;
+
+  /// Format: "City, State" (e.g., "San Juan, PR")
 
   const XplorAppBar({super.key, this.height, this.userLocation});
 
@@ -62,9 +64,15 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 if (isAuthenticated) {
                   return ref.watch(createOrReadCurrentUserProfile).when(
                       data: (profile) {
+                        // Handle null profile during auth state transitions
+                        if (profile == null) {
+                          return placeholderIcon(context, userLocation: userLocation);
+                        }
                         return _buildAvatarWithBadge(
+                          iconTopPosition: userLocation == null ? 8 : 15,
+                          badgeTopPosition: userLocation == null ? 1 : 8,
                           context: context,
-                          avatarChild: profile!.avatarUrl != null &&
+                          avatarChild: profile.avatarUrl != null &&
                                   profile.avatarUrl!.isNotEmpty
                               ? ClipOval(
                                   child: CachedNetworkImage(
@@ -108,6 +116,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data == false) {
                         return _buildAvatarWithBadge(
+                          iconTopPosition: userLocation == null ? 8 : 15,
                           context: context,
                           avatarChild: Icon(
                             Icons.person,
@@ -133,8 +142,9 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget placeholderIcon(BuildContext context) {
+  Widget placeholderIcon(BuildContext context, {String? userLocation}) {
     return _buildAvatarWithBadge(
+        iconTopPosition: userLocation == null ? 8 : 15,
         context: context,
         avatarChild: Icon(
           Icons.person,
@@ -142,8 +152,8 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
           size: iconSizeMedium,
         ),
         badgeText: '...',
-        topPosition: 6,
-        rightPosition: 22);
+        badgeTopPosition: userLocation == null ? 1 : 8,
+        badgeRightPosition: 22);
   }
 
   /// Reusable avatar with badge widget
@@ -151,8 +161,10 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     required BuildContext context,
     required Widget avatarChild,
     required String badgeText,
-    double topPosition = 8,
-    double rightPosition = 12,
+    double badgeTopPosition = 8,
+    double badgeRightPosition = 12,
+    double iconLeftPosition = 10,
+    double iconTopPosition = 15,
     bool showBadge = true,
     VoidCallback? onTap,
   }) {
@@ -162,8 +174,8 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            left: 10,
-            top: 15,
+            left: iconLeftPosition,
+            top: iconTopPosition,
             child: CircleAvatar(
               backgroundColor: context.colors.bgSecondary,
               radius: avatarRadiusSmall,
@@ -171,8 +183,8 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
           ),
           Positioned(
-            top: topPosition,
-            right: rightPosition,
+            top: badgeTopPosition,
+            right: badgeRightPosition,
             child: showBadge
                 ? Text(
                     badgeText,
@@ -243,36 +255,36 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(
-          child: Consumer(
-            builder: (context, ref, child) {
-              final searchQuery = ref.watch(searchQueryProvider);
-              return XploraTextField(
-                controller: _searchController,
-                onChanged: (value) {
-                  ref.read(searchQueryProvider.notifier).state = value.trim();
-                },
-                hintText: 'Search places...',
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: context.colors.textSecondary,
-                  size: iconSizeMedium,
-                ),
-                textCapitalization: TextCapitalization.sentences,
-                suffixIcon: searchQuery.trim().isNotEmpty ? IconButton(
-                  onPressed: () {
-                    _searchController.clear();
-                    ref.read(searchQueryProvider.notifier).state = '';
-                    FocusScope.of(context).unfocus();
-                  },
-                  icon: Icon(
-                    Icons.clear,
-                    color: context.colors.textSecondary,
-                    size: iconSizeMedium,
-                  ),
-                ) : const SizedBox.shrink(),
-              );
-            }
-          ),
+          child: Consumer(builder: (context, ref, child) {
+            final searchQuery = ref.watch(searchQueryProvider);
+            return XploraTextField(
+              controller: _searchController,
+              onChanged: (value) {
+                ref.read(searchQueryProvider.notifier).state = value.trim();
+              },
+              hintText: 'Search places...',
+              prefixIcon: Icon(
+                Icons.search,
+                color: context.colors.textSecondary,
+                size: iconSizeMedium,
+              ),
+              textCapitalization: TextCapitalization.sentences,
+              suffixIcon: searchQuery.trim().isNotEmpty
+                  ? IconButton(
+                      onPressed: () {
+                        _searchController.clear();
+                        ref.read(searchQueryProvider.notifier).state = '';
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(
+                        Icons.clear,
+                        color: context.colors.textSecondary,
+                        size: iconSizeMedium,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            );
+          }),
         ),
         //icon to toggle filters
         Stack(
@@ -291,15 +303,12 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
                 );
               },
             ),
-            if (ref
-                .watch(filtersStateProvider.notifier)
-                .state
-                .selectedType !=
-                'All' ||
+            if (ref.watch(filtersStateProvider.notifier).state.selectedType !=
+                    'All' ||
                 ref
-                    .watch(filtersStateProvider.notifier)
-                    .state
-                    .minimumDistance !=
+                        .watch(filtersStateProvider.notifier)
+                        .state
+                        .minimumDistance !=
                     500000 ||
                 ref.watch(selectedCategoriesProvider) != '')
               Positioned(
@@ -320,4 +329,3 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
     );
   }
 }
-

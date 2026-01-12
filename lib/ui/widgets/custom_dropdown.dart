@@ -3,60 +3,75 @@ import 'package:flutter/material.dart';
 import '../../theme.dart';
 
 class CustomDropdown extends StatelessWidget {
-  CustomDropdown(
-      {super.key,
-      required this.label,
-      required this.value,
-      required this.items,
-      required this.onChanged,
-      required this.icon,
-      this.isOptional = false});
+  const CustomDropdown({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+    required this.icon,
+    this.isOptional = false,
+  });
 
-  String label;
-  String value;
-  List<String> items;
-  Function(String) onChanged;
-  IconData icon;
-  bool isOptional;
+  final String label;
+  final String value;
+  final List<String> items;
+  final Function(String) onChanged;
+  final IconData icon;
+  final bool isOptional;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: bodySmallStyle),
-        const SizedBox(height: 8),
+        Text(
+          label,
+          style: bodySmallStyle.copyWith(
+            color: context.colors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: spacing8),
         Container(
           decoration: BoxDecoration(
             color: context.colors.bgSecondary,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(radiusMedium),
             border: Border.all(
-              color: context.colors.cardContainerBorder,
-              width: 1,
+              color: context.colors.border,
+              width: borderWidthDefault,
             ),
           ),
           child: Theme(
             data: Theme.of(context).copyWith(
               canvasColor: context.colors.bgTertiary,
               focusColor: brandPrimary,
-              hoverColor: brandPrimary.withOpacity(0.05),
-              highlightColor: brandPrimary.withOpacity(0.1),
-              splashColor: brandPrimary.withOpacity(0.05),
+              hoverColor: brandPrimary.withValues(alpha: 0.05),
+              highlightColor: brandPrimary.withValues(alpha: 0.1),
+              splashColor: brandPrimary.withValues(alpha: 0.05),
               dividerColor: Colors.transparent,
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: spacing16,
+                  vertical: spacing4,
+                ),
                 value: value.isEmpty ? null : value,
-                hint: Text('Select $label', style: captionStyle),
+                hint: Text(
+                  'Select $label',
+                  style: captionStyle.copyWith(
+                    color: context.colors.textSecondary,
+                  ),
+                ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
                   color: context.colors.textSecondary,
                 ),
                 isExpanded: true,
                 dropdownColor: context.colors.bgTertiary,
-                style: bodyTextStyle,
+                style: bodyTextStyle.copyWith(
+                  color: context.colors.textPrimary,
+                ),
                 selectedItemBuilder: (BuildContext context) {
                   return items.map<Widget>((String item) {
                     return Container(
@@ -66,13 +81,15 @@ class CustomDropdown extends StatelessWidget {
                           Icon(
                             icon,
                             color: context.colors.textSecondary,
-                            size: 20,
+                            size: iconSizeMedium,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: spacing12),
                           Expanded(
                             child: Text(
                               item,
-                              style: bodyTextStyle,
+                              style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -86,19 +103,23 @@ class CustomDropdown extends StatelessWidget {
                     value: item,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                        horizontal: spacing16,
+                        vertical: spacing8,
+                      ),
                       child: Row(
                         children: [
                           Icon(
                             icon,
                             color: context.colors.textSecondary,
-                            size: 20,
+                            size: iconSizeMedium,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: spacing12),
                           Expanded(
                             child: Text(
                               item,
-                              style: bodyTextStyle,
+                              style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary,
+                              ),
                             ),
                           ),
                         ],
