@@ -309,6 +309,7 @@ class CompleteProfileFormNotifier extends StateNotifier<CompleteProfileForm> {
         categories: [], // Default empty categories
         avatarUrl: avatarUrl,
         username: state.username,
+        bio: '',
         preferredLanguage: state.preferredLanguage,
         country: state.country,
         city: state.city,

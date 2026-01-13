@@ -7,7 +7,9 @@ import '../widgets/quest_tabs.dart';
 /// Quest Main Screen - Browse and manage quests
 /// App bar includes back button, title, and QR code scanner
 class QuestMainScreen extends StatelessWidget {
-  const QuestMainScreen({super.key});
+  const QuestMainScreen({super.key, this.initialTab});
+
+  final QuestTab? initialTab;
 
   @override
   Widget build(BuildContext context) {
@@ -42,24 +44,24 @@ class QuestMainScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: const Padding(
-          padding: EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Streak Summary at the top (non-scrollable)
-              StreakSummaryWidget(
+              const StreakSummaryWidget(
                 currentXp: 5787, // TODO: Get from user profile provider
                 totalXp: 8000, // TODO: Get from level calculation
                 dayStreak: 13, // TODO: Get from streak provider
                 streakStartDayIndex:
                     2, // 0 = Mon, 1 = Tue, etc. TODO: Get from streak provider
               ),
-              SizedBox(height: spacing16),
+              const SizedBox(height: spacing16),
 
               // Quest tabs + placeholder content
               Expanded(
-                child: QuestTabs(),
+                child: QuestTabs(initialTab: initialTab),
               ),
             ],
           ),

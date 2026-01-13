@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
+import '../../application/providers/profile_providers.dart' as profile_providers;
 import '../../application/providers/xplorauser_providers.dart';
 import '../../domain/models/xplora_user.dart';
 import '../../theme.dart';
+import '../widgets/settings_tile.dart';
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
   const AccountSettingsPage({super.key});
@@ -16,92 +18,177 @@ class AccountSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
+  Widget _buildInfoItem(BuildContext context, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: spacing16,
+        vertical: spacing8,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: spacing4),
+          Text(
+            value,
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const GlassAppBar(
-        title: 'Account',
-      ),
-      body: GradientBackground(
-        child: ListView(
-          children: ref.watch(currentAuthUserStreamProvider).when(
-                data: (user) {
-                  if (user == null) {
-                    return [
-                      Center(
-                        child: Text(
-                          'User not found',
-                          style: bodyTextStyle.copyWith(color: context.colors.textSecondary),
-                        ),
-                      ),
-                    ];
-                  }
-                  return [
-                    ListTile(
-                      title: Text(
-                        'Email',
-                        style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
-                      ),
-                      subtitle: Text(
-                        user.email,
-                        style: bodyTextStyle.copyWith(color: context.colors.textSecondary),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => EditEmailPage(user: user),
-                          ),
-                        );
-                      },
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        color: context.colors.textSecondary,
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        'Display Name',
-                        style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
-                      ),
-                      subtitle: Text(
-                        user.displayName,
-                        style: bodyTextStyle.copyWith(color: context.colors.textSecondary),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => EditDisplayNamePage(user: user),
-                          ),
-                        );
-                      },
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        color: context.colors.textSecondary,
-                      ),
-                    ),
-                  ];
-                },
-                loading: () => [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.2,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: brandPrimary,
-                      ),
-                    ),
-                  )
-                ],
-                error: (error, stackTrace) {
-                  return [
-                    Center(
-                      child: Text(
-                        'Error: $error',
-                        style: bodyTextStyle.copyWith(color: errorColor),
-                      ),
-                    ),
-                  ];
-                },
+    final userAsync = ref.watch(currentAuthUserStreamProvider);
+    final profileAsync = ref.watch(createOrReadCurrentUserProfile);
+
+    return GradientBackground(
+      child: Scaffold(
+        appBar: GlassAppBar(
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: context.colors.iconColor,
+              size: iconSizeLarge,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Account',
+                style: h2Style.copyWith(
+                  color: context.colors.textPrimary,
+                ),
               ),
+              Text(
+                'Settings',
+                style: bodySmallStyle.copyWith(
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          centerTitle: true,
+          height: 65,
+        ),
+        body: userAsync.when(
+          data: (user) {
+            if (user == null) {
+              return Center(
+                child: Text(
+                  'User not found',
+                  style: bodyTextStyle.copyWith(
+                    color: context.colors.textSecondary,
+                  ),
+                ),
+              );
+            }
+
+            return ListView(
+              padding: const EdgeInsets.symmetric(vertical: spacing8),
+              children: [
+                // Profile Information Section
+                Padding(
+                  padding: const EdgeInsets.all(spacing16),
+                  child: Text(
+                    'Profile Information',
+                    style: h3Style.copyWith(
+                      color: context.colors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                profileAsync.when(
+                  data: (profile) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildInfoItem(
+                          context,
+                          'Username',
+                          profile?.username != null && profile!.username!.isNotEmpty
+                              ? '@${profile.username}'
+                              : 'Not set',
+                        ),
+                        _buildInfoItem(
+                          context,
+                          'Display Name',
+                          user.displayName.isNotEmpty
+                              ? user.displayName
+                              : 'Not set',
+                        ),
+                      ],
+                    );
+                  },
+                  loading: () => const SizedBox(),
+                  error: (_, __) => const SizedBox(),
+                ),
+                _buildInfoItem(
+                  context,
+                  'Email',
+                  user.email,
+                ),
+                _buildInfoItem(
+                  context,
+                  'Phone Number',
+                  '+1 (555) 123-4567', // Dummy for now
+                ),
+                _buildInfoItem(
+                  context,
+                  'Account Type',
+                  'Xplorer', // Dummy for now
+                ),
+                const SizedBox(height: spacing24),
+                // Account Management Section
+                Padding(
+                  padding: const EdgeInsets.all(spacing16),
+                  child: Text(
+                    'Account Management',
+                    style: h3Style.copyWith(
+                      color: context.colors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                SettingsTile(
+                  title: 'Delete Account',
+                  showTrailing: false,
+                  onTap: () async {
+                    // TODO: Show confirmation dialog for delete account
+                    final xploraProfileProvider = ref.read(profile_providers.profileServiceProvider);
+                    final authProvider = ref.read(authServiceProvider);
+                    await xploraProfileProvider.delete(user.id!);
+                    await authProvider.deleteAccount();
+                    if (context.mounted) {
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+          loading: () => Center(
+            child: CircularProgressIndicator(
+              color: brandPrimary,
+            ),
+          ),
+          error: (error, stackTrace) => Center(
+            child: Text(
+              'Error: $error',
+              style: bodyTextStyle.copyWith(color: errorColor),
+            ),
+          ),
         ),
       ),
     );

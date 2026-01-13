@@ -13,7 +13,7 @@ import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
 import '../dialogs/bottom_change_password_card.dart';
 import '../widgets/email_verification_banner.dart';
-import 'account_settings_page.dart';
+import '../widgets/settings_tile.dart';
 import 'privacy_policy.dart';
 import 'terms_and_conditions.dart';
 
@@ -25,6 +25,114 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
+  @override
+  Widget build(BuildContext context) {
+    final settingsProviderNotifier = ref.read(
+      settingsStateNotifierProvider.notifier,
+    );
+    // Watch the state to trigger rebuilds when settings change
+    ref.watch(settingsStateNotifierProvider);
+
+    return GradientBackground(
+      child: Scaffold(
+        appBar: GlassAppBar(
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: context.colors.iconColor,
+              size: iconSizeLarge,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Text(
+            'Settings',
+            style: h2Style.copyWith(
+              color: context.colors.textPrimary,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: ListView(
+          padding: const EdgeInsets.symmetric(vertical: spacing8),
+          children: [
+            SettingsTile(
+              title: 'Account',
+              onTap: () {
+                Navigator.pushNamed(context, '/account-settings');
+              },
+            ),
+            SettingsTile(
+              title: 'Security',
+              onTap: () {
+                Navigator.pushNamed(context, '/security-settings');
+              },
+            ),
+            SettingsTile(
+              title: 'Notifications',
+              onTap: () {
+                Navigator.pushNamed(context, '/notification-settings');
+              },
+            ),
+            SettingsTile(
+              title: 'Permissions',
+              onTap: () {
+                // TODO: Navigate to permissions settings
+              },
+            ),
+            SettingsTile(
+              title: 'Game XP',
+              onTap: () {
+                // TODO: Navigate to game XP settings
+              },
+            ),
+            SettingsTile(
+              title: 'Privacy',
+              onTap: () {
+                // TODO: Navigate to privacy settings
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => const PrivacyPolicyPage(),
+                //   ),
+                // );
+              },
+            ),
+            SettingsTile(
+              title: 'Accessibility',
+              onTap: () {
+                // TODO: Navigate to accessibility settings
+              },
+            ),
+            SwitchListTile(
+              title: Text(
+                'Dark Mode',
+                style: bodyTextStyle.copyWith(
+                  color: context.colors.textPrimary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              value: settingsProviderNotifier.isDarkMode() ?? false,
+              onChanged: (bool value) {
+                settingsProviderNotifier.toggleDarkMode();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// OLD IMPLEMENTATION - Preserved for reference and logic reuse
+/*
+class SettingsPageOld extends ConsumerStatefulWidget {
+  const SettingsPageOld({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _SettingsPageOldState();
+}
+
+class _SettingsPageOldState extends ConsumerState<SettingsPageOld> {
   @override
   Widget build(BuildContext context) {
     final settingsProviderNotifier = ref.watch(
@@ -179,7 +287,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 final authProvider = ref.read(authServiceProvider);
                 await authProvider.signOut();
                 ref.invalidate(nearbyAdventuresProvider);
-      
+
                 //pop until /
                 if (context.mounted) {
                   showXploraSnackBar(
@@ -224,3 +332,4 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 }
+*/

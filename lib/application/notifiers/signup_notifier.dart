@@ -174,6 +174,7 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
           categories: [],
           avatarUrl: '',
           username: '', // Empty username for now, will be set in profile completion
+          bio: '',
           preferredLanguage: '',
           country: '',
           city: '',

@@ -19,41 +19,42 @@ class BoomarkComponents extends ConsumerStatefulWidget {
 class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: 8.0,
-        ),
-        child: ref.watch(currentUserBoomarksStreamProvider).when(
-              data: (bookmarks) {
-                if (bookmarks == null || bookmarks.isEmpty) {
-                  return const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'You have no bookmarks yet.',
-                        textAlign: TextAlign.center,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 8.0,
+      ),
+      child: ref.watch(currentUserBoomarksStreamProvider).when(
+            data: (bookmarks) {
+              if (bookmarks == null || bookmarks.isEmpty) {
+                return const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'You have no bookmarks yet.',
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Go to the search page to bookmark adventures.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
                       ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Go to the search page to bookmark adventures.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Icon(
-                        Icons.bookmark,
-                        size: 50,
-                      ),
-                    ],
-                  );
-                } else {
-                  return ListView.builder(
-                    itemCount: bookmarks.length,
-                    itemBuilder: (context, index) {
+                    ),
+                    SizedBox(height: 16),
+                    Icon(
+                      Icons.bookmark,
+                      size: 50,
+                    ),
+                  ],
+                );
+              } else {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: bookmarks.length,
+                  itemBuilder: (context, index) {
                       final bookmark = bookmarks[index];
                       final adventureCrudService = ref.read(
                         adventuresCrudServiceProvider,
@@ -121,7 +122,6 @@ class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
                 child: Text('Error: $error'),
               ),
             ),
-      ),
     );
   }
 }

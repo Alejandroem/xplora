@@ -46,11 +46,29 @@ class _QuestItem {
 ///
 /// Uses design-system components (GlassContainer, spacing, typography)
 /// and Riverpod state instead of setState.
-class QuestTabs extends ConsumerWidget {
-  const QuestTabs({super.key});
+class QuestTabs extends ConsumerStatefulWidget {
+  const QuestTabs({super.key, this.initialTab});
+
+  final QuestTab? initialTab;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<QuestTabs> createState() => _QuestTabsState();
+}
+
+class _QuestTabsState extends ConsumerState<QuestTabs> {
+  @override
+  void initState() {
+    super.initState();
+    // Set initial tab if provided
+    if (widget.initialTab != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(questTabProvider.notifier).state = widget.initialTab!;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final selectedTab = ref.watch(questTabProvider);
 
     return Column(

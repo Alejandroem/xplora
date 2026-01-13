@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/colors.dart';
+import '../theme.dart';
 
 /// Shows a reusable snackbar with error or success styling
 void showXploraSnackBar(
@@ -10,23 +10,33 @@ void showXploraSnackBar(
   bool isError = false,
   Duration duration = const Duration(seconds: 2),
 }) {
+  // Determine background color
+  final bgColor = isError
+      ? errorColor
+      : isInfo
+          ? brandSecondary
+          : successColor;
+
+  // Use dark text color for success (bright green) and info (teal)
+  // Use white text for error (dark red)
+  final textColor = isError ? whiteClr : blackClr;
+
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(
         message,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 14,
+        style: bodySmallStyle.copyWith(
+          color: textColor,
           fontWeight: FontWeight.w500,
         ),
       ),
-      backgroundColor: isError ? errorColor : isInfo ? Colors.blue : successColor,
+      backgroundColor: bgColor,
       duration: duration,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(radiusMedium),
       ),
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(spacing16),
     ),
   );
 }

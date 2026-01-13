@@ -25,7 +25,8 @@ mixin _$XploraProfile {
   int get experience => throw _privateConstructorUsedError;
   List<String> get categories => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
-  String? get username =>
+  String? get username => throw _privateConstructorUsedError;
+  String? get bio =>
       throw _privateConstructorUsedError; // Additional profile fields
   String? get preferredLanguage => throw _privateConstructorUsedError;
   String? get country => throw _privateConstructorUsedError;
@@ -56,6 +57,7 @@ abstract class $XploraProfileCopyWith<$Res> {
       List<String> categories,
       String? avatarUrl,
       String? username,
+      String? bio,
       String? preferredLanguage,
       String? country,
       String? city,
@@ -86,6 +88,7 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
     Object? categories = null,
     Object? avatarUrl = freezed,
     Object? username = freezed,
+    Object? bio = freezed,
     Object? preferredLanguage = freezed,
     Object? country = freezed,
     Object? city = freezed,
@@ -120,6 +123,10 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
       username: freezed == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bio: freezed == bio
+          ? _value.bio
+          : bio // ignore: cast_nullable_to_non_nullable
               as String?,
       preferredLanguage: freezed == preferredLanguage
           ? _value.preferredLanguage
@@ -176,6 +183,7 @@ abstract class _$$XploraProfileImplCopyWith<$Res>
       List<String> categories,
       String? avatarUrl,
       String? username,
+      String? bio,
       String? preferredLanguage,
       String? country,
       String? city,
@@ -204,6 +212,7 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
     Object? categories = null,
     Object? avatarUrl = freezed,
     Object? username = freezed,
+    Object? bio = freezed,
     Object? preferredLanguage = freezed,
     Object? country = freezed,
     Object? city = freezed,
@@ -238,6 +247,10 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
       username: freezed == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bio: freezed == bio
+          ? _value.bio
+          : bio // ignore: cast_nullable_to_non_nullable
               as String?,
       preferredLanguage: freezed == preferredLanguage
           ? _value.preferredLanguage
@@ -289,6 +302,7 @@ class _$XploraProfileImpl implements _XploraProfile {
       required final List<String> categories,
       required this.avatarUrl,
       required this.username,
+      required this.bio,
       required this.preferredLanguage,
       required this.country,
       required this.city,
@@ -321,6 +335,8 @@ class _$XploraProfileImpl implements _XploraProfile {
   final String? avatarUrl;
   @override
   final String? username;
+  @override
+  final String? bio;
 // Additional profile fields
   @override
   final String? preferredLanguage;
@@ -343,7 +359,7 @@ class _$XploraProfileImpl implements _XploraProfile {
 
   @override
   String toString() {
-    return 'XploraProfile(id: $id, userId: $userId, experience: $experience, categories: $categories, avatarUrl: $avatarUrl, username: $username, preferredLanguage: $preferredLanguage, country: $country, city: $city, birthdayMonth: $birthdayMonth, birthdayYear: $birthdayYear, gender: $gender, primaryInterestCategory: $primaryInterestCategory, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'XploraProfile(id: $id, userId: $userId, experience: $experience, categories: $categories, avatarUrl: $avatarUrl, username: $username, bio: $bio, preferredLanguage: $preferredLanguage, country: $country, city: $city, birthdayMonth: $birthdayMonth, birthdayYear: $birthdayYear, gender: $gender, primaryInterestCategory: $primaryInterestCategory, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -361,6 +377,7 @@ class _$XploraProfileImpl implements _XploraProfile {
                 other.avatarUrl == avatarUrl) &&
             (identical(other.username, username) ||
                 other.username == username) &&
+            (identical(other.bio, bio) || other.bio == bio) &&
             (identical(other.preferredLanguage, preferredLanguage) ||
                 other.preferredLanguage == preferredLanguage) &&
             (identical(other.country, country) || other.country == country) &&
@@ -389,6 +406,7 @@ class _$XploraProfileImpl implements _XploraProfile {
       const DeepCollectionEquality().hash(_categories),
       avatarUrl,
       username,
+      bio,
       preferredLanguage,
       country,
       city,
@@ -421,6 +439,7 @@ abstract class _XploraProfile implements XploraProfile {
       required final List<String> categories,
       required final String? avatarUrl,
       required final String? username,
+      required final String? bio,
       required final String? preferredLanguage,
       required final String? country,
       required final String? city,
@@ -446,6 +465,8 @@ abstract class _XploraProfile implements XploraProfile {
   String? get avatarUrl;
   @override
   String? get username;
+  @override
+  String? get bio;
   @override // Additional profile fields
   String? get preferredLanguage;
   @override

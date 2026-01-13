@@ -20,6 +20,10 @@ import 'ui/pages/privacy_consent_summary.dart';
 import 'ui/pages/xp_boost_onboarding_page.dart';
 import 'ui/pages/submit_place_page.dart';
 import 'ui/pages/submissions_page.dart';
+import 'ui/pages/achievements_page.dart';
+import 'ui/pages/account_settings_page.dart';
+import 'ui/pages/security_settings_page.dart';
+import 'ui/pages/notification_settings_page.dart';
 import 'package:device_preview_plus/device_preview_plus.dart';
 
 void main() async {
@@ -74,6 +78,10 @@ class MyApp extends ConsumerWidget {
         '/complete-profile': (context) => const CompleteProfilePage(),
         '/submit-place': (context) => const SubmitPlacePage(),
         '/submissions': (context) => const SubmissionsPage(),
+        '/achievements': (context) => const AchievementsPage(),
+        '/account-settings': (context) => const AccountSettingsPage(),
+        '/security-settings': (context) => const SecuritySettingsPage(),
+        '/notification-settings': (context) => const NotificationSettingsPage(),
       },
     );
   }

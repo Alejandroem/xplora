@@ -12,6 +12,7 @@ abstract class XploraProfile with _$XploraProfile {
     required List<String> categories,
     required String? avatarUrl,
     required String? username,
+    required String? bio,
     // Additional profile fields
     required String? preferredLanguage,
     required String? country,

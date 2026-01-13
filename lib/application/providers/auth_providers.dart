@@ -34,6 +34,9 @@ final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
   final profileService = ref.watch(profileServiceProvider);
   final authenticationService = ref.watch(authServiceProvider);
 
+  // Keep the provider alive to prevent disposal during tab switches
+  ref.keepAlive();
+
   // Listen to the auth user stream to react to login/logout events
   await for (final user in authenticationService.getAuthUserStream()) {
     if (user == null) {
@@ -54,6 +57,7 @@ final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
           categories: [],
           avatarUrl: '',
           username: '',
+          bio: '',
           preferredLanguage: '',
           country: '',
           city: '',

@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/adventure_providers.dart';
 import '../../domain/models/adventure_in_progress.dart';
 import '../../theme.dart';
+import '../pages/quest_main_screen.dart';
 import '../widgets/current_quest.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/primary_button.dart';
+import '../widgets/quest_tabs.dart';
 import '../widgets/quest_widget.dart';
 import '../widgets/secondary_button.dart';
 
@@ -49,7 +51,13 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
             Navigator.of(context).pushNamed('/quest-main');
           },
           onQueue: () {
-            // TODO: Queue opens the main quest in progress tab screen.
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const QuestMainScreen(
+                  initialTab: QuestTab.inProgress,
+                ),
+              ),
+            );
           },
         ),
       ],

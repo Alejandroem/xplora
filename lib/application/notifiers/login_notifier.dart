@@ -96,6 +96,7 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
           categories: [],
           avatarUrl: '',
           username: '', // Will be set later in complete profile
+          bio: '',
           preferredLanguage: '',
           country: '',
           city: '',
@@ -169,6 +170,7 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
           categories: [],
           avatarUrl: photoUrl ?? '', // Save Google photo URL if available
           username: '', // Will be set later in complete profile
+          bio: '',
           preferredLanguage: '',
           country: '',
           city: '',
