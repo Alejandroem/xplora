@@ -88,12 +88,13 @@ flutter:
         - asset: assets/fonts/Satoshi-Medium.otf
           weight: 500
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/png/xplora-logo-solid.png" # Your icon image path
-  adaptive_icon_background: "#ffffff" # Background for Android adaptive icon
+  image_path: "assets/png/xplora-xp-logo-solid.png" # Your icon image path
+  adaptive_icon_background: "#F0EFEB" # Background for Android adaptive icon
   remove_alpha_ios: true # Remove alpha from iOS icons
+  background_color_ios: "#F0EFEB" # Background color for iOS icons
 
 flutter_native_splash:
   color: "#ffffff" # Background color of splash screen
