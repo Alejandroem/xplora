@@ -76,7 +76,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             SettingsTile(
               title: 'Permissions',
               onTap: () {
-                // TODO: Navigate to permissions settings
+                Navigator.pushNamed(context, '/permission-settings');
               },
             ),
             SettingsTile(

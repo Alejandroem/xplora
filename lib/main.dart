@@ -24,6 +24,7 @@ import 'ui/pages/achievements_page.dart';
 import 'ui/pages/account_settings_page.dart';
 import 'ui/pages/security_settings_page.dart';
 import 'ui/pages/notification_settings_page.dart';
+import 'ui/pages/permission_settings_page.dart';
 import 'package:device_preview_plus/device_preview_plus.dart';
 
 void main() async {
@@ -82,6 +83,7 @@ class MyApp extends ConsumerWidget {
         '/account-settings': (context) => const AccountSettingsPage(),
         '/security-settings': (context) => const SecuritySettingsPage(),
         '/notification-settings': (context) => const NotificationSettingsPage(),
+        '/permission-settings': (context) => const PermissionSettingsPage(),
       },
     );
   }
