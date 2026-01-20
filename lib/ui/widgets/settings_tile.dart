@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../../theme.dart';
 
@@ -7,7 +8,7 @@ class SettingsTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final VoidCallback onTap;
-  final IconData? leadingIcon;
+  final String? leadingIcon;
   final Widget? trailing;
   final bool showTrailing;
 
@@ -23,38 +24,78 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: leadingIcon != null
-          ? Icon(
-              leadingIcon,
-              color: context.colors.iconColor,
-              size: iconSizeMedium,
-            )
-          : null,
-      title: Text(
-        title,
-        style: bodyTextStyle.copyWith(
-          color: context.colors.textPrimary,
-          fontWeight: FontWeight.w600,
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        vertical: spacing8,
+      ),
+      decoration: BoxDecoration(
+          color: context.colors.bgSecondary,
+          borderRadius: BorderRadius.circular(radiusLarge),
+          border: Border.all(
+              color: context.colors.border, width: borderWidthDefault)),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(radiusLarge),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: spacing24,
+                vertical: subtitle != null ? spacing16 : spacing24),
+            child: Row(
+              children: [
+                if (leadingIcon != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(spacing16),
+                    decoration: BoxDecoration(
+                        color: brandSecondary.withAlpha(35),
+                        borderRadius: const BorderRadius.all(
+                            Radius.circular(radiusMedium))),
+                    child: SvgPicture.asset(
+                      leadingIcon!,
+                      width: iconSizeLarge,
+                      height: iconSizeLarge,
+                    ),
+                  ),
+                  const SizedBox(width: spacing16),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: bodyTextStyle.copyWith(
+                          color: context.colors.textPrimary,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: spacing4),
+                        Text(
+                          subtitle!,
+                          style: bodySmallStyle.copyWith(
+                            color: context.colors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                if (showTrailing) ...[
+                  const SizedBox(width: spacing12),
+                  trailing ??
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: context.colors.textPrimary,
+                        size: iconSizeLarge,
+                      ),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: bodySmallStyle.copyWith(
-                color: context.colors.textSecondary,
-              ),
-            )
-          : null,
-      trailing: showTrailing
-          ? (trailing ??
-              Icon(
-                Icons.arrow_forward_ios,
-                color: context.colors.iconColor,
-                size: iconSizeSmall,
-              ))
-          : null,
-      onTap: onTap,
     );
   }
 }

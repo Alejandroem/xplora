@@ -39,66 +39,64 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
         border: Border(
           bottom: BorderSide(
             color: context.colors.border,
-
             /// Thin divider at bottom
             width: borderWidthDefault,
           ),
         ),
-        boxShadow: const [
-          elevation1,
-        ],
       ),
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: spacing12,
-
-            /// Light blur for floating feel
-            sigmaY: spacing12,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient:
-                  context.isDarkMode ? baseBackgroundDark : baseBackgroundLight,
-              // color: Colors.white.withOpacity(0.5),
+      child: Container(
+        decoration: BoxDecoration(
+          color:
+              context.isDarkMode ? context.colors.bgPrimary : context.colors.bgPrimary,
+        ),
+        child: AppBar(
+          scrolledUnderElevation: 0,
+          toolbarHeight: height ?? kToolbarHeight,
+          leading: leading ?? IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: context.colors.iconColor,
+              size: iconSizeLarge,
             ),
-            child: AppBar(
-              scrolledUnderElevation: 0,
-              toolbarHeight: height ?? kToolbarHeight,
-              leading: leading,
-              leadingWidth: leadingWidth,
-              title: title is Widget
-                  ? title
-                  : title is String
-                      ? title == 'logo'
-                          ? Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  'assets/png/xplora-logo.png',
-                                  height: 24,
-                                  width: 24,
-                                ),
-                                const SizedBox(width: 8),
-                                Text('Xplra', style: h3Style),
-                              ],
-                            )
-                          : Text(title, style: h2Style)
-                      : null,
-              centerTitle: centerTitle,
-              actions: actions,
-              // backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4),
-              backgroundColor: Colors.transparent,
-
-              /// Transparent to show gradient with glass effect
-              elevation: 0,
-
-              /// No shadow, using blur instead
-              iconTheme: IconThemeData(color: context.colors.textPrimary),
-
-              /// Icon color
+            onPressed: () => Navigator.of(context).pop(),
+            style: IconButton.styleFrom(
+              backgroundColor: context.colors.bgSecondary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(radiusMedium),
+              ),
             ),
           ),
+          leadingWidth: leadingWidth,
+          title: title is Widget
+              ? title
+              : title is String
+                  ? title == 'logo'
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(
+                              'assets/png/xplora-logo.png',
+                              height: 24,
+                              width: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text('Xplra', style: h3Style),
+                          ],
+                        )
+                      : Text(title, style: h2Style)
+                  : null,
+          centerTitle: centerTitle,
+          actions: actions,
+          // backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4),
+          // backgroundColor: Colors.transparent,
+
+          /// Transparent to show gradient with glass effect
+          elevation: 0,
+
+          /// No shadow, using blur instead
+          iconTheme: IconThemeData(color: context.colors.textPrimary),
+
+          /// Icon color
         ),
       ),
     );

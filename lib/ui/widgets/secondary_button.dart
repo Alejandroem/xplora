@@ -82,7 +82,7 @@ class _SecondaryButtonState extends State<SecondaryButton> {
             vertical: spacing12,
           ),
           decoration: BoxDecoration(
-            color: Colors.transparent, /// Transparent background
+            color: context.colors.bgSecondary,
             borderRadius: BorderRadius.circular(radiusMedium),
             border: Border.all(
               color: borderColor,

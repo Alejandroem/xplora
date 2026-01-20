@@ -17,6 +17,7 @@ class XploraTextField extends StatefulWidget {
   final void Function(String)? onChanged;
   final int? maxLines;
   final bool isEnabled;
+  final bool readOnly;
   final int? maxLength;
   final FocusNode? focusNode;
   final void Function(PointerEvent)? onTapOutside;
@@ -36,6 +37,7 @@ class XploraTextField extends StatefulWidget {
     this.onChanged,
     this.maxLines = 1,
     this.isEnabled = true,
+    this.readOnly = false,
     this.maxLength,
     this.focusNode,
     this.onTapOutside,
@@ -92,6 +94,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
             widget.labelText!,
             style: bodySmallStyle.copyWith(
               color: hasError ? errorColor : context.colors.textPrimary,
+              fontWeight: FontWeight.bold
             ),
           ),
           const SizedBox(height: spacing8),
@@ -112,6 +115,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
           maxLines: widget.maxLines,
           maxLength: widget.maxLength,
           enabled: widget.isEnabled,
+          readOnly: widget.readOnly,
           validator: (value) {
             final error = widget.validator?.call(value);
             WidgetsBinding.instance.addPostFrameCallback((_) {

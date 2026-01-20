@@ -66,40 +66,43 @@ class _PrimaryButtonState extends State<PrimaryButton> {
       shadows = [buttonDefaultShadow];
     }
 
-    return MouseRegion(
-      onEnter: (_) {
-        if (!isDisabled) {
-          setState(() => _isHovered = true);
-        }
-      },
-      onExit: (_) {
-        if (!isDisabled) {
-          setState(() => _isHovered = false);
-        }
-      },
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacing16,
-            vertical: spacing12,
-          ),
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(radiusMedium),
-            boxShadow: shadows,
-          ),
-          child: Center(
-            child: Text(
-              widget.text,
-              style: buttonTextStyle.copyWith(
-                color: textColor,
+    return SizedBox(
+      height: 48,
+      child: MouseRegion(
+        onEnter: (_) {
+          if (!isDisabled) {
+            setState(() => _isHovered = true);
+          }
+        },
+        onExit: (_) {
+          if (!isDisabled) {
+            setState(() => _isHovered = false);
+          }
+        },
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            padding: const EdgeInsets.symmetric(
+              horizontal: spacing16,
+              vertical: spacing12,
+            ),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(radiusMedium),
+              boxShadow: shadows,
+            ),
+            child: Center(
+              child: Text(
+                widget.text,
+                style: buttonTextStyle.copyWith(
+                  color: textColor,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: widget.maxLines,
+                overflow: widget.maxLines != null ? TextOverflow.ellipsis : null,
               ),
-              textAlign: TextAlign.center,
-              maxLines: widget.maxLines,
-              overflow: widget.maxLines != null ? TextOverflow.ellipsis : null,
             ),
           ),
         ),

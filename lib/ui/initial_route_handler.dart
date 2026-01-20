@@ -51,37 +51,37 @@ class InitialRouteHandler extends ConsumerWidget {
       return const _LoadingScreen();
     }
 
-    return const Home();
+    // return const Home();
 
-    // final hasFinishedOnboardingAsync = ref.watch(hasFinishedOnboardingProvider);
-    //
-    // return hasFinishedOnboardingAsync.when(
-    //   data: (hasFinishedOnboarding) {
-    //     if (!hasFinishedOnboarding) {
-    //       // User hasn't finished onboarding - show onboarding
-    //       return const OnboardingPage();
-    //     }
-    //
-    //     // User has finished onboarding - check categories
-    //     // final hasSelectedInitialCategoriesAsync = ref.watch(hasSelectedInitialCategoriesProvider);
-    //     //
-    //     // return hasSelectedInitialCategoriesAsync.when(
-    //     //   data: (hasSelectedInitialCategories) {
-    //     //     if (!hasSelectedInitialCategories) {
-    //     //       // User hasn't selected categories - show categories page
-    //     //       return const ChooseCategories();
-    //     //     }
-    //     //     // User has completed everything - show home
-    //     //     return const Home();
-    //     //   },
-    //     //   loading: () => const _LoadingScreen(),
-    //     //   error: (_, __) => const Home(), // Fallback to home on error
-    //     // );
-    //     return const Home();
-    //   },
-    //   loading: () => const _LoadingScreen(),
-    //   error: (_, __) => const Home(), // Fallback to home on error
-    // );
+    final hasFinishedOnboardingAsync = ref.watch(hasFinishedOnboardingProvider);
+
+    return hasFinishedOnboardingAsync.when(
+      data: (hasFinishedOnboarding) {
+        if (!hasFinishedOnboarding) {
+          // User hasn't finished onboarding - show onboarding
+          return const OnboardingPage();
+        }
+
+        // User has finished onboarding - check categories
+        // final hasSelectedInitialCategoriesAsync = ref.watch(hasSelectedInitialCategoriesProvider);
+        //
+        // return hasSelectedInitialCategoriesAsync.when(
+        //   data: (hasSelectedInitialCategories) {
+        //     if (!hasSelectedInitialCategories) {
+        //       // User hasn't selected categories - show categories page
+        //       return const ChooseCategories();
+        //     }
+        //     // User has completed everything - show home
+        //     return const Home();
+        //   },
+        //   loading: () => const _LoadingScreen(),
+        //   error: (_, __) => const Home(), // Fallback to home on error
+        // );
+        return const Home();
+      },
+      loading: () => const _LoadingScreen(),
+      error: (_, __) => const Home(), // Fallback to home on error
+    );
   }
 }
 
