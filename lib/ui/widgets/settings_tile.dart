@@ -24,74 +24,82 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        vertical: spacing8,
-      ),
-      decoration: BoxDecoration(
-          color: context.colors.bgSecondary,
-          borderRadius: BorderRadius.circular(radiusLarge),
-          border: Border.all(
-              color: context.colors.border, width: borderWidthDefault)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: spacing8),
       child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(radiusLarge),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
+        color: context.colors.bgSecondary,
+        borderRadius: BorderRadius.circular(radiusLarge),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(radiusLarge),
+            border: Border.all(
+              color: context.colors.border,
+              width: borderWidthDefault,
+            ),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(radiusLarge),
+            splashColor: context.colors.textPrimary.withValues(alpha: 0.06),
+            highlightColor: context.colors.textPrimary.withValues(alpha: 0.03),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
                 horizontal: spacing24,
-                vertical: subtitle != null ? spacing16 : spacing24),
-            child: Row(
-              children: [
-                if (leadingIcon != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(spacing16),
-                    decoration: BoxDecoration(
+                vertical: subtitle != null ? spacing16 : spacing24,
+              ),
+              child: Row(
+                children: [
+                  if (leadingIcon != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(spacing16),
+                      decoration: BoxDecoration(
                         color: brandSecondary.withAlpha(35),
                         borderRadius: const BorderRadius.all(
-                            Radius.circular(radiusMedium))),
-                    child: SvgPicture.asset(
-                      leadingIcon!,
-                      width: iconSizeLarge,
-                      height: iconSizeLarge,
-                    ),
-                  ),
-                  const SizedBox(width: spacing16),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: bodyTextStyle.copyWith(
-                          color: context.colors.textPrimary,
-                          fontWeight: FontWeight.bold
+                          Radius.circular(radiusMedium),
                         ),
                       ),
-                      if (subtitle != null) ...[
-                        const SizedBox(height: spacing4),
+                      child: SvgPicture.asset(
+                        leadingIcon!,
+                        width: iconSizeLarge,
+                        height: iconSizeLarge,
+                      ),
+                    ),
+                    const SizedBox(width: spacing16),
+                  ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          subtitle!,
-                          style: bodySmallStyle.copyWith(
-                            color: context.colors.textSecondary,
+                          title,
+                          style: bodyTextStyle.copyWith(
+                            color: context.colors.textPrimary,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                        if (subtitle != null) ...[
+                          const SizedBox(height: spacing4),
+                          Text(
+                            subtitle!,
+                            style: bodySmallStyle.copyWith(
+                              color: context.colors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-                if (showTrailing) ...[
-                  const SizedBox(width: spacing12),
-                  trailing ??
-                      Icon(
-                        Icons.chevron_right_rounded,
-                        color: context.colors.textPrimary,
-                        size: iconSizeLarge,
-                      ),
+                  if (showTrailing) ...[
+                    const SizedBox(width: spacing12),
+                    trailing ??
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: context.colors.textPrimary,
+                          size: iconSizeLarge,
+                        ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

@@ -79,29 +79,39 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             setState(() => _isHovered = false);
           }
         },
-        child: GestureDetector(
-          onTap: widget.onPressed,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            padding: const EdgeInsets.symmetric(
-              horizontal: spacing16,
-              vertical: spacing12,
-            ),
-            decoration: BoxDecoration(
-              color: backgroundColor,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(radiusMedium),
+            boxShadow: shadows,
+            border: isDisabled ? Border.all(color: context.colors.border) : null,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: widget.onPressed,
               borderRadius: BorderRadius.circular(radiusMedium),
-              boxShadow: shadows,
-            ),
-            child: Center(
-              child: Text(
-                widget.text,
-                style: buttonTextStyle.copyWith(
-                  color: textColor,
+              hoverColor: whiteClr.withValues(alpha: 0.07),
+              highlightColor: blackClr.withValues(alpha: 0.09),
+              splashColor: blackClr.withValues(alpha: 0.05),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: spacing16,
+                  vertical: spacing12,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: widget.maxLines,
-                overflow: widget.maxLines != null ? TextOverflow.ellipsis : null,
+                child: Center(
+                  child: Text(
+                    widget.text,
+                    style: buttonTextStyle.copyWith(
+                      color: textColor,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: widget.maxLines,
+                    overflow: widget.maxLines != null ? TextOverflow.ellipsis : null,
+                  ),
+                ),
               ),
             ),
           ),
