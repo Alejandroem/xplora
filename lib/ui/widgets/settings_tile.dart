@@ -74,7 +74,7 @@ class SettingsTile extends StatelessWidget {
                           title,
                           style: bodyTextStyle.copyWith(
                             color: context.colors.textPrimary,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: subtitle == null ? FontWeight.normal : FontWeight.bold,
                           ),
                         ),
                         if (subtitle != null) ...[

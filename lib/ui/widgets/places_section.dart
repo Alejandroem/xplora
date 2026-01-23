@@ -127,12 +127,12 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     // final selectedActivityTypes = ref.watch(selectedActivityTypesProvider);
 
     // Check if location tracking is enabled (user granted permission through custom dialog)
-    final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
-
-    if (!locationTrackingEnabled) {
-      return const SizedBox
-          .shrink(); // Don't show carousel if location tracking not enabled
-    }
+    // final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
+    //
+    // if (!locationTrackingEnabled) {
+    //   return const SizedBox
+    //       .shrink(); // Don't show carousel if location tracking not enabled
+    // }
 
     final selectedFilter = ref.watch(selectedCarouselFilterProvider);
     final filters = ['Nearby', 'For You', 'Following'];

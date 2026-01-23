@@ -26,20 +26,14 @@ class SecondaryButton extends StatefulWidget {
 
 class _SecondaryButtonState extends State<SecondaryButton> {
   bool _isHovered = false;
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
     final bool isDisabled = widget.onPressed == null;
 
-    // Determine border color based on state
-    final Color borderColor;
-    if (isDisabled) {
-      borderColor = context.isDarkMode
-          ? buttonDisabledDark
-          : buttonDisabledLight;
-    } else {
-      borderColor = context.colors.border;
-    }
+    // Border color remains same for all states
+    final Color borderColor = context.colors.border;
 
     // Determine text color based on state
     final Color textColor;
@@ -51,14 +45,30 @@ class _SecondaryButtonState extends State<SecondaryButton> {
       textColor = context.colors.textPrimary;
     }
 
+    // Determine background color based on state
+    final Color backgroundColor;
+    if (isDisabled) {
+      backgroundColor = context.colors.bgTertiary;
+    } else if (_isHovered) {
+      backgroundColor = const Color(0xFF414141);
+    } else {
+      backgroundColor = context.colors.bgSecondary;
+    }
+
     // Determine shadow based on state
     final List<BoxShadow> shadows;
-    if (isDisabled) {
-      shadows = []; // No shadow for disabled state
-    } else if (_isHovered) {
-      shadows = [buttonHoverShadow];
+    if (_isHovered && !isDisabled) {
+      shadows = [elevation1];
     } else {
-      shadows = []; // No shadow in default state for secondary button
+      // Default, pressed, and disabled states use same shadow
+      shadows = [
+        const BoxShadow(
+          color: Color(0x40000000), // Black with 25% opacity
+          offset: Offset(0, 2),
+          blurRadius: 4,
+          spreadRadius: 0,
+        ),
+      ];
     }
 
     return MouseRegion(
@@ -74,15 +84,26 @@ class _SecondaryButtonState extends State<SecondaryButton> {
       },
       child: GestureDetector(
         onTap: widget.onPressed,
+        onTapDown: (_) {
+          if (!isDisabled) {
+            setState(() => _isPressed = true);
+          }
+        },
+        onTapUp: (_) {
+          if (!isDisabled) {
+            setState(() => _isPressed = false);
+          }
+        },
+        onTapCancel: () {
+          if (!isDisabled) {
+            setState(() => _isPressed = false);
+          }
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacing16,
-            vertical: spacing12,
-          ),
           decoration: BoxDecoration(
-            color: context.colors.bgSecondary,
+            color: backgroundColor,
             borderRadius: BorderRadius.circular(radiusMedium),
             border: Border.all(
               color: borderColor,
@@ -90,26 +111,45 @@ class _SecondaryButtonState extends State<SecondaryButton> {
             ),
             boxShadow: shadows,
           ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (widget.icon != null) ...[
-                  widget.icon!,
-                  const SizedBox(width: spacing8),
-                ],
-                Flexible(
-                  child: Text(
-                    widget.text,
-                    style: buttonTextStyle.copyWith(
-                      color: textColor,
-                    ),
-                    maxLines: widget.maxLines,
-                    overflow: widget.maxLines!=null ? TextOverflow.ellipsis : null,
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: spacing16,
+                  vertical: spacing12,
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (widget.icon != null) ...[
+                        widget.icon!,
+                        const SizedBox(width: spacing8),
+                      ],
+                      Flexible(
+                        child: Text(
+                          widget.text,
+                          style: buttonTextStyle.copyWith(
+                            color: textColor,
+                          ),
+                          maxLines: widget.maxLines,
+                          overflow: widget.maxLines!=null ? TextOverflow.ellipsis : null,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              if (_isPressed)
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0x17000000), // Black with 9% opacity
+                      borderRadius: BorderRadius.circular(radiusMedium),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

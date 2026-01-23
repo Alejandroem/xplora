@@ -41,7 +41,7 @@ class SecuritySettingsPage extends ConsumerWidget {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             SettingsTile(
-              leadingIcon: 'assets/svg/lock-icon.svg',
+              leadingIcon: 'assets/svg/lock.svg',
               title: 'Change Password',
               subtitle: 'Update your account password.',
               onTap: () {
@@ -49,7 +49,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               },
             ),
             SettingsTile(
-              leadingIcon: 'assets/svg/shield-check-icon.svg',
+              leadingIcon: 'assets/svg/shield-check.svg',
               title: 'Two-Factor Authentication',
               subtitle: 'Add an extra layer of security.',
               onTap: () {
@@ -57,7 +57,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               },
             ),
             SettingsTile(
-              leadingIcon: 'assets/svg/monitor-icon.svg',
+              leadingIcon: 'assets/svg/monitor.svg',
               title: 'Login Sessions',
               subtitle: 'Review devices logged into your account.',
               onTap: () {
@@ -65,7 +65,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               },
             ),
             SettingsTile(
-              leadingIcon: 'assets/svg/clock-icon.svg',
+              leadingIcon: 'assets/svg/clock.svg',
               title: 'Recent Activity',
               subtitle: 'View recent sign-ins and actions.',
               onTap: () {
@@ -73,7 +73,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               },
             ),
             SettingsTile(
-              leadingIcon: 'assets/svg/envelope-icon.svg',
+              leadingIcon: 'assets/svg/envelope.svg',
               title: 'Recovery Email/Phone',
               subtitle: 'Used when you get locked out.',
               onTap: () {

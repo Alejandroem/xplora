@@ -47,9 +47,10 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Container(
         decoration: BoxDecoration(
           color:
-              context.isDarkMode ? context.colors.bgPrimary : context.colors.bgPrimary,
+              context.colors.bgPrimary,
         ),
         child: AppBar(
+          backgroundColor: context.colors.bgPrimary,
           scrolledUnderElevation: 0,
           toolbarHeight: height ?? kToolbarHeight,
           leading: leading ?? IconButton(

@@ -37,9 +37,9 @@ class SettingsSwitchTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(radiusLarge),
           onTap: () => onChanged(!value),
           child: Padding(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: spacing24,
-              vertical: subtitle.isNotEmpty ? spacing16 : spacing24,
+              vertical: spacing16,
             ),
             child: Row(
               children: [
@@ -51,7 +51,7 @@ class SettingsSwitchTile extends StatelessWidget {
                         title,
                         style: bodyTextStyle.copyWith(
                           color: context.colors.textPrimary,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: subtitle.isEmpty ? FontWeight.normal : FontWeight.w600,
                         ),
                       ),
                       if (subtitle.isNotEmpty) ...[
@@ -67,10 +67,24 @@ class SettingsSwitchTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: spacing12),
-                Switch.adaptive(
-                  value: value,
-                  onChanged: onChanged,
-                  activeColor: brandPrimary,
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: value ? [switchActiveGlow] : null,
+                    borderRadius: BorderRadius.circular(radiusLarge),
+                  ),
+                  child: Switch.adaptive(
+                    value: value,
+                    onChanged: onChanged,
+                    activeTrackColor: brandPrimary,
+                    inactiveTrackColor: context.isDarkMode ? bgPrimaryLight.withValues(alpha: 0.20) : bgPrimaryDark.withValues(alpha: 0.20),
+                    thumbColor: WidgetStateProperty.all(bgPrimaryLight),
+                    trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return Colors.transparent;
+                      }
+                      return context.isDarkMode ? bgPrimaryLight.withValues(alpha: 0.30) : bgPrimaryDark.withValues(alpha: 0.30);
+                    }),
+                  ),
                 ),
               ],
             ),

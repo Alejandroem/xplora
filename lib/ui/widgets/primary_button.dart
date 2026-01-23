@@ -9,14 +9,12 @@ import '../../theme.dart';
 class PrimaryButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
-  final bool useSecondary; /// If true, uses secondary; if false, uses primary
   final int? maxLines; /// Optional max lines for text overflow
 
   const PrimaryButton({
     super.key,
     required this.text,
     this.onPressed,
-    this.useSecondary = false,
     this.maxLines,
   });
 
@@ -26,44 +24,38 @@ class PrimaryButton extends StatefulWidget {
 
 class _PrimaryButtonState extends State<PrimaryButton> {
   bool _isHovered = false;
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
     final bool isDisabled = widget.onPressed == null;
-    final buttonColor = widget.useSecondary ? brandSecondary : brandPrimary;
 
-    // Determine button background color based on state
+    // Background color - always brandPrimary for enabled, bgTertiary for disabled
     final Color backgroundColor;
     if (isDisabled) {
-      backgroundColor = context.isDarkMode
-          ? buttonDisabledDark
-          : buttonDisabledLight;
+      backgroundColor = context.colors.bgTertiary;
     } else {
-      backgroundColor = buttonColor;
+      backgroundColor = brandPrimary;
     }
 
-    // Determine text color based on state and button type
+    // Determine text color based on state
     final Color textColor;
     if (isDisabled) {
-      textColor = context.isDarkMode
-          ? textDisabledDark
-          : textDisabledLight;
-    } else if (widget.useSecondary) {
-      // Secondary button has dark text on teal background
-      textColor = context.colors.textPrimary;
+      textColor = context.colors.textDisabled;
     } else {
-      // Primary button has white text on purple background
-      textColor = whiteClr;
+      textColor = bgPrimaryLight;
     }
 
     // Determine shadow based on state
     final List<BoxShadow> shadows;
     if (isDisabled) {
-      shadows = []; // No shadow for disabled state
+      shadows = [elevationNone]; // Disabled state uses elevation0
+    } else if (_isPressed) {
+      shadows = [elevationNone]; // Pressed state uses elevation0
     } else if (_isHovered) {
-      shadows = [buttonHoverShadow];
+      shadows = [elevation2]; // Hover state uses elevation2
     } else {
-      shadows = [buttonDefaultShadow];
+      shadows = [elevation1]; // Default state uses elevation1
     }
 
     return SizedBox(
@@ -79,40 +71,70 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             setState(() => _isHovered = false);
           }
         },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(radiusMedium),
-            boxShadow: shadows,
-            border: isDisabled ? Border.all(color: context.colors.border) : null,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: widget.onPressed,
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          onTapDown: (_) {
+            if (!isDisabled) {
+              setState(() => _isPressed = true);
+            }
+          },
+          onTapUp: (_) {
+            if (!isDisabled) {
+              setState(() => _isPressed = false);
+            }
+          },
+          onTapCancel: () {
+            if (!isDisabled) {
+              setState(() => _isPressed = false);
+            }
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(radiusMedium),
-              hoverColor: whiteClr.withValues(alpha: 0.07),
-              highlightColor: blackClr.withValues(alpha: 0.09),
-              splashColor: blackClr.withValues(alpha: 0.05),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: spacing16,
-                  vertical: spacing12,
-                ),
-                child: Center(
-                  child: Text(
-                    widget.text,
-                    style: buttonTextStyle.copyWith(
-                      color: textColor,
+              boxShadow: shadows,
+              border: isDisabled ? Border.all(color: context.colors.border) : null,
+            ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: spacing16,
+                    vertical: spacing12,
+                  ),
+                  child: Center(
+                    child: Text(
+                      widget.text,
+                      style: buttonTextStyle.copyWith(
+                        color: textColor,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: widget.maxLines,
+                      overflow: widget.maxLines != null ? TextOverflow.ellipsis : null,
                     ),
-                    textAlign: TextAlign.center,
-                    maxLines: widget.maxLines,
-                    overflow: widget.maxLines != null ? TextOverflow.ellipsis : null,
                   ),
                 ),
-              ),
+                if (_isHovered && !_isPressed)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0x12FFFFFF), // White with 7% opacity
+                        borderRadius: BorderRadius.circular(radiusMedium),
+                      ),
+                    ),
+                  ),
+                if (_isPressed)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0x17000000), // Black with 9% opacity
+                        borderRadius: BorderRadius.circular(radiusMedium),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

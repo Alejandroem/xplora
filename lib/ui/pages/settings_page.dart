@@ -77,19 +77,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               SettingsTile(
                 title: 'Game XP',
                 onTap: () {
-                  // TODO: Navigate to game XP settings
+                  Navigator.pushNamed(context, '/game-xp');
                 },
               ),
               SettingsTile(
                 title: 'Privacy',
                 onTap: () {
-                  // TODO: Navigate to privacy settings
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => const PrivacyPolicyPage(),
-                  //   ),
-                  // );
+                  Navigator.pushNamed(context, '/privacy-settings');
                 },
               ),
               SettingsTile(
