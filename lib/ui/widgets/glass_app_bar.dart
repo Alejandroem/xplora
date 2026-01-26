@@ -22,6 +22,12 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Optional center title
   final bool centerTitle;
 
+  /// Optional automatically imply leading (back button)
+  final bool automaticallyImplyLeading;
+
+  /// Optional bottom widget (e.g., tabs)
+  final PreferredSizeWidget? bottom;
+
   const GlassAppBar({
     super.key,
     this.title,
@@ -30,6 +36,8 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leadingWidth,
     this.height,
     this.centerTitle = false,
+    this.automaticallyImplyLeading = true,
+    this.bottom,
   });
 
   @override
@@ -39,6 +47,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
         border: Border(
           bottom: BorderSide(
             color: context.colors.border,
+
             /// Thin divider at bottom
             width: borderWidthDefault,
           ),
@@ -46,27 +55,30 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color:
-              context.colors.bgPrimary,
+          color: context.colors.bgPrimary,
         ),
         child: AppBar(
           backgroundColor: context.colors.bgPrimary,
           scrolledUnderElevation: 0,
           toolbarHeight: height ?? kToolbarHeight,
-          leading: leading ?? IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: context.colors.iconColor,
-              size: iconSizeLarge,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-            style: IconButton.styleFrom(
-              backgroundColor: context.colors.bgSecondary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(radiusMedium),
-              ),
-            ),
-          ),
+          automaticallyImplyLeading: automaticallyImplyLeading,
+          leading: leading ??
+              (automaticallyImplyLeading
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: context.colors.iconColor,
+                        size: iconSizeLarge,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: IconButton.styleFrom(
+                        backgroundColor: context.colors.bgSecondary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(radiusMedium),
+                        ),
+                      ),
+                    )
+                  : null),
           leadingWidth: leadingWidth,
           title: title is Widget
               ? title
@@ -88,6 +100,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
                   : null,
           centerTitle: centerTitle,
           actions: actions,
+          bottom: bottom,
           // backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4),
           // backgroundColor: Colors.transparent,
 
@@ -104,5 +117,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(height ?? kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(
+        (height ?? kToolbarHeight) + (bottom?.preferredSize.height ?? 0.0),
+      );
 }

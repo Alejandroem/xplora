@@ -6,6 +6,8 @@ import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
+import '../dialogs/security_settings_page/logout_dialog.dart';
+import '../dialogs/security_settings_page/reset_account_access_dialog.dart';
 import '../widgets/settings_tile.dart';
 
 class SecuritySettingsPage extends ConsumerWidget {
@@ -92,28 +94,41 @@ class SecuritySettingsPage extends ConsumerWidget {
             const SizedBox(height: spacing24),
             PrimaryButton(
               text: 'Reset Account Access',
-              onPressed: () {
-                // TODO: Show confirmation dialog for reset account access
+              onPressed: () async {
+                // Show confirmation dialog
+                final confirmed = await showResetAccountAccessDialog(context);
+
+                // if (confirmed == true && context.mounted) {
+                //   // TODO: Implement reset account access logic
+                //   showXploraSnackBar(
+                //     context,
+                //     'Account access reset successfully',
+                //   );
+                // }
               },
             ),
             const SizedBox(height: spacing16),
             SecondaryButton(
-              text: 'Logout All Devices',
+              text: 'Logout',
               onPressed: () async {
-                // TODO: Show confirmation dialog for logout all devices
-                final authProvider = ref.read(authServiceProvider);
-                await authProvider.signOut();
-                ref.invalidate(nearbyAdventuresProvider);
+                // Show confirmation dialog
+                final confirmed = await showLogoutDialog(context);
 
-                //pop until /
-                if (context.mounted) {
-                  showXploraSnackBar(
-                    context,
-                    'Logged out successfully',
-                  );
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                  ref.read(bottomNavigationBarProvider.notifier).state =
-                      NavigationItem.home;
+                if (confirmed == true && context.mounted) {
+                  final authProvider = ref.read(authServiceProvider);
+                  await authProvider.signOut();
+                  ref.invalidate(nearbyAdventuresProvider);
+
+                  //pop until /
+                  if (context.mounted) {
+                    showXploraSnackBar(
+                      context,
+                      'Logged out successfully',
+                    );
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                    ref.read(bottomNavigationBarProvider.notifier).state =
+                        NavigationItem.home;
+                  }
                 }
               },
             ),

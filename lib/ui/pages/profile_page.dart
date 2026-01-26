@@ -6,7 +6,7 @@ import '../../application/providers/auth_providers.dart';
 import '../../domain/models/xplora_profile.dart';
 import '../../theme.dart';
 import '../widgets/achievements_grid.dart';
-import '../widgets/segmented_tabs.dart';
+import '../widgets/app_bar_tabs.dart';
 import 'settings_page.dart';
 
 /// Provider for managing profile tab selection
@@ -24,13 +24,12 @@ class ProfilePage extends ConsumerWidget {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: GlassAppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: context.colors.iconColor,
-              size: iconSizeLarge,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
+          bottom: AppBarTabs(
+            tabs: const ['Profile', 'Social'],
+            selectedIndex: selectedTabIndex,
+            onTabSelected: (index) {
+              ref.read(profileTabIndexProvider.notifier).state = index;
+            },
           ),
           actions: <Widget>[
             IconButton(
@@ -50,32 +49,14 @@ class ProfilePage extends ConsumerWidget {
             ),
           ],
         ),
-        body: Padding(
-          padding:
-              const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Tabs section
-              SegmentedTabs(
-                tabs: const ['Profile', 'Social'],
-                selectedIndex: selectedTabIndex,
-                onTabSelected: (index) {
-                  ref.read(profileTabIndexProvider.notifier).state = index;
-                },
-              ),
-              const SizedBox(height: spacing16),
-              // Content section
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.zero,
-                  child: selectedTabIndex == 0
-                      ? _buildProfileContent(context, ref)
-                      : _buildSocialContent(context, ref),
-                ),
-              ),
-            ],
+        body: SingleChildScrollView(
+          padding: EdgeInsets.zero,
+          child: Padding(
+            padding:
+                const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
+            child: selectedTabIndex == 0
+                ? _buildProfileContent(context, ref)
+                : _buildSocialContent(context, ref),
           ),
         ),
       ),
@@ -146,108 +127,73 @@ class ProfilePage extends ConsumerWidget {
           children: [
             Text(
               _getDisplayFirstName(ref),
-              style: h2Style.copyWith(
+              style: bodyTextStyle.copyWith(
+                fontSize: 24,
                 color: context.colors.textPrimary,
+                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(width: spacing4),
             Transform.translate(
-              offset: const Offset(0, -4),
+              offset: const Offset(4, -4),
               child: Text(
                 'Lvl 9',
                 style: bodySmallStyle.copyWith(
-                  color: context.colors.textPrimary,
+                  color: brandSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: spacing12),
+        const SizedBox(height: spacing16),
         // Level progress bar with XP info
-        Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Container(
-                height: 30,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: context.colors.border,
-                    width: borderWidthDefault,
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(radiusMedium),
-                    bottomLeft: Radius.circular(radiusMedium),
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    // Progress fill
-                    FractionallySizedBox(
-                      widthFactor: 0.28, // 369/1333 ≈ 0.28 (dummy value)
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: brandPrimary,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(11),
-                            bottomLeft: Radius.circular(11),
-                          ),
-                        ),
-                      ),
-                    ),
-                    // XP text
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: spacing8),
-                        child: Text(
-                          '369/1333',
-                          style: bodySmallStyle.copyWith(
-                            color: context.colors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+            // Progress bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(radiusSmall),
+              child: SizedBox(
+                height: 12,
+                child: LinearProgressIndicator(
+                  value: 369 / 1333, // Progress value (0.0 to 1.0)
+                  backgroundColor: context.colors.bgSecondary,
+                  valueColor: AlwaysStoppedAnimation<Color>(brandSecondary),
+                  borderRadius: BorderRadius.circular(radiusSmall),
                 ),
               ),
             ),
-            // Level number on the right (no gap)
-            Container(
-              height: 30,
-              padding: const EdgeInsets.symmetric(
-                horizontal: spacing8,
-              ),
-              decoration: BoxDecoration(
-                color: context.colors.bgSecondary,
-                border: Border(
-                  top: BorderSide(
-                    color: context.colors.border,
-                    width: borderWidthDefault,
-                  ),
-                  right: BorderSide(
-                    color: context.colors.border,
-                    width: borderWidthDefault,
-                  ),
-                  bottom: BorderSide(
-                    color: context.colors.border,
-                    width: borderWidthDefault,
-                  ),
-                ),
-                borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(radiusMedium),
-                    bottomRight: Radius.circular(radiusMedium)),
-              ),
-              child: Center(
-                child: Text(
-                  '10',
+            const SizedBox(height: spacing8),
+            // XP and Level info row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '369/1333 XP',
                   style: bodySmallStyle.copyWith(
-                    color: context.colors.textPrimary,
-                    fontWeight: FontWeight.w600,
+                    color: context.colors.textSecondary.withOpacity(0.6),
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
-              ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: spacing12,
+                    vertical: spacing4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: brandSecondary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(radiusSmall),
+                  ),
+                  child: Text(
+                    '10',
+                    style: bodySmallStyle.copyWith(
+                      color: brandSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -255,17 +201,16 @@ class ProfilePage extends ConsumerWidget {
         // Stats Section
         Text(
           'Stats',
-          style: h2Style.copyWith(
-            color: context.colors.textPrimary,
-          ),
+          style:
+              h2Style.copyWith(color: context.colors.textPrimary, fontSize: 24),
         ),
         const SizedBox(height: spacing16),
         _buildStatItem(context, 'Exploration', 0.8),
-        const SizedBox(height: spacing12),
+        const SizedBox(height: spacing16),
         _buildStatItem(context, 'Activity', 0.9),
-        const SizedBox(height: spacing12),
+        const SizedBox(height: spacing16),
         _buildStatItem(context, 'Curiosity', 0.4),
-        const SizedBox(height: spacing12),
+        const SizedBox(height: spacing16),
         _buildStatItem(context, 'Contribution', 0.5),
         const SizedBox(height: spacing24),
         // Achievements Section
@@ -273,6 +218,7 @@ class ProfilePage extends ConsumerWidget {
           'Achievements',
           style: h2Style.copyWith(
             color: context.colors.textPrimary,
+            fontSize: 24,
           ),
         ),
         const SizedBox(height: spacing16),
@@ -288,12 +234,13 @@ class ProfilePage extends ConsumerWidget {
               Expanded(
                 child: AchievementsGrid(
                   itemCount: 6,
-                  achievementRadius: 40,
-                  backgroundColor: context.colors.textPrimary,
-                  iconColor: context.colors.bgSecondary,
+                  achievementSize: 87,
+                  backgroundColor: context.colors.bgTertiary,
+                  iconColor: context.colors.iconColor,
                   onTap: (index) {
                     Navigator.pushNamed(context, '/achievements');
                   },
+                  borderRadius: radiusMedium,
                 ),
               ),
               const SizedBox(width: spacing16),
@@ -317,52 +264,44 @@ class ProfilePage extends ConsumerWidget {
 
   Widget _buildStatItem(BuildContext context, String label, double progress) {
     final rating = (progress * 10).toInt();
-    return SizedBox(
-      width: MediaQuery.sizeOf(context).width * 0.5,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: bodyTextStyle.copyWith(
-              color: context.colors.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: spacing8),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: context.colors.bgSecondary,
-                    borderRadius: BorderRadius.circular(radiusSmall),
-                  ),
-                  child: FractionallySizedBox(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: progress,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: brandPrimary,
-                        borderRadius: BorderRadius.circular(radiusSmall),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: spacing12),
-              Text(
-                '$rating/10',
-                style: bodySmallStyle.copyWith(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Label and rating row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: bodyTextStyle.copyWith(
                   color: context.colors.textPrimary,
                   fontWeight: FontWeight.w600,
-                ),
+                  fontSize: 14),
+            ),
+            Text(
+              '$rating/10',
+              style: bodySmallStyle.copyWith(
+                color: context.colors.textSecondary.withOpacity(0.6),
+                fontWeight: FontWeight.w400,
               ),
-            ],
+            ),
+          ],
+        ),
+        const SizedBox(height: spacing8),
+        // Progress bar
+        ClipRRect(
+          borderRadius: BorderRadius.circular(radiusSmall),
+          child: SizedBox(
+            height: 8,
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: context.colors.bgSecondary,
+              valueColor: AlwaysStoppedAnimation<Color>(brandSecondary),
+              borderRadius: BorderRadius.circular(radiusSmall),
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

@@ -89,7 +89,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               SettingsTile(
                 title: 'Accessibility',
                 onTap: () {
-                  // TODO: Navigate to accessibility settings
+                  Navigator.pushNamed(context, '/accessibility-settings');
                 },
               ),
               // Test dark and light mode button

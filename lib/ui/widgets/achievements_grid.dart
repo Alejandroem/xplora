@@ -6,26 +6,28 @@ import 'achievement_widget.dart';
 /// Reusable grid widget for displaying achievements
 class AchievementsGrid extends StatelessWidget {
   final int itemCount;
-  final double achievementRadius;
+  final double achievementSize;
   final Color? backgroundColor;
   final Color? iconColor;
   final Function(int)? onTap;
   final int crossAxisCount;
+  final double? borderRadius;
 
   const AchievementsGrid({
     super.key,
     required this.itemCount,
-    this.achievementRadius = 36,
+    this.achievementSize = 72,
     this.backgroundColor,
     this.iconColor,
     this.onTap,
     this.crossAxisCount = 3,
+    this.borderRadius,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Calculate cell size based on radius (diameter + some padding)
-    final cellSize = achievementRadius * 2 + spacing8;
+    // Calculate cell size based on achievement size + some padding
+    final cellSize = achievementSize + spacing8;
 
     return GridView.builder(
       shrinkWrap: true,
@@ -41,10 +43,11 @@ class AchievementsGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         return Center(
           child: AchievementWidget(
-            radius: achievementRadius,
+            size: achievementSize,
             icon: Icons.emoji_events,
             backgroundColor: backgroundColor,
             iconColor: iconColor,
+            borderRadius: borderRadius,
             onTap: onTap != null ? () => onTap!(index) : null,
           ),
         );

@@ -10,12 +10,14 @@ class PrimaryButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
   final int? maxLines; /// Optional max lines for text overflow
+  final Color? backgroundColor; /// Optional custom background color
 
   const PrimaryButton({
     super.key,
     required this.text,
     this.onPressed,
     this.maxLines,
+    this.backgroundColor,
   });
 
   @override
@@ -30,12 +32,12 @@ class _PrimaryButtonState extends State<PrimaryButton> {
   Widget build(BuildContext context) {
     final bool isDisabled = widget.onPressed == null;
 
-    // Background color - always brandPrimary for enabled, bgTertiary for disabled
+    // Background color - uses custom color if provided, otherwise brandPrimary for enabled, bgTertiary for disabled
     final Color backgroundColor;
     if (isDisabled) {
       backgroundColor = context.colors.bgTertiary;
     } else {
-      backgroundColor = brandPrimary;
+      backgroundColor = widget.backgroundColor ?? brandPrimary;
     }
 
     // Determine text color based on state

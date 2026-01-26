@@ -60,7 +60,7 @@ class AchievementsPage extends ConsumerWidget {
               // Featured achievements grid (3x2)
               AchievementsGrid(
                 itemCount: 6,
-                achievementRadius: 48,
+                achievementSize: 96,
                 onTap: (index) {
                   // TODO: Show achievement details
                 },
@@ -83,7 +83,7 @@ class AchievementsPage extends ConsumerWidget {
               // All achievements grid (3 columns, many rows)
               AchievementsGrid(
                 itemCount: 18, // Showing 18 achievements (6 rows)
-                achievementRadius: 48,
+                achievementSize: 96,
                 onTap: (index) {
                   // TODO: Show achievement details
                 },

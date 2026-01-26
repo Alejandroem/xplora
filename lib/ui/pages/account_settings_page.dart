@@ -7,6 +7,7 @@ import '../../application/providers/profile_providers.dart' as profile_providers
 import '../../application/providers/xplorauser_providers.dart';
 import '../../domain/models/xplora_user.dart';
 import '../../theme.dart';
+import '../dialogs/delete_account_confirmation_dialog.dart';
 import '../widgets/settings_tile.dart';
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
@@ -134,13 +135,17 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   PrimaryButton(
                     text: 'Delete Account',
                     onPressed: () async {
-                      // TODO: Show confirmation dialog for delete account
-                      final xploraProfileProvider = ref.read(profile_providers.profileServiceProvider);
-                      final authProvider = ref.read(authServiceProvider);
-                      await xploraProfileProvider.delete(user.id!);
-                      await authProvider.deleteAccount();
-                      if (context.mounted) {
-                        Navigator.popUntil(context, (route) => route.isFirst);
+                      // Show confirmation dialog
+                      final confirmed = await showDeleteAccountConfirmationDialog(context);
+
+                      if (confirmed == true && context.mounted) {
+                        final xploraProfileProvider = ref.read(profile_providers.profileServiceProvider);
+                        final authProvider = ref.read(authServiceProvider);
+                        await xploraProfileProvider.delete(user.id!);
+                        await authProvider.deleteAccount();
+                        if (context.mounted) {
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        }
                       }
                     },
                   ),
