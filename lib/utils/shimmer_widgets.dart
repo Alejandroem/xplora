@@ -90,34 +90,56 @@ class ShimmerWidgets {
     required BuildContext context,
     double? width = 150,
     double? imageHeight = 140,
+    bool isInGrid = false,
   }) {
     return Container(
       width: width,
       decoration: BoxDecoration(
         color: context.colors.bgSecondary,
         borderRadius: BorderRadius.circular(radiusCard),
+        border: Border.all(
+          color: context.colors.border,
+          width: borderWidthDefault,
+        ),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: isInGrid ? MainAxisSize.max : MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image shimmer (top section)
-          baseShimmer(
-            context: context,
-            child: Container(
-              height: imageHeight,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: context.colors.bgTertiary,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(radiusCard),
-                  topRight: Radius.circular(radiusCard),
+          isInGrid
+              ? Expanded(
+                  child: baseShimmer(
+                    context: context,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: context.colors.bgTertiary,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(radiusCard),
+                          topRight: Radius.circular(radiusCard),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : baseShimmer(
+                  context: context,
+                  child: Container(
+                    height: imageHeight,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: context.colors.bgTertiary,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(radiusCard),
+                        topRight: Radius.circular(radiusCard),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
           // Bottom content section
           Container(
-            padding: const EdgeInsets.all(spacing8),
+            padding: const EdgeInsets.all(spacing12),
             decoration: BoxDecoration(
               color: context.colors.bgSecondary,
               borderRadius: const BorderRadius.only(
@@ -142,49 +164,65 @@ class ShimmerWidgets {
                   ),
                 ),
                 const SizedBox(height: spacing4),
-                // City/State shimmer
-                baseShimmer(
-                  context: context,
-                  child: Container(
-                    width: 70,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: context.colors.bgTertiary,
-                      borderRadius: BorderRadius.circular(radiusSmall),
+                // Grid: only distance shimmer
+                // Carousel: full content
+                if (isInGrid) ...[
+                  baseShimmer(
+                    context: context,
+                    child: Container(
+                      width: 70,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: context.colors.bgTertiary,
+                        borderRadius: BorderRadius.circular(radiusSmall),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: spacing4),
-                // Category and XP row
-                Row(
-                  children: [
-                    // Category shimmer
-                    baseShimmer(
-                      context: context,
-                      child: Container(
-                        width: 60,
-                        height: 13,
-                        decoration: BoxDecoration(
-                          color: context.colors.bgTertiary,
-                          borderRadius: BorderRadius.circular(radiusSmall),
-                        ),
+                ] else ...[
+                  // City/State shimmer
+                  baseShimmer(
+                    context: context,
+                    child: Container(
+                      width: 70,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: context.colors.bgTertiary,
+                        borderRadius: BorderRadius.circular(radiusSmall),
                       ),
                     ),
-                    const Spacer(),
-                    // XP shimmer
-                    baseShimmer(
-                      context: context,
-                      child: Container(
-                        width: 50,
-                        height: 13,
-                        decoration: BoxDecoration(
-                          color: context.colors.bgTertiary,
-                          borderRadius: BorderRadius.circular(radiusSmall),
+                  ),
+                  const SizedBox(height: spacing4),
+                  // Category and XP row
+                  Row(
+                    children: [
+                      // Category shimmer
+                      baseShimmer(
+                        context: context,
+                        child: Container(
+                          width: 60,
+                          height: 13,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgTertiary,
+                            borderRadius: BorderRadius.circular(radiusSmall),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                      const Spacer(),
+                      // XP shimmer
+                      baseShimmer(
+                        context: context,
+                        child: Container(
+                          width: 50,
+                          height: 13,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgTertiary,
+                            borderRadius: BorderRadius.circular(radiusSmall),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

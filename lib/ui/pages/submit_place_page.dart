@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../theme.dart';
@@ -319,6 +320,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
         appBar: const GlassAppBar(
           title: 'Submit a Place',
           centerTitle: true,
+          height: 64,
         ),
         body: Form(
           key: _formKey,
@@ -394,22 +396,24 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
     return GestureDetector(
       onTap: _showImageSourceDialog,
       child: Container(
-        width: 120,
-        height: 120,
-        decoration: BoxDecoration(
-          color: context.colors.bgSecondary,
-          borderRadius: BorderRadius.circular(radiusMedium),
-          border: Border.all(
-            color: context.colors.border,
-            width: borderWidthDefault,
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            color: context.colors.bgSecondary,
+            borderRadius: BorderRadius.circular(radiusMedium),
+            border: Border.all(
+              color: context.colors.border,
+              width: borderWidthDefault,
+            ),
           ),
-        ),
-        child: Icon(
-          Icons.add,
-          size: iconSizeLarge,
-          color: context.colors.textSecondary,
-        ),
-      ),
+          child: Center(
+            child: SvgPicture.asset(
+              'assets/svg/grey-plus.svg',
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(context.colors.textPrimary, BlendMode.srcIn),
+            ),
+          )),
     );
   }
 
@@ -506,7 +510,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
           XploraTextField(
             controller: _placeNameController,
             labelText: 'Place Name',
-            hintText: 'Enter the name of the place',
+            hintText: 'Enter the place name',
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.next,
             textCapitalization: TextCapitalization.words,
@@ -530,7 +534,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
           XploraTextField(
             controller: _descriptionController,
             labelText: 'Description',
-            hintText: 'Describe this place and what makes it special',
+            hintText: 'Describe this place...',
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.newline,
             textCapitalization: TextCapitalization.sentences,
@@ -562,14 +566,14 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
             onPressed: _handleSubmit,
           ),
 
-          const SizedBox(height: spacing12),
+          const SizedBox(height: spacing16),
 
           // Review notice
           Text(
-            '"Your submission will be reviewed by XPLRA team.\nApproved places reward XP."',
+            'Your submission will be reviewed by XPLRA team.\nApproved places are rewarded XP.',
             textAlign: TextAlign.center,
             style: captionStyle.copyWith(
-              color: context.colors.textSecondary,
+              color: context.colors.textSecondary.withValues(alpha: 0.5),
             ),
           ),
 
@@ -650,17 +654,22 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
         },
         child: BaseDialog(
           icon: Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: brandPrimary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.check,
-              size: 48,
-            ),
-          ),
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                  color: brandPrimary.withValues(alpha: 0.15),
+                  borderRadius:
+                      const BorderRadius.all(Radius.circular(radiusLarge)),
+                  border: Border.all(
+                      width: 2, color: brandPrimary.withValues(alpha: 0.3))),
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/svg/checkmark.svg',
+                  width: 36,
+                  height: 36,
+                  colorFilter: ColorFilter.mode(brandPrimary, BlendMode.srcIn),
+                ),
+              )),
           title: 'Place Submitted!',
           description: 'You will receive XP once it\'s approved.',
           actions: [
@@ -721,6 +730,13 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
               ),
               const SizedBox(height: spacing8),
               SecondaryButton(
+                icon: SvgPicture.asset(
+                  'assets/svg/location-pin.svg',
+                  width: 18,
+                  height: 18,
+                  colorFilter: ColorFilter.mode(
+                      context.colors.textPrimary, BlendMode.srcIn),
+                ),
                 text: selectedLocation == null ? 'Drop Pin' : 'Edit Pin',
                 onPressed: () async {
                   final result = await Navigator.push<SelectedLocation>(

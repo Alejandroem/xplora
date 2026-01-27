@@ -438,12 +438,12 @@ class _TodoTabContent extends ConsumerWidget {
                     notifier.state = current;
                   },
                 ),
-                if (index < _categories.length - 1) const SizedBox(height: spacing8),
+                if (index < _categories.length - 1) const SizedBox(height: spacing12),
               ],
             );
           }),
           // Extra spacing before Contribute section
-          const SizedBox(height: spacing24),
+          const SizedBox(height: spacing12),
           // Contribute section at the end
           const ContributeSection(),
           const SizedBox(height: spacing16),
@@ -470,26 +470,32 @@ class _QuestCategoryTile extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: onToggle,
-          child: GlassContainer(
-            borderRadius: radiusLarge,
-            padding: const EdgeInsets.symmetric(
-              horizontal: spacing16,
-              vertical: spacing12,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  category.title,
-                  style: h3Style.copyWith(
-                    color: context.colors.textPrimary,
+          child: SizedBox(
+            height: 59,
+            child: GlassContainer(
+              borderRadius: 14,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: spacing12,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    category.title,
+                    style: bodyTextStyle.copyWith(
+                      color: context.colors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
-                ),
-                Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  color: context.colors.textPrimary,
-                ),
-              ],
+                  Icon(
+                    isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    color: isExpanded ? context.colors.textPrimary : context.colors.textPrimary.withValues(alpha: 0.7),
+                    size: 25,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -23,14 +23,7 @@ class QuestMainScreen extends StatelessWidget {
             ),
           ),
           centerTitle: true,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: context.colors.iconColor,
-              size: iconSizeLarge,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          height: 64,
           actions: [
             IconButton(
               icon: Icon(

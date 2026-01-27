@@ -7,43 +7,42 @@ import '../../theme.dart';
 class GlassContainer extends StatelessWidget {
   final Widget child;
   final double? borderRadius;
+  final BorderRadiusGeometry? customBorderRadius;
   final EdgeInsetsGeometry? padding;
-  final double? blur; /// Backdrop blur amount (default: 12px)
   final Border? border;
   final Color? bgColor;
+  final List<BoxShadow>? boxShadow;
 
   const GlassContainer({
     super.key,
     required this.child,
     this.borderRadius,
+    this.customBorderRadius,
     this.padding,
-    this.blur,
     this.border,
-    this.bgColor
+    this.bgColor,
+    this.boxShadow
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveBorderRadius = customBorderRadius ??
+        BorderRadius.circular(borderRadius ?? radiusMedium);
+
     return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius ?? radiusMedium),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: blur ?? cardContainerBlur.toDouble(),
-          sigmaY: blur ?? cardContainerBlur.toDouble(),
-        ),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: bgColor ?? context.colors.bgSecondary, /// rgba(18,18,18,0.65)
-            borderRadius: BorderRadius.circular(borderRadius ?? radiusMedium),
-            border: border ?? Border.all(
-              color: context.colors.cardContainerBorder, /// #8A2BE2 at 10% opacity
-              width: borderWidthDefault,
-            ),
-            boxShadow: const [elevation1],
+      borderRadius: effectiveBorderRadius,
+      child: Container(
+        padding: padding,
+        decoration: BoxDecoration(
+          color: bgColor ?? context.colors.bgSecondary, /// rgba(18,18,18,0.65)
+          borderRadius: effectiveBorderRadius,
+          border: border ?? Border.all(
+            color: context.colors.cardContainerBorder, /// #8A2BE2 at 10% opacity
+            width: borderWidthDefault,
           ),
-          child: child,
+          boxShadow: boxShadow,
         ),
+        child: child,
       ),
     );
   }

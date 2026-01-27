@@ -27,10 +27,12 @@ class PlaceCard extends ConsumerWidget {
         adventure.latitude,
         adventure.longitude,
       );
-      if (distance < 1000) {
-        return '${distance.toStringAsFixed(0)}m';
+      // Convert meters to miles (1 mile = 1609.34 meters)
+      final miles = distance / 1609.34;
+      if (miles < 0.1) {
+        return '${(distance * 3.28084).toStringAsFixed(0)} ft. away';
       } else {
-        return '${(distance / 1000).toStringAsFixed(0)}km';
+        return '${miles.toStringAsFixed(1)} mi. away';
       }
     }
     return '--';
@@ -58,48 +60,65 @@ class PlaceCard extends ConsumerWidget {
           ),
         );
       },
-      bottomContent: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('City, State',
-              style: bodySmallStyle.copyWith(
-                fontSize: 12,
-                color: context.colors.textSecondary,
-              )),
-          const SizedBox(height: spacing4),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Category',
-                  style: bodySmallStyle.copyWith(
-                    fontSize: 13,
-                    color: context.colors.textTertiary,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-              const SizedBox(width: spacing4),
-              Row(
+      bottomContent: isInGrid
+          ? SizedBox(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Flexible(
-                    child: Text(
-                      '+${adventure.experience.toInt()} XP',
-                      style: xpNumberStyle.copyWith(
-                        color: xpColor,
-                        fontSize: 13,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                  Text(
+                    _getDistance(ref),
+                    style: bodySmallStyle.copyWith(
+                      fontSize: 12,
+                      color: context.colors.textSecondary.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
-      ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('City, State',
+                    style: bodySmallStyle.copyWith(
+                      fontSize: 12,
+                      color: context.colors.textSecondary,
+                    )),
+                const SizedBox(height: spacing4),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Category',
+                        style: bodySmallStyle.copyWith(
+                          fontSize: 13,
+                          color: context.colors.textTertiary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    const SizedBox(width: spacing4),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '+${adventure.experience.toInt()} XP',
+                            style: xpNumberStyle.copyWith(
+                              color: xpColor,
+                              fontSize: 13,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
     );
   }
 }

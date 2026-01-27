@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/auth_providers.dart';
@@ -93,8 +94,8 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                   ),
                                 )
                               : Icon(
-                                  Icons.person,
-                                  color: context.colors.iconColor,
+                                  LucideIcons.user,
+                                  color: context.isDarkMode ? bgPrimaryLight.withValues(alpha: 0.6) : bgPrimaryDark.withValues(alpha: 0.6),
                                   size: iconSizeMedium,
                                 ),
                           badgeText: 'Lvl 7',
@@ -119,8 +120,8 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                           iconTopPosition: userLocation == null ? 8 : 15,
                           context: context,
                           avatarChild: Icon(
-                            Icons.person,
-                            color: context.colors.iconColor,
+                            LucideIcons.user,
+                            color: context.isDarkMode ? bgPrimaryLight.withValues(alpha: 0.6) : bgPrimaryDark.withValues(alpha: 0.6),
                             size: iconSizeMedium,
                           ),
                           badgeText: 'Lvl 7',
@@ -139,6 +140,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
               error: (error, stackTrace) => const SizedBox.shrink(),
             )
           : null,
+      automaticallyImplyLeading: false,
     );
   }
 
@@ -189,7 +191,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 ? Text(
                     badgeText,
                     style: bodySmallStyle.copyWith(
-                      color: context.colors.textSecondary,
+                      color: brandSecondary,
                       fontSize: 10,
                     ),
                   )
@@ -262,12 +264,7 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
               onChanged: (value) {
                 ref.read(searchQueryProvider.notifier).state = value.trim();
               },
-              hintText: 'Search places...',
-              prefixIcon: Icon(
-                Icons.search,
-                color: context.colors.textSecondary,
-                size: iconSizeMedium,
-              ),
+              hintText: 'Search',
               textCapitalization: TextCapitalization.sentences,
               suffixIcon: searchQuery.trim().isNotEmpty
                   ? IconButton(

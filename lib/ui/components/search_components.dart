@@ -82,14 +82,16 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
         child: Column(
           children: [
             // Fixed filter row at the top
-            SmoothFilterScrollRow(
-              filters: const ['All', 'Nearby', 'Recommended', 'Saved'],
-              selectedFilter: selectedFilter,
-              onFilterTap: (filter) {
-                ref.read(selectedSearchFilterProvider.notifier).state = filter;
-              },
+            SizedBox(
+              width: double.infinity,
+              child: SmoothFilterScrollRow(
+                filters: const ['All', 'Nearby', 'Recommended', 'Saved'],
+                selectedFilter: selectedFilter,
+                onFilterTap: (filter) {
+                  ref.read(selectedSearchFilterProvider.notifier).state = filter;
+                },
+              ),
             ),
-            const SizedBox(height: spacing16),
             // Scrollable content area
             Expanded(
               child: _buildFilteredContent(selectedFilter, searchQuery, isSearching),
@@ -174,10 +176,10 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   }) {
     return GridView.builder(
       controller: controller,
-      padding: const EdgeInsets.only(bottom: spacing16),
+      padding: const EdgeInsets.symmetric(vertical: spacing16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.75,
+        childAspectRatio: 173 / 222, // 173px width x 222px height
         crossAxisSpacing: spacing12,
         mainAxisSpacing: spacing12,
       ),
@@ -185,8 +187,8 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
       itemBuilder: (context, index) {
         if (index >= adventures.length) {
           return ShimmerWidgets.adventureCardShimmer(
-            imageHeight: 155,
             context: context,
+            isInGrid: true,
           );
         }
         return PlaceCard(adventures[index], isInGrid: true);
@@ -197,18 +199,18 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   // Loading state with shimmer grid
   Widget _buildLoadingGrid() {
     return GridView.builder(
-      padding: const EdgeInsets.only(bottom: spacing16),
+      padding: const EdgeInsets.symmetric(vertical: spacing16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.75,
+        childAspectRatio: 173 / 222, // 173px width x 222px height
         crossAxisSpacing: spacing12,
         mainAxisSpacing: spacing12,
       ),
       itemCount: 6,
       itemBuilder: (context, index) {
         return ShimmerWidgets.adventureCardShimmer(
-          imageHeight: 155,
           context: context,
+          isInGrid: true,
         );
       },
     );
@@ -221,7 +223,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Error loading adventures',
+            'Error loading places',
             style: bodyTextStyle.copyWith(
               color: context.colors.textPrimary,
             ),

@@ -153,6 +153,7 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: spacing16),
           child: SmoothFilterScrollRow(
+            alignCenter: false,
             filters: filters,
             selectedFilter: selectedFilter,
             onFilterTap: (filter) {

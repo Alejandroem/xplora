@@ -93,8 +93,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
           Text(
             widget.labelText!,
             style: bodySmallStyle.copyWith(
-              color: hasError ? errorColor : context.colors.textPrimary,
-              fontWeight: FontWeight.bold
+              color: hasError ? errorColor : context.colors.textPrimary
             ),
           ),
           const SizedBox(height: spacing8),
@@ -130,7 +129,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
           style: bodySmallStyle,
           decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: captionStyle,
+            hintStyle: captionStyle.copyWith(color: context.colors.textPrimary.withValues(alpha: 0.8)),
             errorStyle: const TextStyle(height: 0, fontSize: 0), // Hide default error
             counterText: '', // Hide default counter, we'll show it custom below
             suffixIcon: widget.suffixIcon,

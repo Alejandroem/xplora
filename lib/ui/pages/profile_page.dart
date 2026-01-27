@@ -223,38 +223,40 @@ class ProfilePage extends ConsumerWidget {
         ),
         const SizedBox(height: spacing16),
         // Featured achievements grid with navigation
-        Container(
-          padding: const EdgeInsets.all(spacing16),
-          decoration: BoxDecoration(
-            color: context.colors.bgSecondary,
-            borderRadius: BorderRadius.circular(radiusMedium),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: AchievementsGrid(
-                  itemCount: 6,
-                  achievementSize: 87,
-                  backgroundColor: context.colors.bgTertiary,
-                  iconColor: context.colors.iconColor,
-                  onTap: (index) {
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/achievements');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(spacing16),
+            decoration: BoxDecoration(
+              color: context.colors.bgSecondary,
+              borderRadius: BorderRadius.circular(radiusMedium),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: AchievementsGrid(
+                      itemCount: 6,
+                      achievementSize: 87,
+                      backgroundColor: context.colors.bgTertiary,
+                      iconColor: context.colors.iconColor,
+                      borderRadius: radiusMedium,
+                    ),
+                ),
+                const SizedBox(width: spacing16),
+                IconButton(
+                  icon: Icon(
+                    Icons.arrow_forward_ios,
+                    color: context.colors.iconColor,
+                    size: iconSizeMedium,
+                  ),
+                  onPressed: () {
                     Navigator.pushNamed(context, '/achievements');
                   },
-                  borderRadius: radiusMedium,
                 ),
-              ),
-              const SizedBox(width: spacing16),
-              IconButton(
-                icon: Icon(
-                  Icons.arrow_forward_ios,
-                  color: context.colors.iconColor,
-                  size: iconSizeMedium,
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/achievements');
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         const SizedBox(height: spacing24),
