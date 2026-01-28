@@ -40,6 +40,7 @@ class _CarouselWidgetState<T> extends State<CarouselWidget<T>> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      clipBehavior: Clip.none,
       controller: _scrollController,
       scrollDirection: Axis.horizontal,
       child: IntrinsicHeight(

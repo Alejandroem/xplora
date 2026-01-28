@@ -4,105 +4,98 @@ import '../../theme.dart';
 class InProgressQuest extends StatelessWidget {
   const InProgressQuest({
     super.key,
-    required this.dummyQuestTitle,
-    required this.dummyProgress,
-    required this.onSeeQuestDetails,
-    required this.onMoreQuest,
-    required this.onQueue,
+    required this.onContinue,
+    required this.onSeeMore,
   });
 
-  final String dummyQuestTitle;
-  final int dummyProgress;
-  final VoidCallback onSeeQuestDetails;
-  final VoidCallback onMoreQuest;
-  final VoidCallback onQueue;
+  final VoidCallback onContinue;
+  final VoidCallback onSeeMore;
 
   @override
   Widget build(BuildContext context) {
+    // Dummy data
+    const title = 'Hidden Alleyway Treasures';
+    const description = 'Discover 3 secret murals in the Mission District';
+    const checkpointsCompleted = 2;
+    const totalCheckpoints = 3;
+    const progressPercentage = 67;
+
     return GlassContainer(
-      padding: const EdgeInsets.fromLTRB(spacing16, spacing4, spacing16, spacing16),
+      border: const Border.fromBorderSide(BorderSide.none),
+      boxShadow: const [elevation1],
+      padding: const EdgeInsets.all(spacing16),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // "In Progress" label
+          // Title
+          Text(
+            title,
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textPrimary,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: spacing4),
+
+          // Description
+          Text(
+            description,
+            style: bodySmallStyle.copyWith(
+              color: context.colors.textSecondary.withValues(alpha: 0.8),
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Progress info and percentage row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'In Progress',
-                style: h3Style.copyWith(color: context.colors.textPrimary),
+                '$checkpointsCompleted of $totalCheckpoints checkpoints',
+                style: bodySmallStyle.copyWith(
+                  color: context.colors.textSecondary.withValues(alpha: 0.8),
+                ),
               ),
-              IconButton(
-                  onPressed: () {
-                    print('QR Code Tapped');
-                  },
-                  icon: Icon(
-                    Icons.qr_code_scanner,
-                    color: context.colors.textPrimary,
-                  ))
+              Text(
+                '$progressPercentage%',
+                style: bodySmallStyle.copyWith(
+                  color: brandSecondary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: spacing8),
-          // Quest title (dummy)
-          Text(
-            dummyQuestTitle,
-            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(radiusLarge),
+            child: LinearProgressIndicator(
+              value: progressPercentage / 100,
+              minHeight: 8,
+              backgroundColor: context.colors.bgTertiary,
+              valueColor: AlwaysStoppedAnimation<Color>(brandSecondary),
+            ),
           ),
           const SizedBox(height: spacing16),
-          // Progress bar with percentage (dummy)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(radiusSmall),
-                      child: LinearProgressIndicator(
-                        value: dummyProgress / 100,
-                        minHeight: 8,
-                        backgroundColor: context.colors.bgTertiary,
-                        valueColor: AlwaysStoppedAnimation<Color>(brandPrimary),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: spacing16),
-                  Text(
-                    '$dummyProgress%',
-                    style: bodySmallStyle.copyWith(color: context.colors.textSecondary),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: spacing16),
-          // Action buttons
+
+          // Buttons row
           Row(
             children: [
+              // Continue button
+              Expanded(
+                child: PrimaryButton(
+                  onPressed: onContinue,
+                  text: 'Continue',
+                ),
+              ),
+              const SizedBox(width: spacing12),
+              // See More button
               Expanded(
                 child: SecondaryButton(
-                  maxLines: 1,
-                  text: 'See Quest Details',
-                  onPressed: onSeeQuestDetails,
-                ),
-              ),
-              const SizedBox(width: spacing8),
-              Flexible(
-                child: SecondaryButton(
-                  maxLines: 1,
-                  text: 'More Quest',
-                  onPressed: onMoreQuest,
-                ),
-              ),
-              const SizedBox(width: spacing8),
-              Flexible(
-                child: SecondaryButton(
-                  text: 'Queue',
-                  onPressed: onQueue,
+                  onPressed: onSeeMore,
+                  text: 'See More',
                 ),
               ),
             ],

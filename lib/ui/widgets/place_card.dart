@@ -45,11 +45,11 @@ class PlaceCard extends ConsumerWidget {
       title: adventure.title,
       heroTag:
           'adventure-image-${adventure.id}-${isInGrid ? 'grid' : 'carousel'}',
-      width: isInGrid ? null : 150,
+      width: isInGrid ? null : 160,
       // For grid: use expandImage to fill available space
       // For carousel: use fixed height
       expandImage: isInGrid,
-      imageHeight: isInGrid ? null : 140,
+      imageHeight: isInGrid ? null : 130,
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -61,61 +61,38 @@ class PlaceCard extends ConsumerWidget {
         );
       },
       bottomContent: isInGrid
-          ? SizedBox(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _getDistance(ref),
-                    style: bodySmallStyle.copyWith(
-                      fontSize: 12,
-                      color: context.colors.textSecondary.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
+          ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                _getDistance(ref),
+                style: bodySmallStyle.copyWith(
+                  fontSize: 12,
+                  color: context.colors.textSecondary.withValues(alpha: 0.6),
+                ),
               ),
-            )
+            ],
+          )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text('City, State',
-                    style: bodySmallStyle.copyWith(
-                      fontSize: 12,
-                      color: context.colors.textSecondary,
-                    )),
-                const SizedBox(height: spacing4),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Category',
-                        style: bodySmallStyle.copyWith(
-                          fontSize: 13,
-                          color: context.colors.textTertiary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                    const SizedBox(width: spacing4),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            '+${adventure.experience.toInt()} XP',
-                            style: xpNumberStyle.copyWith(
-                              color: xpColor,
-                              fontSize: 13,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                Text(
+                  'San Juan, PR',
+                  style: bodySmallStyle.copyWith(
+                    fontSize: 12,
+                    color: context.colors.textSecondary.withValues(alpha: 0.6),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  _getDistance(ref),
+                  style: bodySmallStyle.copyWith(
+                    fontSize: 12,
+                    color: context.colors.textSecondary.withValues(alpha: 0.6),
+                  ),
                 ),
               ],
             ),

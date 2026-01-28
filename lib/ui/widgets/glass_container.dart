@@ -29,20 +29,25 @@ class GlassContainer extends StatelessWidget {
     final effectiveBorderRadius = customBorderRadius ??
         BorderRadius.circular(borderRadius ?? radiusMedium);
 
-    return ClipRRect(
-      borderRadius: effectiveBorderRadius,
-      child: Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: bgColor ?? context.colors.bgSecondary, /// rgba(18,18,18,0.65)
-          borderRadius: effectiveBorderRadius,
-          border: border ?? Border.all(
-            color: context.colors.cardContainerBorder, /// #8A2BE2 at 10% opacity
-            width: borderWidthDefault,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: effectiveBorderRadius,
+        boxShadow: boxShadow,
+      ),
+      child: ClipRRect(
+        borderRadius: effectiveBorderRadius,
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color: bgColor ?? context.colors.bgSecondary, /// rgba(18,18,18,0.65)
+            borderRadius: effectiveBorderRadius,
+            border: border ?? Border.all(
+              color: context.colors.cardContainerBorder, /// #8A2BE2 at 10% opacity
+              width: borderWidthDefault,
+            ),
           ),
-          boxShadow: boxShadow,
+          child: child,
         ),
-        child: child,
       ),
     );
   }

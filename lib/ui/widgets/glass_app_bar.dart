@@ -28,6 +28,9 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Optional bottom widget (e.g., tabs)
   final PreferredSizeWidget? bottom;
 
+  /// Optional hide bottom divider
+  final bool hideBottomDivider;
+
   const GlassAppBar({
     super.key,
     this.title,
@@ -38,6 +41,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle = false,
     this.automaticallyImplyLeading = true,
     this.bottom,
+    this.hideBottomDivider = false,
   });
 
   @override
@@ -45,7 +49,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
+          bottom: hideBottomDivider ? BorderSide.none : BorderSide(
             color: context.colors.border,
 
             /// Thin divider at bottom

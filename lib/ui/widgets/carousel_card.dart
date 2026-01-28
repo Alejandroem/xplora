@@ -62,7 +62,7 @@ class _CarouselCardState extends State<CarouselCard> {
     }
 
     final cardChild = GlassContainer(
-      border: Border.all(width: 0),
+      border: const Border.fromBorderSide(BorderSide.none),
       boxShadow: const [elevation1],
       borderRadius: radiusLarge,
       padding: EdgeInsets.zero,
@@ -75,6 +75,7 @@ class _CarouselCardState extends State<CarouselCard> {
 
           // Bottom content section
           Container(
+            width: double.infinity,
             padding: const EdgeInsets.all(spacing12),
             decoration: BoxDecoration(
               color: context.colors.bgSecondary,
@@ -84,9 +85,7 @@ class _CarouselCardState extends State<CarouselCard> {
               ),
             ),
             child: Column(
-              crossAxisAlignment: widget.bottomContent != null
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
@@ -97,9 +96,7 @@ class _CarouselCardState extends State<CarouselCard> {
                   ),
                   maxLines: widget.bottomContent != null ? 1 : 2,
                   overflow: TextOverflow.ellipsis,
-                  textAlign: widget.bottomContent != null
-                      ? TextAlign.start
-                      : TextAlign.center,
+                  textAlign: TextAlign.start,
                 ),
                 if (widget.bottomContent != null) ...[
                   const SizedBox(height: spacing4),

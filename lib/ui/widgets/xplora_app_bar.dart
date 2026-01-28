@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../application/providers/adventure_providers.dart';
@@ -11,7 +12,6 @@ import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 import '../components/search_components.dart';
-import '../dialogs/bottom_login_card.dart';
 import '../pages/filters_page.dart';
 import '../pages/profile_page.dart';
 
@@ -32,16 +32,25 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final bottomBar = ref.watch(bottomNavigationBarProvider);
 
     return GlassAppBar(
+      hideBottomDivider: bottomBar == NavigationItem.home ? true : false,
       title: bottomBar == NavigationItem.home
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'XPLRA',
-                  style: h3Style.copyWith(
-                    color: context.colors.textPrimary,
-                  ),
+                Image.asset(
+                  'assets/png/xplra-text-logo-no-bg.png',
+                  width: 110,
+                  height: 32,
+                  color: context.isDarkMode ? null : bgPrimaryDark,
                 ),
+                // SvgPicture.asset(
+                //   'assets/svg/xplra-text-logo.svg',
+                //   width: 110,
+                //   height: 32,
+                //   // colorFilter: ColorFilter.mode(
+                //   //     context.isDarkMode ? bgPrimaryLight : bgPrimaryDark,
+                //   //     BlendMode.srcIn),
+                // ),
                 if (userLocation != null)
                   Text(
                     userLocation!,
@@ -67,37 +76,31 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                       data: (profile) {
                         // Handle null profile during auth state transitions
                         if (profile == null) {
-                          return placeholderIcon(context, userLocation: userLocation);
+                          return placeholderIcon(context);
                         }
                         return _buildAvatarWithBadge(
-                          iconTopPosition: userLocation == null ? 8 : 15,
-                          badgeTopPosition: userLocation == null ? 1 : 8,
                           context: context,
                           avatarChild: profile.avatarUrl != null &&
                                   profile.avatarUrl!.isNotEmpty
                               ? ClipOval(
                                   child: CachedNetworkImage(
                                     imageUrl: profile.avatarUrl!,
-                                    width: avatarSizeSmall,
-                                    height: avatarSizeSmall,
+                                    width: avatarSizeMedium,
+                                    height: avatarSizeMedium,
                                     fit: BoxFit.cover,
                                     errorWidget: (ctx, err, _) => Icon(
                                       Icons.error,
-                                      size: iconSizeMedium,
+                                      size: iconSizeLarge,
                                       color: errorColor,
                                     ),
                                     placeholder: (ctx, loading) =>
                                         ShimmerWidgets.imageShimmer(
-                                            borderRadius: BorderRadius.circular(
-                                                avatarRadiusSmall),
+                                            borderRadius:
+                                                BorderRadius.circular(100),
                                             context: context),
                                   ),
                                 )
-                              : Icon(
-                                  LucideIcons.user,
-                                  color: context.isDarkMode ? bgPrimaryLight.withValues(alpha: 0.6) : bgPrimaryDark.withValues(alpha: 0.6),
-                                  size: iconSizeMedium,
-                                ),
+                              : _buildUserIcon(context),
                           badgeText: 'Lvl 7',
                           onTap: () {
                             Navigator.push(
@@ -117,13 +120,8 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data == false) {
                         return _buildAvatarWithBadge(
-                          iconTopPosition: userLocation == null ? 8 : 15,
                           context: context,
-                          avatarChild: Icon(
-                            LucideIcons.user,
-                            color: context.isDarkMode ? bgPrimaryLight.withValues(alpha: 0.6) : bgPrimaryDark.withValues(alpha: 0.6),
-                            size: iconSizeMedium,
-                          ),
+                          avatarChild: _buildUserIcon(context),
                           badgeText: 'Lvl 7',
                           showBadge: false,
                           onTap: () {
@@ -144,18 +142,23 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget placeholderIcon(BuildContext context, {String? userLocation}) {
+  Widget placeholderIcon(BuildContext context) {
     return _buildAvatarWithBadge(
-        iconTopPosition: userLocation == null ? 8 : 15,
-        context: context,
-        avatarChild: Icon(
-          Icons.person,
-          color: context.colors.iconColor,
-          size: iconSizeMedium,
-        ),
-        badgeText: '...',
-        badgeTopPosition: userLocation == null ? 1 : 8,
-        badgeRightPosition: 22);
+      context: context,
+      avatarChild: _buildUserIcon(context),
+      badgeText: '...',
+      badgeTopPosition: 6,
+      badgeRightPosition: 4,
+    );
+  }
+
+  /// Reusable user icon widget to eliminate repetition
+  Widget _buildUserIcon(BuildContext context) {
+    return Icon(
+      LucideIcons.user,
+      color: context.colors.textSecondary,
+      size: iconSizeLarge,
+    );
   }
 
   /// Reusable avatar with badge widget
@@ -163,50 +166,49 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     required BuildContext context,
     required Widget avatarChild,
     required String badgeText,
-    double badgeTopPosition = 8,
-    double badgeRightPosition = 12,
-    double iconLeftPosition = 10,
-    double iconTopPosition = 15,
+    double badgeTopPosition = 6,
+    double badgeRightPosition = -7,
     bool showBadge = true,
     VoidCallback? onTap,
   }) {
     final avatarWidget = Padding(
       padding: const EdgeInsets.only(left: spacing8),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            left: iconLeftPosition,
-            top: iconTopPosition,
-            child: CircleAvatar(
+      child: SizedBox(
+        width: avatarSizeMedium,
+        height: avatarSizeMedium,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            CircleAvatar(
               backgroundColor: context.colors.bgSecondary,
-              radius: avatarRadiusSmall,
+              radius: iconSizeLarge,
               child: avatarChild,
             ),
-          ),
-          Positioned(
-            top: badgeTopPosition,
-            right: badgeRightPosition,
-            child: showBadge
-                ? Text(
-                    badgeText,
-                    style: bodySmallStyle.copyWith(
-                      color: brandSecondary,
-                      fontSize: 10,
-                    ),
-                  )
-                : Opacity(
-                    opacity: 0,
-                    child: Text(
+            Positioned(
+              top: badgeTopPosition,
+              right: badgeRightPosition,
+              child: showBadge
+                  ? Text(
                       badgeText,
                       style: bodySmallStyle.copyWith(
-                        color: context.colors.textSecondary,
+                        color: brandSecondary,
                         fontSize: 10,
                       ),
+                    )
+                  : Opacity(
+                      opacity: 0,
+                      child: Text(
+                        badgeText,
+                        style: bodySmallStyle.copyWith(
+                          color: context.colors.textSecondary,
+                          fontSize: 10,
+                        ),
+                      ),
                     ),
-                  ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
 
