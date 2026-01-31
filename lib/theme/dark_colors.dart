@@ -12,10 +12,10 @@ Color borderDark = const Color(0xff4C4B4D); /// Borders and dividers
 Color elevatedDark = const Color(0xff5F5F5F); /// Elevated surfaces
 
 // TEXT COLORS
-Color textPrimaryDark = const Color(0xffF5F5F5); /// Primary text
+Color textPrimaryDark = const Color(0xffF0EFEB); /// Primary text
 Color textSecondaryDark = const Color(0xffEFEFEF); /// Secondary text
-Color textTertiaryDark = const Color(0xffDDDCDC); /// Tertiary text
-Color textDisabledDark = const Color(0xffCBACAA); /// Disabled text
+Color textTertiaryDark = const Color(0xffE3E3E3); /// Tertiary text
+Color textDisabledDark = const Color(0xffD7D7D7); /// Disabled text
 
 // ============================================================================
 // UTILITY & EFFECTS (DARK MODE)

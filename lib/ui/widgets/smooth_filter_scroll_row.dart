@@ -259,82 +259,72 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: context.colors.border,
-            width: borderWidthDefault,
-          ),
-        ),
-      ),
-      child: Align(
-        alignment: widget.alignCenter ? AlignmentGeometry.center : AlignmentDirectional.topStart,
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          scrollDirection: Axis.horizontal,
-          // Use BouncingScrollPhysics for natural, smooth scrolling behavior
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: [
-              // Build filter tabs
-              ...widget.filters.asMap().entries.map((entry) {
-                final index = entry.key;
-                final filter = entry.value;
-                final isSelected = widget.selectedFilter == filter;
-
-                return Padding(
-                  key: _filterKeys[index],
-                  padding: EdgeInsets.only(
-                    right: index < widget.filters.length - 1 ? spacing32 : 0,
-                  ),
-                  child: GestureDetector(
-                    onTap: () {
-                      // Animate to center this filter when tapped
-                      _centerItem(index);
-                      widget.onFilterTap(filter);
-                    },
-                    behavior: HitTestBehavior.opaque,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: spacing8),
-                      child: IntrinsicWidth(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              filter,
-                              style: bodyTextStyle.copyWith(
-                                fontSize: 14,
-                                color: isSelected
-                                    ? context.colors.textPrimary
-                                    : context.colors.textSecondary.withValues(
-                                        alpha: 0.5,
-                                      ),
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                              ),
+    return Align(
+      alignment: widget.alignCenter ? AlignmentGeometry.center : AlignmentDirectional.topStart,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        // Use BouncingScrollPhysics for natural, smooth scrolling behavior
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: [
+            // Build filter tabs
+            ...widget.filters.asMap().entries.map((entry) {
+              final index = entry.key;
+              final filter = entry.value;
+              final isSelected = widget.selectedFilter == filter;
+    
+              return Padding(
+                key: _filterKeys[index],
+                padding: EdgeInsets.only(
+                  right: index < widget.filters.length - 1 ? spacing32 : 0,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    // Animate to center this filter when tapped
+                    _centerItem(index);
+                    widget.onFilterTap(filter);
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: spacing8),
+                    child: IntrinsicWidth(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            filter,
+                            style: bodyTextStyle.copyWith(
+                              fontSize: 14,
+                              color: isSelected
+                                  ? context.colors.textPrimary
+                                  : context.colors.textSecondary.withValues(
+                                      alpha: 0.5,
+                                    ),
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
-                            const SizedBox(height: spacing8),
-                            // Indicator under text - matches text width exactly
-                            Container(
-                              height: 2,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? brandPrimary
-                                    : Colors.transparent,
-                              ),
+                          ),
+                          const SizedBox(height: spacing8),
+                          // Indicator under text - matches text width exactly
+                          Container(
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? brandPrimary
+                                  : Colors.transparent,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                );
-              }),
-            ],
-          ),
+                ),
+              );
+            }),
+          ],
         ),
       ),
     );

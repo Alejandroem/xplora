@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/adventure_providers.dart';
 import '../../theme.dart';
-import '../pages/adventure_detail.dart';
+import '../pages/place_detail.dart';
 
 // Provider for current featured adventure index
 final featuredAdventureIndexProvider = StateProvider<int>((ref) => 0);
@@ -71,7 +71,8 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
             final adventure = data.first; */
 
             return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -88,7 +89,8 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                         const SizedBox(width: 8),
                         Text(
                           'Featured Adventures',
-                          style: h3Style.copyWith(color: context.colors.textPrimary),
+                          style: h3Style.copyWith(
+                              color: context.colors.textPrimary),
                         ),
                       ],
                     ),
@@ -99,7 +101,9 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                     width: double.infinity,
                     child: PageView.builder(
                       onPageChanged: (index) {
-                        ref.read(featuredAdventureIndexProvider.notifier).state = index;
+                        ref
+                            .read(featuredAdventureIndexProvider.notifier)
+                            .state = index;
                       },
                       controller: _pageController,
                       itemCount: data.length,
@@ -112,7 +116,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      AdventureDetail('featured', data[index]),
+                                      PlaceDetail('featured', data[index]),
                                 ),
                               );
                             },
@@ -176,8 +180,7 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
             );
           },
           loading: () => const SizedBox(
-            height: 200,
-              child: Center(child: CircularProgressIndicator())),
+              height: 200, child: Center(child: CircularProgressIndicator())),
           error: (error, stackTrace) =>
               const Center(child: Text('An error occurred')),
         );

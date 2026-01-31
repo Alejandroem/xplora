@@ -6,7 +6,7 @@ import '../../application/providers/boomark_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../domain/models/bookmark.dart';
 import '../../theme.dart';
-import '../pages/adventure_detail.dart';
+import '../pages/place_detail.dart';
 
 class BoomarkComponents extends ConsumerStatefulWidget {
   const BoomarkComponents({super.key});
@@ -55,73 +55,73 @@ class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: bookmarks.length,
                   itemBuilder: (context, index) {
-                      final bookmark = bookmarks[index];
-                      final adventureCrudService = ref.read(
-                        adventuresCrudServiceProvider,
-                      );
+                    final bookmark = bookmarks[index];
+                    final adventureCrudService = ref.read(
+                      adventuresCrudServiceProvider,
+                    );
 
-                      if (bookmark.type == BookmarkType.adventure) {
-                        return FutureBuilder(
-                          future: adventureCrudService.read(bookmark.entityId),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              final adventure = snapshot.data as Adventure;
-                              return ListTile(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return AdventureDetail(
-                                          'bookmarks',
-                                          adventure,
-                                        );
-                                      },
-                                    ),
-                                  );
+                    if (bookmark.type == BookmarkType.adventure) {
+                      return FutureBuilder(
+                        future: adventureCrudService.read(bookmark.entityId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            final adventure = snapshot.data as Adventure;
+                            return ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return PlaceDetail(
+                                        'bookmarks',
+                                        adventure,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              contentPadding: const EdgeInsets.all(8.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              tileColor: context.colors.bgSecondary,
+                              leading: Image.network(
+                                adventure.imageUrl,
+                                width: 50,
+                                height: 50,
+                              ),
+                              title: Text(
+                                adventure.title,
+                              ),
+                              subtitle: Text(
+                                adventure.shortDescription,
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () async {
+                                  await ref
+                                      .read(boomarkCrudServiceProvider)
+                                      .delete(bookmark.id!);
+                                  ref.invalidate(
+                                      currentUserBoomarksStreamProvider);
                                 },
-                                contentPadding: const EdgeInsets.all(8.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                tileColor: context.colors.bgSecondary,
-                                leading: Image.network(
-                                  adventure.imageUrl,
-                                  width: 50,
-                                  height: 50,
-                                ),
-                                title: Text(
-                                  adventure.title,
-                                ),
-                                subtitle: Text(
-                                  adventure.shortDescription,
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () async {
-                                    await ref
-                                        .read(boomarkCrudServiceProvider)
-                                        .delete(bookmark.id!);
-                                    ref.invalidate(
-                                        currentUserBoomarksStreamProvider);
-                                  },
-                                ),
-                              );
-                            }
-                            return const SizedBox();
-                          },
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  );
-                }
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stackTrace) => Center(
-                child: Text('Error: $error'),
-              ),
+                              ),
+                            );
+                          }
+                          return const SizedBox();
+                        },
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                );
+              }
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) => Center(
+              child: Text('Error: $error'),
             ),
+          ),
     );
   }
 }

@@ -18,7 +18,6 @@ class NotificationComponents extends ConsumerStatefulWidget {
 
 class _NotificationComponentsState
     extends ConsumerState<NotificationComponents> {
-
   // ============================================================================
   // COMMENTED OUT: Previous provider-based logic (for future use with real data)
   // ============================================================================
@@ -120,102 +119,93 @@ class _NotificationComponentsState
       },
     ];
 
-    return GradientBackground(
-      child: Scaffold(
-        appBar: const GlassAppBar(
-          title: 'Notifications',
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-        ),
-        body: ListView.builder(
-          itemCount: dummyNotifications.length,
-          itemBuilder: (context, index) {
-            final notification = dummyNotifications[index];
-            final isLastItem = index == dummyNotifications.length - 1;
-            return NotificationItemTile(
-              svgIconPath: notification['svgIcon'] as String,
-              iconBackgroundColor: _getNotificationColor(index),
-              title: notification['title'] as String,
-              description: notification['description'] as String,
-              timeAgo: notification['timeAgo'] as String,
-              isLast: isLastItem,
-              onTap: () {
-                // Handle notification tap
-              },
-            );
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: dummyNotifications.length,
+      itemBuilder: (context, index) {
+        final notification = dummyNotifications[index];
+        final isLastItem = index == dummyNotifications.length - 1;
+        return NotificationItemTile(
+          svgIconPath: notification['svgIcon'] as String,
+          iconBackgroundColor: _getNotificationColor(index),
+          title: notification['title'] as String,
+          description: notification['description'] as String,
+          timeAgo: notification['timeAgo'] as String,
+          isLast: isLastItem,
+          onTap: () {
+            // Handle notification tap
           },
-        ),
-
-        // ============================================================================
-        // COMMENTED OUT: Previous provider-based body (for future use with real data)
-        // ============================================================================
-        // body: ref.watch(userPreviousActivitiesProviderStream).when(
-        //       data: (items) {
-        //         if (items.isEmpty) {
-        //           return SizedBox(
-        //             height: MediaQuery.of(context).size.height * 0.8,
-        //             child: Center(
-        //               child: Text(
-        //                 'No notifications found',
-        //                 style: bodyTextStyle.copyWith(
-        //                   color: context.colors.textSecondary,
-        //                 ),
-        //               ),
-        //             ),
-        //           );
-        //         }
-        //         return ListView.builder(
-        //           itemCount: items.length,
-        //           itemBuilder: (context, index) {
-        //             final item = items[index];
-        //             final isLastItem = index == items.length - 1;
-        //             String title = '';
-        //             String description = '';
-        //             DateTime? timestamp;
-
-        //             if (item is Quest) {
-        //               title = 'Quest Available: ${item.title}';
-        //               description = item.shortDescription;
-        //               timestamp = item.completedAt;
-        //             } else if (item is Adventure) {
-        //               title = 'Adventure Completed: ${item.title}';
-        //               description = item.shortDescription;
-        //               timestamp = item.completedAt;
-        //             }
-
-        //             return NotificationItemTile(
-        //               svgIconPath: _getNotificationSvgIcon(item),
-        //               iconBackgroundColor: _getNotificationColor(index),
-        //               title: title,
-        //               description: description,
-        //               timeAgo: _timeAgo(timestamp),
-        //               isLast: isLastItem,
-        //               onTap: () {
-        //                 // Handle notification tap
-        //               },
-        //             );
-        //           },
-        //         );
-        //       },
-        //       loading: () => SizedBox(
-        //         height: MediaQuery.of(context).size.height * 0.8,
-        //         child: const Center(
-        //           child: CircularProgressIndicator(),
-        //         ),
-        //       ),
-        //       error: (err, stack) => Center(
-        //         child: Text(
-        //           'Error loading notifications',
-        //           style: bodyTextStyle.copyWith(
-        //             color: context.colors.textSecondary,
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-      ),
+        );
+      },
     );
+
+    // ============================================================================
+    // COMMENTED OUT: Previous provider-based body (for future use with real data)
+    // ============================================================================
+    // body: ref.watch(userPreviousActivitiesProviderStream).when(
+    //       data: (items) {
+    //         if (items.isEmpty) {
+    //           return SizedBox(
+    //             height: MediaQuery.of(context).size.height * 0.8,
+    //             child: Center(
+    //               child: Text(
+    //                 'No notifications found',
+    //                 style: bodyTextStyle.copyWith(
+    //                   color: context.colors.textSecondary,
+    //                 ),
+    //               ),
+    //             ),
+    //           );
+    //         }
+    //         return ListView.builder(
+    //           itemCount: items.length,
+    //           itemBuilder: (context, index) {
+    //             final item = items[index];
+    //             final isLastItem = index == items.length - 1;
+    //             String title = '';
+    //             String description = '';
+    //             DateTime? timestamp;
+
+    //             if (item is Quest) {
+    //               title = 'Quest Available: ${item.title}';
+    //               description = item.shortDescription;
+    //               timestamp = item.completedAt;
+    //             } else if (item is Adventure) {
+    //               title = 'Adventure Completed: ${item.title}';
+    //               description = item.shortDescription;
+    //               timestamp = item.completedAt;
+    //             }
+
+    //             return NotificationItemTile(
+    //               svgIconPath: _getNotificationSvgIcon(item),
+    //               iconBackgroundColor: _getNotificationColor(index),
+    //               title: title,
+    //               description: description,
+    //               timeAgo: _timeAgo(timestamp),
+    //               isLast: isLastItem,
+    //               onTap: () {
+    //                 // Handle notification tap
+    //               },
+    //             );
+    //           },
+    //         );
+    //       },
+    //       loading: () => SizedBox(
+    //         height: MediaQuery.of(context).size.height * 0.8,
+    //         child: const Center(
+    //           child: CircularProgressIndicator(),
+    //         ),
+    //       ),
+    //       error: (err, stack) => Center(
+    //         child: Text(
+    //           'Error loading notifications',
+    //           style: bodyTextStyle.copyWith(
+    //             color: context.colors.textSecondary,
+    //           ),
+    //         ),
+    //       ),
+    //     ),
   }
 }
 
 // AdventureCard widget to display each adventure
-

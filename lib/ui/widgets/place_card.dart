@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../application/providers/location_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../theme.dart';
-import '../pages/adventure_detail.dart';
+import '../pages/place_detail.dart';
 import 'carousel_card.dart';
 
 class PlaceCard extends ConsumerWidget {
@@ -53,7 +53,7 @@ class PlaceCard extends ConsumerWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => AdventureDetail(
+            builder: (context) => PlaceDetail(
               isInGrid ? 'grid' : 'carousel',
               adventure,
             ),
@@ -62,18 +62,18 @@ class PlaceCard extends ConsumerWidget {
       },
       bottomContent: isInGrid
           ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                _getDistance(ref),
-                style: bodySmallStyle.copyWith(
-                  fontSize: 12,
-                  color: context.colors.textSecondary.withValues(alpha: 0.6),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _getDistance(ref),
+                  style: bodySmallStyle.copyWith(
+                    fontSize: 12,
+                    color: context.colors.textSecondary.withValues(alpha: 0.6),
+                  ),
                 ),
-              ),
-            ],
-          )
+              ],
+            )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,

@@ -12,6 +12,9 @@ class GlassContainer extends StatelessWidget {
   final Border? border;
   final Color? bgColor;
   final List<BoxShadow>? boxShadow;
+  final double? width;
+  final double? height;
+  final bool showBorder;
 
   const GlassContainer({
     super.key,
@@ -21,7 +24,10 @@ class GlassContainer extends StatelessWidget {
     this.padding,
     this.border,
     this.bgColor,
-    this.boxShadow
+    this.boxShadow,
+    this.width,
+    this.height,
+    this.showBorder = true,
   });
 
   @override
@@ -30,6 +36,8 @@ class GlassContainer extends StatelessWidget {
         BorderRadius.circular(borderRadius ?? radiusMedium);
 
     return Container(
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         borderRadius: effectiveBorderRadius,
         boxShadow: boxShadow,
@@ -39,12 +47,17 @@ class GlassContainer extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: bgColor ?? context.colors.bgSecondary, /// rgba(18,18,18,0.65)
+            color: bgColor ?? context.colors.bgSecondary,
+
+            /// rgba(18,18,18,0.65)
             borderRadius: effectiveBorderRadius,
-            border: border ?? Border.all(
-              color: context.colors.cardContainerBorder, /// #8A2BE2 at 10% opacity
-              width: borderWidthDefault,
-            ),
+            border: showBorder ? border ??
+                Border.all(
+                  color: context.colors.cardContainerBorder,
+
+                  /// #8A2BE2 at 10% opacity
+                  width: borderWidthDefault,
+                ) : null,
           ),
           child: child,
         ),

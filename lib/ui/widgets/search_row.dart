@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/adventure.dart';
 import '../../domain/models/quest.dart';
-import '../pages/adventure_detail.dart';
+import '../pages/place_detail.dart';
 import 'quest_list.dart';
 
 class SearchRow extends ConsumerStatefulWidget {
@@ -36,7 +36,7 @@ class _SearchRowState extends ConsumerState<SearchRow> {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => AdventureDetail(
+                builder: (context) => PlaceDetail(
                   'other',
                   model,
                 ),

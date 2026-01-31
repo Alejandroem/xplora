@@ -230,24 +230,21 @@ class _HomeState extends ConsumerState<Home> {
 
   PreferredSizeWidget? getAppBar() {
     final bottomBar = ref.watch(bottomNavigationBarProvider);
-    if (bottomBar != NavigationItem.notifications) {
-      // Watch user location for home screen
-      final userLocation = bottomBar == NavigationItem.home
-          ? ref.watch(userLocationStringProvider).value
-          : null;
+    // Watch user location for home screen
+    final userLocation = bottomBar == NavigationItem.home
+        ? ref.watch(userLocationStringProvider).value
+        : null;
 
-      return XplorAppBar(
-        height: bottomBar == NavigationItem.home
-            ? userLocation != null
-                ? 72
-                : null // Let XplorAppBar calculate dynamic height
-            : bottomBar == NavigationItem.search
-                ? 80.0
-                : null,
-        userLocation: userLocation,
-      );
-    }
-    return null;
+    return XplorAppBar(
+      height: bottomBar == NavigationItem.home
+          ? userLocation != null
+              ? 72
+              : null // Let XplorAppBar calculate dynamic height
+          : bottomBar == NavigationItem.search
+              ? 80.0
+              : null,
+      userLocation: userLocation,
+    );
   }
 
   @override

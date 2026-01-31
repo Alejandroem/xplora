@@ -5,19 +5,20 @@ import '../../theme.dart';
 /// - Transparent background with border
 /// - Uses design system spacing, colors, radius, and elevation
 /// - Implements proper button states (default, hover, disabled)
-/// - No customization parameters to ensure consistency
 class SecondaryButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
   final Widget? icon; /// Optional icon (displayed before text)
   final int? maxLines; /// Optional max lines for text overflow
+  final double? borderRadius; /// Optional custom border radius
 
   const SecondaryButton({
     super.key,
     required this.text,
     this.onPressed,
     this.icon,
-    this.maxLines
+    this.maxLines,
+    this.borderRadius,
   });
 
   @override
@@ -104,7 +105,7 @@ class _SecondaryButtonState extends State<SecondaryButton> {
           curve: Curves.easeInOut,
           decoration: BoxDecoration(
             color: backgroundColor,
-            borderRadius: BorderRadius.circular(radiusMedium),
+            borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
             border: Border.all(
               color: borderColor,
               width: borderWidthDefault,
@@ -145,7 +146,7 @@ class _SecondaryButtonState extends State<SecondaryButton> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color(0x17000000), // Black with 9% opacity
-                      borderRadius: BorderRadius.circular(radiusMedium),
+                      borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
                     ),
                   ),
                 ),

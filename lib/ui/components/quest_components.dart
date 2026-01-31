@@ -7,7 +7,8 @@ import '../widgets/quest_tabs.dart';
 import '../widgets/quest_widget.dart' show QuestWidget, QuestState;
 
 // Test state provider for cycling through quest states
-final testQuestStateProvider = StateProvider<QuestState>((ref) => QuestState.browse);
+final testQuestStateProvider =
+    StateProvider<QuestState>((ref) => QuestState.browse);
 
 class QuestComponents extends ConsumerStatefulWidget {
   const QuestComponents({super.key});
@@ -43,6 +44,11 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Text('Quest',
+            style: h3Style.copyWith(
+                color: context.colors.textPrimary,
+                fontWeight: FontWeight.bold)),
+        const SizedBox(height: spacing8),
         QuestWidget(
           questState: questState,
           onStartAdventure: () {

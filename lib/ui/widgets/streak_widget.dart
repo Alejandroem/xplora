@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme.dart';
 import '../components/quest_components.dart';
 import 'quest_widget.dart' show QuestState;
@@ -15,10 +14,9 @@ class StreakWidget extends ConsumerWidget {
     final questState = ref.watch(testQuestStateProvider);
 
     // Dummy data
-    int currentStreak = 3;
-    const int maxDays = 7;
-    // Show current streak + 1 (the next day to complete), but max 7
-    final int visibleDays = (currentStreak + 1).clamp(0, maxDays);
+    int currentStreak = 3; // Test with multi-week streak
+    const int visibleDays = 7;
+    // Always show 7 days, starting from first circle
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,6 +29,7 @@ class StreakWidget extends ConsumerWidget {
         const SizedBox(height: spacing8),
         Expanded(
           child: GlassContainer(
+            showBorder: false,
             boxShadow: const [elevation1],
             padding: const EdgeInsets.all(spacing16),
             child: Column(
@@ -62,12 +61,14 @@ class StreakWidget extends ConsumerWidget {
 
                 // Description text
                 Text(
-                  "You've explored $currentStreak days in a row.",
+                  currentStreak > 0
+                      ? 'You\'ve explored $currentStreak ${currentStreak == 1 ? 'day' : 'days'} in a row.'
+                      : 'Start your exploration streak today!',
                   style: bodySmallStyle.copyWith(
                     color: context.colors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: spacing16),
+                const SizedBox(height: spacing12),
 
                 // Day indicators (dots)
                 Row(
@@ -82,15 +83,16 @@ class StreakWidget extends ConsumerWidget {
                     );
                   }),
                 ),
-                if (questState == QuestState.inProgress ||
-                    questState == QuestState.completed) ...[
-                  const SizedBox(height: spacing12),
-                  Text(
-                    'Keep up the momentum',
-                    style: bodySmallStyle.copyWith(
-                        color: context.colors.textSecondary, fontSize: 11),
-                  )
-                ]
+                // if (questState == QuestState.inProgress ||
+                //     questState == QuestState.completed) ...[
+                //   const SizedBox(height: spacing12),
+                //   Text(
+                //     'Keep up the momentum',
+                //     style: bodySmallStyle.copyWith(
+                //         color: context.colors.textSecondary, fontSize: 11),
+                //   )
+                // ],
+              const SizedBox(height: spacing16),
               ],
             ),
           ),
@@ -111,22 +113,23 @@ class _DayIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCurrentDay = index == currentStreak - 1;
-    final isCompletedBefore = index < currentStreak - 1;
+    // Calculate position within current week (0-6)
+    // For multi-week streaks, show only current week's progress
+    final currentWeekPosition = currentStreak > 0 ? (currentStreak - 1) % 7 : -1;
+
+    // Determine states
+    final isCompleted = index <= currentWeekPosition;
+    final isCurrentTarget = index == currentWeekPosition + 1 && currentWeekPosition < 6;
 
     return Container(
       width: 10,
       height: 10,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isCompletedBefore
+        color: isCompleted
             ? brandSecondary
-            : isCurrentDay
-                ? context.isDarkMode
-                    ? whiteClr
-                    : blackClr
-                : context.colors.bgTertiary,
-        border: isCurrentDay
+            : context.colors.textPrimary.withValues(alpha: 0.2),
+        border: isCurrentTarget
             ? Border.all(
                 color: brandSecondary,
                 width: borderWidthDefault,

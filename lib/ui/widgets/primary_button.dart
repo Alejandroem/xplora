@@ -5,12 +5,12 @@ import '../../theme.dart';
 /// - Uses brand colors (primary/secondary)
 /// - Implements proper button states (default, hover, disabled)
 /// - Uses design system spacing, radius, and elevation
-/// - No customization parameters to ensure consistency
 class PrimaryButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
   final int? maxLines; /// Optional max lines for text overflow
   final Color? backgroundColor; /// Optional custom background color
+  final double? borderRadius; /// Optional custom border radius
 
   const PrimaryButton({
     super.key,
@@ -18,6 +18,7 @@ class PrimaryButton extends StatefulWidget {
     this.onPressed,
     this.maxLines,
     this.backgroundColor,
+    this.borderRadius,
   });
 
   @override
@@ -95,7 +96,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             curve: Curves.easeInOut,
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(radiusMedium),
+              borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
               boxShadow: shadows,
               border: isDisabled ? Border.all(color: context.colors.border) : null,
             ),
@@ -123,7 +124,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0x12FFFFFF), // White with 7% opacity
-                        borderRadius: BorderRadius.circular(radiusMedium),
+                        borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
                       ),
                     ),
                   ),
@@ -132,7 +133,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0x17000000), // Black with 9% opacity
-                        borderRadius: BorderRadius.circular(radiusMedium),
+                        borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
                       ),
                     ),
                   ),

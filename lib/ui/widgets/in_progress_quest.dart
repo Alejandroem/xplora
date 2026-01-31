@@ -1,101 +1,134 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../theme.dart';
 
+/// In Progress Quest Widget
+/// Displays a quest currently being completed with status badge
 class InProgressQuest extends StatelessWidget {
   const InProgressQuest({
     super.key,
+    this.title = 'El Morro QR codes',
+    this.description = 'Collect 3 hidden QR codes around El Morro',
     required this.onContinue,
     required this.onSeeMore,
   });
 
+  final String title;
+  final String description;
   final VoidCallback onContinue;
   final VoidCallback onSeeMore;
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data
-    const title = 'Hidden Alleyway Treasures';
-    const description = 'Discover 3 secret murals in the Mission District';
-    const checkpointsCompleted = 2;
-    const totalCheckpoints = 3;
-    const progressPercentage = 67;
-
     return GlassContainer(
-      border: const Border.fromBorderSide(BorderSide.none),
+      showBorder: false,
       boxShadow: const [elevation1],
       padding: const EdgeInsets.all(spacing16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
-          Text(
-            title,
-            style: bodyTextStyle.copyWith(
-              color: context.colors.textPrimary,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          const SizedBox(height: spacing4),
-
-          // Description
-          Text(
-            description,
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textSecondary.withValues(alpha: 0.8),
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          // Progress info and percentage row
+          // Icon, title, description and status badge row
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '$checkpointsCompleted of $totalCheckpoints checkpoints',
-                style: bodySmallStyle.copyWith(
-                  color: context.colors.textSecondary.withValues(alpha: 0.8),
+              // Scan icon with circular background
+              Container(
+                width: 45,
+                height: 45,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: brandPrimary.withValues(alpha: 0.2),
+                ),
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/svg/scan-grey.svg',
+                    width: iconSizeLarge,
+                    height: iconSizeLarge,
+                    colorFilter: ColorFilter.mode(
+                      brandPrimary,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
               ),
-              Text(
-                '$progressPercentage%',
-                style: bodySmallStyle.copyWith(
-                  color: brandSecondary,
-                  fontWeight: FontWeight.bold,
+              const SizedBox(width: spacing8),
+
+              // Text section
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      title,
+                      style: bodyTextStyle.copyWith(
+                        color: context.colors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: spacing4),
+
+                    // Description
+                    Text(
+                      description,
+                      style: bodySmallStyle.copyWith(
+                        color: context.colors.textSecondary.withValues(alpha: 0.7),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: spacing8),
+
+              // Status badge
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: spacing8,
+                  vertical: spacing4,
+                ),
+                decoration: BoxDecoration(
+                  color: brandSecondary.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(radiusSmall),
+                  border: Border.all(
+                    color: brandSecondary.withValues(alpha: 0.3),
+                    width: borderWidthDefault,
+                  ),
+                ),
+                child: Text(
+                  'In Progress',
+                  style: bodySmallStyle.copyWith(
+                    color: brandSecondary,
+                    fontSize: 12
+                  ),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: spacing8),
-
-          // Progress bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(radiusLarge),
-            child: LinearProgressIndicator(
-              value: progressPercentage / 100,
-              minHeight: 8,
-              backgroundColor: context.colors.bgTertiary,
-              valueColor: AlwaysStoppedAnimation<Color>(brandSecondary),
-            ),
           ),
           const SizedBox(height: spacing16),
 
           // Buttons row
           Row(
+            spacing: spacing16,
             children: [
-              // Continue button
+              // Details button
               Expanded(
                 child: PrimaryButton(
                   onPressed: onContinue,
-                  text: 'Continue',
+                  text: 'Details',
+                  borderRadius: radiusPill,
                 ),
               ),
-              const SizedBox(width: spacing12),
               // See More button
               Expanded(
                 child: SecondaryButton(
                   onPressed: onSeeMore,
                   text: 'See More',
+                  borderRadius: radiusPill,
                 ),
               ),
             ],

@@ -19,6 +19,7 @@ class GlassBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 76,
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
@@ -39,7 +40,7 @@ class GlassBottomNavBar extends StatelessWidget {
             items: items,
             backgroundColor: context.colors.bgPrimary,
             selectedItemColor: brandPrimary, /// Lime green for active states
-            unselectedItemColor: context.colors.textSecondary, /// Gray for inactive icons
+            unselectedItemColor: context.colors.textPrimary.withValues(alpha: 0.5), /// Gray for inactive icons
             type: BottomNavigationBarType.fixed, /// Keeps items fixed width
             elevation: 0, /// No shadow, using blur instead
             showSelectedLabels: false, /// No labels, only icons

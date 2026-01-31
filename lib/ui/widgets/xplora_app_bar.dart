@@ -32,7 +32,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final bottomBar = ref.watch(bottomNavigationBarProvider);
 
     return GlassAppBar(
-      hideBottomDivider: bottomBar == NavigationItem.home ? true : false,
+      hideBottomDivider: true,
       title: bottomBar == NavigationItem.home
           ? Column(
               mainAxisSize: MainAxisSize.min,
@@ -64,7 +64,9 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ? const SearchHeader()
               : bottomBar == NavigationItem.xpc
                   ? 'Economy Hub'
-                  : 'Store',
+                  : bottomBar == NavigationItem.store
+                      ? 'Store'
+                      : 'Notifications',
       height: height,
       centerTitle: true,
       leadingWidth: bottomBar == NavigationItem.home ? 90 : null,
@@ -139,6 +141,31 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
             )
           : null,
       automaticallyImplyLeading: false,
+      actions: [
+        if (bottomBar == NavigationItem.home)
+          Container(
+            margin: const EdgeInsets.only(right: spacing8),
+            child: ClipOval(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {},
+                  child: Padding(
+                    padding: const EdgeInsets.all(spacing8),
+                    child: SvgPicture.asset(
+                      'assets/svg/scan-grey.svg',
+                      width: 30,
+                      height: 30,
+                      colorFilter: ColorFilter.mode(
+                          context.colors.textPrimary.withValues(alpha: 0.7),
+                          BlendMode.srcIn),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
