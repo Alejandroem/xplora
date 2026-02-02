@@ -19,7 +19,7 @@ class FeedComponents extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PlacesSection(),
-          SizedBox(height: spacing24),
+          SizedBox(height: spacing16),
           // Streak and Community side by side
           Padding(
             padding: EdgeInsets.symmetric(horizontal: spacing16),
@@ -33,7 +33,7 @@ class FeedComponents extends ConsumerWidget {
               ),
             ),
           ),
-          SizedBox(height: spacing24),
+          SizedBox(height: 14),
           Padding(
             padding: EdgeInsets.fromLTRB(spacing16, 0, spacing16, spacing16),
             child: QuestComponents(),

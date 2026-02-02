@@ -86,11 +86,7 @@ class SubmissionsPage extends ConsumerWidget {
             ? _buildEmptyState(context)
             : ListView.builder(
                 padding: const EdgeInsets.fromLTRB(
-                  spacing16,
-                  spacing24,
-                  spacing16,
-                  spacing16
-                ),
+                    spacing16, spacing24, spacing16, spacing16),
                 itemCount: submissions.length,
                 itemBuilder: (context, index) {
                   return Padding(
@@ -223,22 +219,59 @@ class _SubmissionTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  submission.placeName,
-                  style: bodyTextStyle.copyWith(
-                    color: context.colors.textPrimary,
-                    fontWeight: FontWeight.bold
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                // Top row: Title and XP badge
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        submission.placeName,
+                        style: bodyTextStyle.copyWith(
+                          color: context.colors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    // XP Badge for approved submissions
+                    if (submission.status == SubmissionStatus.approved &&
+                        submission.xpEarned != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: spacing12,
+                          vertical: spacing4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: brandSecondary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: brandSecondary.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          '${submission.xpEarned}xp',
+                          style: bodySmallStyle.copyWith(
+                            color: brandSecondary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
+
                 const SizedBox(height: spacing4),
+            
+                // Status row
                 Row(
                   children: [
                     Text(
                       'Status: ',
                       style: bodySmallStyle.copyWith(
-                        color: context.colors.textSecondary.withValues(alpha: 0.8),
+                        color: context.colors.textSecondary
+                            .withValues(alpha: 0.8),
                       ),
                     ),
                     Text(
@@ -255,41 +288,26 @@ class _SubmissionTile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Extra info for approved/rejected
-                    if (submission.status == SubmissionStatus.approved &&
-                        submission.xpEarned != null) ...[
-                      Text(
-                        '+${submission.xpEarned} XP earned',
-                        style: bodySmallStyle.copyWith(
-                          color: successColor,
-                          fontSize: 12
-                        ),
-                      ),
-                    ],
-
+                    // Rejection reason for rejected submissions
                     if (submission.status == SubmissionStatus.rejected &&
-                        submission.rejectionReason != null) ...[
+                        submission.rejectionReason != null)
                       Text(
                         submission.rejectionReason!,
-                        style: bodyTextStyle.copyWith(
+                        style: bodySmallStyle.copyWith(
                           color: errorColor,
-                            fontSize: 12
+                          fontSize: 12,
                         ),
-                      ),
-                    ],
-
-                    // Spacer when no extra info is shown
-                    if (!((submission.status == SubmissionStatus.approved &&
-                            submission.xpEarned != null) ||
-                        (submission.status == SubmissionStatus.rejected &&
-                            submission.rejectionReason != null)))
+                      )
+                    else
                       const SizedBox(),
-
+            
+                    // Timestamp
                     Text(
                       submission.timeAgo,
-                      style: bodyTextStyle.copyWith(
-                        color: context.colors.textSecondary.withValues(alpha: 0.5),
-                        fontSize: 12
+                      style: bodySmallStyle.copyWith(
+                        color: context.colors.textSecondary
+                            .withValues(alpha: 0.5),
+                        fontSize: 12,
                       ),
                     ),
                   ],

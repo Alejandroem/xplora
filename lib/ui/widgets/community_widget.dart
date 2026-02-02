@@ -9,7 +9,7 @@ class CommunityWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Community heading
         Text(
@@ -29,6 +29,7 @@ class CommunityWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 4),
                 // Main title
                 Text(
                   'Explorer Network',
@@ -37,17 +38,17 @@ class CommunityWidget extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: spacing16),
+                const SizedBox(height: 10),
 
                 // Description
-                Text(
-                  'Join and create clubs with membership',
-                  style: bodySmallStyle.copyWith(
-                    color: context.colors.textPrimary,
-                    fontSize: 13
-                  ),
-                ),
-                const SizedBox(height: spacing8),
+                // Text(
+                //   'Join and create clubs with membership',
+                //   style: bodySmallStyle.copyWith(
+                //     color: context.colors.textPrimary,
+                //     fontSize: 13
+                //   ),
+                // ),
+                // const SizedBox(height: spacing4),
 
                 // Status label
                 Text(
@@ -58,7 +59,7 @@ class CommunityWidget extends StatelessWidget {
                     fontSize: 13
                   ),
                 ),
-                const SizedBox(height: spacing16),
+                // const SizedBox(height: spacing16),
               ],
             ),
           ),

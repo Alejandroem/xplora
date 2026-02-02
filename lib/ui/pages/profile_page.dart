@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../application/providers/auth_providers.dart';
 import '../../domain/models/xplora_profile.dart';
@@ -24,6 +25,7 @@ class ProfilePage extends ConsumerWidget {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: GlassAppBar(
+          hideBottomDivider: true,
           bottom: AppBarTabs(
             tabs: const ['Profile', 'Social'],
             selectedIndex: selectedTabIndex,
@@ -49,11 +51,11 @@ class ProfilePage extends ConsumerWidget {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.zero,
-          child: Padding(
+        body: Padding(
+          padding: const EdgeInsets.only(top: spacing4),
+          child: SingleChildScrollView(
             padding:
-                const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
+                const EdgeInsets.fromLTRB(spacing16, spacing12, spacing16, 0),
             child: selectedTabIndex == 0
                 ? _buildProfileContent(context, ref)
                 : _buildSocialContent(context, ref),
@@ -70,54 +72,87 @@ class ProfilePage extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         const SizedBox(height: spacing16),
-        // Avatar and Edit button section
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            // Centered avatar
-            Center(
-              child: CircleAvatar(
-                radius: 64,
-                backgroundColor: context.colors.bgSecondary,
-                child:
-                    profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
-                        ? ClipOval(
-                            child: CachedNetworkImage(
-                              imageUrl: profile.avatarUrl!,
-                              width: 128,
-                              height: 128,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Icon(
-                                Icons.person,
-                                size: 64,
-                                color: context.colors.iconColor,
+        // Avatar with camera button section
+        Center(
+          child: SizedBox(
+            width: 128,
+            height: 128,
+            child: Stack(
+              children: [
+                // Avatar
+                CircleAvatar(
+                  radius: 64,
+                  backgroundColor: context.colors.bgSecondary,
+                  child:
+                      profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
+                          ? ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl: profile.avatarUrl!,
+                                width: 128,
+                                height: 128,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Icon(
+                                  Icons.person,
+                                  size: 64,
+                                  color: context.colors.iconColor,
+                                ),
+                                errorWidget: (context, url, error) => Icon(
+                                  Icons.person,
+                                  size: 64,
+                                  color: context.colors.iconColor,
+                                ),
                               ),
-                              errorWidget: (context, url, error) => Icon(
-                                Icons.person,
-                                size: 64,
-                                color: context.colors.iconColor,
-                              ),
+                            )
+                          : Icon(
+                              Icons.person,
+                              size: 64,
+                              color: context.colors.iconColor,
                             ),
-                          )
-                        : Icon(
-                            Icons.person,
-                            size: 64,
-                            color: context.colors.iconColor,
+                ),
+                // Edit button positioned on the right
+                // Positioned(
+                //   top: -10,
+                //   right: 20,
+                //   child: SecondaryButton(
+                //     text: 'Edit',
+                //     onPressed: () {
+                //       // TODO: Navigate to edit profile page
+                //     },
+                //   ),
+                // ),
+                // Camera button positioned at bottom right
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      // TODO: Handle avatar change
+                    },
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: context.colors.bgSecondary,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: EdgeInsets.all(4),
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'assets/svg/camera.svg',
+                          width: 18,
+                          height: 18,
+                          colorFilter: ColorFilter.mode(
+                            context.colors.iconColor,
+                            BlendMode.srcIn,
                           ),
-              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            // Edit button positioned on the right
-            Positioned(
-              top: -10,
-              right: 20,
-              child: SecondaryButton(
-                text: 'Edit',
-                onPressed: () {
-                  // TODO: Navigate to edit profile page
-                },
-              ),
-            ),
-          ],
+          ),
         ),
         const SizedBox(height: spacing32),
         // First name with Level as superscript
@@ -237,12 +272,12 @@ class ProfilePage extends ConsumerWidget {
               children: [
                 Expanded(
                   child: AchievementsGrid(
-                      itemCount: 6,
-                      achievementSize: 87,
-                      backgroundColor: context.colors.bgTertiary,
-                      iconColor: context.colors.iconColor,
-                      borderRadius: radiusMedium,
-                    ),
+                    itemCount: 6,
+                    achievementSize: 87,
+                    backgroundColor: context.colors.bgTertiary,
+                    iconColor: context.colors.iconColor,
+                    borderRadius: radiusMedium,
+                  ),
                 ),
                 const SizedBox(width: spacing16),
                 IconButton(

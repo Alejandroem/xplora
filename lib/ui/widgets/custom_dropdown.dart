@@ -9,30 +9,37 @@ class CustomDropdown extends StatelessWidget {
     required this.value,
     required this.items,
     required this.onChanged,
-    required this.icon,
+    this.icon,
     this.isOptional = false,
+    this.showLabel = true,
+    this.width,
   });
 
   final String label;
   final String value;
   final List<String> items;
   final Function(String) onChanged;
-  final IconData icon;
+  final IconData? icon;
   final bool isOptional;
+  final bool showLabel;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: bodySmallStyle.copyWith(
-            color: context.colors.textPrimary,
+        if (showLabel) ...[
+          Text(
+            label,
+            style: bodySmallStyle.copyWith(
+              color: context.colors.textPrimary,
+            ),
           ),
-        ),
-        const SizedBox(height: spacing8),
+          const SizedBox(height: spacing8),
+        ],
         Container(
+          width: width,
           decoration: BoxDecoration(
             color: context.colors.bgSecondary,
             borderRadius: BorderRadius.circular(radiusMedium),
@@ -54,7 +61,7 @@ class CustomDropdown extends StatelessWidget {
               child: DropdownButton<String>(
                 padding: const EdgeInsets.symmetric(
                   horizontal: spacing16,
-                  vertical: spacing4,
+                  // vertical: spacing4,
                 ),
                 value: value.isEmpty ? null : value,
                 hint: Text(
@@ -64,7 +71,7 @@ class CustomDropdown extends StatelessWidget {
                   ),
                 ),
                 icon: Icon(
-                  Icons.keyboard_arrow_down,
+                  Icons.keyboard_arrow_down_rounded,
                   color: context.colors.textSecondary,
                 ),
                 isExpanded: true,
@@ -78,12 +85,14 @@ class CustomDropdown extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
-                          Icon(
-                            icon,
-                            color: context.colors.textSecondary,
-                            size: iconSizeMedium,
-                          ),
-                          const SizedBox(width: spacing12),
+                          if (icon != null) ...[
+                            Icon(
+                              icon,
+                              color: context.colors.textSecondary,
+                              size: iconSizeMedium,
+                            ),
+                            const SizedBox(width: spacing12),
+                          ],
                           Expanded(
                             child: Text(
                               item,
@@ -108,12 +117,14 @@ class CustomDropdown extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            icon,
-                            color: context.colors.textSecondary,
-                            size: iconSizeMedium,
-                          ),
-                          const SizedBox(width: spacing12),
+                          if (icon != null) ...[
+                            Icon(
+                              icon,
+                              color: context.colors.textSecondary,
+                              size: iconSizeMedium,
+                            ),
+                            const SizedBox(width: spacing12),
+                          ],
                           Expanded(
                             child: Text(
                               item,

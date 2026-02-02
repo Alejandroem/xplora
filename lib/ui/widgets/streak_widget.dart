@@ -11,7 +11,7 @@ class StreakWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the test quest state
-    final questState = ref.watch(testQuestStateProvider);
+    // final questState = ref.watch(testQuestStateProvider);
 
     // Dummy data
     int currentStreak = 3; // Test with multi-week streak
@@ -35,8 +35,10 @@ class StreakWidget extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 4),
                 // Header with icon and title
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SvgPicture.asset(
                       'assets/svg/flame.svg',
@@ -46,43 +48,49 @@ class StreakWidget extends ConsumerWidget {
                       height: iconSizeLarge,
                     ),
                     const SizedBox(width: spacing12),
-                    Flexible(
-                      child: Text(
-                        '$currentStreak-Day Streak',
-                        style: bodyTextStyle.copyWith(
-                          color: context.colors.textPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '$currentStreak-Day Streak',
+                            style: bodyTextStyle.copyWith(
+                              color: context.colors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
+                          const SizedBox(height: spacing12),
+                          // Day indicators (dots)
+                          Wrap(
+                            spacing: spacing8,
+                            runSpacing: spacing8,
+                            children: List.generate(visibleDays, (index) {
+                              return _DayIndicator(
+                                index: index,
+                                currentStreak: currentStreak,
+                              );
+                            }),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: spacing16),
 
                 // Description text
-                Text(
-                  currentStreak > 0
-                      ? 'You\'ve explored $currentStreak ${currentStreak == 1 ? 'day' : 'days'} in a row.'
-                      : 'Start your exploration streak today!',
-                  style: bodySmallStyle.copyWith(
-                    color: context.colors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: spacing12),
+                // Text(
+                //   'Stay consistent to unlock rewards',
+                //   // currentStreak > 0
+                //   //     ? 'You\'ve explored $currentStreak ${currentStreak == 1 ? 'day' : 'days'} in a row.'
+                //   //     : 'Start your exploration streak today!',
+                //   style: bodySmallStyle.copyWith(
+                //     color: context.colors.textSecondary,
+                //   ),
+                // ),
+                // const SizedBox(height: 6),
 
-                // Day indicators (dots)
-                Row(
-                  children: List.generate(visibleDays, (index) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                          right: index < visibleDays - 1 ? spacing8 : 0),
-                      child: _DayIndicator(
-                        index: index,
-                        currentStreak: currentStreak,
-                      ),
-                    );
-                  }),
-                ),
                 // if (questState == QuestState.inProgress ||
                 //     questState == QuestState.completed) ...[
                 //   const SizedBox(height: spacing12),
@@ -92,7 +100,7 @@ class StreakWidget extends ConsumerWidget {
                 //         color: context.colors.textSecondary, fontSize: 11),
                 //   )
                 // ],
-              const SizedBox(height: spacing16),
+                // const SizedBox(height: spacing16),
               ],
             ),
           ),
@@ -115,11 +123,13 @@ class _DayIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     // Calculate position within current week (0-6)
     // For multi-week streaks, show only current week's progress
-    final currentWeekPosition = currentStreak > 0 ? (currentStreak - 1) % 7 : -1;
+    final currentWeekPosition =
+        currentStreak > 0 ? (currentStreak - 1) % 7 : -1;
 
     // Determine states
     final isCompleted = index <= currentWeekPosition;
-    final isCurrentTarget = index == currentWeekPosition + 1 && currentWeekPosition < 6;
+    final isCurrentTarget =
+        index == currentWeekPosition + 1 && currentWeekPosition < 6;
 
     return Container(
       width: 10,

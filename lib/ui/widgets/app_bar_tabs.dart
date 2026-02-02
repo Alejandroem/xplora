@@ -27,32 +27,34 @@ class AppBarTabs extends StatelessWidget implements PreferredSizeWidget {
               behavior: HitTestBehavior.opaque,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: spacing8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      tabs[index],
-                      style: bodyTextStyle.copyWith(
-                        color: selectedIndex == index
-                            ? context.colors.textPrimary
-                            : context.colors.textSecondary.withValues(
-                                alpha: 0.5,
-                              ),
-                        fontWeight: FontWeight.bold,
+                child: IntrinsicWidth(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        tabs[index],
+                        style: bodyTextStyle.copyWith(
+                          color: selectedIndex == index
+                              ? context.colors.textPrimary
+                              : context.colors.textSecondary.withValues(
+                                  alpha: 0.5,
+                                ),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: spacing8),
-                    // Indicator only under text
-                    Container(
-                      height: 2,
-                      width: 56, // Fixed width for indicator
-                      decoration: BoxDecoration(
-                        color: selectedIndex == index
-                            ? brandPrimary
-                            : Colors.transparent,
+                      const SizedBox(height: spacing8),
+                      // Indicator matches text width
+                      Container(
+                        height: 2,
+                        decoration: BoxDecoration(
+                          color: selectedIndex == index
+                              ? brandPrimary
+                              : Colors.transparent,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

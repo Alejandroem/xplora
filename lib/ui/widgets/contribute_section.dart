@@ -23,19 +23,16 @@ class ContributeSection extends ConsumerWidget {
             notifier.state = !notifier.state;
           },
           child: SizedBox(
-            height: 59,
+            // height: 59,
             child: GlassContainer(
               borderRadius: isExpanded ? null : 14,
               customBorderRadius: isExpanded
                   ? const BorderRadius.only(
-                      topLeft: Radius.circular(14),
-                      topRight: Radius.circular(14),
+                      topLeft: Radius.circular(radiusMedium),
+                      topRight: Radius.circular(radiusMedium),
                     )
                   : null,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: spacing12,
-              ),
+              padding: const EdgeInsets.all(spacing16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -43,7 +40,6 @@ class ContributeSection extends ConsumerWidget {
                     'Contribute',
                     style: bodyTextStyle.copyWith(
                       color: context.colors.textPrimary,
-                      fontSize: 18,
                       fontWeight: FontWeight.bold
                     ),
                   ),
@@ -82,34 +78,12 @@ class ContributeSection extends ConsumerWidget {
                 ),
               ),
             ),
-            padding: const EdgeInsets.all(spacing12),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: spacing12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _ContributeRow(
-                  title: 'Submit a Place',
-                  subtitle: 'Help improve the map and earn XP.',
-                  trailing: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: brandPrimary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(radiusMedium),
-                      border: Border.all(color: brandPrimary.withValues(alpha: 0.3), width: 0.5)
-                    ),
-                    child: Icon(
-                      Icons.add_rounded,
-                      size: 30,
-                      color: brandPrimary,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/submit-place');
-                  },
-                ),
-                const SizedBox(height: spacing8),
-                _ContributeRow(
-                  title: 'Your Submissions',
+                  title: 'Submissions status',
                   subtitle:
                       'View pending, approved, or rejected contributions.',
                   trailing: Container(
@@ -118,12 +92,12 @@ class ContributeSection extends ConsumerWidget {
                       vertical: spacing8,
                     ),
                     decoration: BoxDecoration(
-                      color: context.colors.bgSecondary,
+                      color: context.colors.textPrimary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(radiusSmall),
                     ),
                     child: Text(
                       'View',
-                      style: bodyTextStyle.copyWith(
+                      style: bodySmallStyle.copyWith(
                         color: context.colors.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
@@ -131,6 +105,28 @@ class ContributeSection extends ConsumerWidget {
                   ),
                   onTap: () {
                     Navigator.pushNamed(context, '/submissions');
+                  },
+                ),
+                const SizedBox(height: spacing8),
+                _ContributeRow(
+                  title: 'Submit a Place',
+                  subtitle: 'Help improve the map and earn XP.',
+                  trailing: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: brandPrimary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(radiusMedium),
+                      border: Border.all(color: brandPrimary.withValues(alpha: 0.3), width: 0.5)
+                    ),
+                    child: Icon(
+                      Icons.add_rounded,
+                      size: 24,
+                      color: brandPrimary,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/submit-place');
                   },
                 ),
               ],
@@ -177,7 +173,7 @@ class _ContributeRow extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(spacing16),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
@@ -193,8 +189,8 @@ class _ContributeRow extends StatelessWidget {
                       const SizedBox(height: spacing4),
                       Text(
                         subtitle,
-                        style: bodyTextStyle.copyWith(
-                          color: context.colors.textSecondary.withValues(alpha: 0.7),
+                        style: bodySmallStyle.copyWith(
+                          color: context.colors.textPrimary.withValues(alpha: 0.6),
                         ),
                       ),
                     ],

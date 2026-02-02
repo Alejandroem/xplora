@@ -18,8 +18,10 @@ class GlassBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Container(
-      height: 76,
+      height: 76 + bottomPadding, /// Fixed navbar height + safe area
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(

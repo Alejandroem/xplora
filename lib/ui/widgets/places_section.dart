@@ -142,7 +142,7 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
       children: [
         Padding(
           padding:
-              const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
+              const EdgeInsets.fromLTRB(spacing16, spacing12, spacing16, 0),
           child: Text(
             'Places',
             style: h3Style.copyWith(
