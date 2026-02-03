@@ -13,6 +13,9 @@ import 'settings_page.dart';
 /// Provider for managing profile tab selection
 final profileTabIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 
+/// Provider for managing social sub-tab selection
+final socialTabIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
+
 class ProfilePage extends ConsumerWidget {
   final XploraProfile profile;
   const ProfilePage(this.profile, {super.key});
@@ -122,28 +125,34 @@ class ProfilePage extends ConsumerWidget {
                 // ),
                 // Camera button positioned at bottom right
                 Positioned(
-                  bottom: 0,
-                  right: 0,
+                  bottom: 4,
+                  right: 8,
                   child: GestureDetector(
                     onTap: () {
                       // TODO: Handle avatar change
                     },
                     child: Container(
-                      width: 32,
-                      height: 32,
                       decoration: BoxDecoration(
-                        color: context.colors.bgSecondary,
+                        color: context.colors.bgPrimary,
                         shape: BoxShape.circle,
                       ),
-                      padding: EdgeInsets.all(4),
-                      child: Center(
-                        child: SvgPicture.asset(
-                          'assets/svg/camera.svg',
-                          width: 18,
-                          height: 18,
-                          colorFilter: ColorFilter.mode(
-                            context.colors.iconColor,
-                            BlendMode.srcIn,
+                      padding: const EdgeInsets.all(2.0),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: context.colors.bgSecondary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            'assets/svg/camera.svg',
+                            width: 18,
+                            height: 18,
+                            colorFilter: ColorFilter.mode(
+                              context.colors.iconColor,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
                       ),
@@ -170,7 +179,7 @@ class ProfilePage extends ConsumerWidget {
             ),
             const SizedBox(width: spacing4),
             Transform.translate(
-              offset: const Offset(4, -4),
+              offset: const Offset(4, -2),
               child: Text(
                 'Lvl 9',
                 style: bodySmallStyle.copyWith(
@@ -190,7 +199,7 @@ class ProfilePage extends ConsumerWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(radiusSmall),
               child: SizedBox(
-                height: 12,
+                height: 8,
                 child: LinearProgressIndicator(
                   value: 369 / 1333, // Progress value (0.0 to 1.0)
                   backgroundColor: context.colors.bgSecondary,
@@ -207,7 +216,7 @@ class ProfilePage extends ConsumerWidget {
                 Text(
                   '369/1333 XP',
                   style: bodySmallStyle.copyWith(
-                    color: context.colors.textSecondary.withOpacity(0.6),
+                    color: context.colors.textPrimary.withOpacity(0.6),
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -258,40 +267,30 @@ class ProfilePage extends ConsumerWidget {
         ),
         const SizedBox(height: spacing16),
         // Featured achievements grid with navigation
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/achievements');
-          },
-          child: Container(
-            padding: const EdgeInsets.all(spacing16),
-            decoration: BoxDecoration(
-              color: context.colors.bgSecondary,
-              borderRadius: BorderRadius.circular(radiusMedium),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: AchievementsGrid(
-                    itemCount: 6,
-                    achievementSize: 87,
-                    backgroundColor: context.colors.bgTertiary,
-                    iconColor: context.colors.iconColor,
-                    borderRadius: radiusMedium,
-                  ),
-                ),
-                const SizedBox(width: spacing16),
-                IconButton(
-                  icon: Icon(
-                    Icons.arrow_forward_ios,
-                    color: context.colors.iconColor,
-                    size: iconSizeMedium,
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/achievements');
-                  },
-                ),
-              ],
-            ),
+        Container(
+          padding: const EdgeInsets.all(spacing24),
+          decoration: BoxDecoration(
+            color: context.colors.bgSecondary,
+            borderRadius: BorderRadius.circular(radiusLarge),
+          ),
+          child: Column(
+            children: [
+              AchievementsGrid(
+                itemCount: 6, // Always show 6 slots
+                earnedCount: 4, // TODO: Replace with actual earned achievements count from profile data
+                achievementSize: 87,
+                backgroundColor: context.colors.bgTertiary,
+                iconColor: context.colors.iconColor.withValues(alpha: 0.7),
+                borderRadius: radiusMedium,
+              ),
+              const SizedBox(height: spacing16),
+              SecondaryButton(
+                text: 'See more',
+                onPressed: () {
+                  Navigator.pushNamed(context, '/achievements');
+                },
+              ),
+            ],
           ),
         ),
         const SizedBox(height: spacing24),
@@ -310,16 +309,15 @@ class ProfilePage extends ConsumerWidget {
           children: [
             Text(
               label,
-              style: bodyTextStyle.copyWith(
-                  color: context.colors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14),
+              style: bodySmallStyle.copyWith(
+                color: context.colors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             Text(
               '$rating/10',
               style: bodySmallStyle.copyWith(
                 color: context.colors.textSecondary.withOpacity(0.6),
-                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -329,7 +327,7 @@ class ProfilePage extends ConsumerWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(radiusSmall),
           child: SizedBox(
-            height: 8,
+            height: 6,
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: context.colors.bgSecondary,
@@ -339,6 +337,36 @@ class ProfilePage extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSocialTab({
+    required BuildContext context,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: spacing12),
+        decoration: BoxDecoration(
+          border: isSelected
+              ? Border(
+                  bottom: BorderSide(
+                    color: brandPrimary,
+                    width: 2.0,
+                  ),
+                )
+              : null,
+        ),
+        child: Icon(
+          icon,
+          size: iconSizeLarge,
+          color: isSelected ? brandPrimary : context.colors.iconColor,
+        ),
+      ),
     );
   }
 
@@ -358,103 +386,179 @@ class ProfilePage extends ConsumerWidget {
   }
 
   Widget _buildSocialContent(BuildContext context, WidgetRef ref) {
+    // final selectedSocialTabIndex = ref.watch(socialTabIndexProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(height: spacing48),
+        // Coming soon content
+        Icon(
+          Icons.hourglass_empty,
+          size: 64,
+          color: context.colors.iconColor.withValues(alpha: 0.3),
+        ),
+        const SizedBox(height: spacing24),
+        Text(
+          'Coming Soon',
+          style: h2Style.copyWith(
+            color: context.colors.textPrimary,
+            fontSize: 28,
+          ),
+        ),
+        const SizedBox(height: spacing12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: spacing32),
+          child: Text(
+            'Social features are under development',
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textSecondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(height: spacing48),
+      ],
+    );
+
+    /* ============================================================
+     * REDESIGNED SOCIAL TAB LAYOUT - PRESERVED FOR FUTURE USE
+     * ============================================================
+     * Uncomment this section when social features are ready
+     *
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: spacing16),
-        // Avatar with level badge and Edit button
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 48,
-                  backgroundColor: context.colors.bgSecondary,
-                  child:
-                      profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
-                          ? ClipOval(
-                              child: CachedNetworkImage(
-                                imageUrl: profile.avatarUrl!,
-                                width: 96,
-                                height: 96,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Icon(
-                                  Icons.person,
-                                  size: 48,
-                                  color: context.colors.iconColor,
-                                ),
-                                errorWidget: (context, url, error) => Icon(
-                                  Icons.person,
-                                  size: 48,
-                                  color: context.colors.iconColor,
-                                ),
-                              ),
-                            )
-                          : Icon(
-                              Icons.person,
-                              size: 48,
-                              color: context.colors.iconColor,
-                            ),
-                ),
-                const SizedBox(width: spacing4),
-                Transform.translate(
-                  offset: const Offset(0, -4),
-                  child: Text(
-                    'Lvl 9',
-                    style: bodySmallStyle.copyWith(
-                      color: context.colors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
-            // Edit button positioned on the top right
-            Positioned(
-              top: -10,
-              right: 20,
-              child: SecondaryButton(
-                text: 'Edit',
-                onPressed: () {
-                  // TODO: Navigate to edit profile page
-                },
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: spacing16),
-        // First name with verification badge
+        // Avatar, name/username, and Edit button in same row
         Row(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _getDisplayFirstName(ref),
-              style: h2Style.copyWith(
-                color: context.colors.textPrimary,
+            // Avatar with camera overlay
+            SizedBox(
+              width: 96,
+              height: 96,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Avatar
+                  CircleAvatar(
+                    radius: 48,
+                    backgroundColor: context.colors.bgSecondary,
+                    child: profile.avatarUrl != null &&
+                            profile.avatarUrl!.isNotEmpty
+                        ? ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: profile.avatarUrl!,
+                              width: 96,
+                              height: 96,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Icon(
+                                Icons.person,
+                                size: 48,
+                                color: context.colors.iconColor,
+                              ),
+                              errorWidget: (context, url, error) => Icon(
+                                Icons.person,
+                                size: 48,
+                                color: context.colors.iconColor,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            Icons.person,
+                            size: 48,
+                            color: context.colors.iconColor,
+                          ),
+                  ),
+                  // Camera button positioned at bottom right
+                  Positioned(
+                    bottom: 0,
+                    right: -2,
+                    child: GestureDetector(
+                      onTap: () {
+                        // TODO: Handle avatar change
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: context.colors.bgPrimary,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: const EdgeInsets.all(2.0),
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgSecondary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: SvgPicture.asset(
+                              'assets/svg/camera.svg',
+                              width: 14,
+                              height: 14,
+                              colorFilter: ColorFilter.mode(
+                                context.colors.iconColor,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(width: spacing4),
-            Transform.translate(
-              offset: const Offset(0, -2),
-              child: Icon(
-                Icons.verified,
-                size: iconSizeSmall,
-                color: brandPrimary,
+            const SizedBox(width: spacing12),
+            // Name and username column
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // First name
+                  Text(
+                    _getDisplayFirstName(ref),
+                    style: bodyTextStyle.copyWith(
+                      color: context.colors.textPrimary,
+                      fontSize: 20
+                    ),
+                  ),
+                  const SizedBox(height: spacing4),
+                  // Username with verification badge (teal circle)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '@\${profile.username ?? 'username'}',
+                        style: bodyTextStyle.copyWith(
+                          color: context.colors.textPrimary.withValues(alpha: 0.6),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: brandSecondary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+            ),
+            // Edit button
+            SecondaryButton(
+              text: 'Edit',
+              onPressed: () {
+                // TODO: Navigate to edit profile page
+              },
             ),
           ],
-        ),
-        // const SizedBox(height: spacing4),
-        // Username
-        Text(
-          '@${profile.username ?? 'username'}',
-          style: bodyTextStyle.copyWith(
-            color: context.colors.textSecondary,
-          ),
         ),
         const SizedBox(height: spacing12),
         // Bio (only show if user has set it)
@@ -474,101 +578,67 @@ class ProfilePage extends ConsumerWidget {
             ),
           ),
         const SizedBox(height: spacing24),
-        // Stats row: Badge, Friends, TBD
+        // Tab-based navigation with icons
         Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: spacing16,
-            horizontal: spacing12,
-          ),
           decoration: BoxDecoration(
-            color: context.colors.bgSecondary,
-            borderRadius: BorderRadius.circular(radiusMedium),
-            border: Border.all(
-              color: context.colors.border,
-              width: borderWidthDefault,
+            border: Border(
+              bottom: BorderSide(
+                color: context.colors.border,
+                width: borderWidthDefault,
+              ),
             ),
           ),
           child: Row(
             children: [
-              // Special Badge
+              // Places/Location tab
               Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.shield,
-                      size: iconSizeLarge,
-                      color: context.colors.iconColor,
-                    ),
-                    const SizedBox(height: spacing4),
-                    Text(
-                      'Badge',
-                      style: bodySmallStyle.copyWith(
-                        color: context.colors.textSecondary,
-                      ),
-                    ),
-                  ],
+                child: _buildSocialTab(
+                  context: context,
+                  icon: Icons.location_on_outlined,
+                  isSelected: selectedSocialTabIndex == 0,
+                  onTap: () {
+                    ref.read(socialTabIndexProvider.notifier).state = 0;
+                  },
                 ),
               ),
-              // Divider
-              Container(
-                width: borderWidthDefault,
-                height: 40,
-                color: context.colors.border,
-              ),
-              // Friends count
+              // Friends/Social tab
               Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '0',
-                      style: h2Style.copyWith(
-                        color: context.colors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: spacing4),
-                    Text(
-                      'Friends',
-                      style: bodySmallStyle.copyWith(
-                        color: context.colors.textSecondary,
-                      ),
-                    ),
-                  ],
+                child: _buildSocialTab(
+                  context: context,
+                  icon: Icons.people_outline,
+                  isSelected: selectedSocialTabIndex == 1,
+                  onTap: () {
+                    ref.read(socialTabIndexProvider.notifier).state = 1;
+                  },
                 ),
               ),
-              // Divider
-              Container(
-                width: borderWidthDefault,
-                height: 40,
-                color: context.colors.border,
-              ),
-              // Placeholder (empty for now)
+              // Menu/More tab
               Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '-',
-                      style: h2Style.copyWith(
-                        color: context.colors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: spacing4),
-                    Text(
-                      'TBD',
-                      style: bodySmallStyle.copyWith(
-                        color: context.colors.textSecondary,
-                      ),
-                    ),
-                  ],
+                child: _buildSocialTab(
+                  context: context,
+                  icon: Icons.menu,
+                  isSelected: selectedSocialTabIndex == 2,
+                  onTap: () {
+                    ref.read(socialTabIndexProvider.notifier).state = 2;
+                  },
                 ),
               ),
             ],
           ),
         ),
         const SizedBox(height: spacing24),
+        // Tab content would go here
+        Center(
+          child: Text(
+            'Content for selected tab',
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textSecondary,
+            ),
+          ),
+        ),
+        const SizedBox(height: spacing24),
       ],
     );
+    * ============================================================ */
   }
 }

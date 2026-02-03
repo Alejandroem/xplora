@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'application/providers/auth_providers.dart';
 import 'application/providers/settings_providers.dart';
+import 'domain/models/quest.dart';
 import 'theme.dart';
 import 'ui/home.dart';
 import 'ui/initial_route_handler.dart';
@@ -12,6 +13,7 @@ import 'ui/pages/categories.dart';
 import 'ui/pages/lora_ai_assistant.dart';
 import 'ui/pages/onboarding.dart';
 import 'ui/pages/quest_main_screen.dart';
+import 'ui/pages/quest_detail.dart';
 import 'ui/pages/signin_page.dart';
 import 'ui/pages/signup_page.dart';
 import 'ui/pages/complete_profile_page.dart';
@@ -90,6 +92,18 @@ class MyApp extends ConsumerWidget {
         '/game-xp': (context) => const GameXpPage(),
         '/privacy-settings': (context) => const PrivacySettingsPage(),
         '/accessibility-settings': (context) => const AccessibilitySettingsPage(),
+      },
+      onGenerateRoute: (settings) {
+        // Handle quest detail route with arguments
+        if (settings.name == '/quest-detail') {
+          final quest = settings.arguments as Quest?;
+          if (quest != null) {
+            return MaterialPageRoute(
+              builder: (context) => QuestDetail(quest),
+            );
+          }
+        }
+        return null;
       },
     );
   }

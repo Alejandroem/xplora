@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../domain/models/quest.dart' as quest_model;
 import '../../theme.dart';
 import 'contribute_section.dart';
 import 'custom_dropdown.dart';
@@ -38,7 +39,7 @@ class _QuestCategory {
   });
 }
 
-enum QuestType { location, qr, secret }
+enum QuestType { location, qr, input }
 
 class _QuestItem {
   final String title;
@@ -49,7 +50,7 @@ class _QuestItem {
   // For location type: duration in minutes
   final int? durationMinutes;
 
-  // For QR and secret types: progress tracking
+  // For QR and input types: progress tracking
   final int? currentProgress;
   final int? totalProgress;
 
@@ -134,7 +135,7 @@ class _InProgressTabContent extends StatelessWidget {
 
   static const _activeQuest = _QuestItem(
     title: 'El Morro Entry phrase',
-    type: QuestType.secret,
+    type: QuestType.input,
     description: 'Find the hidden entry phrases on the front historical monument.',
     hint: 'They\'ll become useful in the future.',
     currentProgress: 1,
@@ -205,7 +206,7 @@ class _ActiveQuestCard extends StatelessWidget {
         return 'assets/svg/location-pin.svg';
       case QuestType.qr:
         return 'assets/svg/scan-grey.svg';
-      case QuestType.secret:
+      case QuestType.input:
         return 'assets/svg/edit-grey.svg';
     }
   }
@@ -364,7 +365,7 @@ class _CompletedTabContent extends StatelessWidget {
     ),
     _QuestItem(
       title: 'City Explorer',
-      type: QuestType.secret,
+      type: QuestType.input,
       currentProgress: 3,
       totalProgress: 3,
       xp: 60,
@@ -440,7 +441,7 @@ class _TodoTabContent extends ConsumerWidget {
         ),
         _QuestItem(
           title: 'El Morro secret',
-          type: QuestType.secret,
+          type: QuestType.input,
           currentProgress: 0,
           totalProgress: 1,
           xp: 20,
@@ -482,7 +483,7 @@ class _TodoTabContent extends ConsumerWidget {
       quests: [
         _QuestItem(
           title: 'Activity Quest',
-          type: QuestType.secret,
+          type: QuestType.input,
           currentProgress: 0,
           totalProgress: 1,
           xp: 10,
@@ -637,7 +638,7 @@ class _QuestListTile extends StatelessWidget {
         return 'assets/svg/location-pin.svg';
       case QuestType.qr:
         return 'assets/svg/scan-grey.svg';
-      case QuestType.secret:
+      case QuestType.input:
         return 'assets/svg/edit-grey.svg';
     }
   }
@@ -649,6 +650,39 @@ class _QuestListTile extends StatelessWidget {
       return '${item.currentProgress}/${item.totalProgress} completed';
     }
     return '';
+  }
+
+  /// Convert _QuestItem to Quest model for navigation
+  /// This is temporary mock data conversion until real data is integrated
+  quest_model.Quest _toQuest() {
+    // Map local QuestType to domain QuestType
+    final domainQuestType = item.type == QuestType.location
+        ? quest_model.QuestType.location
+        : item.type == QuestType.qr
+            ? quest_model.QuestType.qr
+            : quest_model.QuestType.input;
+
+    return quest_model.Quest(
+      id: 'mock-${item.title.toLowerCase().replaceAll(' ', '-')}',
+      userId: null,
+      questId: 'quest-${item.title.toLowerCase().replaceAll(' ', '-')}',
+      category: 'Adventure',
+      title: item.title,
+      shortDescription: item.description ?? item.title,
+      longDescription: item.description ??
+          'A quiet corner in the city holds a secret. Find it, observe what makes it special, and unlock its story.',
+      imageUrl: 'https://picsum.photos/400/300',
+      experience: item.xp.toDouble(),
+      stepType: domainQuestType,
+      timeInSeconds: item.durationMinutes != null ? item.durationMinutes! * 60 : null,
+      stepLatitude: null,
+      stepLongitude: null,
+      distance: null,
+      stepCode: null,
+      hasNotified: null,
+      completedAt: null,
+      hoursToCompleteAgain: null,
+    );
   }
 
   @override
@@ -671,7 +705,16 @@ class _QuestListTile extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: isEnabled ? () {} : null,
+            onTap: isEnabled
+                ? () {
+                    // Navigate to quest detail screen
+                    Navigator.pushNamed(
+                      context,
+                      '/quest-detail',
+                      arguments: _toQuest(),
+                    );
+                  }
+                : null,
             overlayColor: MaterialStateProperty.resolveWith((states) {
               if (!states.contains(MaterialState.pressed)) return null;
               return isDark ? questSplashDark : questSplashLight;
