@@ -10,6 +10,7 @@ class BaseDialog extends StatelessWidget {
   final Widget? content;
   final List<Widget> actions;
   final bool showCloseButton;
+  final bool dismissOnBarrierTap;
 
   const BaseDialog({
     super.key,
@@ -20,12 +21,13 @@ class BaseDialog extends StatelessWidget {
     this.content,
     required this.actions,
     this.showCloseButton = false,
+    this.dismissOnBarrierTap = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).pop(), // Dismiss on barrier tap
+      onTap: dismissOnBarrierTap ? () => Navigator.of(context).pop() : null,
       child: Material(
         color: Colors.black54, // Standard Flutter dialog barrier color
         child: Center(
@@ -70,7 +72,7 @@ class BaseDialog extends StatelessWidget {
                             Text(
                               description,
                               style: bodyTextStyle.copyWith(
-                                color: context.colors.textSecondary.withValues(alpha: 0.7),
+                                color: context.colors.textPrimary,
                               ),
                               textAlign: TextAlign.center,
                             ),

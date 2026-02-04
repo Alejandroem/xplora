@@ -140,17 +140,6 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding:
-              const EdgeInsets.fromLTRB(spacing16, spacing12, spacing16, 0),
-          child: Text(
-            'Places',
-            style: h3Style.copyWith(
-              color: context.colors.textPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
         const SizedBox(height: spacing8),
         // Filter Bubble Row
         Padding(
@@ -162,6 +151,17 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
             onFilterTap: (filter) {
               ref.read(selectedCarouselFilterProvider.notifier).state = filter;
             },
+          ),
+        ),
+        Padding(
+          padding:
+              const EdgeInsets.fromLTRB(spacing16, spacing12, spacing16, 0),
+          child: Text(
+            'Places',
+            style: h3Style.copyWith(
+              color: context.colors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: spacing16),

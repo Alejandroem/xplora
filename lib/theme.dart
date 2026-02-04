@@ -37,7 +37,7 @@ ThemeData getTheme() {
 
     brightness: Brightness.light,
 
-    scaffoldBackgroundColor: Colors.transparent, /// Transparent to show gradient background
+    scaffoldBackgroundColor: bgPrimaryLight, /// Base Background Light
 
     primaryColor: brandPrimary, /// Purple #A855F7
 
@@ -259,7 +259,7 @@ ThemeData getDarkTheme() {
 
     brightness: Brightness.dark,
 
-    scaffoldBackgroundColor: Colors.transparent, /// Transparent to show gradient background
+    scaffoldBackgroundColor: bgPrimaryDark, /// Base Background Dark
 
     primaryColor: brandPrimary, /// Purple #A855F7
 

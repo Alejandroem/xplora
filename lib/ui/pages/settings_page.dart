@@ -92,7 +92,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   Navigator.pushNamed(context, '/accessibility-settings');
                 },
               ),
-              // Test dark and light mode button
+              // Dark and light mode toggle
               SwitchListTile(
                 title: Text(
                   'Dark Mode',

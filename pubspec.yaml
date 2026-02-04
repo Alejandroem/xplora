@@ -24,6 +24,7 @@ dependencies:
   google_fonts: ^6.3.2
   percent_indicator: ^4.2.3
   qr_code_scanner: ^1.0.1
+  mobile_scanner: ^7.1.4
   firebase_auth: ^5.1.2
   url_launcher: ^6.3.1
   location: ^7.0.0

@@ -10,6 +10,7 @@ class PrimaryButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final int? maxLines; /// Optional max lines for text overflow
   final Color? backgroundColor; /// Optional custom background color
+  final Color? textColor; /// Optional custom text color
   final double? borderRadius; /// Optional custom border radius
 
   const PrimaryButton({
@@ -18,6 +19,7 @@ class PrimaryButton extends StatefulWidget {
     this.onPressed,
     this.maxLines,
     this.backgroundColor,
+    this.textColor,
     this.borderRadius,
   });
 
@@ -44,9 +46,9 @@ class _PrimaryButtonState extends State<PrimaryButton> {
     // Determine text color based on state
     final Color textColor;
     if (isDisabled) {
-      textColor = context.colors.textDisabled;
+      textColor = widget.textColor ?? context.colors.textDisabled;
     } else {
-      textColor = bgPrimaryLight;
+      textColor = widget.textColor ?? bgPrimaryLight;
     }
 
     // Determine shadow based on state

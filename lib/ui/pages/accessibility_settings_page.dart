@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/notifiers/accessibility_settings_notifier.dart';
+import '../../application/providers/settings_providers.dart';
 import '../../theme.dart';
 import '../widgets/settings_switch_tile.dart';
 import '../widgets/settings_tile.dart';
@@ -13,6 +14,10 @@ class AccessibilitySettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final accessibilitySettings = ref.watch(accessibilitySettingsProvider);
     final notifier = ref.read(accessibilitySettingsProvider.notifier);
+
+    // Settings for dark mode
+    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+    ref.watch(settingsStateNotifierProvider);
 
     return GradientBackground(
       child: Scaffold(
@@ -52,6 +57,14 @@ class AccessibilitySettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: spacing12),
+                SettingsSwitchTile(
+                  title: 'Dark/Light Mode',
+                  subtitle: '',
+                  value: settingsNotifier.isDarkMode() ?? false,
+                  onChanged: (bool value) {
+                    settingsNotifier.toggleDarkMode();
+                  },
+                ),
                 SettingsTile(
                   title: 'Text Size',
                   onTap: () {
