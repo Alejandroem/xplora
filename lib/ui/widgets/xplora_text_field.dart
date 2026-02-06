@@ -129,7 +129,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
           style: bodySmallStyle,
           decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: captionStyle.copyWith(color: context.colors.textPrimary.withValues(alpha: 0.8)),
+            hintStyle: captionStyle.copyWith(color: context.colors.textPrimary.withValues(alpha: 0.5)),
             errorStyle: const TextStyle(height: 0, fontSize: 0), // Hide default error
             counterText: '', // Hide default counter, we'll show it custom below
             suffixIcon: widget.suffixIcon,

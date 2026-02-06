@@ -12,6 +12,8 @@ import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 import '../components/search_components.dart';
+import '../pages/choose_interests_page.dart';
+import '../pages/enable_location_page.dart';
 import '../pages/filters_page.dart';
 import '../pages/profile_page.dart';
 
@@ -149,7 +151,11 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(builder: (context) => const ChooseInterestsPage()), 
+                    // );
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(spacing8),
                     child: SvgPicture.asset(

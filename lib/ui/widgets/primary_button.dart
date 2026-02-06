@@ -12,6 +12,7 @@ class PrimaryButton extends StatefulWidget {
   final Color? backgroundColor; /// Optional custom background color
   final Color? textColor; /// Optional custom text color
   final double? borderRadius; /// Optional custom border radius
+  final double? height;
 
   const PrimaryButton({
     super.key,
@@ -21,6 +22,7 @@ class PrimaryButton extends StatefulWidget {
     this.backgroundColor,
     this.textColor,
     this.borderRadius,
+    this.height,
   });
 
   @override
@@ -64,7 +66,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
     }
 
     return SizedBox(
-      height: 48,
+      height: widget.height ?? 48,
       child: MouseRegion(
         onEnter: (_) {
           if (!isDisabled) {

@@ -91,8 +91,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Widget _buildMainLogo(BuildContext context) {
     return Image.asset(
       'assets/png/xplra-logo.png',
-      width: 250,
-      height: 250,
+      height: 175,
       color: context.isDarkMode ? null : context.colors.textPrimary,
     );
   }

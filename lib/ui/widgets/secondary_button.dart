@@ -11,6 +11,7 @@ class SecondaryButton extends StatefulWidget {
   final Widget? icon; /// Optional icon (displayed before text)
   final int? maxLines; /// Optional max lines for text overflow
   final double? borderRadius; /// Optional custom border radius
+  final double? height;
 
   const SecondaryButton({
     super.key,
@@ -19,6 +20,7 @@ class SecondaryButton extends StatefulWidget {
     this.icon,
     this.maxLines,
     this.borderRadius,
+    this.height,
   });
 
   @override
@@ -72,85 +74,88 @@ class _SecondaryButtonState extends State<SecondaryButton> {
       ];
     }
 
-    return MouseRegion(
-      onEnter: (_) {
-        if (!isDisabled) {
-          setState(() => _isHovered = true);
-        }
-      },
-      onExit: (_) {
-        if (!isDisabled) {
-          setState(() => _isHovered = false);
-        }
-      },
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        onTapDown: (_) {
+    return SizedBox(
+      height: widget.height,
+      child: MouseRegion(
+        onEnter: (_) {
           if (!isDisabled) {
-            setState(() => _isPressed = true);
+            setState(() => _isHovered = true);
           }
         },
-        onTapUp: (_) {
+        onExit: (_) {
           if (!isDisabled) {
-            setState(() => _isPressed = false);
+            setState(() => _isHovered = false);
           }
         },
-        onTapCancel: () {
-          if (!isDisabled) {
-            setState(() => _isPressed = false);
-          }
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
-            border: Border.all(
-              color: borderColor,
-              width: borderWidthDefault,
-            ),
-            boxShadow: shadows,
-          ),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: spacing16,
-                  vertical: spacing12,
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.icon != null) ...[
-                        widget.icon!,
-                        const SizedBox(width: spacing8),
-                      ],
-                      Flexible(
-                        child: Text(
-                          widget.text,
-                          style: buttonTextStyle.copyWith(
-                            color: textColor,
-                          ),
-                          maxLines: widget.maxLines,
-                          overflow: widget.maxLines!=null ? TextOverflow.ellipsis : null,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          onTapDown: (_) {
+            if (!isDisabled) {
+              setState(() => _isPressed = true);
+            }
+          },
+          onTapUp: (_) {
+            if (!isDisabled) {
+              setState(() => _isPressed = false);
+            }
+          },
+          onTapCancel: () {
+            if (!isDisabled) {
+              setState(() => _isPressed = false);
+            }
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
+              border: Border.all(
+                color: borderColor,
+                width: borderWidthDefault,
               ),
-              if (_isPressed)
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0x17000000), // Black with 9% opacity
-                      borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
+              boxShadow: shadows,
+            ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: spacing16,
+                    vertical: spacing12,
+                  ),
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.icon != null) ...[
+                          widget.icon!,
+                          const SizedBox(width: spacing8),
+                        ],
+                        Flexible(
+                          child: Text(
+                            widget.text,
+                            style: buttonTextStyle.copyWith(
+                              color: textColor,
+                            ),
+                            maxLines: widget.maxLines,
+                            overflow: widget.maxLines!=null ? TextOverflow.ellipsis : null,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-            ],
+                if (_isPressed)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0x17000000), // Black with 9% opacity
+                        borderRadius: BorderRadius.circular(widget.borderRadius ?? radiusMedium),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

@@ -6,16 +6,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/models/quest.dart';
 import '../../theme.dart';
-import '../../utils/snackbar_utils.dart';
 import '../dialogs/base_dialog.dart';
 import 'qr_scanner_screen.dart';
 
 // Quest state providers
+// Note: Input quest providers don't use autoDispose to maintain state throughout quest
 final questStartedProvider = StateProvider.autoDispose<bool>((ref) => false);
 final inRangeProvider = StateProvider.autoDispose<bool>((ref) => false);
 final dwellMetProvider = StateProvider.autoDispose<bool>((ref) => false);
 final dwellProgressProvider = StateProvider.autoDispose<double>((ref) => 0.0);
 final scannedQRsProvider = StateProvider.autoDispose<int>((ref) => 0);
+final submittedAnswersListProvider = StateProvider<Set<String>>((ref) => {});
 final inputTextProvider = StateProvider.autoDispose<String>((ref) => '');
 final inputErrorProvider = StateProvider.autoDispose<String?>((ref) => null);
 
@@ -174,9 +175,9 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
     }
   }
 
-  /// Submit input and validate against expected answer
+  /// Submit input and validate against expected answers
   void _submitInput() {
-    final inputText = _inputController.text.trim();
+    final inputText = _inputController.text.trim().toLowerCase();
 
     // Clear any previous error
     ref.read(inputErrorProvider.notifier).state = null;
@@ -189,15 +190,42 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
     // TODO: Replace with actual expected answers from quest data
     // For now, using a hardcoded list of accepted answers (case-insensitive)
     final acceptedAnswers = ['secret', 'answer', 'xplora'];
+    const totalAnswersRequired = 3; // Quest requires 3 correct answers
 
+    // Get already submitted answers
+    final submittedAnswers = ref.read(submittedAnswersListProvider);
+
+    // Check if already submitted this answer
+    if (submittedAnswers.contains(inputText)) {
+      ref.read(inputErrorProvider.notifier).state =
+          'Already submitted this answer';
+      return;
+    }
+
+    // Check if answer is correct
     final isCorrect = acceptedAnswers.any(
-      (answer) => answer.toLowerCase() == inputText.toLowerCase(),
+      (answer) => answer.toLowerCase() == inputText,
     );
 
     if (isCorrect) {
-      // Correct answer - complete the quest
-      ref.read(dwellMetProvider.notifier).state = true;
-      _showQuestCompletedDialog();
+      // Correct answer - add to submitted list
+      ref.read(submittedAnswersListProvider.notifier).state = {
+        ...submittedAnswers,
+        inputText
+      };
+
+      // Clear input field
+      _inputController.clear();
+
+      // Check if all answers submitted
+      final newCount = submittedAnswers.length + 1;
+      if (newCount >= totalAnswersRequired) {
+        ref.read(dwellMetProvider.notifier).state = true;
+        _showQuestCompletedDialog();
+      } else {
+        // Show success feedback but continue quest
+        ref.read(inputErrorProvider.notifier).state = null;
+      }
     } else {
       // Wrong answer - show error
       ref.read(inputErrorProvider.notifier).state =
@@ -300,7 +328,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 10),
+          margin: const EdgeInsets.only(top: spacing8),
           width: 6,
           height: 6,
           decoration: BoxDecoration(
@@ -350,7 +378,8 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                 Text(
                   widget.quest.title,
                   style: h1Style.copyWith(
-                      color: context.colors.textPrimary, fontSize: 30),
+                    color: context.colors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: spacing12),
 
@@ -384,30 +413,33 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                 const SizedBox(height: spacing12),
 
                 // Action Row: XP Badge + Buttons
-                Row(
-                  children: [
-                    // XP Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: spacing24,
-                        vertical: 9.5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: brandSecondary.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(radiusLarge),
-                        border: Border.all(
-                          color: brandSecondary.withValues(alpha: 0.3),
-                          width: borderWidthDefault,
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // XP Badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: spacing24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: brandSecondary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(radiusLarge),
+                          border: Border.all(
+                            color: brandSecondary.withValues(alpha: 0.3),
+                            width: borderWidthDefault,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${widget.quest.experience.toInt()} XP',
+                            style: bodyTextStyle.copyWith(
+                              color: brandSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
-                      child: Text(
-                        '${widget.quest.experience.toInt()} XP',
-                        style: bodyTextStyle.copyWith(
-                          color: brandSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
                     const SizedBox(width: spacing12),
 
                     // View place button
@@ -431,6 +463,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                       ),
                     ),
                   ],
+                  ),
                 ),
                 const SizedBox(height: spacing16),
 
@@ -456,10 +489,9 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                       // Title based on quest type
                       Text(
                         _getValidationTitle(widget.quest.stepType),
-                        style: bodyTextStyle.copyWith(
+                        style: h3Style.copyWith(
                           color: context.colors.textPrimary,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
                         ),
                       ),
                       const SizedBox(height: spacing4),
@@ -543,13 +575,12 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                         style: bodyTextStyle.copyWith(
                           color: context.colors.textPrimary,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
                         ),
                       ),
                       const SizedBox(height: spacing4),
 
                       Padding(
-                        padding: const EdgeInsets.only(left: 6),
+                        padding: const EdgeInsets.only(left: spacing8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -603,7 +634,6 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
         - Opens celebratory pop up or user gets xp notifcation
         
         Notes
-        - Inline Action Surface replaces any input field
         - CTA label mirrors the same action (Scan QR)
         - If scanned outside location → error toast
         
@@ -624,7 +654,8 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
         Notes
         - Input field never appears before arrival
         - CTA performs submission (not the keyboard)
-        - Visible only when user is in range
+
+        Visible only when user is in range
         **Component:**
         Input Field Panel
         - Single text input
@@ -685,248 +716,239 @@ class _QuestProgressSection extends ConsumerWidget {
   }
 
   Widget _buildContent(BuildContext context, WidgetRef ref) {
-    switch (questType) {
-      case QuestType.location:
-      case QuestType.timeLocation:
-        final questStarted = ref.watch(questStartedProvider);
-        final inRange = ref.watch(inRangeProvider);
-        final dwellMet = ref.watch(dwellMetProvider);
-        final dwellProgress = ref.watch(dwellProgressProvider);
+    // Watch common state once to avoid repeated provider calls
+    final questState = _QuestState(
+      questStarted: ref.watch(questStartedProvider),
+      inRange: ref.watch(inRangeProvider),
+      dwellMet: ref.watch(dwellMetProvider),
+    );
 
-        double progressValue = 0.0;
-        String rightText = 'Waiting for arrival...';
+    return switch (questType) {
+      QuestType.location || QuestType.timeLocation =>
+        _buildLocationQuestProgress(context, ref, questState),
+      QuestType.qr => _buildQRQuestProgress(context, ref, questState),
+      QuestType.input => _buildInputQuestProgress(context, ref, questState),
+    };
+  }
 
-        if (dwellMet) {
-          progressValue = 1.0;
-          rightText = 'Quest completed!';
-        } else if (inRange) {
-          // Show progress from 0.0 to 1.0 during dwell time
-          progressValue = dwellProgress;
-          rightText = 'Hold position...';
-        } else if (questStarted) {
-          progressValue = 0.0;
-          rightText = 'Navigate to location';
-        }
+  /// Build progress UI for location-based quests
+  Widget _buildLocationQuestProgress(
+    BuildContext context,
+    WidgetRef ref,
+    _QuestState state,
+  ) {
+    final dwellProgress = ref.watch(dwellProgressProvider);
 
-        return _buildProgressSection(
-          context,
-          progressValue: progressValue,
-          leftContent: _buildIconText(
-            context,
-            'assets/svg/grey-clock-2.svg',
-            '5 min',
-          ),
-          rightContent: Text(
-            rightText,
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          ),
-        );
-      case QuestType.qr:
-        final questStarted = ref.watch(questStartedProvider);
-        final inRange = ref.watch(inRangeProvider);
-        final dwellMet = ref.watch(dwellMetProvider);
-        final scannedQRs = ref.watch(scannedQRsProvider);
+    double progressValue = 0.0;
+    String rightText = 'Waiting for arrival...';
 
-        const totalQRs = 3;
-        double progressValue = scannedQRs / totalQRs;
-
-        Widget? leftContent;
-        Widget? rightContent;
-
-        if (dwellMet) {
-          // Completed: quest completed on left, progress on right
-          progressValue = 1.0;
-          leftContent = Text(
-            'Quest completed!',
-            style: bodySmallStyle.copyWith(
-              color: brandPrimary,
-            ),
-          );
-          rightContent = Text(
-            '$totalQRs/$totalQRs',
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          );
-        } else if (inRange) {
-          // In range: "Scan QR code" on left, progress on right
-          leftContent = _buildIconText(
-            context,
-            'assets/svg/scan-grey.svg',
-            'Scan QR code',
-            isUnderlined: true,
-          );
-          rightContent = Text(
-            '$scannedQRs/$totalQRs',
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          );
-        } else if (questStarted) {
-          // Not in range: "Find QR code" on left, progress on right
-          leftContent = Text(
-            'Find QR code',
-            style: bodySmallStyle.copyWith(
-              color: brandPrimary,
-            ),
-          );
-          rightContent = Text(
-            '$scannedQRs/$totalQRs',
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          );
-        } else {
-          // Before start: "Find QR code" on left, nothing on right
-          progressValue = 0.0;
-          leftContent = Text(
-            'Find QR code',
-            style: bodySmallStyle.copyWith(
-              color: brandPrimary,
-            ),
-          );
-          rightContent = null;
-        }
-
-        return _buildProgressSection(
-          context,
-          progressValue: progressValue,
-          leftContent: leftContent,
-          rightContent: rightContent ?? const SizedBox.shrink(),
-        );
-      case QuestType.input:
-        final questStarted = ref.watch(questStartedProvider);
-        final inRange = ref.watch(inRangeProvider);
-        final dwellMet = ref.watch(dwellMetProvider);
-        final inputError = ref.watch(inputErrorProvider);
-
-        double progressValue = dwellMet ? 1.0 : 0.0;
-        Widget? leftContent;
-        Widget? rightContent;
-
-        if (dwellMet) {
-          // Completed
-          leftContent = _buildIconText(
-            context,
-            'assets/svg/edit-grey.svg',
-            'Answer submitted',
-          );
-          rightContent = Text(
-            'Quest completed!',
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          );
-        } else if (inRange) {
-          // In range: show input field
-          leftContent = Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SvgPicture.asset(
-                'assets/svg/edit-grey.svg',
-                width: iconSizeMedium,
-                height: iconSizeMedium,
-                colorFilter: ColorFilter.mode(
-                  inputError != null ? errorColor : brandPrimary,
-                  BlendMode.srcIn,
-                ),
-              ),
-              const SizedBox(width: 2),
-              Expanded(
-                child: TextField(
-                  controller: inputController,
-                  onTapOutside: (event) {
-                    FocusScope.of(context).unfocus();
-                  },
-                  onChanged: (value) {
-                    // Clear error when user types
-                    if (ref.read(inputErrorProvider) != null) {
-                      ref.read(inputErrorProvider.notifier).state = null;
-                    }
-                  },
-                  // Use TextInputAction.done to just close keyboard
-                  // Submission only happens via the CTA button, not keyboard
-                  textInputAction: TextInputAction.done,
-                  style: bodySmallStyle.copyWith(
-                    color: context.colors.textPrimary,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Enter text here',
-                    hintStyle: bodySmallStyle.copyWith(
-                      color: context.colors.textSecondary,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    border: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: inputError != null ? errorColor : brandPrimary,
-                        width: 2,
-                      ),
-                    ),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: inputError != null ? errorColor : brandPrimary,
-                        width: 2,
-                      ),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: inputError != null ? errorColor : brandPrimary,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: EdgeInsets.zero,
-                    isDense: true,
-                  ),
-                ),
-              ),
-            ],
-          );
-          rightContent = inputError != null
-              ? Text(
-                  inputError,
-                  style: bodySmallStyle.copyWith(
-                    color: errorColor,
-                  ),
-                )
-              : const SizedBox.shrink();
-        } else if (questStarted) {
-          // Not in range: navigate
-          leftContent = _buildIconText(
-            context,
-            'assets/svg/edit-grey.svg',
-            'Enter answer on site',
-          );
-          rightContent = Text(
-            'Navigate to location',
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          );
-        } else {
-          // Before start
-          leftContent = _buildIconText(
-            context,
-            'assets/svg/edit-grey.svg',
-            'Enter answer on site',
-          );
-          rightContent = Text(
-            'Waiting to start...',
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          );
-        }
-
-        return _buildProgressSection(
-          context,
-          progressValue: progressValue,
-          leftContent: leftContent,
-          rightContent: rightContent,
-        );
+    if (state.dwellMet) {
+      progressValue = 1.0;
+      rightText = 'Quest completed!';
+    } else if (state.inRange) {
+      progressValue = dwellProgress;
+      rightText = 'Hold position...';
+    } else if (state.questStarted) {
+      progressValue = 0.0;
+      rightText = 'Navigate to location';
     }
+
+    return _buildProgressSection(
+      context,
+      progressValue: progressValue,
+      leftContent: _buildIconText(
+        context,
+        'assets/svg/grey-clock-2.svg',
+        '5 min',
+      ),
+      rightContent: _buildStatusText(context, rightText),
+    );
+  }
+
+  /// Build progress UI for QR code quests
+  Widget _buildQRQuestProgress(
+    BuildContext context,
+    WidgetRef ref,
+    _QuestState state,
+  ) {
+    final scannedQRs = ref.watch(scannedQRsProvider);
+
+    const totalQRs = 3;
+    double progressValue = scannedQRs / totalQRs;
+
+    Widget leftContent;
+    Widget rightContent;
+
+    if (state.dwellMet) {
+      // Completed: quest completed on left, progress on right
+      progressValue = 1.0;
+      leftContent = _buildStatusText(context, 'Quest Completed!',
+          color: brandPrimary);
+      rightContent = _buildStatusText(context, '$totalQRs/$totalQRs');
+    } else if (state.inRange) {
+      // In range: "Scan QR code" on left, progress on right
+      leftContent = _buildIconText(
+        context,
+        'assets/svg/scan-grey.svg',
+        'Scan QR code',
+        isUnderlined: true,
+      );
+      rightContent = _buildStatusText(context, '$scannedQRs/$totalQRs');
+    } else if (state.questStarted) {
+      // Not in range: "Find QR code" on left, progress on right
+      leftContent = _buildStatusText(context, 'Find QR code',
+          color: brandPrimary);
+      rightContent = _buildStatusText(context, '$scannedQRs/$totalQRs');
+    } else {
+      // Before start: "Find QR code" on left, nothing on right
+      progressValue = 0.0;
+      leftContent = _buildStatusText(context, 'Find QR code',
+          color: brandPrimary);
+      rightContent = const SizedBox.shrink();
+    }
+
+    return _buildProgressSection(
+      context,
+      progressValue: progressValue,
+      leftContent: leftContent,
+      rightContent: rightContent,
+    );
+  }
+
+  /// Build progress UI for input-based quests
+  Widget _buildInputQuestProgress(
+    BuildContext context,
+    WidgetRef ref,
+    _QuestState state,
+  ) {
+    final inputError = ref.watch(inputErrorProvider);
+    final submittedAnswersList = ref.watch(submittedAnswersListProvider);
+    final submittedCount = submittedAnswersList.length;
+
+    const totalAnswersRequired = 3;
+    double progressValue = submittedCount / totalAnswersRequired;
+    Widget leftContent;
+    Widget rightContent;
+
+    if (state.dwellMet) {
+      // Completed
+      leftContent = _buildStatusText(
+        context,
+        'All answers found!',
+        color: brandPrimary,
+      );
+      rightContent = _buildStatusText(context, '$totalAnswersRequired/$totalAnswersRequired');
+    } else if (state.inRange) {
+      // In range: show input field
+      leftContent = _buildInputField(context, ref, inputError);
+      rightContent = inputError != null
+          ? _buildStatusText(context, inputError, color: errorColor)
+          : submittedCount > 0
+              ? _buildStatusText(
+                  context,
+                  '$submittedCount/$totalAnswersRequired found',
+                  color: brandPrimary,
+                )
+              : _buildStatusText(context, '$submittedCount/$totalAnswersRequired');
+    } else if (state.questStarted) {
+      // Not in range: navigate
+      leftContent = _buildIconText(
+        context,
+        'assets/svg/edit-grey.svg',
+        'Find answers on site',
+      );
+      rightContent = _buildStatusText(context, '$submittedCount/$totalAnswersRequired');
+    } else {
+      // Before start
+      leftContent = _buildIconText(
+        context,
+        'assets/svg/edit-grey.svg',
+        'Find answers on site',
+      );
+      rightContent = const SizedBox.shrink();
+    }
+
+    return _buildProgressSection(
+      context,
+      progressValue: progressValue,
+      leftContent: leftContent,
+      rightContent: rightContent,
+    );
+  }
+
+  /// Build the input field widget for input quests
+  Widget _buildInputField(BuildContext context, WidgetRef ref, String? inputError) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        SvgPicture.asset(
+          'assets/svg/edit-grey.svg',
+          width: iconSizeMedium,
+          height: iconSizeMedium,
+          colorFilter: ColorFilter.mode(
+            inputError != null ? errorColor : brandPrimary,
+            BlendMode.srcIn,
+          ),
+        ),
+        const SizedBox(width: spacing4),
+        Expanded(
+          child: TextField(
+            controller: inputController,
+            onTapOutside: (event) {
+              FocusScope.of(context).unfocus();
+            },
+            onChanged: (value) {
+              // Clear error when user types
+              if (ref.read(inputErrorProvider) != null) {
+                ref.read(inputErrorProvider.notifier).state = null;
+              }
+            },
+            textInputAction: TextInputAction.done,
+            style: bodySmallStyle.copyWith(
+              color: context.colors.textPrimary,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Enter text here',
+              hintStyle: bodySmallStyle.copyWith(
+                color: context.colors.textSecondary,
+              ),
+              filled: true,
+              fillColor: Colors.transparent,
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: inputError != null ? errorColor : brandPrimary,
+                  width: borderWidthDefault,
+                ),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: inputError != null ? errorColor : brandPrimary,
+                  width: borderWidthDefault,
+                ),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: inputError != null ? errorColor : brandPrimary,
+                  width: borderWidthDefault,
+                ),
+              ),
+              contentPadding: EdgeInsets.zero,
+              isDense: true,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Build a status text widget with consistent styling
+  Widget _buildStatusText(BuildContext context, String text, {Color? color}) {
+    return Text(
+      text,
+      style: bodySmallStyle.copyWith(
+        color: color ?? context.colors.textPrimary,
+      ),
+    );
   }
 
   /// Reusable progress section with progress bar and custom left/right content
@@ -947,7 +969,7 @@ class _QuestProgressSection extends ConsumerWidget {
           minHeight: 6,
           borderRadius: BorderRadius.circular(radiusSmall),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: spacing16),
 
         // Content row
         Row(
@@ -982,7 +1004,7 @@ class _QuestProgressSection extends ConsumerWidget {
             BlendMode.srcIn,
           ),
         ),
-        const SizedBox(width: 2),
+        const SizedBox(width: spacing4),
         Flexible(
           child: Text(
             text,
@@ -997,4 +1019,18 @@ class _QuestProgressSection extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// Immutable state holder for quest progress
+/// Consolidates common quest state to avoid repeated provider watches
+class _QuestState {
+  final bool questStarted;
+  final bool inRange;
+  final bool dwellMet;
+
+  const _QuestState({
+    required this.questStarted,
+    required this.inRange,
+    required this.dwellMet,
+  });
 }

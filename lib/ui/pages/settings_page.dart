@@ -93,19 +93,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 },
               ),
               // Dark and light mode toggle
-              SwitchListTile(
-                title: Text(
-                  'Dark Mode',
-                  style: bodyTextStyle.copyWith(
-                    color: context.colors.textPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                value: settingsProviderNotifier.isDarkMode() ?? false,
-                onChanged: (bool value) {
-                  settingsProviderNotifier.toggleDarkMode();
-                },
-              ),
+              // SwitchListTile(
+              //   title: Text(
+              //     'Dark Mode',
+              //     style: bodyTextStyle.copyWith(
+              //       color: context.colors.textPrimary,
+              //       fontWeight: FontWeight.w500,
+              //     ),
+              //   ),
+              //   value: settingsProviderNotifier.isDarkMode() ?? false,
+              //   onChanged: (bool value) {
+              //     settingsProviderNotifier.toggleDarkMode();
+              //   },
+              // ),
             ],
           ),
         ),

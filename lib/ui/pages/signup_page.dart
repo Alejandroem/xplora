@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../utils/snackbar_utils.dart';
-import '../widgets/social_icon_button.dart';
+import 'choose_username_page.dart';
+
+// Error state providers
+final nameErrorProvider = StateProvider.autoDispose<String?>((ref) => null);
+final emailSignupErrorProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
+final passwordSignupErrorProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
+final confirmPasswordErrorProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
+
+// Obscure text state providers
+final obscurePasswordProvider = StateProvider.autoDispose<bool>((ref) => true);
+final obscureConfirmPasswordProvider =
+    StateProvider.autoDispose<bool>((ref) => true);
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -14,290 +30,380 @@ class SignUpPage extends ConsumerStatefulWidget {
 }
 
 class _SignUpPageState extends ConsumerState<SignUpPage> {
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    // Reset form state when screen is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(signupFormNotifierProvider);
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  /// Clears error and triggers validation if error exists
+  void _clearErrorAndValidate(AutoDisposeStateProvider<String?> errorProvider) {
+    final error = ref.read(errorProvider);
+    if (error != null) {
+      ref.read(errorProvider.notifier).state = null;
+      // WidgetsBinding.instance
+      //     .addPostFrameCallback((_) => _formKey.currentState?.validate());
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (mounted) {
+          _formKey.currentState?.validate();
+        }
+      });
+    }
+  }
+
+  /// Clears all error providers
+  void _clearAllErrors() {
+    ref.read(nameErrorProvider.notifier).state = null;
+    ref.read(emailSignupErrorProvider.notifier).state = null;
+    ref.read(passwordSignupErrorProvider.notifier).state = null;
+    ref.read(confirmPasswordErrorProvider.notifier).state = null;
+  }
+
+  /// Sets error on a specific provider and triggers validation
+  void _setErrorAndValidate(
+      AutoDisposeStateProvider<String?> errorProvider, String error) {
+    ref.read(errorProvider.notifier).state = error;
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (mounted) {
+        _formKey.currentState?.validate();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const GlassAppBar(
-        title: 'logo',
-        centerTitle: true,
-      ),
-      body: GradientBackground(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+              horizontal: spacing16, vertical: spacing32),
+          child: Form(
+            key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                  // Sign Up title
-                  Center(
-                    child: Text(
-                      'Sign Up',
-                      style: h1Style,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  
-                  Center(
-                    child: Text(
-                      'Create your account and start exploring',
-                      style: bodyTextStyle.copyWith(
-                        color: context.colors.textSecondary,
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  
-                  
-      
-                  // Display Name field
-                  Consumer(
-                    builder: (context, ref, child) {
-                      return XploraTextField(
-                        labelText: 'Display Name',
-                        hintText: 'Enter your display name',
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.words,
-                        prefixIcon: Icon(
-                          Icons.person_outline,
-                          color: context.colors.textSecondary,
-                          size: 20,
-                        ),
-                        onChanged: (value) {
-                          ref
-                              .read(signupFormNotifierProvider.notifier)
-                              .setDisplayName(value.trim());
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  // Email field
-                  XploraTextField(
-                    labelText: 'Email',
-                    hintText: 'Enter your email address',
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    prefixIcon: Icon(
-                      Icons.email_outlined,
-                      color: context.colors.textSecondary,
-                      size: 20,
-                    ),
-                    onChanged: (value) {
-                      ref.read(signupFormNotifierProvider.notifier).setEmail(value.trim());
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  // Password field
-                  XploraTextField(
-                    labelText: 'Password',
-                    hintText: 'Create a strong password',
-                    obscureText: _obscurePassword,
-                    prefixIcon: Icon(
-                      Icons.lock_outline,
-                      color: context.colors.textSecondary,
-                      size: 20,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: context.colors.textSecondary,
-                        size: 20,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      ref.read(signupFormNotifierProvider.notifier).setPassword(value.trim());
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  // Confirm Password field
-                  XploraTextField(
-                    labelText: 'Confirm Password',
-                    hintText: 'Confirm your password',
-                    obscureText: _obscureConfirmPassword,
-                    prefixIcon: Icon(
-                      Icons.lock_outline,
-                      color: context.colors.textSecondary,
-                      size: 20,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
-                      icon: Icon(
-                        _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
-                        color: context.colors.textSecondary,
-                        size: 20,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      ref.read(signupFormNotifierProvider.notifier).setConfirmPassword(value.trim());
-                    },
-                  ),
-                  const SizedBox(height: 32),
-                  
-                  // Sign Up button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: Consumer(
-                      builder: (ctx, ref, child)
-                      {
-                        final isLoading = ref.watch(signupFormNotifierProvider).isLoading;
-                        return PrimaryButton(
-                          text: isLoading ? 'Signing up...' : 'Sign up',
-                          onPressed: isLoading ? null : () async {
-                            final signUpNotifier =
-                                ref.read(signupFormNotifierProvider.notifier);
+                const SizedBox(height: spacing48),
 
-                            // Perform sign up
-                            await signUpNotifier.signUp();
-
-                            // Check for errors
-                            final finalState =
-                                ref.read(signupFormNotifierProvider);
-                            if (finalState.errors.isNotEmpty) {
-                              if (context.mounted) {
-                                showXploraSnackBar(
-                                  context,
-                                  finalState.errors.first,
-                                  isError: true,
-                                );
-                              }
-                            } else {
-                              // Success - navigate to profile completion screen
-                              if (context.mounted) {
-                                // Refresh settings to ensure they're loaded
-                                ref.invalidate(settingsStateNotifierProvider);
-                                
-                                Navigator.of(context).pushReplacementNamed('/complete-profile');
-                              }
-                            }
-                          },
-                        );
-                      },
-                    ),
+                // Create an Account title
+                Text(
+                  'Create an Account',
+                  style: h1Style.copyWith(
+                    color: context.colors.textPrimary,
                   ),
-                  const SizedBox(height: 32),
-                  
-                  // Divider with "or" text
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          color: context.colors.border,
-                          thickness: 1,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'or continue with',
-                          style: bodyTextStyle.copyWith(
-                            color: context.colors.textSecondary,
-                            fontSize: 14,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: spacing8),
+
+                // Subtitle
+                Text(
+                  'Sign up to get started',
+                  style: h3Style.copyWith(
+                    color: context.colors.textPrimary.withValues(alpha: 0.6),
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: spacing32),
+
+                // Name field
+                Consumer(
+                  builder: (context, ref, child) {
+                    final nameError = ref.watch(nameErrorProvider);
+                    final hasError = nameError != null && nameError.isNotEmpty;
+                    return XploraTextField(
+                      controller: _nameController,
+                      hintText: 'Name',
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.words,
+                      prefixIcon: Padding(
+                          padding: const EdgeInsets.all(spacing12),
+                          child: Icon(
+                            LucideIcons.user,
+                            color: hasError
+                                ? errorColor
+                                : context.colors.textPrimary
+                                    .withValues(alpha: 0.5),
+                            size: 22,
+                          )),
+                      validator: (value) => nameError,
+                      onChanged: (value) {
+                        _clearErrorAndValidate(nameErrorProvider);
+                        ref
+                            .read(signupFormNotifierProvider.notifier)
+                            .setDisplayName(value.trim());
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: spacing12),
+
+                // Email field
+                Consumer(
+                  builder: (context, ref, child) {
+                    final emailError = ref.watch(emailSignupErrorProvider);
+                    final hasError =
+                        emailError != null && emailError.isNotEmpty;
+                    return XploraTextField(
+                      controller: _emailController,
+                      hintText: 'Email',
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: Padding(
+                          padding: const EdgeInsets.all(spacing12),
+                          child: Icon(
+                            LucideIcons.mail,
+                            color: hasError
+                                ? errorColor
+                                : context.colors.textPrimary
+                                    .withValues(alpha: 0.5),
+                            size: 22,
+                          )),
+                      validator: (value) => emailError,
+                      onChanged: (value) {
+                        _clearErrorAndValidate(emailSignupErrorProvider);
+                        ref
+                            .read(signupFormNotifierProvider.notifier)
+                            .setEmail(value.trim());
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: spacing12),
+
+                // Password field
+                Consumer(
+                  builder: (context, ref, child) {
+                    final passwordError =
+                        ref.watch(passwordSignupErrorProvider);
+                    final obscurePassword = ref.watch(obscurePasswordProvider);
+                    final hasError =
+                        passwordError != null && passwordError.isNotEmpty;
+                    return XploraTextField(
+                      controller: _passwordController,
+                      hintText: 'Password',
+                      obscureText: obscurePassword,
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(spacing12),
+                        child: SvgPicture.asset(
+                          'assets/svg/lock.svg',
+                          width: 22,
+                          height: 22,
+                          colorFilter: ColorFilter.mode(
+                            hasError
+                                ? errorColor
+                                : context.colors.textPrimary
+                                    .withValues(alpha: 0.5),
+                            BlendMode.srcIn,
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Divider(
-                          color: context.colors.border,
-                          thickness: 1,
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: spacing8),
+                        child: IconButton(
+                          onPressed: () {
+                            ref.read(obscurePasswordProvider.notifier).state =
+                                !obscurePassword;
+                          },
+                          icon: Icon(
+                            obscurePassword
+                                ? LucideIcons.eyeOff
+                                : LucideIcons.eye,
+                            color: brandSecondary,
+                            size: 20,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  
-                  // Social sign up buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SocialIconButton(
-                        iconPath: 'assets/png/google-icon.png',
-                        onPressed: () {
-                          // TODO: Implement Google sign up
-                          showXploraSnackBar(
-                            context,
-                            'Google sign up coming soon!',
-                          );
-                        },
-                      ),
-                      SocialIconButton(
-                        icon: Icons.apple,
-                        onPressed: () {
-                          // TODO: Implement Apple sign up
-                          showXploraSnackBar(
-                            context,
-                            'Apple sign up coming soon!',
-                          );
-                        },
-                      ),
-                      SocialIconButton(
-                        iconPath: 'assets/png/github-icon.png',
-                        onPressed: () {
-                          // TODO: Implement GitHub sign up
-                          showXploraSnackBar(
-                            context,
-                            'GitHub sign up coming soon!',
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 48),
-                  
-                  // Footer text
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushReplacementNamed('/signin');
+                      validator: (value) => passwordError,
+                      onChanged: (value) {
+                        _clearErrorAndValidate(passwordSignupErrorProvider);
+                        ref
+                            .read(signupFormNotifierProvider.notifier)
+                            .setPassword(value.trim());
                       },
-                      child: Text.rich(
-                        style: bodyTextStyle,
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Already have an account? ',
-                              style: bodyTextStyle.copyWith(
-                                color: context.colors.textSecondary,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Sign in',
-                              style: bodyTextStyle.copyWith(
-                                color: brandPrimary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                    );
+                  },
+                ),
+                const SizedBox(height: spacing12),
+
+                // Confirm Password field
+                Consumer(
+                  builder: (context, ref, child) {
+                    final confirmPasswordError =
+                        ref.watch(confirmPasswordErrorProvider);
+                    final obscureConfirmPassword =
+                        ref.watch(obscureConfirmPasswordProvider);
+                    final hasError = confirmPasswordError != null &&
+                        confirmPasswordError.isNotEmpty;
+                    return XploraTextField(
+                      controller: _confirmPasswordController,
+                      hintText: 'Confirm Password',
+                      obscureText: obscureConfirmPassword,
+                      textInputAction: TextInputAction.done,
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(spacing12),
+                        child: SvgPicture.asset(
+                          'assets/svg/lock.svg',
+                          width: 22,
+                          height: 22,
+                          colorFilter: ColorFilter.mode(
+                            hasError
+                                ? errorColor
+                                : context.colors.textPrimary
+                                    .withValues(alpha: 0.5),
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: spacing8),
+                        child: IconButton(
+                          onPressed: () {
+                            ref
+                                .read(obscureConfirmPasswordProvider.notifier)
+                                .state = !obscureConfirmPassword;
+                          },
+                          icon: Icon(
+                            obscureConfirmPassword
+                                ? LucideIcons.eyeOff
+                                : LucideIcons.eye,
+                            color: brandSecondary,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      validator: (value) => confirmPasswordError,
+                      onChanged: (value) {
+                        _clearErrorAndValidate(confirmPasswordErrorProvider);
+                        ref
+                            .read(signupFormNotifierProvider.notifier)
+                            .setConfirmPassword(value.trim());
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: spacing32),
+
+                // Sign up button
+                Consumer(
+                  builder: (context, ref, child) {
+                    final isLoading =
+                        ref.watch(signupFormNotifierProvider).isLoading;
+                    return PrimaryButton(
+                      text: isLoading ? 'Signing up...' : 'Sign up',
+                      onPressed: isLoading
+                          ? null
+                          : () async {
+                              // Clear previous errors
+                              _clearAllErrors();
+
+                              final signUpNotifier =
+                                  ref.read(signupFormNotifierProvider.notifier);
+
+                              try {
+                                // Perform sign up
+                                await signUpNotifier.signUp();
+
+                                // Check for errors
+                                final finalState =
+                                    ref.read(signupFormNotifierProvider);
+                                if (finalState.errors.isNotEmpty) {
+                                  if (context.mounted) {
+                                    // Parse and display errors
+                                    final errorMessage =
+                                        finalState.errors.first.toLowerCase();
+                                    if (errorMessage.contains('name') ||
+                                        errorMessage.contains('display')) {
+                                      // Name-specific error
+                                      _setErrorAndValidate(nameErrorProvider,
+                                          finalState.errors.first);
+                                    } else if (errorMessage.contains('email')) {
+                                      // Email-specific error
+                                      _setErrorAndValidate(
+                                          emailSignupErrorProvider,
+                                          finalState.errors.first);
+                                    } else if (errorMessage
+                                            .contains('password') &&
+                                        (errorMessage.contains('confirm') ||
+                                            errorMessage.contains('match'))) {
+                                      // Confirm password error
+                                      _setErrorAndValidate(
+                                          confirmPasswordErrorProvider,
+                                          finalState.errors.first);
+                                    } else if (errorMessage
+                                        .contains('password')) {
+                                      // Password-specific error
+                                      _setErrorAndValidate(
+                                          passwordSignupErrorProvider,
+                                          finalState.errors.first);
+                                    } else {
+                                      // General error - show in snackbar
+                                      showXploraSnackBar(
+                                        context,
+                                        finalState.errors.first,
+                                        isError: true,
+                                      );
+                                    }
+                                  }
+                                } else {
+                                  // Success - navigate to profile completion screen
+                                  if (context.mounted) {
+                                    // Refresh settings to ensure they're loaded
+                                    ref.invalidate(
+                                        settingsStateNotifierProvider);
+
+                                    showXploraSnackBar(
+                                      context,
+                                      'Account created successfully!',
+                                    );
+                                    Navigator.pop(context);
+                                    Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context) => const ChooseUsernamePage()));
+                                  }
+                                }
+                              } catch (e) {
+                                // General error in snackbar
+                                final finalState =
+                                    ref.read(signupFormNotifierProvider);
+                                if (context.mounted) {
+                                  final errorMessage =
+                                      finalState.errors.isNotEmpty
+                                          ? finalState.errors.first
+                                          : 'Sign up failed. Please try again.';
+                                  showXploraSnackBar(
+                                    context,
+                                    errorMessage,
+                                    isError: true,
+                                  );
+                                }
+                              }
+                            },
+                    );
+                  },
+                ),
+                const SizedBox(height: spacing24),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 }
-

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'application/providers/auth_providers.dart';
 import 'application/providers/settings_providers.dart';
 import 'domain/models/quest.dart';
+import 'firebase_options.dart';
 import 'theme.dart';
 import 'ui/home.dart';
 import 'ui/initial_route_handler.dart';
@@ -34,7 +35,9 @@ import 'package:device_preview_plus/device_preview_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(
     DevicePreview(
