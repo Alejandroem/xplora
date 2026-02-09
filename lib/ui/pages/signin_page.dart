@@ -406,8 +406,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
                                       // Navigate to complete profile if new user, otherwise pop
                                       if (finalState.needsProfileCompletion) {
-                                        Navigator.of(context)
-                                            .push(MaterialPageRoute(builder: (context) => const ChooseInterestsPage()));
+                                        Navigator.pushReplacementNamed(context, '/choose-username');
                                       } else {
                                         // Refresh location to ensure it's loaded
                                         ref.invalidate(
@@ -462,37 +461,41 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                   Navigator.of(context).pop();
                                 },
                         ),
+
+                        const SizedBox(height: spacing16),
+
+                        // Footer text
+                        GestureDetector(
+                          onTap: isLoading
+                              ? null
+                              : () async {
+                                  await Navigator.of(context)
+                                      .pushNamed('/signup');
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Don't have an account? ",
+                                  style: h3Style.copyWith(
+                                      color: context.colors.textPrimary
+                                          .withValues(alpha: 0.7),
+                                      fontSize: 14),
+                                ),
+                                TextSpan(
+                                  text: 'Sign up',
+                                  style: h3Style.copyWith(
+                                      color: brandSecondary, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ],
                     );
                   },
-                ),
-
-                const SizedBox(height: spacing16),
-
-                // Footer text
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pushNamed('/signup');
-                  },
-                  child: Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "Don't have an account? ",
-                          style: h3Style.copyWith(
-                              color: context.colors.textPrimary
-                                  .withValues(alpha: 0.7),
-                              fontSize: 14),
-                        ),
-                        TextSpan(
-                          text: 'Sign up',
-                          style: h3Style.copyWith(
-                              color: brandSecondary, fontSize: 14),
-                        ),
-                      ],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
                 ),
                 const SizedBox(height: spacing24),
               ],

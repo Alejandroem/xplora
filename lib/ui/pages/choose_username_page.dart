@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../application/notifiers/username_notifier.dart';
+import '../../application/providers/auth_service_providers.dart';
+import '../../application/providers/username_providers.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
+import '../../utils/username_validator.dart';
 import 'choose_interests_page.dart';
-
-// Error/success state provider for username
-final usernameErrorProvider = StateProvider.autoDispose<String?>((ref) => null);
-final usernameSuccessProvider =
-    StateProvider.autoDispose<String?>((ref) => null);
-final usernameAvailabilityInfoProvider =
-    StateProvider.autoDispose<String?>((ref) => null);
-
-// Loading state for username availability check
-final usernameCheckLoadingProvider =
-    StateProvider.autoDispose<bool>((ref) => false);
 
 class ChooseUsernamePage extends ConsumerStatefulWidget {
   const ChooseUsernamePage({super.key});
@@ -27,107 +20,59 @@ class _ChooseUsernamePageState extends ConsumerState<ChooseUsernamePage> {
   final _usernameController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    // Reset form state when screen is opened
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.invalidate(usernameErrorProvider);
-      ref.invalidate(usernameSuccessProvider);
-      ref.invalidate(usernameAvailabilityInfoProvider);
-      ref.invalidate(usernameCheckLoadingProvider);
-    });
-  }
-
-  @override
   void dispose() {
     _usernameController.dispose();
     super.dispose();
   }
 
-  /// Clears error/success and triggers validation if error exists
-  void _clearFeedbackAndValidate() {
-    final error = ref.read(usernameErrorProvider);
-    final success = ref.read(usernameSuccessProvider);
-    final info = ref.read(usernameAvailabilityInfoProvider);
-
-    if (error != null || success != null || info != null) {
-      ref.read(usernameErrorProvider.notifier).state = null;
-      ref.read(usernameSuccessProvider.notifier).state = null;
-      ref.read(usernameAvailabilityInfoProvider.notifier).state = null;
-
-      Future.delayed(const Duration(milliseconds: 50), () {
-        if (mounted) {
-          _formKey.currentState?.validate();
-        }
-      });
+  /// Whether to show availability message (hide during checking or invalid state)
+  bool _shouldShowAvailabilityMessage(UsernameState state) {
+    if (state.isCheckingUsername || state.username.isEmpty) {
+      return false;
     }
+
+    // Show error message if there's an error
+    if (state.hasError) {
+      return true;
+    }
+
+    // Only show availability message if:
+    // 1. Username passes validation AND
+    // 2. We've actually checked availability (not null)
+    return UsernameValidator.isValid(state.username) && state.hasBeenChecked;
   }
 
-  /// Sets error on username and triggers validation
-  void _setErrorAndValidate(String error) {
-    ref.read(usernameErrorProvider.notifier).state = error;
-    ref.read(usernameSuccessProvider.notifier).state = null;
-    ref.read(usernameAvailabilityInfoProvider.notifier).state = null;
-    Future.delayed(const Duration(milliseconds: 50), () {
-      if (mounted) {
-        _formKey.currentState?.validate();
-      }
-    });
+  /// Get the availability status message
+  String _availabilityMessage(UsernameState state) {
+    // Show error message if present
+    if (state.hasError) {
+      return state.errorMessage!;
+    }
+
+    return state.isUsernameAvailable == true
+        ? 'Username available'
+        : 'Username is already taken';
   }
 
-  /// Check username availability (simulated - replace with actual API call)
-  /// Shows availability status automatically, validation errors shown when Continue is pressed
-  Future<void> _checkUsernameAvailability(String username) async {
-    if (username.isEmpty) {
-      _clearFeedbackAndValidate();
-      return;
+  /// Get the color for availability message
+  Color _availabilityMessageColor(UsernameState state, BuildContext context) {
+    // Error state - use error color
+    if (state.hasError) {
+      return errorColor;
     }
 
-    // Basic validation - but don't show errors yet
-    if (username.length < 3) {
-      // Clear any previous messages but don't show error
-      ref.read(usernameSuccessProvider.notifier).state = null;
-      ref.read(usernameAvailabilityInfoProvider.notifier).state = null;
-      return;
-    }
-
-    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(username)) {
-      // Clear any previous messages but don't show error
-      ref.read(usernameSuccessProvider.notifier).state = null;
-      ref.read(usernameAvailabilityInfoProvider.notifier).state = null;
-      return;
-    }
-
-    // Set loading state
-    ref.read(usernameCheckLoadingProvider.notifier).state = true;
-
-    // Simulate API call
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    if (!mounted) return;
-
-    // Simulate availability check (replace with actual API call)
-    // For demo purposes, consider usernames with "taken" as unavailable
-    final isAvailable = !username.toLowerCase().contains('taken');
-
-    ref.read(usernameCheckLoadingProvider.notifier).state = false;
-
-    if (isAvailable) {
-      ref.read(usernameSuccessProvider.notifier).state = 'Username available';
-      ref.read(usernameAvailabilityInfoProvider.notifier).state = null;
-      Future.delayed(const Duration(milliseconds: 50), () {
-        if (mounted) {
-          _formKey.currentState?.validate();
-        }
-      });
-    } else {
-      ref.read(usernameSuccessProvider.notifier).state = null;
-      ref.read(usernameAvailabilityInfoProvider.notifier).state = 'Username is already taken';
-    }
+    // Available - use primary text color
+    // Taken - use error color
+    return state.isUsernameAvailable == true
+        ? context.colors.textPrimary
+        : errorColor;
   }
 
   @override
   Widget build(BuildContext context) {
+    final usernameState = ref.watch(usernameNotifierProvider);
+    final usernameNotifier = ref.read(usernameNotifierProvider.notifier);
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -137,6 +82,7 @@ class _ChooseUsernamePageState extends ConsumerState<ChooseUsernamePage> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: spacing16, vertical: spacing32),
                 child: Form(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -166,98 +112,57 @@ class _ChooseUsernamePageState extends ConsumerState<ChooseUsernamePage> {
                       const SizedBox(height: spacing32),
 
                       // Username field
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final usernameError =
-                              ref.watch(usernameErrorProvider);
-                          final usernameSuccess =
-                              ref.watch(usernameSuccessProvider);
-                          final usernameAvailabilityInfo =
-                              ref.watch(usernameAvailabilityInfoProvider);
-                          final isChecking =
-                              ref.watch(usernameCheckLoadingProvider);
-
-                          final hasError =
-                              usernameError != null && usernameError.isNotEmpty;
-                          final hasSuccess = usernameSuccess != null &&
-                              usernameSuccess.isNotEmpty;
-                          final hasAvailabilityInfo = usernameAvailabilityInfo != null &&
-                              usernameAvailabilityInfo.isNotEmpty;
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Text field
-                              XploraTextField(
-                                controller: _usernameController,
-                                hintText: 'Username',
-                                keyboardType: TextInputType.text,
-                                textInputAction: TextInputAction.done,
-                                suffixIcon: isChecking
-                                    ? Padding(
-                                        padding:
-                                            const EdgeInsets.all(spacing12),
-                                        child: SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                              brandPrimary,
-                                            ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Text field
+                          XploraTextField(
+                            controller: _usernameController,
+                            hintText: 'Username',
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.done,
+                            suffixIcon: usernameState.isCheckingUsername
+                                ? Padding(
+                                    padding: const EdgeInsets.all(spacing12),
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: Transform.scale(
+                                        scale: 0.8,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                            brandPrimary,
                                           ),
                                         ),
-                                      )
-                                    : null,
-                                validator: (value) {
-                                  if (hasError) return usernameError;
-                                  if (hasSuccess) return null;
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  _clearFeedbackAndValidate();
-                                  // Debounce username check
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500), () {
-                                    if (mounted &&
-                                        _usernameController.text == value) {
-                                      _checkUsernameAvailability(value.trim());
-                                    }
-                                  });
-                                },
-                              ),
+                                      ),
+                                    ),
+                                  )
+                                : null,
+                            validator: UsernameValidator.validate,
+                            onChanged: (value) {
+                              usernameNotifier.setUsername(value.trim());
+                              usernameNotifier
+                                  .checkUsernameAvailability(value.trim());
+                            },
+                          ),
 
-                              // Availability status messages (shown automatically)
-                              if (hasSuccess) ...{
-                                const SizedBox(height: spacing8),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: spacing8),
-                                  child: Text(
-                                  usernameSuccess,
-                                  style: captionStyle.copyWith(
-                                    color: context.colors.textPrimary,
-                                    fontSize: 12
-                                  ),
+                          // Availability status message
+                          if (_shouldShowAvailabilityMessage(usernameState)) ...{
+                            const SizedBox(height: spacing8),
+                            Padding(
+                              padding: const EdgeInsets.only(left: spacing8),
+                              child: Text(
+                                _availabilityMessage(usernameState),
+                                style: captionStyle.copyWith(
+                                  color: _availabilityMessageColor(usernameState, context),
+                                  fontSize: 12,
                                 ),
-                                )
-                              },
-                              if (hasAvailabilityInfo) ...{
-                                const SizedBox(height: spacing8),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: spacing8),
-                                  child: Text(
-                                  usernameAvailabilityInfo,
-                                  style: captionStyle.copyWith(
-                                    color: errorColor,
-                                    fontSize: 12
-                                  ),
-                                ),
-                                )
-                              },
-                            ],
-                          );
-                        },
+                              ),
+                            )
+                          },
+                        ],
                       ),
                     ],
                   ),
@@ -268,61 +173,75 @@ class _ChooseUsernamePageState extends ConsumerState<ChooseUsernamePage> {
             // Continue button at bottom
             Padding(
               padding: const EdgeInsets.all(spacing16),
-              child: Consumer(
-                builder: (context, ref, child) {
-                  final usernameError = ref.watch(usernameErrorProvider);
-                  final isChecking = ref.watch(usernameCheckLoadingProvider);
+              child: PrimaryButton(
+                text: usernameState.isSavingUsername ? 'Loading...' : 'Continue',
+                onPressed: usernameState.isSavingUsername
+                    ? null
+                    : () async {
+                  // Validate form
+                  if (!_formKey.currentState!.validate()) {
+                    return;
+                  }
 
-                  return PrimaryButton(
-                    text: 'Continue',
-                    onPressed: () {
-                      final username = _usernameController.text.trim();
+                  // Check for errors
+                  if (usernameState.hasError) {
+                    showXploraSnackBar(
+                      context,
+                      usernameState.errorMessage!,
+                      isError: true,
+                    );
+                    return;
+                  }
 
-                      // Validate username and show errors
-                      if (username.isEmpty) {
-                        _setErrorAndValidate('Please enter a username');
-                        return;
-                      }
+                  if (usernameState.isCheckingUsername) {
+                    showXploraSnackBar(
+                      context,
+                      'Please wait while we check username availability',
+                    );
+                    return;
+                  }
 
-                      if (username.length < 3) {
-                        _setErrorAndValidate('Username must be at least 3 characters');
-                        return;
-                      }
+                  // Check if username is available
+                  if (usernameState.isUsernameAvailable != true) {
+                    showXploraSnackBar(
+                      context,
+                      usernameState.isUsernameAvailable == null
+                          ? 'Please wait while we check username availability'
+                          : 'Username is already taken',
+                      isError: usernameState.isUsernameAvailable == false,
+                    );
+                    return;
+                  }
 
-                      if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(username)) {
-                        _setErrorAndValidate(
-                            'Username can only contain letters, numbers, and underscores');
-                        return;
-                      }
+                  // Save username to backend
+                  usernameNotifier.setSavingState(true);
 
-                      // Check if username is taken (simulated check)
-                      if (username.toLowerCase().contains('taken')) {
-                        _setErrorAndValidate('Username is already taken');
-                        return;
-                      }
+                  try {
+                    final authService = ref.read(authServiceProvider);
+                    await authService.updateUsername(usernameState.username);
 
-                      if (usernameError != null && usernameError.isNotEmpty) {
-                        // Error already displayed under text field
-                        return;
-                      }
-
-                      if (isChecking) {
-                        showXploraSnackBar(
-                          context,
-                          'Please wait while we check username availability',
-                        );
-                        return;
-                      }
-
-                      // TODO: Save username to backend
-                      // Navigate to interests selection screen
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const ChooseInterestsPage(),
-                        ),
+                    if (context.mounted) {
+                      // Show success message
+                      showXploraSnackBar(
+                        context,
+                        'Username saved successfully!',
                       );
-                    },
-                  );
+
+                      // Navigate to interests selection screen
+                      Navigator.pushReplacementNamed(
+                          context, '/choose-interests');
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      showXploraSnackBar(
+                        context,
+                        'Failed to save username. Please try again.',
+                        isError: true,
+                      );
+                    }
+                  } finally {
+                    usernameNotifier.setSavingState(false);
+                  }
                 },
               ),
             ),

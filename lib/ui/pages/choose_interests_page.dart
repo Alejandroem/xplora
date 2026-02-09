@@ -164,18 +164,15 @@ class _ChooseInterestsPageState extends ConsumerState<ChooseInterestsPage> {
                       onPressed: () {
                         // TODO: Save interests to backend
                         // Navigate to location permission screen
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const EnableLocationPage(),
-                          ),
-                        );
+                        Navigator.of(context)
+                            .pushReplacementNamed('/enable-location');
                       },
                     ),
+                    const SizedBox(height: spacing32),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: spacing32),
           ],
         ),
       ),

@@ -295,6 +295,7 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
                         children: [
                           Text(
                             filter,
+                            textAlign: TextAlign.center,
                             style: bodyTextStyle.copyWith(
                               fontSize: 14,
                               color: isSelected

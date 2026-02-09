@@ -85,7 +85,7 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
       state = state.copyWith(
           displayName: displayName,
           touchedDisplayName: true,
-          errors: ['Display name cannot contain numbers']);
+          errors: ['Name cannot contain numbers']);
       return;
     }
 
@@ -96,12 +96,12 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
 
   bool isValid() {
     if (state.displayName.isEmpty) {
-      state = state.copyWith(touchedDisplayName: true, errors: ['Display name is required']);
+      state = state.copyWith(touchedDisplayName: true, errors: ['Name is required']);
       return false;
     }
 
     if (RegExp(r'[0-9]').hasMatch(state.displayName)) {
-      state = state.copyWith(touchedDisplayName: true, errors: ['Display name cannot contain numbers']);
+      state = state.copyWith(touchedDisplayName: true, errors: ['Name cannot contain numbers']);
       return false;
     }
 

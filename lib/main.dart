@@ -11,6 +11,11 @@ import 'theme.dart';
 import 'ui/home.dart';
 import 'ui/initial_route_handler.dart';
 import 'ui/pages/categories.dart';
+import 'ui/pages/choose_interests_page.dart';
+import 'ui/pages/choose_username_page.dart';
+import 'ui/pages/enable_location_page.dart';
+import 'ui/pages/enable_notifications_page.dart';
+import 'ui/pages/how_it_works_page.dart';
 import 'ui/pages/lora_ai_assistant.dart';
 import 'ui/pages/onboarding.dart';
 import 'ui/pages/quest_main_screen.dart';
@@ -95,6 +100,11 @@ class MyApp extends ConsumerWidget {
         '/game-xp': (context) => const GameXpPage(),
         '/privacy-settings': (context) => const PrivacySettingsPage(),
         '/accessibility-settings': (context) => const AccessibilitySettingsPage(),
+        '/choose-username': (context) => const ChooseUsernamePage(),
+        '/choose-interests': (context) => const ChooseInterestsPage(),
+        '/enable-location': (context) => const EnableLocationPage(),
+        '/enable-notifications': (context) => const EnableNotificationsPage(),
+        '/how-it-works': (context) => const HowItWorksPage(),
       },
       onGenerateRoute: (settings) {
         // Handle quest detail route with arguments

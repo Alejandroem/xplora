@@ -113,12 +113,7 @@ class EnableLocationPage extends StatelessWidget {
                         text: 'Maybe Later',
                         onPressed: () {
                           // Skip location permission and proceed to notifications
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const EnableNotificationsPage(),
-                            ),
-                          );
+                          Navigator.of(context).pushReplacementNamed('/enable-notifications');
                         },
                       ),
                     ],

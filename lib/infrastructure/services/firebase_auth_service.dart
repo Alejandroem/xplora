@@ -24,7 +24,7 @@ class FirebaseAuthService extends AuthService {
       collectionReference.doc(userCredential.user!.uid).set({
         'email': email,
         'id': userCredential.user!.uid,
-        'displayName': '',
+        'name': '',
         'username': '',
       });
     }
@@ -36,7 +36,7 @@ class FirebaseAuthService extends AuthService {
     return XploraUser(
       id: userCredential.user!.uid,
       email: userCredential.user!.email!,
-      displayName: data['displayName'] ?? '',
+      displayName: data['name'] ?? '',
       username: data['username'] ?? '',
       isEmailVerified: userCredential.user!.emailVerified,
     );
@@ -67,7 +67,7 @@ class FirebaseAuthService extends AuthService {
     await collectionReference.doc(userCredential.user!.uid).set({
       'email': email,
       'id': userCredential.user!.uid,
-      'displayName': displayName,
+      'name': displayName,
       'username': '',
       'type': 'user',
       'createdAt': now,
@@ -75,7 +75,7 @@ class FirebaseAuthService extends AuthService {
     });
 
     //send verification email
-    await userCredential.user!.sendEmailVerification();
+    // await userCredential.user!.sendEmailVerification();
 
     return XploraUser(
       id: userCredential.user!.uid,
@@ -113,7 +113,7 @@ class FirebaseAuthService extends AuthService {
     return XploraUser(
       id: user.uid,
       email: user.email!,
-      displayName: data['displayName'] ?? '',
+      displayName: data['name'] ?? '',
       username: data['username'] ?? '',
       isEmailVerified: user.emailVerified,
     );
@@ -169,7 +169,7 @@ class FirebaseAuthService extends AuthService {
       return XploraUser(
         id: user.uid,
         email: user.email!,
-        displayName: data['displayName'] ?? '',
+        displayName: data['name'] ?? '',
         username: data['username'] ?? '',
         isEmailVerified: user.emailVerified,
       );
@@ -220,6 +220,21 @@ class FirebaseAuthService extends AuthService {
   }
 
   @override
+  Future<void> updateUsername(String username) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if (user != null) {
+      final now = DateTime.now().toUtc().toIso8601String();
+      CollectionReference collectionReference =
+          FirebaseFirestore.instance.collection('users');
+      await collectionReference.doc(user.uid).update({
+        'username': username,
+        'updatedAt': now,
+      });
+    }
+  }
+
+  @override
   Future<({XploraUser user, bool isNewUser, String? photoUrl})> signInWithGoogle() async {
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
@@ -265,7 +280,7 @@ class FirebaseAuthService extends AuthService {
         await collectionReference.doc(userCredential.user!.uid).set({
           'email': userCredential.user!.email,
           'id': userCredential.user!.uid,
-          'displayName': userCredential.user!.displayName ?? '',
+          'name': userCredential.user!.displayName ?? '',
           'username': '',
           'type': 'user',
           'createdAt': now,
@@ -283,7 +298,7 @@ class FirebaseAuthService extends AuthService {
         user: XploraUser(
           id: userCredential.user!.uid,
           email: userCredential.user!.email!,
-          displayName: data['displayName'] ?? '',
+          displayName: data['name'] ?? '',
           username: data['username'] ?? '',
           isEmailVerified: userCredential.user!.emailVerified,
         ),

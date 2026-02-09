@@ -24,6 +24,8 @@ abstract class AuthService {
 
   Future<void> updateName(String name);
 
+  Future<void> updateUsername(String username);
+
   Future<void> updateEmail(String email);
 
   /// Returns a record with the user, whether this is a new user (first Google sign-in), and optional photo URL
