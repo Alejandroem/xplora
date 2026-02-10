@@ -53,9 +53,10 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 //   //     context.isDarkMode ? bgPrimaryLight : bgPrimaryDark,
                 //   //     BlendMode.srcIn),
                 // ),
-                if (userLocation != null)
+                // if (userLocation != null)
                   Text(
-                    userLocation!,
+                    // userLocation!,
+                    'San Juan, PR',
                     style: bodySmallStyle.copyWith(
                       color: context.colors.textSecondary,
                     ),
@@ -71,75 +72,78 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                       : 'Notifications',
       height: height,
       centerTitle: true,
-      leadingWidth: bottomBar == NavigationItem.home ? 90 : null,
+      leadingWidth: bottomBar == NavigationItem.home ? 70 : null,
       leading: bottomBar == NavigationItem.home
-          ? isAuthenticatedAsyncValue.when(
-              data: (isAuthenticated) {
-                if (isAuthenticated) {
-                  return ref.watch(createOrReadCurrentUserProfile).when(
-                      data: (profile) {
-                        // Handle null profile during auth state transitions
-                        if (profile == null) {
-                          return placeholderIcon(context);
-                        }
-                        return _buildAvatarWithBadge(
-                          context: context,
-                          avatarChild: profile.avatarUrl != null &&
-                                  profile.avatarUrl!.isNotEmpty
-                              ? ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl: profile.avatarUrl!,
-                                    width: avatarSizeMedium,
-                                    height: avatarSizeMedium,
-                                    fit: BoxFit.cover,
-                                    errorWidget: (ctx, err, _) => Icon(
-                                      Icons.error,
-                                      size: iconSizeLarge,
-                                      color: errorColor,
+          ? Align(
+              alignment: Alignment.center,
+              child: isAuthenticatedAsyncValue.when(
+                data: (isAuthenticated) {
+                  if (isAuthenticated) {
+                    return ref.watch(createOrReadCurrentUserProfile).when(
+                        data: (profile) {
+                          // Handle null profile during auth state transitions
+                          if (profile == null) {
+                            return placeholderIcon(context);
+                          }
+                          return _buildAvatarWithBadge(
+                            context: context,
+                            avatarChild: profile.avatarUrl != null &&
+                                    profile.avatarUrl!.isNotEmpty
+                                ? ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl: profile.avatarUrl!,
+                                      width: avatarSizeMedium,
+                                      height: avatarSizeMedium,
+                                      fit: BoxFit.cover,
+                                      errorWidget: (ctx, err, _) => Icon(
+                                        Icons.error,
+                                        size: iconSizeLarge,
+                                        color: errorColor,
+                                      ),
+                                      placeholder: (ctx, loading) =>
+                                          ShimmerWidgets.imageShimmer(
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                              context: context),
                                     ),
-                                    placeholder: (ctx, loading) =>
-                                        ShimmerWidgets.imageShimmer(
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            context: context),
-                                  ),
-                                )
-                              : _buildUserIcon(context),
-                          badgeText: 'Lvl 7',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfilePage(profile),
-                              ),
-                            );
-                          },
-                        );
+                                  )
+                                : _buildUserIcon(context),
+                            badgeText: 'Lvl 7',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfilePage(profile),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        loading: () => placeholderIcon(context),
+                        error: (error, stackTrace) => placeholderIcon(context));
+                  } else {
+                    return StreamBuilder<bool>(
+                      stream: ref.read(authServiceProvider).isSignedIn,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data == false) {
+                          return _buildAvatarWithBadge(
+                            context: context,
+                            avatarChild: _buildUserIcon(context),
+                            badgeText: 'Lvl 7',
+                            showBadge: false,
+                            onTap: () {
+                              Navigator.of(context).pushNamed('/signin');
+                            },
+                          );
+                        }
+                        return const SizedBox.shrink();
                       },
-                      loading: () => placeholderIcon(context),
-                      error: (error, stackTrace) => placeholderIcon(context));
-                } else {
-                  return StreamBuilder<bool>(
-                    stream: ref.read(authServiceProvider).isSignedIn,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data == false) {
-                        return _buildAvatarWithBadge(
-                          context: context,
-                          avatarChild: _buildUserIcon(context),
-                          badgeText: 'Lvl 7',
-                          showBadge: false,
-                          onTap: () {
-                            Navigator.of(context).pushNamed('/signin');
-                          },
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  );
-                }
-              },
-              loading: () => const SizedBox.shrink(),
-              error: (error, stackTrace) => const SizedBox.shrink(),
+                    );
+                  }
+                },
+                loading: () => const SizedBox.shrink(),
+                error: (error, stackTrace) => const SizedBox.shrink(),
+              ),
             )
           : null,
       automaticallyImplyLeading: false,
@@ -152,9 +156,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    // Navigator.of(context).push(
-                    //   MaterialPageRoute(builder: (context) => const ChooseInterestsPage()), 
-                    // );
+                    Navigator.pushNamed(context, '/enable-location');
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(spacing8),
@@ -180,8 +182,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
       context: context,
       avatarChild: _buildUserIcon(context),
       badgeText: '...',
-      badgeTopPosition: 6,
-      badgeRightPosition: 4,
+      badgeRightPosition: -16,
     );
   }
 
@@ -199,8 +200,8 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
     required BuildContext context,
     required Widget avatarChild,
     required String badgeText,
-    double badgeTopPosition = 6,
-    double badgeRightPosition = -7,
+    double badgeTopPosition = 0,
+    double badgeRightPosition = -30,
     bool showBadge = true,
     VoidCallback? onTap,
   }) {

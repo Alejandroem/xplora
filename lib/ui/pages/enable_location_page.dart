@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../../application/providers/settings_providers.dart';
 import '../../theme.dart';
-import 'enable_notifications_page.dart';
 
-class EnableLocationPage extends StatelessWidget {
+// State provider to track which button is loading
+final _locationLoadingStateProvider = StateProvider.autoDispose<String?>((ref) => null);
+
+class EnableLocationPage extends ConsumerWidget {
   const EnableLocationPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+    final loadingState = ref.watch(_locationLoadingStateProvider);
+
+    final isAllowLoading = loadingState == 'allow';
+    final isLaterLoading = loadingState == 'later';
     return Scaffold(
       body: Stack(
         children: [
@@ -34,7 +44,7 @@ class EnableLocationPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: spacing48),
+                  SizedBox(height: 48.h),
 
                   // Location icon with glow effect
                   Center(
@@ -92,17 +102,32 @@ class EnableLocationPage extends StatelessWidget {
                     children: [
                       // Allow Location button
                       PrimaryButton(
-                        text: 'Allow Location',
-                        backgroundColor: const Color(0xFF9D4EDD), // Purple
-                        onPressed: () {
-                          // TODO: Request location permission
-                          // Then navigate to notifications page
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const EnableNotificationsPage(),
-                            ),
-                          );
+                        text: isAllowLoading ? 'Loading...' : 'Allow Location',
+                        onPressed: loadingState != null ? null : () async {
+                          // Set loading state
+                          ref.read(_locationLoadingStateProvider.notifier).state = 'allow';
+
+                          try {
+                            // Request location permission
+                            final status = await Permission.location.request();
+
+                            print('Location permission status: $status');
+
+                            // Update settings based on permission result
+                            await settingsNotifier.setLocationEnabled(
+                              status.isGranted,
+                            );
+
+                            // Navigate to notifications page
+                            if (context.mounted) {
+                              Navigator.of(context).pushReplacementNamed(
+                                '/enable-notifications',
+                              );
+                            }
+                          } finally {
+                            // Clear loading state
+                            ref.read(_locationLoadingStateProvider.notifier).state = null;
+                          }
                         },
                       ),
 
@@ -110,10 +135,25 @@ class EnableLocationPage extends StatelessWidget {
 
                       // Maybe Later button
                       SecondaryButton(
-                        text: 'Maybe Later',
-                        onPressed: () {
-                          // Skip location permission and proceed to notifications
-                          Navigator.of(context).pushReplacementNamed('/enable-notifications');
+                        text: isLaterLoading ? 'Loading...' : 'Maybe Later',
+                        onPressed: loadingState != null ? null : () async {
+                          // Set loading state
+                          ref.read(_locationLoadingStateProvider.notifier).state = 'later';
+
+                          try {
+                            // Set location permission to false in settings
+                            await settingsNotifier.setLocationEnabled(false);
+
+                            // Skip location permission and proceed to notifications
+                            if (context.mounted) {
+                              Navigator.of(context).pushReplacementNamed(
+                                '/enable-notifications',
+                              );
+                            }
+                          } finally {
+                            // Clear loading state
+                            ref.read(_locationLoadingStateProvider.notifier).state = null;
+                          }
                         },
                       ),
                     ],

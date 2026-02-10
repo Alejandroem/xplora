@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/notifiers/username_notifier.dart';
-import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/username_providers.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
@@ -149,14 +148,16 @@ class _ChooseUsernamePageState extends ConsumerState<ChooseUsernamePage> {
                           ),
 
                           // Availability status message
-                          if (_shouldShowAvailabilityMessage(usernameState)) ...{
+                          if (_shouldShowAvailabilityMessage(
+                              usernameState)) ...{
                             const SizedBox(height: spacing8),
                             Padding(
                               padding: const EdgeInsets.only(left: spacing8),
                               child: Text(
                                 _availabilityMessage(usernameState),
                                 style: captionStyle.copyWith(
-                                  color: _availabilityMessageColor(usernameState, context),
+                                  color: _availabilityMessageColor(
+                                      usernameState, context),
                                   fontSize: 12,
                                 ),
                               ),
@@ -174,75 +175,69 @@ class _ChooseUsernamePageState extends ConsumerState<ChooseUsernamePage> {
             Padding(
               padding: const EdgeInsets.all(spacing16),
               child: PrimaryButton(
-                text: usernameState.isSavingUsername ? 'Loading...' : 'Continue',
+                text: usernameState.isSavingUsername ? 'Saving...' : 'Continue',
                 onPressed: usernameState.isSavingUsername
                     ? null
                     : () async {
-                  // Validate form
-                  if (!_formKey.currentState!.validate()) {
-                    return;
-                  }
+                        // Validate form
+                        if (!_formKey.currentState!.validate()) {
+                          return;
+                        }
 
-                  // Check for errors
-                  if (usernameState.hasError) {
-                    showXploraSnackBar(
-                      context,
-                      usernameState.errorMessage!,
-                      isError: true,
-                    );
-                    return;
-                  }
+                        // Check for errors
+                        if (usernameState.hasError) {
+                          showXploraSnackBar(
+                            context,
+                            usernameState.errorMessage!,
+                            isError: true,
+                          );
+                          return;
+                        }
 
-                  if (usernameState.isCheckingUsername) {
-                    showXploraSnackBar(
-                      context,
-                      'Please wait while we check username availability',
-                    );
-                    return;
-                  }
+                        if (usernameState.isCheckingUsername) {
+                          showXploraSnackBar(
+                            context,
+                            'Please wait while we check username availability',
+                          );
+                          return;
+                        }
 
-                  // Check if username is available
-                  if (usernameState.isUsernameAvailable != true) {
-                    showXploraSnackBar(
-                      context,
-                      usernameState.isUsernameAvailable == null
-                          ? 'Please wait while we check username availability'
-                          : 'Username is already taken',
-                      isError: usernameState.isUsernameAvailable == false,
-                    );
-                    return;
-                  }
+                        // Check if username is available
+                        if (usernameState.isUsernameAvailable != true) {
+                          showXploraSnackBar(
+                            context,
+                            usernameState.isUsernameAvailable == null
+                                ? 'Please wait while we check username availability'
+                                : 'Username is already taken',
+                            isError: usernameState.isUsernameAvailable == false,
+                          );
+                          return;
+                        }
 
-                  // Save username to backend
-                  usernameNotifier.setSavingState(true);
+                        // Save username to backend
+                        final success = await usernameNotifier.saveUsername();
 
-                  try {
-                    final authService = ref.read(authServiceProvider);
-                    await authService.updateUsername(usernameState.username);
+                        if (context.mounted) {
+                          if (success) {
+                            // Show success message
+                            showXploraSnackBar(
+                              context,
+                              'Username saved successfully!',
+                            );
 
-                    if (context.mounted) {
-                      // Show success message
-                      showXploraSnackBar(
-                        context,
-                        'Username saved successfully!',
-                      );
-
-                      // Navigate to interests selection screen
-                      Navigator.pushReplacementNamed(
-                          context, '/choose-interests');
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      showXploraSnackBar(
-                        context,
-                        'Failed to save username. Please try again.',
-                        isError: true,
-                      );
-                    }
-                  } finally {
-                    usernameNotifier.setSavingState(false);
-                  }
-                },
+                            // Navigate to interests selection screen
+                            Navigator.pushReplacementNamed(
+                                context, '/choose-interests');
+                          } else {
+                            // Show error
+                            showXploraSnackBar(
+                              context,
+                              'Failed to save username. Please try again.',
+                              isError: true,
+                            );
+                          }
+                        }
+                      },
               ),
             ),
 

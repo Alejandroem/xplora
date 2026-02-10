@@ -23,20 +23,13 @@ mixin _$XploraProfile {
   String? get id => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   int get experience => throw _privateConstructorUsedError;
-  List<String> get categories => throw _privateConstructorUsedError;
+  List<String> get interests => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
-  String? get username => throw _privateConstructorUsedError;
-  String? get bio =>
-      throw _privateConstructorUsedError; // Additional profile fields
-  String? get preferredLanguage => throw _privateConstructorUsedError;
-  String? get country => throw _privateConstructorUsedError;
-  String? get city => throw _privateConstructorUsedError;
-  String? get birthdayMonth => throw _privateConstructorUsedError;
-  String? get birthdayYear => throw _privateConstructorUsedError;
-  String? get gender => throw _privateConstructorUsedError;
-  String? get primaryInterestCategory => throw _privateConstructorUsedError;
-  String? get createdAt => throw _privateConstructorUsedError;
-  String? get updatedAt => throw _privateConstructorUsedError;
+  String? get bio => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  Timestamp? get createdAt => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  Timestamp? get updatedAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -54,19 +47,11 @@ abstract class $XploraProfileCopyWith<$Res> {
       {String? id,
       String userId,
       int experience,
-      List<String> categories,
+      List<String> interests,
       String? avatarUrl,
-      String? username,
       String? bio,
-      String? preferredLanguage,
-      String? country,
-      String? city,
-      String? birthdayMonth,
-      String? birthdayYear,
-      String? gender,
-      String? primaryInterestCategory,
-      String? createdAt,
-      String? updatedAt});
+      @TimestampConverter() Timestamp? createdAt,
+      @TimestampConverter() Timestamp? updatedAt});
 }
 
 /// @nodoc
@@ -85,17 +70,9 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
     Object? id = freezed,
     Object? userId = null,
     Object? experience = null,
-    Object? categories = null,
+    Object? interests = null,
     Object? avatarUrl = freezed,
-    Object? username = freezed,
     Object? bio = freezed,
-    Object? preferredLanguage = freezed,
-    Object? country = freezed,
-    Object? city = freezed,
-    Object? birthdayMonth = freezed,
-    Object? birthdayYear = freezed,
-    Object? gender = freezed,
-    Object? primaryInterestCategory = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -112,58 +89,26 @@ class _$XploraProfileCopyWithImpl<$Res, $Val extends XploraProfile>
           ? _value.experience
           : experience // ignore: cast_nullable_to_non_nullable
               as int,
-      categories: null == categories
-          ? _value.categories
-          : categories // ignore: cast_nullable_to_non_nullable
+      interests: null == interests
+          ? _value.interests
+          : interests // ignore: cast_nullable_to_non_nullable
               as List<String>,
       avatarUrl: freezed == avatarUrl
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      username: freezed == username
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String?,
       bio: freezed == bio
           ? _value.bio
           : bio // ignore: cast_nullable_to_non_nullable
               as String?,
-      preferredLanguage: freezed == preferredLanguage
-          ? _value.preferredLanguage
-          : preferredLanguage // ignore: cast_nullable_to_non_nullable
-              as String?,
-      country: freezed == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as String?,
-      city: freezed == city
-          ? _value.city
-          : city // ignore: cast_nullable_to_non_nullable
-              as String?,
-      birthdayMonth: freezed == birthdayMonth
-          ? _value.birthdayMonth
-          : birthdayMonth // ignore: cast_nullable_to_non_nullable
-              as String?,
-      birthdayYear: freezed == birthdayYear
-          ? _value.birthdayYear
-          : birthdayYear // ignore: cast_nullable_to_non_nullable
-              as String?,
-      gender: freezed == gender
-          ? _value.gender
-          : gender // ignore: cast_nullable_to_non_nullable
-              as String?,
-      primaryInterestCategory: freezed == primaryInterestCategory
-          ? _value.primaryInterestCategory
-          : primaryInterestCategory // ignore: cast_nullable_to_non_nullable
-              as String?,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as Timestamp?,
       updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as Timestamp?,
     ) as $Val);
   }
 }
@@ -180,19 +125,11 @@ abstract class _$$XploraProfileImplCopyWith<$Res>
       {String? id,
       String userId,
       int experience,
-      List<String> categories,
+      List<String> interests,
       String? avatarUrl,
-      String? username,
       String? bio,
-      String? preferredLanguage,
-      String? country,
-      String? city,
-      String? birthdayMonth,
-      String? birthdayYear,
-      String? gender,
-      String? primaryInterestCategory,
-      String? createdAt,
-      String? updatedAt});
+      @TimestampConverter() Timestamp? createdAt,
+      @TimestampConverter() Timestamp? updatedAt});
 }
 
 /// @nodoc
@@ -209,17 +146,9 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
     Object? id = freezed,
     Object? userId = null,
     Object? experience = null,
-    Object? categories = null,
+    Object? interests = null,
     Object? avatarUrl = freezed,
-    Object? username = freezed,
     Object? bio = freezed,
-    Object? preferredLanguage = freezed,
-    Object? country = freezed,
-    Object? city = freezed,
-    Object? birthdayMonth = freezed,
-    Object? birthdayYear = freezed,
-    Object? gender = freezed,
-    Object? primaryInterestCategory = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -236,58 +165,26 @@ class __$$XploraProfileImplCopyWithImpl<$Res>
           ? _value.experience
           : experience // ignore: cast_nullable_to_non_nullable
               as int,
-      categories: null == categories
-          ? _value._categories
-          : categories // ignore: cast_nullable_to_non_nullable
+      interests: null == interests
+          ? _value._interests
+          : interests // ignore: cast_nullable_to_non_nullable
               as List<String>,
       avatarUrl: freezed == avatarUrl
           ? _value.avatarUrl
           : avatarUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      username: freezed == username
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String?,
       bio: freezed == bio
           ? _value.bio
           : bio // ignore: cast_nullable_to_non_nullable
               as String?,
-      preferredLanguage: freezed == preferredLanguage
-          ? _value.preferredLanguage
-          : preferredLanguage // ignore: cast_nullable_to_non_nullable
-              as String?,
-      country: freezed == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as String?,
-      city: freezed == city
-          ? _value.city
-          : city // ignore: cast_nullable_to_non_nullable
-              as String?,
-      birthdayMonth: freezed == birthdayMonth
-          ? _value.birthdayMonth
-          : birthdayMonth // ignore: cast_nullable_to_non_nullable
-              as String?,
-      birthdayYear: freezed == birthdayYear
-          ? _value.birthdayYear
-          : birthdayYear // ignore: cast_nullable_to_non_nullable
-              as String?,
-      gender: freezed == gender
-          ? _value.gender
-          : gender // ignore: cast_nullable_to_non_nullable
-              as String?,
-      primaryInterestCategory: freezed == primaryInterestCategory
-          ? _value.primaryInterestCategory
-          : primaryInterestCategory // ignore: cast_nullable_to_non_nullable
-              as String?,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as Timestamp?,
       updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as Timestamp?,
     ));
   }
 }
@@ -299,20 +196,12 @@ class _$XploraProfileImpl implements _XploraProfile {
       {required this.id,
       required this.userId,
       required this.experience,
-      required final List<String> categories,
+      required final List<String> interests,
       required this.avatarUrl,
-      required this.username,
       required this.bio,
-      required this.preferredLanguage,
-      required this.country,
-      required this.city,
-      required this.birthdayMonth,
-      required this.birthdayYear,
-      required this.gender,
-      required this.primaryInterestCategory,
-      required this.createdAt,
-      required this.updatedAt})
-      : _categories = categories;
+      @TimestampConverter() required this.createdAt,
+      @TimestampConverter() required this.updatedAt})
+      : _interests = interests;
 
   factory _$XploraProfileImpl.fromJson(Map<String, dynamic> json) =>
       _$$XploraProfileImplFromJson(json);
@@ -323,43 +212,28 @@ class _$XploraProfileImpl implements _XploraProfile {
   final String userId;
   @override
   final int experience;
-  final List<String> _categories;
+  final List<String> _interests;
   @override
-  List<String> get categories {
-    if (_categories is EqualUnmodifiableListView) return _categories;
+  List<String> get interests {
+    if (_interests is EqualUnmodifiableListView) return _interests;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_categories);
+    return EqualUnmodifiableListView(_interests);
   }
 
   @override
   final String? avatarUrl;
   @override
-  final String? username;
-  @override
   final String? bio;
-// Additional profile fields
   @override
-  final String? preferredLanguage;
+  @TimestampConverter()
+  final Timestamp? createdAt;
   @override
-  final String? country;
-  @override
-  final String? city;
-  @override
-  final String? birthdayMonth;
-  @override
-  final String? birthdayYear;
-  @override
-  final String? gender;
-  @override
-  final String? primaryInterestCategory;
-  @override
-  final String? createdAt;
-  @override
-  final String? updatedAt;
+  @TimestampConverter()
+  final Timestamp? updatedAt;
 
   @override
   String toString() {
-    return 'XploraProfile(id: $id, userId: $userId, experience: $experience, categories: $categories, avatarUrl: $avatarUrl, username: $username, bio: $bio, preferredLanguage: $preferredLanguage, country: $country, city: $city, birthdayMonth: $birthdayMonth, birthdayYear: $birthdayYear, gender: $gender, primaryInterestCategory: $primaryInterestCategory, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'XploraProfile(id: $id, userId: $userId, experience: $experience, interests: $interests, avatarUrl: $avatarUrl, bio: $bio, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -372,24 +246,10 @@ class _$XploraProfileImpl implements _XploraProfile {
             (identical(other.experience, experience) ||
                 other.experience == experience) &&
             const DeepCollectionEquality()
-                .equals(other._categories, _categories) &&
+                .equals(other._interests, _interests) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
-            (identical(other.username, username) ||
-                other.username == username) &&
             (identical(other.bio, bio) || other.bio == bio) &&
-            (identical(other.preferredLanguage, preferredLanguage) ||
-                other.preferredLanguage == preferredLanguage) &&
-            (identical(other.country, country) || other.country == country) &&
-            (identical(other.city, city) || other.city == city) &&
-            (identical(other.birthdayMonth, birthdayMonth) ||
-                other.birthdayMonth == birthdayMonth) &&
-            (identical(other.birthdayYear, birthdayYear) ||
-                other.birthdayYear == birthdayYear) &&
-            (identical(other.gender, gender) || other.gender == gender) &&
-            (identical(
-                    other.primaryInterestCategory, primaryInterestCategory) ||
-                other.primaryInterestCategory == primaryInterestCategory) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -403,17 +263,9 @@ class _$XploraProfileImpl implements _XploraProfile {
       id,
       userId,
       experience,
-      const DeepCollectionEquality().hash(_categories),
+      const DeepCollectionEquality().hash(_interests),
       avatarUrl,
-      username,
       bio,
-      preferredLanguage,
-      country,
-      city,
-      birthdayMonth,
-      birthdayYear,
-      gender,
-      primaryInterestCategory,
       createdAt,
       updatedAt);
 
@@ -433,22 +285,15 @@ class _$XploraProfileImpl implements _XploraProfile {
 
 abstract class _XploraProfile implements XploraProfile {
   const factory _XploraProfile(
-      {required final String? id,
-      required final String userId,
-      required final int experience,
-      required final List<String> categories,
-      required final String? avatarUrl,
-      required final String? username,
-      required final String? bio,
-      required final String? preferredLanguage,
-      required final String? country,
-      required final String? city,
-      required final String? birthdayMonth,
-      required final String? birthdayYear,
-      required final String? gender,
-      required final String? primaryInterestCategory,
-      required final String? createdAt,
-      required final String? updatedAt}) = _$XploraProfileImpl;
+          {required final String? id,
+          required final String userId,
+          required final int experience,
+          required final List<String> interests,
+          required final String? avatarUrl,
+          required final String? bio,
+          @TimestampConverter() required final Timestamp? createdAt,
+          @TimestampConverter() required final Timestamp? updatedAt}) =
+      _$XploraProfileImpl;
 
   factory _XploraProfile.fromJson(Map<String, dynamic> json) =
       _$XploraProfileImpl.fromJson;
@@ -460,31 +305,17 @@ abstract class _XploraProfile implements XploraProfile {
   @override
   int get experience;
   @override
-  List<String> get categories;
+  List<String> get interests;
   @override
   String? get avatarUrl;
   @override
-  String? get username;
-  @override
   String? get bio;
-  @override // Additional profile fields
-  String? get preferredLanguage;
   @override
-  String? get country;
+  @TimestampConverter()
+  Timestamp? get createdAt;
   @override
-  String? get city;
-  @override
-  String? get birthdayMonth;
-  @override
-  String? get birthdayYear;
-  @override
-  String? get gender;
-  @override
-  String? get primaryInterestCategory;
-  @override
-  String? get createdAt;
-  @override
-  String? get updatedAt;
+  @TimestampConverter()
+  Timestamp? get updatedAt;
   @override
   @JsonKey(ignore: true)
   _$$XploraProfileImplCopyWith<_$XploraProfileImpl> get copyWith =>

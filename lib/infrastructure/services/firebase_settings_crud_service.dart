@@ -5,6 +5,7 @@ import '../../domain/services/settings_crud_service.dart';
 
 class FirebaseSettingsCrudService implements SettingsCrudService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Duration timeoutDuration = const Duration(seconds: 10);
 
   /// Get the settings data document reference for a specific user
   /// Path: users/{userId}/settings/data
@@ -48,26 +49,26 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
     }
 
     final docRef = _getUserSettingsDoc(entity.userId);
-    final now = DateTime.now();
+    final now = Timestamp.now();
 
     // Get existing data or create new
-    final snapshot = await docRef.get();
+    final snapshot = await docRef.get().timeout(timeoutDuration);
     final exists = snapshot.exists;
 
     Map<String, dynamic> updateData = {
       entity.key: entity.value,
-      'updatedAt': now.toIso8601String(),
+      'updatedAt': now,
     };
 
     // Only set createdAt if document doesn't exist
     if (!exists) {
-      updateData['createdAt'] = now.toIso8601String();
+      updateData['createdAt'] = now;
     }
 
     // Save to Firestore
-    await docRef.set(updateData, SetOptions(merge: true));
+    await docRef.set(updateData, SetOptions(merge: true)).timeout(timeoutDuration);
 
-    return entity.copyWith(updatedAt: now);
+    return entity.copyWith(updatedAt: now as DateTime);
   }
 
   @override
@@ -85,17 +86,15 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
   Future<List<Setting>> readBy(String field, String value) async {
     if (field == 'userId') {
       final docRef = _getUserSettingsDoc(value);
-      final snapshot = await docRef.get();
+      final snapshot = await docRef.get().timeout(timeoutDuration);
 
       if (!snapshot.exists) {
         return [];
       }
 
       final data = snapshot.data()!;
-      final updatedAtStr = data['updatedAt'] as String?;
-      final updatedAt = updatedAtStr != null
-          ? DateTime.parse(updatedAtStr)
-          : DateTime.now();
+      final updatedAtTimestamp = data['updatedAt'] as Timestamp?;
+      final updatedAt = updatedAtTimestamp?.toDate() ?? DateTime.now();
 
       List<Setting> settings = [];
       data.forEach((key, val) {
@@ -124,17 +123,43 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
 
   Future<void> deleteSetting(String userId, String key) async {
     final docRef = _getUserSettingsDoc(userId);
-    final now = DateTime.now();
 
     await docRef.update({
       key: FieldValue.delete(),
-      'updatedAt': now.toIso8601String(),
+      'updatedAt': Timestamp.now(),
     });
   }
 
   Future<void> deleteAllSettings(String userId) async {
     final docRef = _getUserSettingsDoc(userId);
     await docRef.delete();
+  }
+
+  /// Creates default settings for a new user with grouped structure
+  Future<void> createDefaultSettings({
+    required String userId,
+    required bool locationEnabled,
+    required bool notificationsEnabled,
+    required bool darkModeEnabled,
+  }) async {
+    final docRef = _getUserSettingsDoc(userId);
+    final now = Timestamp.now();
+
+    final settingsData = {
+      'permissions': {
+        'location': locationEnabled,
+      },
+      'notifications': {
+        'push_enabled': notificationsEnabled,
+      },
+      'accessibility': {
+        'dark_mode': darkModeEnabled,
+      },
+      'createdAt': now,
+      'updatedAt': now,
+    };
+
+    await docRef.set(settingsData).timeout(timeoutDuration);
   }
 
   @override
@@ -185,10 +210,8 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
       }
 
       final data = snapshot.data()!;
-      final updatedAtStr = data['updatedAt'] as String?;
-      final updatedAt = updatedAtStr != null
-          ? DateTime.parse(updatedAtStr)
-          : DateTime.now();
+      final updatedAtTimestamp = data['updatedAt'] as Timestamp?;
+      final updatedAt = updatedAtTimestamp?.toDate() ?? DateTime.now();
 
       List<Setting> settings = [];
       data.forEach((key, val) {

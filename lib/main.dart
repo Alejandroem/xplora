@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'application/providers/auth_providers.dart';
 import 'application/providers/settings_providers.dart';
@@ -59,64 +61,78 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the settings state (not .notifier) to rebuild when settings change
-    final settings = ref.watch(settingsStateNotifierProvider);
+    // Watch the settings state to rebuild when settings change
+    ref.watch(settingsStateNotifierProvider);
 
-    // Get dark mode preference from settings
-    final isDarkModeSetting =
-        settings.where((s) => s.key == 'isDarkMode').firstOrNull;
-    final isDarkMode = isDarkModeSetting?.value as bool?;
+    // Get notifier to access helper methods
+    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+
+    // Get dark mode preference from nested settings structure
+    final isDarkMode = settingsNotifier.isDarkMode();
 
     print('isDarkMode: $isDarkMode');
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Xplra',
-      theme: getTheme(), // Light theme
-      darkTheme: getDarkTheme(), // Dark theme
-      themeMode: isDarkMode == null
-          ? ThemeMode.system // No preference - follow system
-          : (isDarkMode ? ThemeMode.dark : ThemeMode.light),
-      routes: {
-        '/': (context) => const InitialRouteHandler(),
-        '/home': (context) => const Home(),
-        '/onboarding': (context) => const OnboardingPage(),
-        '/categories': (context) => const ChooseCategories(),
-        '/welcome-mission': (context) => const WelcomeMissionPage(),
-        '/privacy-consent-summary': (context) => const PrivacyConsentSummary(),
-        '/xp-onboarding': (context) => const XpBoostOnboardingPage(),
-        '/lora-assistant': (context) => const LoraAiAssistant(),
-        '/quest-main': (context) => const QuestMainScreen(),
-        '/signin': (context) => const SignInPage(),
-        '/signup': (context) => const SignUpPage(),
-        '/complete-profile': (context) => const CompleteProfilePage(),
-        '/submit-place': (context) => const SubmitPlacePage(),
-        '/submissions': (context) => const SubmissionsPage(),
-        '/achievements': (context) => const AchievementsPage(),
-        '/account-settings': (context) => const AccountSettingsPage(),
-        '/security-settings': (context) => const SecuritySettingsPage(),
-        '/notification-settings': (context) => const NotificationSettingsPage(),
-        '/permission-settings': (context) => const PermissionSettingsPage(),
-        '/game-xp': (context) => const GameXpPage(),
-        '/privacy-settings': (context) => const PrivacySettingsPage(),
-        '/accessibility-settings': (context) => const AccessibilitySettingsPage(),
-        '/choose-username': (context) => const ChooseUsernamePage(),
-        '/choose-interests': (context) => const ChooseInterestsPage(),
-        '/enable-location': (context) => const EnableLocationPage(),
-        '/enable-notifications': (context) => const EnableNotificationsPage(),
-        '/how-it-works': (context) => const HowItWorksPage(),
-      },
-      onGenerateRoute: (settings) {
-        // Handle quest detail route with arguments
-        if (settings.name == '/quest-detail') {
-          final quest = settings.arguments as Quest?;
-          if (quest != null) {
-            return MaterialPageRoute(
-              builder: (context) => QuestDetail(quest),
-            );
-          }
-        }
-        return null;
+    // FirebaseAuth.instance.signOut();
+
+    return ScreenUtilInit(
+      designSize: const Size(393, 852), // iPhone 16 size as base
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Xplra',
+          theme: getTheme(), // Light theme
+          darkTheme: getDarkTheme(), // Dark theme
+          themeMode: isDarkMode == null
+              ? ThemeMode.system // No preference - follow system
+              : (isDarkMode ? ThemeMode.dark : ThemeMode.light),
+          routes: {
+            '/': (context) => const InitialRouteHandler(),
+            '/home': (context) => const Home(),
+            '/onboarding': (context) => const OnboardingPage(),
+            '/categories': (context) => const ChooseCategories(),
+            '/welcome-mission': (context) => const WelcomeMissionPage(),
+            '/privacy-consent-summary': (context) =>
+                const PrivacyConsentSummary(),
+            '/xp-onboarding': (context) => const XpBoostOnboardingPage(),
+            '/lora-assistant': (context) => const LoraAiAssistant(),
+            '/quest-main': (context) => const QuestMainScreen(),
+            '/signin': (context) => const SignInPage(),
+            '/signup': (context) => const SignUpPage(),
+            // '/complete-profile': (context) => const CompleteProfilePage(),
+            '/submit-place': (context) => const SubmitPlacePage(),
+            '/submissions': (context) => const SubmissionsPage(),
+            '/achievements': (context) => const AchievementsPage(),
+            '/account-settings': (context) => const AccountSettingsPage(),
+            '/security-settings': (context) => const SecuritySettingsPage(),
+            '/notification-settings': (context) =>
+                const NotificationSettingsPage(),
+            '/permission-settings': (context) => const PermissionSettingsPage(),
+            '/game-xp': (context) => const GameXpPage(),
+            '/privacy-settings': (context) => const PrivacySettingsPage(),
+            '/accessibility-settings': (context) =>
+                const AccessibilitySettingsPage(),
+            '/choose-username': (context) => const ChooseUsernamePage(),
+            '/choose-interests': (context) => const ChooseInterestsPage(),
+            '/enable-location': (context) => const EnableLocationPage(),
+            '/enable-notifications': (context) =>
+                const EnableNotificationsPage(),
+            '/how-it-works': (context) => const HowItWorksPage(),
+          },
+          onGenerateRoute: (settings) {
+            // Handle quest detail route with arguments
+            if (settings.name == '/quest-detail') {
+              final quest = settings.arguments as Quest?;
+              if (quest != null) {
+                return MaterialPageRoute(
+                  builder: (context) => QuestDetail(quest),
+                );
+              }
+            }
+            return null;
+          },
+        );
       },
     );
   }

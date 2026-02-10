@@ -237,9 +237,11 @@ class _HomeState extends ConsumerState<Home> {
 
     return XplorAppBar(
       height: bottomBar == NavigationItem.home
-          ? userLocation != null
-              ? 72
-              : null // Let XplorAppBar calculate dynamic height
+          ? 
+          // userLocation != null
+              // ? 
+              72
+              // : null // Let XplorAppBar calculate dynamic height
           : bottomBar == NavigationItem.search
               ? 80.0
               : null,

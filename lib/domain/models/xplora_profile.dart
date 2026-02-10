@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'xplora_profile.freezed.dart';
@@ -9,24 +10,41 @@ abstract class XploraProfile with _$XploraProfile {
     required String? id,
     required String userId,
     required int experience,
-    required List<String> categories,
+    required List<String> interests,
     required String? avatarUrl,
-    required String? username,
     required String? bio,
-    // Additional profile fields
-    required String? preferredLanguage,
-    required String? country,
-    required String? city,
-    required String? birthdayMonth,
-    required String? birthdayYear,
-    required String? gender,
-    required String? primaryInterestCategory,
-    required String? createdAt,
-    required String? updatedAt,
+    @TimestampConverter() required Timestamp? createdAt,
+    @TimestampConverter() required Timestamp? updatedAt,
   }) = _XploraProfile;
 
   factory XploraProfile.fromJson(Map<String, dynamic> json) =>
       _$XploraProfileFromJson(json);
+}
+
+/// Converter for Firestore Timestamp to handle JSON serialization
+class TimestampConverter implements JsonConverter<Timestamp?, Object?> {
+  const TimestampConverter();
+
+  @override
+  Timestamp? fromJson(Object? json) {
+    if (json == null) return null;
+    if (json is Timestamp) return json;
+    if (json is String) {
+      // Backward compatibility: parse ISO string to Timestamp
+      try {
+        final dateTime = DateTime.parse(json);
+        return Timestamp.fromDate(dateTime);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Object? toJson(Timestamp? timestamp) {
+    return timestamp; // Return Timestamp as-is for Firestore
+  }
 }
 
 extension XploraProfileXP on XploraProfile {

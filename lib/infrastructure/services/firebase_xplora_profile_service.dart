@@ -4,26 +4,30 @@ import '../../domain/services/xplora_profile_service.dart';
 
 class FirebaseXploraProfileCrudService implements XploraProfileService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Duration timeoutDuration = const Duration(seconds: 10);
 
   @override
   Future<XploraProfile> create(XploraProfile entity) async {
     try {
       final profileData = entity.toJson();
       profileData['id'] = entity.userId; // Use userId as the document ID
-      profileData['createdAt'] = DateTime.now().toUtc().toIso8601String();
-      profileData['updatedAt'] = DateTime.now().toUtc().toIso8601String();
+
+      // Use Timestamp.now() for client-side timestamps
+      final now = Timestamp.now();
+      profileData['createdAt'] = now;
+      profileData['updatedAt'] = now;
 
       await _firestore
           .collection('users')
           .doc(entity.userId)
           .collection('profile')
           .doc('data')
-          .set(profileData, SetOptions(merge: true));
+          .set(profileData, SetOptions(merge: true)).timeout(timeoutDuration);
 
       return entity.copyWith(
         id: entity.userId,
-        createdAt: profileData['createdAt'],
-        updatedAt: profileData['updatedAt'],
+        createdAt: now,
+        updatedAt: now,
       );
     } catch (e) {
       throw Exception('Failed to create profile: $e');
@@ -38,7 +42,8 @@ class FirebaseXploraProfileCrudService implements XploraProfileService {
           .doc(id)
           .collection('profile')
           .doc('data')
-          .get();
+          .get()
+          .timeout(timeoutDuration);
 
       if (docSnapshot.exists) {
         final data = docSnapshot.data()!;
@@ -56,18 +61,22 @@ class FirebaseXploraProfileCrudService implements XploraProfileService {
     try {
       final profileData = entity.toJson();
       profileData['id'] = id;
-      profileData['updatedAt'] = DateTime.now().toUtc().toIso8601String();
+
+      // Use Timestamp.now() for client-side timestamp
+      final now = Timestamp.now();
+      profileData['updatedAt'] = now;
 
       await _firestore
           .collection('users')
           .doc(id)
           .collection('profile')
           .doc('data')
-          .set(profileData, SetOptions(merge: true));
+          .set(profileData, SetOptions(merge: true))
+          .timeout(timeoutDuration);
 
       return entity.copyWith(
         id: id,
-        updatedAt: profileData['updatedAt'],
+        updatedAt: now,
       );
     } catch (e) {
       throw Exception('Failed to update profile: $e');
@@ -85,6 +94,29 @@ class FirebaseXploraProfileCrudService implements XploraProfileService {
           .delete();
     } catch (e) {
       throw Exception('Failed to delete profile: $e');
+    }
+  }
+
+  @override
+  Future<bool> updateFields(String userId, Map<String, dynamic> fields) async {
+    try {
+      // Add updatedAt timestamp
+      final fieldsWithTimestamp = {
+        ...fields,
+        'updatedAt': Timestamp.now(),
+      };
+
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('profile')
+          .doc('data')
+          .update(fieldsWithTimestamp)
+          .timeout(timeoutDuration);
+
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 

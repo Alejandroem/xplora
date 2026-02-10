@@ -58,7 +58,7 @@ class AccessibilitySettingsPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: spacing12),
                 SettingsSwitchTile(
-                  title: 'Dark/Light Mode',
+                  title: 'Dark Mode',
                   subtitle: '',
                   value: settingsNotifier.isDarkMode() ?? false,
                   onChanged: (bool value) {

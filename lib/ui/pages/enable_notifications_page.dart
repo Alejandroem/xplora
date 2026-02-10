@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../theme.dart';
 import 'how_it_works_page.dart';
 
@@ -33,7 +34,7 @@ class EnableNotificationsPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: spacing48),
+                  SizedBox(height: 48.h),
 
                   // Notification icon with glow effect
                   Center(

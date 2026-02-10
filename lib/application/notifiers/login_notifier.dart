@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -85,25 +86,16 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       );
 
       final profiles = await profileService.readBy('userId', user.id!);
-      profiles.forEach((action)=>print('action.city: ${action.city}'));
       if (profiles.isEmpty) {
         //Create profile with username from authenticated user
-        final now = DateTime.now().toUtc().toIso8601String();
+        final now = Timestamp.now();
         final xploraProfile = XploraProfile(
           id: user.id,
           userId: user.id!,
           experience: 0,
-          categories: [],
+          interests: [],
           avatarUrl: '',
-          username: '', // Will be set later in complete profile
           bio: '',
-          preferredLanguage: '',
-          country: '',
-          city: '',
-          birthdayMonth: '',
-          birthdayYear: '',
-          gender: '',
-          primaryInterestCategory: '',
           createdAt: now,
           updatedAt: now,
         );
@@ -162,22 +154,14 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       if (isNewUser) {
         // New user - create profile and follow signup flow
         print('New Google user detected, creating profile');
-        final now = DateTime.now().toUtc().toIso8601String();
+        final now = Timestamp.now();
         final xploraProfile = XploraProfile(
           id: user.id,
           userId: user.id!,
           experience: 0,
-          categories: [],
+          interests: [],
           avatarUrl: photoUrl ?? '', // Save Google photo URL if available
-          username: '', // Will be set later in complete profile
           bio: '',
-          preferredLanguage: '',
-          country: '',
-          city: '',
-          birthdayMonth: '',
-          birthdayYear: '',
-          gender: '',
-          primaryInterestCategory: '',
           createdAt: now,
           updatedAt: now,
         );

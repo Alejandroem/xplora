@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/services/auth_service.dart';
 import '../../utils/username_validator.dart';
 
 class UsernameState {
   final String username;
   final bool isCheckingUsername;
-  final bool? isUsernameAvailable; // null = not checked, true = available, false = taken
+  final bool?
+      isUsernameAvailable; // null = not checked, true = available, false = taken
   final bool isSavingUsername;
   final String? errorMessage;
 
@@ -30,7 +32,9 @@ class UsernameState {
     return UsernameState(
       username: username ?? this.username,
       isCheckingUsername: isCheckingUsername ?? this.isCheckingUsername,
-      isUsernameAvailable: clearAvailability ? null : (isUsernameAvailable ?? this.isUsernameAvailable),
+      isUsernameAvailable: clearAvailability
+          ? null
+          : (isUsernameAvailable ?? this.isUsernameAvailable),
       isSavingUsername: isSavingUsername ?? this.isSavingUsername,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
@@ -41,10 +45,14 @@ class UsernameState {
 }
 
 class UsernameNotifier extends StateNotifier<UsernameState> {
-  UsernameNotifier() : super(const UsernameState());
+  final AuthService authService;
+
+  UsernameNotifier(this.authService) : super(const UsernameState());
 
   Timer? _usernameValidationTimer;
   String? _currentlyCheckingUsername;
+
+  final Duration timeoutDuration = const Duration(seconds: 10);
 
   @override
   void dispose() {
@@ -85,7 +93,8 @@ class UsernameNotifier extends StateNotifier<UsernameState> {
     }
 
     // Debounce the validation by 500ms
-    _usernameValidationTimer = Timer(const Duration(milliseconds: 500), () async {
+    _usernameValidationTimer =
+        Timer(const Duration(milliseconds: 500), () async {
       // Set loading state only when actually starting the check
       state = state.copyWith(
         isCheckingUsername: true,
@@ -102,10 +111,17 @@ class UsernameNotifier extends StateNotifier<UsernameState> {
     _currentlyCheckingUsername = username;
 
     try {
+      
+
+    // await Future.delayed(timeoutDuration, () {
+    // });
+    
+    //   throw Exception();
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('username', isEqualTo: username)
-          .get();
+          .get()
+          .timeout(timeoutDuration);
 
       // Only update state if this is still the current username being checked
       // This prevents race conditions when user types quickly
@@ -124,7 +140,8 @@ class UsernameNotifier extends StateNotifier<UsernameState> {
         state = state.copyWith(
           isCheckingUsername: false,
           isUsernameAvailable: false,
-          errorMessage: 'Unable to check username availability. Please try again.',
+          errorMessage:
+              'Unable to check username availability. Please try again.',
         );
       }
     } finally {
@@ -135,8 +152,22 @@ class UsernameNotifier extends StateNotifier<UsernameState> {
     }
   }
 
-  /// Set the saving state
-  void setSavingState(bool isSaving) {
-    state = state.copyWith(isSavingUsername: isSaving);
+  /// Save username to user profile
+  /// Returns true if successful, false otherwise
+  Future<bool> saveUsername() async {
+    try {
+      // Set loading state
+      state = state.copyWith(isSavingUsername: true);
+
+      // Save username using auth service (updates main user document)
+      await authService.updateUsername(state.username);
+
+      // Success
+      state = state.copyWith(isSavingUsername: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isSavingUsername: false);
+      return false;
+    }
   }
 }

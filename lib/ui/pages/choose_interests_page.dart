@@ -1,30 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
-import 'enable_location_page.dart';
-
-// State provider for selected interests
-final selectedInterestsProvider =
-    StateProvider.autoDispose<Set<String>>((ref) => {});
-
-// Interest model - supports both IconData and SVG path
-class Interest {
-  final String id;
-  final String label;
-  final IconData? icon;
-  final String? svgPath;
-
-  const Interest({
-    required this.id,
-    required this.label,
-    this.icon,
-    this.svgPath,
-  }) : assert(icon != null || svgPath != null,
-            'Either icon or svgPath must be provided');
-}
+import '../../application/providers/interests_providers.dart';
+import '../constants/interests_constants.dart';
 
 class ChooseInterestsPage extends ConsumerStatefulWidget {
   const ChooseInterestsPage({super.key});
@@ -35,66 +16,19 @@ class ChooseInterestsPage extends ConsumerStatefulWidget {
 }
 
 class _ChooseInterestsPageState extends ConsumerState<ChooseInterestsPage> {
-// Available interests list
-  final availableInterests = [
-    const Interest(id: 'history', label: 'History', icon: LucideIcons.landmark),
-    const Interest(id: 'nature', label: 'Nature', icon: LucideIcons.leaf),
-    const Interest(
-        id: 'art_culture', label: 'Art & Culture', icon: LucideIcons.palette),
-    const Interest(
-        id: 'sports', label: 'Sports', svgPath: 'assets/svg/sports.svg'),
-    const Interest(
-        id: 'food_cafes',
-        label: 'Food & Cafes',
-        icon: LucideIcons.utensilsCrossed),
-    const Interest(
-        id: 'exploring', label: 'Exploring', icon: LucideIcons.personStanding),
-    const Interest(id: 'beaches', label: 'Beaches', icon: LucideIcons.waves),
-    const Interest(
-        id: 'hidden_spots',
-        label: 'Hidden Spots',
-        svgPath: 'assets/svg/location-on-map.svg'),
-    const Interest(
-        id: 'running',
-        label: 'Running',
-        svgPath: 'assets/svg/person-running.svg'),
-    const Interest(
-        id: 'live_music', label: 'Live Music', icon: LucideIcons.music4),
-    const Interest(
-        id: 'fashion', label: 'Fashion', svgPath: 'assets/svg/shirt.svg'),
-    const Interest(
-        id: 'rivers', label: 'Rivers', svgPath: 'assets/svg/waves.svg'),
-    const Interest(
-        id: 'social', label: 'Social', svgPath: 'assets/svg/laughing-mask.svg'),
-    const Interest(
-        id: 'hiking', label: 'Hiking', svgPath: 'assets/svg/hiking.svg'),
-  ];
-
   @override
   void initState() {
     super.initState();
     // Reset selected interests when screen is opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.invalidate(selectedInterestsProvider);
+      ref.read(interestsNotifierProvider.notifier).reset();
     });
-  }
-
-  void _toggleInterest(String interestId) {
-    final currentSelected = ref.read(selectedInterestsProvider);
-    final newSelected = Set<String>.from(currentSelected);
-
-    if (newSelected.contains(interestId)) {
-      newSelected.remove(interestId);
-    } else {
-      newSelected.add(interestId);
-    }
-
-    ref.read(selectedInterestsProvider.notifier).state = newSelected;
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedInterests = ref.watch(selectedInterestsProvider);
+    final interestsState = ref.watch(interestsNotifierProvider);
+    final interestsNotifier = ref.read(interestsNotifierProvider.notifier);
 
     return Scaffold(
       body: SafeArea(
@@ -102,12 +36,11 @@ class _ChooseInterestsPageState extends ConsumerState<ChooseInterestsPage> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: spacing16, vertical: spacing32),
+                padding: const EdgeInsets.all(spacing16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: spacing48),
+                    SizedBox(height: 54.h),
 
                     // Title
                     Text(
@@ -144,29 +77,61 @@ class _ChooseInterestsPageState extends ConsumerState<ChooseInterestsPage> {
                       itemCount: availableInterests.length,
                       itemBuilder: (context, index) {
                         final interest = availableInterests[index];
-                        final isSelected =
-                            selectedInterests.contains(interest.id);
+                        final isSelected = interestsState.selectedInterestIds
+                            .contains(interest.id);
 
                         return InterestButton(
                           label: interest.label,
                           icon: interest.icon,
                           svgPath: interest.svgPath,
                           isSelected: isSelected,
-                          onTap: () => _toggleInterest(interest.id),
+                          onTap: () => interestsNotifier.toggleInterest(interest.id),
                         );
                       },
                     ),
                     const SizedBox(height: spacing32),
                     PrimaryButton(
-                      text: 'Continue',
-                      backgroundColor:
-                          const Color(0xFF9D4EDD), // Purple gradient color
-                      onPressed: () {
-                        // TODO: Save interests to backend
-                        // Navigate to location permission screen
-                        Navigator.of(context)
-                            .pushReplacementNamed('/enable-location');
-                      },
+                      text: interestsState.isSaving ? 'Saving...' : 'Continue',
+                      onPressed: interestsState.isSaving
+                          ? null
+                          : () async {
+                              // Convert interest IDs to labels
+                              final selectedInterestLabels = availableInterests
+                                  .where((interest) => interestsState
+                                      .selectedInterestIds
+                                      .contains(interest.id))
+                                  .map((interest) => interest.label)
+                                  .toList();
+
+                              // Validate at least one interest selected
+                              if (selectedInterestLabels.isEmpty) {
+                                showXploraSnackBar(
+                                  context,
+                                  'Please select at least one interest',
+                                  isError: true,
+                                );
+                                return;
+                              }
+
+                              // Save interests
+                              final success = await interestsNotifier
+                                  .saveInterests(selectedInterestLabels);
+
+                              if (context.mounted) {
+                                if (success) {
+                                  // Navigate to location permission screen
+                                  Navigator.of(context)
+                                      .pushReplacementNamed('/enable-location');
+                                } else {
+                                  // Show error
+                                  showXploraSnackBar(
+                                    context,
+                                    'Failed to save interests. Please try again.',
+                                    isError: true,
+                                  );
+                                }
+                              }
+                            },
                     ),
                     const SizedBox(height: spacing32),
                   ],

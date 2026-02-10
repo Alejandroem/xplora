@@ -1,10 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../domain/models/signup_form.dart';
 import '../../domain/models/xplora_profile.dart';
-import '../../domain/models/setting.dart';
 import '../../domain/services/auth_service.dart';
 import '../../domain/services/xplora_profile_service.dart';
 import '../../domain/services/settings_crud_service.dart';
@@ -166,22 +166,14 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
       final profiles = await profileService.readBy('userId', user.id!);
       if (profiles.isEmpty) {
         //Create profile with empty data for now
-        final now = DateTime.now().toUtc().toIso8601String();
+        final now = Timestamp.now();
         final xploraProfile = XploraProfile(
           id: user.id,
           userId: user.id!,
           experience: 0,
-          categories: [],
+          interests: [],
           avatarUrl: '',
-          username: '', // Empty username for now, will be set in profile completion
           bio: '',
-          preferredLanguage: '',
-          country: '',
-          city: '',
-          birthdayMonth: '',
-          birthdayYear: '',
-          gender: '',
-          primaryInterestCategory: '',
           createdAt: now,
           updatedAt: now,
         );
@@ -190,9 +182,6 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
 
       // Create default settings for the new user
       await _createDefaultSettings(user.id!);
-      
-      // Fetch user settings to ensure they're available
-      await _fetchUserSettings(user.id!);
     } on FirebaseAuthException catch (e) {
       print(e);
       if (e.code == 'email-already-in-use') {
@@ -216,66 +205,21 @@ class SignupFormNotifier extends StateNotifier<SignupForm> {
   /// Creates default settings for a new user
   Future<void> _createDefaultSettings(String userId) async {
     try {
-      final now = DateTime.now();
-
       // Check actual permission status for notifications and location
       final notificationStatus = await Permission.notification.status;
       final locationStatus = await Permission.location.status;
 
-      // Create default settings based on actual permissions
-      final defaultSettings = [
-        Setting(
-          id: null,
-          userId: userId,
-          key: 'isDarkMode',
-          value: true, // Dark mode enabled by default
-          variableType: 'bool',
-          updatedAt: now,
-        ),
-        Setting(
-          id: null,
-          userId: userId,
-          key: 'isNotificationsEnabled',
-          value: notificationStatus.isGranted, // Based on actual permission
-          variableType: 'bool',
-          updatedAt: now,
-        ),
-        Setting(
-          id: null,
-          userId: userId,
-          key: 'isLocationEnabled',
-          value: locationStatus.isGranted, // Based on actual permission
-          variableType: 'bool',
-          updatedAt: now,
-        ),
-      ];
-
-      // Create all default settings (they will be saved in single data doc)
-      for (final setting in defaultSettings) {
-        await settingsService.create(setting);
-      }
+      // Create default settings using service
+      await settingsService.createDefaultSettings(
+        userId: userId,
+        locationEnabled: locationStatus.isGranted,
+        notificationsEnabled: notificationStatus.isGranted,
+        darkModeEnabled: true, // Dark mode enabled by default
+      );
     } catch (e) {
       // Log error but don't fail signup for settings creation
       print('Error creating default settings: $e');
     }
   }
 
-  /// Fetches user settings after successful signup
-  Future<void> _fetchUserSettings(String userId) async {
-    try {
-      final settings = await settingsService.readByFilters([
-        {
-          'field': 'userId',
-          'operator': '==',
-          'value': userId,
-        }
-      ]);
-      
-      // Settings are now available in the settings provider
-      // The SettingsStateNotifier will automatically pick them up
-      print('Fetched ${settings?.length ?? 0} settings for user $userId');
-    } catch (e) {
-      print('Error fetching user settings: $e');
-    }
-  }
 }

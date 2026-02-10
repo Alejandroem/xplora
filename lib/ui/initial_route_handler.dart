@@ -19,6 +19,9 @@ class InitialRouteHandler extends ConsumerWidget {
     final authUser = ref.watch(currentAuthUserIdStreamProvider);
     final settings = ref.watch(settingsStateNotifierProvider);
 
+    // Get notifier to access helper methods (use read, not watch, since we already watch the state above)
+    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+
     final isLoadingSettings = authUser.whenOrNull(
           data: (userId) => userId != null && settings.isEmpty,
         ) ??
@@ -29,10 +32,8 @@ class InitialRouteHandler extends ConsumerWidget {
       return const SplashScreen();
     }
 
-    // Get user's theme preference from settings
-    final isDarkModeSetting =
-        settings.where((s) => s.key == 'isDarkMode').firstOrNull;
-    final isDarkMode = isDarkModeSetting?.value as bool?;
+    // Get user's theme preference from nested settings structure
+    final isDarkMode = settingsNotifier.isDarkMode();
 
     // Get current theme brightness from context
     final currentBrightness = Theme.of(context).brightness;

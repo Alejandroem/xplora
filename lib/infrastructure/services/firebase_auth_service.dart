@@ -6,6 +6,8 @@ import '../../domain/models/xplora_user.dart';
 import '../../domain/services/auth_service.dart';
 
 class FirebaseAuthService extends AuthService {
+  final Duration timeoutDuration = const Duration(seconds: 10);
+
   @override
   Future<XploraUser> signInWithEmailAndPassword(
       String email, String password) async {
@@ -58,9 +60,9 @@ class FirebaseAuthService extends AuthService {
     UserCredential userCredential = await auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
-    );
+    ).timeout(timeoutDuration);
 
-    final now = DateTime.now().toUtc().toIso8601String();
+    final now = Timestamp.now();
 
     CollectionReference collectionReference =
         FirebaseFirestore.instance.collection('users');
@@ -72,7 +74,7 @@ class FirebaseAuthService extends AuthService {
       'type': 'user',
       'createdAt': now,
       'updatedAt': now,
-    });
+    }).timeout(timeoutDuration);
 
     //send verification email
     // await userCredential.user!.sendEmailVerification();
@@ -224,13 +226,13 @@ class FirebaseAuthService extends AuthService {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
     if (user != null) {
-      final now = DateTime.now().toUtc().toIso8601String();
+      final now = Timestamp.now();
       CollectionReference collectionReference =
           FirebaseFirestore.instance.collection('users');
       await collectionReference.doc(user.uid).update({
         'username': username,
         'updatedAt': now,
-      });
+      }).timeout(timeoutDuration);
     }
   }
 
@@ -275,7 +277,7 @@ class FirebaseAuthService extends AuthService {
 
       // If this is a new user, create a user document (same flow as email signup)
       if (isNewUser) {
-        final now = DateTime.now().toUtc().toIso8601String();
+        final now = Timestamp.now();
 
         await collectionReference.doc(userCredential.user!.uid).set({
           'email': userCredential.user!.email,

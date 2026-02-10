@@ -30,7 +30,6 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final userAsync = ref.watch(currentAuthUserStreamProvider);
-    final profileAsync = ref.watch(createOrReadCurrentUserProfile);
 
     return GradientBackground(
       child: Scaffold(
@@ -81,31 +80,19 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                       color: context.colors.textPrimary,
                     ),
                   ),
-                  profileAsync.when(
-                    data: (profile) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: spacing16,
-                        children: [
-                          _buildInfoItem(
-                            context,
-                            'Username',
-                            profile?.username != null && profile!.username!.isNotEmpty
-                                ? '@${profile.username}'
-                                : 'Not set',
-                          ),
-                          _buildInfoItem(
-                            context,
-                            'Display Name',
-                            user.displayName.isNotEmpty
-                                ? user.displayName
-                                : 'Not set',
-                          ),
-                        ],
-                      );
-                    },
-                    loading: () => const SizedBox(),
-                    error: (_, __) => const SizedBox(),
+                  _buildInfoItem(
+                    context,
+                    'Username',
+                    user.username.isNotEmpty
+                        ? '@${user.username}'
+                        : 'Not set',
+                  ),
+                  _buildInfoItem(
+                    context,
+                    'Display Name',
+                    user.displayName.isNotEmpty
+                        ? user.displayName
+                        : 'Not set',
                   ),
                   _buildInfoItem(
                     context,
