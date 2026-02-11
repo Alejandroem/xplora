@@ -9,11 +9,6 @@ import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../utils/snackbar_utils.dart';
-import 'choose_interests_page.dart';
-
-// Error state providers
-final emailErrorProvider = StateProvider.autoDispose<String?>((ref) => null);
-final passwordErrorProvider = StateProvider.autoDispose<String?>((ref) => null);
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -41,38 +36,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  /// Clears error and triggers validation if error exists
-  void _clearErrorAndValidate(AutoDisposeStateProvider<String?> errorProvider) {
-    final error = ref.read(errorProvider);
-    if (error != null) {
-      ref.read(errorProvider.notifier).state = null;
-      // WidgetsBinding.instance
-      //     .addPostFrameCallback((_) => _formKey.currentState?.validate());
-      Future.delayed(const Duration(milliseconds: 50), () {
-        if (mounted) {
-          _formKey.currentState?.validate();
-        }
-      });
-    }
-  }
-
-  /// Clears all error providers
-  void _clearAllErrors() {
-    ref.read(emailErrorProvider.notifier).state = null;
-    ref.read(passwordErrorProvider.notifier).state = null;
-  }
-
-  /// Sets error on a specific provider and triggers validation
-  void _setErrorAndValidate(
-      AutoDisposeStateProvider<String?> errorProvider, String error) {
-    ref.read(errorProvider.notifier).state = error;
-    Future.delayed(const Duration(milliseconds: 50), () {
-      if (mounted) {
-        _formKey.currentState?.validate();
-      }
-    });
   }
 
   @override
@@ -111,33 +74,28 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 const SizedBox(height: spacing32),
 
                 // Email or Username field
-                Consumer(
-                  builder: (context, ref, child) {
-                    final emailError = ref.watch(emailErrorProvider);
-                    final hasError =
-                        emailError != null && emailError.isNotEmpty;
-                    return XploraTextField(
-                      controller: _emailController,
-                      hintText: 'Email or Username',
-                      keyboardType: TextInputType.emailAddress,
-                      prefixIcon: Padding(
-                          padding: const EdgeInsets.all(spacing12),
-                          child: Icon(
-                            LucideIcons.user,
-                            color: hasError
-                                ? errorColor
-                                : context.colors.textPrimary
-                                    .withValues(alpha: 0.5),
-                            size: 22,
-                          )),
-                      validator: (value) => emailError,
-                      onChanged: (value) {
-                        _clearErrorAndValidate(emailErrorProvider);
-                        ref
-                            .read(loginFormNotifierProvider.notifier)
-                            .setEmail(value.trim());
-                      },
-                    );
+                XploraTextField(
+                  controller: _emailController,
+                  hintText: 'Email or Username',
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  prefixIcon: Padding(
+                      padding: const EdgeInsets.all(spacing12),
+                      child: Icon(
+                        LucideIcons.user,
+                        color: context.colors.textPrimary.withValues(alpha: 0.5),
+                        size: 22,
+                      )),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Email or Username is required';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    ref
+                        .read(loginFormNotifierProvider.notifier)
+                        .setEmail(value.trim());
                   },
                 ),
                 const SizedBox(height: spacing16),
@@ -146,13 +104,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 Consumer(
                   builder: (context, ref, child) {
                     final loginState = ref.watch(loginFormNotifierProvider);
-                    final passwordError = ref.watch(passwordErrorProvider);
-                    final hasError =
-                        passwordError != null && passwordError.isNotEmpty;
                     return XploraTextField(
                       controller: _passwordController,
                       hintText: 'Password',
                       obscureText: loginState.obscureText,
+                      textInputAction: TextInputAction.done,
                       prefixIcon: Padding(
                         padding: const EdgeInsets.all(spacing12),
                         child: SvgPicture.asset(
@@ -160,10 +116,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           width: 22,
                           height: 22,
                           colorFilter: ColorFilter.mode(
-                            hasError
-                                ? errorColor
-                                : context.colors.textPrimary
-                                    .withValues(alpha: 0.5),
+                            context.colors.textPrimary.withValues(alpha: 0.5),
                             BlendMode.srcIn,
                           ),
                         ),
@@ -185,9 +138,16 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                         ),
                       ),
-                      validator: (value) => passwordError,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Password is required';
+                        }
+                        if (value.trim().length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
                       onChanged: (value) {
-                        _clearErrorAndValidate(passwordErrorProvider);
                         ref
                             .read(loginFormNotifierProvider.notifier)
                             .setPassword(value.trim());
@@ -228,44 +188,28 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       onPressed: loginState.isLoading
                           ? null
                           : () async {
-                              // Clear previous errors
-                              _clearAllErrors();
+                              // Validate form
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
 
                               final loginNotifier =
                                   ref.read(loginFormNotifierProvider.notifier);
 
                               try {
+                                // Perform login
                                 await loginNotifier.login();
 
-                                // Check for errors
+                                // Check for server-side errors
                                 final finalState =
                                     ref.read(loginFormNotifierProvider);
                                 if (finalState.errors.isNotEmpty) {
                                   if (context.mounted) {
-                                    // Parse and display errors
-                                    final errorMessage =
-                                        finalState.errors.first.toLowerCase();
-                                    if (errorMessage.contains('email') ||
-                                        errorMessage.contains('username') ||
-                                        errorMessage
-                                            .contains('user not found')) {
-                                      // Email-specific error - show under email field
-                                      _setErrorAndValidate(emailErrorProvider,
-                                          finalState.errors.first);
-                                    } else if (errorMessage
-                                        .contains('password')) {
-                                      // Password-specific error - show under password field
-                                      _setErrorAndValidate(
-                                          passwordErrorProvider,
-                                          finalState.errors.first);
-                                    } else {
-                                      // General error - show in snackbar
-                                      showXploraSnackBar(
-                                        context,
-                                        finalState.errors.first,
-                                        isError: true,
-                                      );
-                                    }
+                                    showXploraSnackBar(
+                                      context,
+                                      finalState.errors.first,
+                                      isError: true,
+                                    );
                                   }
                                 } else {
                                   // Success - refresh settings and navigate
@@ -289,7 +233,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                   }
                                 }
                               } catch (e) {
-                                // Get the current state to show the actual error
+                                // General error in snackbar
                                 final finalState =
                                     ref.read(loginFormNotifierProvider);
                                 if (context.mounted) {
@@ -297,7 +241,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                       finalState.errors.isNotEmpty
                                           ? finalState.errors.first
                                           : 'Sign in failed. Please try again.';
-                                  // Show general error in snackbar
                                   showXploraSnackBar(
                                     context,
                                     errorMessage,

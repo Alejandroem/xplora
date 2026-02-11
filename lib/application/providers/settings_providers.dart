@@ -1,19 +1,24 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../domain/services/auth_service.dart';
+import '../../domain/services/settings_crud_service.dart';
 import 'auth_service_providers.dart';
+import 'settings_crud_providers.dart';
 
 class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
   SettingsStateNotifier(
     this.authService,
+    this.settingsService,
   ) : super({}) {
     _init();
   }
 
   final AuthService authService;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final SettingsCrudService settingsService;
 
   void _init() async {
     final user = await authService.getAuthUser();
@@ -26,30 +31,12 @@ class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
     print('SettingsStateNotifier: Loading settings for user ${user.id}');
 
     try {
-      final docSnapshot = await _firestore
-          .collection('users')
-          .doc(user.id!)
-          .collection('settings')
-          .doc('data')
-          .get();
-
-      if (docSnapshot.exists) {
-        final data = docSnapshot.data()!;
-        print('SettingsStateNotifier: Loaded settings');
-        state = data;
-      }
+      final settings = await settingsService.getSettings(user.id!);
+      print('SettingsStateNotifier: Loaded settings');
+      state = settings;
     } catch (e) {
       print('SettingsStateNotifier: Error loading settings: $e');
     }
-  }
-
-  /// Get reference to user's settings document
-  DocumentReference<Map<String, dynamic>> _getUserSettingsDoc(String userId) {
-    return _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('settings')
-        .doc('data');
   }
 
   bool? isDarkMode() {
@@ -90,17 +77,15 @@ class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
     final newValue = !currentValue;
 
     try {
-      await _getUserSettingsDoc(user.id!).update({
-        'accessibility.dark_mode': newValue,
-        'updatedAt': Timestamp.now(),
-      });
+      await settingsService.toggleDarkMode(user.id!);
 
       // Update local state
       final newState = Map<String, dynamic>.from(state);
       if (newState['accessibility'] == null) {
         newState['accessibility'] = {};
       }
-      (newState['accessibility'] as Map<String, dynamic>)['dark_mode'] = newValue;
+      (newState['accessibility'] as Map<String, dynamic>)['dark_mode'] =
+          newValue;
       newState['updatedAt'] = Timestamp.now();
       state = newState;
     } catch (e) {
@@ -116,21 +101,20 @@ class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
     if (isNotificationsEnabled() == enabled) return;
 
     try {
-      await _getUserSettingsDoc(user.id!).update({
-        'notifications.push_enabled': enabled,
-        'updatedAt': Timestamp.now(),
-      });
+      await settingsService.setNotificationsEnabled(user.id!, enabled);
 
       // Update local state
       final newState = Map<String, dynamic>.from(state);
       if (newState['notifications'] == null) {
         newState['notifications'] = {};
       }
-      (newState['notifications'] as Map<String, dynamic>)['push_enabled'] = enabled;
+      (newState['notifications'] as Map<String, dynamic>)['push_enabled'] =
+          enabled;
       newState['updatedAt'] = Timestamp.now();
       state = newState;
     } catch (e) {
       print('Error setting notifications: $e');
+      rethrow; // Rethrow to allow UI to handle the error
     }
   }
 
@@ -142,17 +126,15 @@ class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
     final newValue = !currentValue;
 
     try {
-      await _getUserSettingsDoc(user.id!).update({
-        'notifications.push_enabled': newValue,
-        'updatedAt': Timestamp.now(),
-      });
+      await settingsService.toggleNotifications(user.id!);
 
       // Update local state
       final newState = Map<String, dynamic>.from(state);
       if (newState['notifications'] == null) {
         newState['notifications'] = {};
       }
-      (newState['notifications'] as Map<String, dynamic>)['push_enabled'] = newValue;
+      (newState['notifications'] as Map<String, dynamic>)['push_enabled'] =
+          newValue;
       newState['updatedAt'] = Timestamp.now();
       state = newState;
 
@@ -173,10 +155,7 @@ class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
     if (isLocationEnabled() == enabled) return;
 
     try {
-      await _getUserSettingsDoc(user.id!).update({
-        'permissions.location': enabled,
-        'updatedAt': Timestamp.now(),
-      });
+      await settingsService.setLocationEnabled(user.id!, enabled);
 
       // Update local state
       final newState = Map<String, dynamic>.from(state);
@@ -188,6 +167,7 @@ class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
       state = newState;
     } catch (e) {
       print('Error setting location: $e');
+      rethrow; // Rethrow to allow UI to handle the error
     }
   }
 
@@ -199,10 +179,7 @@ class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
     final newValue = !currentValue;
 
     try {
-      await _getUserSettingsDoc(user.id!).update({
-        'permissions.location': newValue,
-        'updatedAt': Timestamp.now(),
-      });
+      await settingsService.toggleLocation(user.id!);
 
       // Update local state
       final newState = Map<String, dynamic>.from(state);
@@ -227,5 +204,14 @@ final settingsStateNotifierProvider =
     StateNotifierProvider<SettingsStateNotifier, Map<String, dynamic>>((ref) {
   return SettingsStateNotifier(
     ref.read(authServiceProvider),
+    ref.read(settingsCrudServiceProvider),
   );
+});
+
+/// Provider that exposes only the dark mode value
+/// Rebuilds only when dark mode setting changes
+final isDarkModeProvider = Provider<bool?>((ref) {
+  final settings = ref.watch(settingsStateNotifierProvider);
+  final accessibility = settings['accessibility'] as Map<String, dynamic>?;
+  return accessibility?['dark_mode'] as bool?;
 });

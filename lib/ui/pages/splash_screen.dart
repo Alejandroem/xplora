@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../application/providers/local_storage_providers.dart';
 import '../../infrastructure/constants.dart';
@@ -46,8 +47,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GradientBackground(
-        child: SafeArea(
+      body: SafeArea(
+        child: GradientBackground(
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: spacing32,
@@ -56,16 +57,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             child: Column(
               children: [
                 // Top section: Text logo
-                const SizedBox(height: spacing48),
+                SizedBox(height: 48.h),
                 _buildTextLogo(context),
-
+          
                 // Center section: Main logo (expanded to center it)
                 Expanded(
                   child: Center(
                     child: _buildMainLogo(context),
                   ),
                 ),
-
+          
                 // Bottom section: Tagline + Button (only when showGetStarted is true)
                 _buildBottomSection(context),
                 const SizedBox(height: spacing24),

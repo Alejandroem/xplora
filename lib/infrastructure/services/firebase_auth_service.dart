@@ -237,6 +237,28 @@ class FirebaseAuthService extends AuthService {
   }
 
   @override
+  Future<String?> getEmailByUsername(String username) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .limit(1)
+          .get()
+          .timeout(timeoutDuration);
+
+      if (querySnapshot.docs.isEmpty) {
+        return null;
+      }
+
+      final userData = querySnapshot.docs.first.data();
+      return userData['email'] as String?;
+    } catch (e) {
+      print('Error fetching email by username: $e');
+      return null;
+    }
+  }
+
+  @override
   Future<({XploraUser user, bool isNewUser, String? photoUrl})> signInWithGoogle() async {
     try {
       FirebaseAuth auth = FirebaseAuth.instance;

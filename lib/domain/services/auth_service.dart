@@ -28,6 +28,10 @@ abstract class AuthService {
 
   Future<void> updateEmail(String email);
 
+  /// Fetches the email address associated with a username
+  /// Returns the email if username exists, null otherwise
+  Future<String?> getEmailByUsername(String username);
+
   /// Returns a record with the user, whether this is a new user (first Google sign-in), and optional photo URL
   Future<({XploraUser user, bool isNewUser, String? photoUrl})> signInWithGoogle();
 }

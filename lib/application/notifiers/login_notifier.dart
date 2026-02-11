@@ -24,12 +24,7 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       return;
     }
 
-    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      state = state.copyWith(
-          email: email, touchedEmail: true, errors: ['Invalid email']);
-      return;
-    }
-
+    // No email format validation - we accept username OR email
     state = state.copyWith(email: email, touchedEmail: true, errors: []);
   }
 
@@ -58,10 +53,9 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
 
   bool isValid() {
     final errors = <String>[];
+    // Accept username OR email - no format validation
     if (state.email.isEmpty) {
-      errors.add('Email is required');
-    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(state.email)) {
-      errors.add('Please enter a valid email');
+      errors.add('Email or Username is required');
     }
     if (state.password.isEmpty) {
       errors.add('Password is required');
@@ -79,9 +73,36 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       state = state.copyWith(isLoading: false);
     }
     if (state.errors.isNotEmpty) return;
+
     try {
+      // Determine if input is email or username
+      String emailToUse = state.email;
+      final isEmailFormat = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(state.email);
+
+      // If not email format, treat as username and fetch email
+      if (!isEmailFormat) {
+        print('Fetching email for username ${state.email}');
+        final fetchedEmail = await authenticationService.getEmailByUsername(state.email);
+
+        if (fetchedEmail == null) {
+          // Username not found
+          state = state.copyWith(
+            errors: ['Invalid email/username or password.'],
+            isLoading: false,
+          );
+          return; // Return early instead of throwing
+        }
+
+        emailToUse = fetchedEmail;
+      } else {
+        print('Using email ${state.email}');
+      }
+
+      print('Logging in with email $emailToUse');
+
+      // Sign in with email (either provided or fetched from username)
       final user = await authenticationService.signInWithEmailAndPassword(
-        state.email,
+        emailToUse,
         state.password,
       );
 
@@ -108,7 +129,7 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
     } catch (e) {
       print(e.toString());
       String errorMessage = 'Error logging in, please try again.';
-      
+
       // Parse Firebase Auth specific errors
       if (e.toString().contains('user-not-found')) {
         errorMessage = 'No account found with this email address.';
@@ -123,9 +144,9 @@ class LoginFormNotifier extends StateNotifier<LoginForm> {
       } else if (e.toString().contains('network-request-failed')) {
         errorMessage = 'Network error. Please check your connection.';
       } else if (e.toString().contains('invalid-credential')) {
-        errorMessage = 'Invalid email or password.';
+        errorMessage = 'Invalid email/username or password.';
       }
-      
+
       state = state.copyWith(
         errors: [errorMessage],
         isLoading: false,

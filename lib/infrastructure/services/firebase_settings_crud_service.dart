@@ -5,7 +5,7 @@ import '../../domain/services/settings_crud_service.dart';
 
 class FirebaseSettingsCrudService implements SettingsCrudService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Duration timeoutDuration = const Duration(seconds: 10);
+  final Duration _timeoutDuration = const Duration(seconds: 10);
 
   /// Get the settings data document reference for a specific user
   /// Path: users/{userId}/settings/data
@@ -52,7 +52,7 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
     final now = Timestamp.now();
 
     // Get existing data or create new
-    final snapshot = await docRef.get().timeout(timeoutDuration);
+    final snapshot = await docRef.get().timeout(_timeoutDuration);
     final exists = snapshot.exists;
 
     Map<String, dynamic> updateData = {
@@ -66,7 +66,7 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
     }
 
     // Save to Firestore
-    await docRef.set(updateData, SetOptions(merge: true)).timeout(timeoutDuration);
+    await docRef.set(updateData, SetOptions(merge: true)).timeout(_timeoutDuration);
 
     return entity.copyWith(updatedAt: now as DateTime);
   }
@@ -86,7 +86,7 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
   Future<List<Setting>> readBy(String field, String value) async {
     if (field == 'userId') {
       final docRef = _getUserSettingsDoc(value);
-      final snapshot = await docRef.get().timeout(timeoutDuration);
+      final snapshot = await docRef.get().timeout(_timeoutDuration);
 
       if (!snapshot.exists) {
         return [];
@@ -136,6 +136,7 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
   }
 
   /// Creates default settings for a new user with grouped structure
+  @override
   Future<void> createDefaultSettings({
     required String userId,
     required bool locationEnabled,
@@ -159,7 +160,7 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
       'updatedAt': now,
     };
 
-    await docRef.set(settingsData).timeout(timeoutDuration);
+    await docRef.set(settingsData).timeout(_timeoutDuration);
   }
 
   @override
@@ -256,5 +257,94 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
   }) async {
     throw UnimplementedError(
         'readPaginated is not supported for Settings. Settings are stored in a single document per user.');
+  }
+
+  @override
+  Future<Map<String, dynamic>> getSettings(String userId) async {
+    final docRef = _getUserSettingsDoc(userId);
+    final snapshot = await docRef.get().timeout(_timeoutDuration);
+
+    if (!snapshot.exists) {
+      return {};
+    }
+
+    return snapshot.data() ?? {};
+  }
+
+  @override
+  Future<void> setLocationEnabled(String userId, bool enabled) async {
+    final docRef = _getUserSettingsDoc(userId);
+
+    await docRef.update({
+      'permissions.location': enabled,
+      'updatedAt': Timestamp.now(),
+    }).timeout(_timeoutDuration);
+  }
+
+  @override
+  Future<void> setNotificationsEnabled(String userId, bool enabled) async {
+    final docRef = _getUserSettingsDoc(userId);
+
+    await docRef.update({
+      'notifications.push_enabled': enabled,
+      'updatedAt': Timestamp.now(),
+    }).timeout(_timeoutDuration);
+  }
+
+  @override
+  Future<void> toggleDarkMode(String userId) async {
+    final docRef = _getUserSettingsDoc(userId);
+    final snapshot = await docRef.get().timeout(_timeoutDuration);
+
+    if (!snapshot.exists) {
+      throw Exception('Settings not found for user $userId');
+    }
+
+    final data = snapshot.data()!;
+    final accessibility = data['accessibility'] as Map<String, dynamic>?;
+    final currentValue = accessibility?['dark_mode'] as bool? ?? false;
+
+    await docRef.update({
+      'accessibility.dark_mode': !currentValue,
+      'updatedAt': Timestamp.now(),
+    }).timeout(_timeoutDuration);
+  }
+
+  @override
+  Future<void> toggleNotifications(String userId) async {
+    final docRef = _getUserSettingsDoc(userId);
+    final snapshot = await docRef.get().timeout(_timeoutDuration);
+
+    if (!snapshot.exists) {
+      throw Exception('Settings not found for user $userId');
+    }
+
+    final data = snapshot.data()!;
+    final notifications = data['notifications'] as Map<String, dynamic>?;
+    final currentValue = notifications?['push_enabled'] as bool? ?? false;
+
+    await docRef.update({
+      'notifications.push_enabled': !currentValue,
+      'updatedAt': Timestamp.now(),
+    }).timeout(_timeoutDuration);
+  }
+
+  @override
+  Future<void> toggleLocation(String userId) async {
+    final docRef = _getUserSettingsDoc(userId);
+    final snapshot = await docRef.get().timeout(_timeoutDuration);
+
+    if (!snapshot.exists) {
+      throw Exception('Settings not found for user $userId');
+    }
+
+    final data = snapshot.data()!;
+    final permissions = data['permissions'] as Map<String, dynamic>?;
+    final currentValue = permissions?['location'] as bool? ?? false;
+
+    await docRef.update({
+      'permissions.location': !currentValue,
+      'updatedAt': Timestamp.now(),
+    }).timeout(_timeoutDuration);
   }
 }

@@ -17,13 +17,14 @@ class InitialRouteHandler extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Check if settings are being initialized (empty on first load before Firestore loads)
     final authUser = ref.watch(currentAuthUserIdStreamProvider);
-    final settings = ref.watch(settingsStateNotifierProvider);
 
-    // Get notifier to access helper methods (use read, not watch, since we already watch the state above)
-    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+    // Watch only the isEmpty state to avoid rebuilding on every settings change
+    final isSettingsEmpty = ref.watch(
+      settingsStateNotifierProvider.select((settings) => settings.isEmpty),
+    );
 
     final isLoadingSettings = authUser.whenOrNull(
-          data: (userId) => userId != null && settings.isEmpty,
+          data: (userId) => userId != null && isSettingsEmpty,
         ) ??
         false;
 
@@ -33,7 +34,9 @@ class InitialRouteHandler extends ConsumerWidget {
     }
 
     // Get user's theme preference from nested settings structure
-    final isDarkMode = settingsNotifier.isDarkMode();
+    final isDarkMode = ref.watch(isDarkModeProvider);
+
+    // print('🌙 isDarkMode: $isDarkMode');
 
     // Get current theme brightness from context
     final currentBrightness = Theme.of(context).brightness;

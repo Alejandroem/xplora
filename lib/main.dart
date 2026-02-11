@@ -61,16 +61,10 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the settings state to rebuild when settings change
-    ref.watch(settingsStateNotifierProvider);
+    // Watch only the dark mode value to rebuild only when it changes
+    final isDarkMode = ref.watch(isDarkModeProvider);
 
-    // Get notifier to access helper methods
-    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
-
-    // Get dark mode preference from nested settings structure
-    final isDarkMode = settingsNotifier.isDarkMode();
-
-    print('isDarkMode: $isDarkMode');
+    print('🌙 isDarkMode: $isDarkMode');
 
     // FirebaseAuth.instance.signOut();
 
