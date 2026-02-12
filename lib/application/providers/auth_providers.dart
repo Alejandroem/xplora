@@ -46,24 +46,24 @@ final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
     }
 
     // First check if profile exists
-    final existingProfile = await profileService.read(user.id!);
-
-    // Create profile if it doesn't exist
-    if (existingProfile == null) {
-      final now = Timestamp.now();
-      await profileService.create(
-        XploraProfile(
-          id: null,
-          userId: user.id!,
-          experience: 0,
-          interests: [],
-          avatarUrl: '',
-          bio: '',
-          createdAt: now,
-          updatedAt: now,
-        ),
-      );
-    }
+    // final existingProfile = await profileService.read(user.id!);
+    //
+    // // Create profile if it doesn't exist
+    // if (existingProfile == null) {
+    //   final now = Timestamp.now();
+    //   await profileService.create(
+    //     XploraProfile(
+    //       id: null,
+    //       userId: user.id!,
+    //       experience: 0,
+    //       interests: [],
+    //       avatarUrl: '',
+    //       bio: '',
+    //       createdAt: now,
+    //       updatedAt: now,
+    //     ),
+    //   );
+    // }
 
     // Yield the current profile (read it fresh after potential creation)
     final profile = await profileService.read(user.id!);
@@ -96,6 +96,7 @@ final loginFormNotifierProvider =
     StateNotifierProvider.autoDispose<LoginFormNotifier, LoginForm>((ref) {
   final authService = ref.watch(authServiceProvider);
   final profileService = ref.watch(profileServiceProvider);
+  final userService = ref.watch(userServiceProvider);
   final settingsService = ref.watch(settingsCrudServiceProvider);
   return LoginFormNotifier(
     const LoginForm(
@@ -109,6 +110,7 @@ final loginFormNotifierProvider =
     ),
     authService,
     profileService,
+    userService,
     settingsService,
   );
 });

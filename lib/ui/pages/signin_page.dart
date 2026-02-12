@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -46,6 +49,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           padding: const EdgeInsets.symmetric(
               horizontal: spacing16, vertical: spacing32),
           child: Form(
+            autovalidateMode: AutovalidateMode.onUnfocus,
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,12 +87,15 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       padding: const EdgeInsets.all(spacing12),
                       child: Icon(
                         LucideIcons.user,
-                        color: context.colors.textPrimary.withValues(alpha: 0.5),
+                        color:
+                            context.colors.textPrimary.withValues(alpha: 0.5),
                         size: 22,
                       )),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Email or Username is required';
+                    } else if (value.trim().length < 3) {
+                      return 'Email or Username must be at least 3 characters';
                     }
                     return null;
                   },
@@ -326,7 +333,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                       );
                                     }
                                   } else {
-                                    // Success - verify by checking if we have a user
+                                    // CRITICAL: Verify user is actually authenticated
+                                    // When user cancels Google sign-in, errors remain empty
+                                    // (silent cancellation for better UX), but no user is signed in.
+                                    // This check prevents navigation/settings loading when no one is authenticated.
                                     final authService =
                                         ref.read(authServiceProvider);
                                     final currentUser =
@@ -349,7 +359,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
                                       // Navigate to complete profile if new user, otherwise pop
                                       if (finalState.needsProfileCompletion) {
-                                        Navigator.pushReplacementNamed(context, '/choose-username');
+                                        Navigator.pushReplacementNamed(
+                                            context, '/choose-username');
                                       } else {
                                         // Refresh location to ensure it's loaded
                                         ref.invalidate(
@@ -368,25 +379,84 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                         const SizedBox(height: spacing16),
 
                         // Continue with Apple
-                        SecondaryButton(
-                          height: 50,
-                          text: 'Continue with Apple',
-                          icon: Icon(
-                            Icons.apple,
-                            color: context.colors.textPrimary,
-                            size: 20,
+                        if (!kIsWeb &&
+                            defaultTargetPlatform == TargetPlatform.iOS) ...[
+                          SecondaryButton(
+                            height: 50,
+                            text: 'Continue with Apple',
+                            icon: Icon(
+                              Icons.apple,
+                              color: context.colors.textPrimary,
+                              size: 20,
+                            ),
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    final loginNotifier = ref.read(
+                                        loginFormNotifierProvider.notifier);
+
+                                    // Trigger Apple Sign-In
+                                    await loginNotifier.loginWithApple();
+
+                                    // Check for errors and handle navigation
+                                    final finalState =
+                                        ref.read(loginFormNotifierProvider);
+
+                                    if (finalState.errors.isNotEmpty) {
+                                      // Show error message in UI (user cancellation won't have errors)
+                                      if (context.mounted) {
+                                        showXploraSnackBar(
+                                          context,
+                                          finalState.errors.first,
+                                          isError: true,
+                                        );
+                                      }
+                                    } else {
+                                      // CRITICAL: Verify user is actually authenticated
+                                      // When user cancels Apple sign-in, errors remain empty
+                                      // (silent cancellation for better UX), but no user is signed in.
+                                      // This check prevents navigation/settings loading when no one is authenticated.
+                                      final authService =
+                                          ref.read(authServiceProvider);
+                                      final currentUser =
+                                          await authService.getAuthUser();
+
+                                      if (currentUser != null &&
+                                          context.mounted) {
+                                        // Success - refresh settings and navigate
+                                        // Refresh settings to ensure they're loaded
+                                        ref.invalidate(
+                                            settingsStateNotifierProvider);
+
+                                        // Show appropriate message based on whether it's a new user
+                                        showXploraSnackBar(
+                                          context,
+                                          finalState.needsProfileCompletion
+                                              ? 'Signed up successfully!'
+                                              : 'Signed in successfully!',
+                                        );
+
+                                        // Navigate to complete profile if new user, otherwise pop
+                                        if (finalState.needsProfileCompletion) {
+                                          Navigator.pushReplacementNamed(
+                                              context, '/choose-username');
+                                        } else {
+                                          // Refresh location to ensure it's loaded
+                                          ref.invalidate(
+                                              nearbyAdventuresProvider);
+
+                                          // Refresh auto enable location provider
+                                          ref.invalidate(
+                                              autoEnableLocationTrackingProvider);
+
+                                          Navigator.of(context).pop();
+                                        }
+                                      }
+                                    }
+                                  },
                           ),
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  // TODO: Implement Apple sign in
-                                  showXploraSnackBar(
-                                    context,
-                                    'Apple sign in coming soon!',
-                                  );
-                                },
-                        ),
-                        const SizedBox(height: spacing16),
+                          const SizedBox(height: spacing16),
+                        ],
 
                         // Continue as Guest
                         SecondaryButton(

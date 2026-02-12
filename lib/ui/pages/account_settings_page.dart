@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
-import '../../application/providers/profile_providers.dart' as profile_providers;
+import '../../application/providers/profile_providers.dart'
+    as profile_providers;
 import '../../application/providers/xplorauser_providers.dart';
 import '../../domain/models/xplora_user.dart';
 import '../../theme.dart';
@@ -83,16 +84,12 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   _buildInfoItem(
                     context,
                     'Username',
-                    user.username.isNotEmpty
-                        ? '@${user.username}'
-                        : 'Not set',
+                    user.username.isNotEmpty ? '@${user.username}' : 'Not set',
                   ),
                   _buildInfoItem(
                     context,
                     'Display Name',
-                    user.displayName.isNotEmpty
-                        ? user.displayName
-                        : 'Not set',
+                    user.displayName.isNotEmpty ? user.displayName : 'Not set',
                   ),
                   _buildInfoItem(
                     context,
@@ -123,10 +120,12 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     text: 'Delete Account',
                     onPressed: () async {
                       // Show confirmation dialog
-                      final confirmed = await showDeleteAccountConfirmationDialog(context);
+                      final confirmed =
+                          await showDeleteAccountConfirmationDialog(context);
 
                       if (confirmed == true && context.mounted) {
-                        final xploraProfileProvider = ref.read(profile_providers.profileServiceProvider);
+                        final xploraProfileProvider =
+                            ref.read(profile_providers.profileServiceProvider);
                         final authProvider = ref.read(authServiceProvider);
                         await xploraProfileProvider.delete(user.id!);
                         await authProvider.deleteAccount();
@@ -186,7 +185,7 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = ref.watch(authServiceProvider);
+    final userService = ref.watch(userServiceProvider);
 
     return Scaffold(
       appBar: const GlassAppBar(
@@ -209,17 +208,17 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
                 onPressed: () async {
                   final newDisplayName = displayNameController.text.trim();
                   try {
-                    await authService.updateName(newDisplayName);
-                    ref.read(userServiceProvider).update(
-                          widget.user.copyWith(displayName: newDisplayName),
-                          widget.user.id!,
-                        );
+                    await userService.updateName(
+                      widget.user.id!,
+                      newDisplayName,
+                    );
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             'Display name updated',
-                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary),
                           ),
                           backgroundColor: brandPrimary,
                         ),
@@ -232,7 +231,8 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
                         SnackBar(
                           content: Text(
                             'Failed to update display name: $e',
-                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary),
                           ),
                           backgroundColor: errorColor,
                         ),
@@ -248,7 +248,6 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
     );
   }
 }
-
 
 class EditEmailPage extends ConsumerStatefulWidget {
   final XploraUser user;
@@ -311,7 +310,8 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
                         SnackBar(
                           content: Text(
                             'Email updated',
-                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary),
                           ),
                           backgroundColor: brandPrimary,
                         ),
@@ -324,7 +324,8 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
                         SnackBar(
                           content: Text(
                             'Failed to update email: $e',
-                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary),
                           ),
                           backgroundColor: errorColor,
                         ),

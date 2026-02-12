@@ -145,6 +145,7 @@ class _ChooseUsernamePageState extends ConsumerState<ChooseUsernamePage> {
                               usernameNotifier
                                   .checkUsernameAvailability(value.trim());
                             },
+                            isEnabled: !usernameState.isSavingUsername,
                           ),
 
                           // Availability status message

@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/services/auth_service.dart';
+import '../../domain/services/xplora_user_crud_service.dart';
 import '../../utils/username_validator.dart';
 
 class UsernameState {
@@ -46,13 +46,13 @@ class UsernameState {
 
 class UsernameNotifier extends StateNotifier<UsernameState> {
   final AuthService authService;
+  final XploraUserService userService;
 
-  UsernameNotifier(this.authService) : super(const UsernameState());
+  UsernameNotifier(this.authService, this.userService)
+      : super(const UsernameState());
 
   Timer? _usernameValidationTimer;
   String? _currentlyCheckingUsername;
-
-  final Duration timeoutDuration = const Duration(seconds: 10);
 
   @override
   void dispose() {
@@ -105,29 +105,17 @@ class UsernameNotifier extends StateNotifier<UsernameState> {
     });
   }
 
-  /// Performs the actual Firestore query to check username availability
+  /// Performs the username availability check via the user service
   Future<void> _performUsernameValidation(String username) async {
     // Track the username we're checking to prevent race conditions
     _currentlyCheckingUsername = username;
 
     try {
-      
-
-    // await Future.delayed(timeoutDuration, () {
-    // });
-    
-    //   throw Exception();
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('username', isEqualTo: username)
-          .get()
-          .timeout(timeoutDuration);
+      final isAvailable = await userService.isUsernameAvailable(username);
 
       // Only update state if this is still the current username being checked
       // This prevents race conditions when user types quickly
       if (_currentlyCheckingUsername == username) {
-        final isAvailable = querySnapshot.docs.isEmpty;
-
         state = state.copyWith(
           isCheckingUsername: false,
           isUsernameAvailable: isAvailable,
@@ -159,8 +147,15 @@ class UsernameNotifier extends StateNotifier<UsernameState> {
       // Set loading state
       state = state.copyWith(isSavingUsername: true);
 
-      // Save username using auth service (updates main user document)
-      await authService.updateUsername(state.username);
+      // Get current user ID
+      final user = await authService.getAuthUser();
+      if (user == null || user.id == null) {
+        state = state.copyWith(isSavingUsername: false);
+        return false;
+      }
+
+      // Save username using user service (updates main user document)
+      await userService.updateUsername(user.id!, state.username);
 
       // Success
       state = state.copyWith(isSavingUsername: false);
