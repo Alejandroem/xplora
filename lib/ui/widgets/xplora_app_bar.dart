@@ -15,7 +15,6 @@ import '../components/search_components.dart';
 import '../pages/choose_interests_page.dart';
 import '../pages/enable_location_page.dart';
 import '../pages/filters_page.dart';
-import '../pages/profile_page.dart';
 
 class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final double? height;
@@ -110,11 +109,9 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                 : _buildUserIcon(context),
                             badgeText: 'Lvl 7',
                             onTap: () {
-                              Navigator.push(
+                              Navigator.pushNamed(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProfilePage(profile),
-                                ),
+                                '/profile',
                               );
                             },
                           );

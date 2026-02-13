@@ -18,6 +18,8 @@ class InitialRouteHandler extends ConsumerWidget {
     // Check if settings are being initialized (empty on first load before Firestore loads)
     final authUser = ref.watch(currentAuthUserIdStreamProvider);
 
+    print('currentUserId: $authUser');
+
     // Watch only the isEmpty state to avoid rebuilding on every settings change
     final isSettingsEmpty = ref.watch(
       settingsStateNotifierProvider.select((settings) => settings.isEmpty),

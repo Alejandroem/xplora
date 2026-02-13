@@ -261,6 +261,10 @@ class _HomeState extends ConsumerState<Home> {
     ref.watch(questInProgressTrackerProvider);
     ref.watch(autoEnableLocationTrackingProvider);
 
+    ref.listen(currentUserProvider, (previous, next) {
+      print('currentUser: $next');
+    });
+
     // Listen for permanently denied location permission
     ref.listen<LocationPermissionRequestStatus>(
       locationPermissionRequestStatusProvider,

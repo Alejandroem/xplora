@@ -17,11 +17,64 @@ final profileTabIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 final socialTabIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 
 class ProfilePage extends ConsumerWidget {
-  final XploraProfile profile;
-  const ProfilePage(this.profile, {super.key});
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(createOrReadCurrentUserProfile).when(
+      data: (profile) {
+        if (profile == null) {
+          return _buildErrorState(context);
+        }
+        return _buildProfileScreen(context, ref, profile);
+      },
+      loading: () => _buildLoadingState(context),
+      error: (e, st) => _buildErrorState(context),
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context) {
+    return GradientBackground(
+      child: Scaffold(
+        appBar: GlassAppBar(hideBottomDivider: true),
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(brandSecondary),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context) {
+    return GradientBackground(
+      child: Scaffold(
+        appBar: GlassAppBar(hideBottomDivider: true),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: context.colors.iconColor.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: spacing16),
+              Text(
+                'Unable to load profile',
+                style: bodyTextStyle.copyWith(
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileScreen(
+      BuildContext context, WidgetRef ref, XploraProfile profile) {
     final selectedTabIndex = ref.watch(profileTabIndexProvider);
 
     return GradientBackground(
@@ -60,7 +113,7 @@ class ProfilePage extends ConsumerWidget {
             padding:
                 const EdgeInsets.fromLTRB(spacing16, spacing12, spacing16, 0),
             child: selectedTabIndex == 0
-                ? _buildProfileContent(context, ref)
+                ? _buildProfileContent(context, ref, profile)
                 : _buildSocialContent(context, ref),
           ),
         ),
@@ -68,7 +121,7 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileContent(BuildContext context, WidgetRef ref) {
+  Widget _buildProfileContent(BuildContext context, WidgetRef ref, XploraProfile profile) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -166,15 +219,18 @@ class ProfilePage extends ConsumerWidget {
         const SizedBox(height: spacing32),
         // First name with Level as superscript
         Row(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _getDisplayFirstName(ref),
-              style: bodyTextStyle.copyWith(
-                fontSize: 24,
-                color: context.colors.textPrimary,
-                fontWeight: FontWeight.bold,
+            Flexible(
+              child: Text(
+                _getDisplayName(ref),
+                style: bodyTextStyle.copyWith(
+                  fontSize: 24,
+                  color: context.colors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: spacing4),
@@ -370,18 +426,18 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  String _getDisplayFirstName(WidgetRef ref) {
+  String _getDisplayName(WidgetRef ref) {
     final currentUserAsync = ref.watch(currentUserProvider);
 
     return currentUserAsync.when(
       data: (user) {
         if (user != null && user.displayName.isNotEmpty) {
-          return user.displayName.split(' ').first;
+          return user.displayName;
         }
-        return 'Set first name';
+        return 'Set name';
       },
       loading: () => '...',
-      error: (_, __) => 'Set first name',
+      error: (_, __) => 'Set name',
     );
   }
 
@@ -520,7 +576,7 @@ class ProfilePage extends ConsumerWidget {
                 children: [
                   // First name
                   Text(
-                    _getDisplayFirstName(ref),
+                    _getDisplayName(ref),
                     style: bodyTextStyle.copyWith(
                       color: context.colors.textPrimary,
                       fontSize: 20

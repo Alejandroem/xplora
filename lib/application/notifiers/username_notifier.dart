@@ -161,6 +161,7 @@ class UsernameNotifier extends StateNotifier<UsernameState> {
       state = state.copyWith(isSavingUsername: false);
       return true;
     } catch (e) {
+      print(e);
       state = state.copyWith(isSavingUsername: false);
       return false;
     }

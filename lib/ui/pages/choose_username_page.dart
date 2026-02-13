@@ -221,10 +221,10 @@ class _ChooseUsernamePageState extends ConsumerState<ChooseUsernamePage> {
                         if (context.mounted) {
                           if (success) {
                             // Show success message
-                            showXploraSnackBar(
-                              context,
-                              'Username saved successfully!',
-                            );
+                            // showXploraSnackBar(
+                            //   context,
+                            //   'Username saved successfully!',
+                            // );
 
                             // Navigate to interests selection screen
                             Navigator.pushReplacementNamed(

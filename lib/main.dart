@@ -22,6 +22,7 @@ import 'ui/pages/lora_ai_assistant.dart';
 import 'ui/pages/onboarding.dart';
 import 'ui/pages/quest_main_screen.dart';
 import 'ui/pages/quest_detail.dart';
+import 'ui/pages/profile_page.dart';
 import 'ui/pages/signin_page.dart';
 import 'ui/pages/signup_page.dart';
 import 'ui/pages/complete_profile_page.dart';
@@ -113,6 +114,7 @@ class MyApp extends ConsumerWidget {
             '/enable-notifications': (context) =>
                 const EnableNotificationsPage(),
             '/how-it-works': (context) => const HowItWorksPage(),
+            '/profile': (context) => const ProfilePage(),
           },
           onGenerateRoute: (settings) {
             // Handle quest detail route with arguments
