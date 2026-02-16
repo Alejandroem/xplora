@@ -3,9 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+// import '../../application/providers/app_startup_providers.dart'; // TODO: Enable if MainActivity destruction becomes an issue
 import '../../application/providers/auth_providers.dart';
+import '../../application/providers/image_picker_providers.dart';
+import '../../application/providers/profile_providers.dart';
+import '../../application/providers/storage_providers.dart';
 import '../../domain/models/xplora_profile.dart';
+import '../../domain/services/image_picker_service.dart';
 import '../../theme.dart';
+import '../../utils/shimmer_widgets.dart';
+import '../../utils/snackbar_utils.dart';
 import '../widgets/achievements_grid.dart';
 import '../widgets/app_bar_tabs.dart';
 import 'settings_page.dart';
@@ -19,8 +26,127 @@ final socialTabIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
+  /// Pick image from gallery, upload to Firebase Storage, and update profile
+  Future<void> _pickProfileImage(BuildContext context, WidgetRef ref) async {
+    try {
+      final imagePickerService = ref.read(imagePickerServiceProvider);
+
+      // Pick image from gallery with automatic compression
+      final result = await imagePickerService.pickImageFromGallery(
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (result != null) {
+        // Get current user ID
+        final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+        final userId = userIdAsync.value;
+
+        if (userId == null) {
+          if (context.mounted) {
+            showXploraSnackBar(
+              context,
+              'Unable to upload: User not authenticated',
+              isError: true,
+              duration: const Duration(seconds: 3),
+            );
+          }
+          return;
+        }
+
+        // Show uploading snackbar
+        if (context.mounted) {
+          showXploraSnackBar(
+            context,
+            'Updating profile picture...',
+            isInfo: true,
+            duration: const Duration(seconds: 30), // Long duration for upload
+          );
+        }
+
+        // Upload to Firebase Storage
+        final storageService = ref.read(storageServiceProvider);
+        final downloadUrl = await storageService.uploadImage(
+          result.path,
+          userId, // Use userId as filename to overwrite previous avatar
+        );
+
+        // Update profile with new avatar URL
+        final profileService = ref.read(profileServiceProvider);
+        final updateSuccess = await profileService.updateFields(
+          userId,
+          {'avatarUrl': downloadUrl},
+        );
+
+        if (!updateSuccess) {
+          throw Exception('Failed to update profile with new avatar URL');
+        }
+
+        // Dismiss uploading snackbar and show success
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          showXploraSnackBar(
+            context,
+            'Profile picture updated successfully',
+            duration: const Duration(seconds: 2),
+          );
+        }
+
+        // UI will automatically update since it's watching createOrReadCurrentUserProfile stream
+      }
+      // If result is null, user cancelled - no action needed
+    } on ImagePickerException catch (e) {
+      // Handle our custom exception with user-friendly message
+      if (context.mounted) {
+        showXploraSnackBar(
+          context,
+          e.message,
+          isError: true,
+          duration: const Duration(seconds: 4),
+        );
+      }
+    } catch (e) {
+      // Handle any other unexpected errors (upload/update failures)
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        showXploraSnackBar(
+          context,
+          'Failed to update profile picture: ${e.toString()}',
+          isError: true,
+          duration: const Duration(seconds: 4),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    /* ========================================================================
+     * ANDROID MAINACTIVITY DESTRUCTION RECOVERY - DISABLED FOR NOW
+     * ========================================================================
+     * Uncomment this code if you experience issues with lost images on Android
+     * when the app is killed due to low memory while the image picker is open.
+     *
+     * To enable:
+     * 1. Uncomment the import: app_startup_providers.dart
+     * 2. Uncomment the code below
+     *
+    ref.listen(checkLostImageDataProvider, (previous, next) {
+      next.whenData((result) {
+        if (result != null && context.mounted) {
+          showXploraSnackBar(
+            context,
+            'Image recovered: ${result.sizeInMB.toStringAsFixed(2)}MB',
+            isInfo: true,
+            duration: const Duration(seconds: 3),
+          );
+          // TODO: Handle the recovered image (upload to storage, etc.)
+        }
+      });
+    });
+    * ======================================================================== */
+
     return ref.watch(createOrReadCurrentUserProfile).when(
       data: (profile) {
         if (profile == null) {
@@ -147,10 +273,12 @@ class ProfilePage extends ConsumerWidget {
                                 width: 128,
                                 height: 128,
                                 fit: BoxFit.cover,
-                                placeholder: (context, url) => Icon(
-                                  Icons.person,
-                                  size: 64,
-                                  color: context.colors.iconColor,
+                                placeholder: (context, url) =>
+                                    ShimmerWidgets.imageShimmer(
+                                  context: context,
+                                  width: 128,
+                                  height: 128,
+                                  borderRadius: BorderRadius.circular(64),
                                 ),
                                 errorWidget: (context, url, error) => Icon(
                                   Icons.person,
@@ -180,31 +308,32 @@ class ProfilePage extends ConsumerWidget {
                 Positioned(
                   bottom: 4,
                   right: 8,
-                  child: GestureDetector(
-                    onTap: () {
-                      // TODO: Handle avatar change
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: context.colors.bgPrimary,
-                        shape: BoxShape.circle,
-                      ),
-                      padding: const EdgeInsets.all(2.0),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: context.colors.bgSecondary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            'assets/svg/camera.svg',
-                            width: 18,
-                            height: 18,
-                            colorFilter: ColorFilter.mode(
-                              context.colors.iconColor,
-                              BlendMode.srcIn,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: context.colors.bgPrimary,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(2.0),
+                    child: Material(
+                      color: context.colors.bgSecondary,
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        onTap: () => _pickProfileImage(context, ref),
+                        customBorder: const CircleBorder(),
+                        splashColor: context.colors.iconColor.withValues(alpha: 0.2),
+                        highlightColor: context.colors.iconColor.withValues(alpha: 0.1),
+                        child: SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: Center(
+                            child: SvgPicture.asset(
+                              'assets/svg/camera.svg',
+                              width: 18,
+                              height: 18,
+                              colorFilter: ColorFilter.mode(
+                                context.colors.iconColor,
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ),
                         ),

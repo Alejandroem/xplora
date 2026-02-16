@@ -12,6 +12,7 @@ import '../../application/providers/location_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
+import '../../utils/snackbar_utils.dart';
 import '../components/search_components.dart';
 import '../pages/choose_interests_page.dart';
 import '../pages/enable_location_page.dart';
@@ -183,6 +184,22 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
+                    // Check if user is authenticated
+                    final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+                    final userId = userIdAsync.value;
+
+                    if (userId == null) {
+                      // User not logged in - show info message
+                      showXploraSnackBar(
+                        context,
+                        'Please sign in to scan QR codes',
+                        isInfo: true,
+                        duration: const Duration(seconds: 2),
+                      );
+                      return;
+                    }
+
+                    // User is authenticated - allow navigation
                     Navigator.pushNamed(context, '/enable-location');
                   },
                   child: Padding(

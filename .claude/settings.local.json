@@ -7,7 +7,9 @@
       "Bash(grep:*)",
       "Bash(dart analyze:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebSearch",
+      "WebFetch(domain:pub.dev)"
     ]
   }
 }

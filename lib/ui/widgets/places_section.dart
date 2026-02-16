@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/adventure_providers.dart';
+import '../../application/providers/auth_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
+import '../../utils/snackbar_utils.dart';
 import 'carousel_widget.dart';
 import 'place_card.dart';
 import 'smooth_filter_scroll_row.dart';
@@ -149,6 +151,22 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
             filters: filters,
             selectedFilter: selectedFilter,
             onFilterTap: (filter) {
+              // Check if user is authenticated
+              final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+              final userId = userIdAsync.value;
+
+              if (userId == null) {
+                // User not logged in - show message and don't change filter
+                showXploraSnackBar(
+                  context,
+                  'Please sign in to use filters',
+                  isInfo: true,
+                  duration: const Duration(seconds: 2),
+                );
+                return;
+              }
+
+              // User is authenticated - allow filter change
               ref.read(selectedCarouselFilterProvider.notifier).state = filter;
             },
           ),

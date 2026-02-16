@@ -262,6 +262,10 @@ final geocodedLocationProvider = FutureProvider<String?>((ref) async {
       position.longitude,
     );
 
+    // placemarks.forEach((placemark) {
+    //   print('🗺️ placemark: $placemark');
+    // });
+
     if (placemarks.isEmpty) {
       return null;
     }

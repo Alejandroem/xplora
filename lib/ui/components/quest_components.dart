@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/providers/auth_providers.dart';
 import '../../theme.dart';
+import '../../utils/snackbar_utils.dart';
 import '../pages/quest_main_screen.dart';
 import '../widgets/quest_tabs.dart';
 import '../widgets/quest_widget.dart' show QuestWidget, QuestState;
@@ -34,6 +36,10 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
     // final questInProgress = ref.watch(adventureInProgressTrackerProvider);
     final questState = ref.watch(testQuestStateProvider);
 
+    // Watch user ID to react to auth state changes (login/logout)
+    final userIdAsync = ref.watch(currentAuthUserIdStreamProvider);
+    final userId = userIdAsync.value;
+
     // Determine next state for button text
     final nextState = switch (questState) {
       QuestState.browse => 'In-Progress',
@@ -52,10 +58,29 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
         QuestWidget(
           questState: questState,
           onStartAdventure: () {
+            if (userId == null) {
+              showXploraSnackBar(
+                context,
+                'Please sign in to start quest',
+                isInfo: true,
+                duration: const Duration(seconds: 2),
+              );
+              return;
+            }
+
             Navigator.of(context).pushNamed('/quest-main');
           },
-          onContinue: () {
-            // TODO: Continue the current quest
+          onDetails: () {
+            if (userId == null) {
+              showXploraSnackBar(
+                context,
+                'Please sign in to view quest details',
+                isInfo: true,
+                duration: const Duration(seconds: 2),
+              );
+              return;
+            }
+
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const QuestMainScreen(
@@ -65,6 +90,16 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
             );
           },
           onSeeMore: () {
+            if (userId == null) {
+              showXploraSnackBar(
+                context,
+                'Please sign in to view more quests',
+                isInfo: true,
+                duration: const Duration(seconds: 2),
+              );
+              return;
+            }
+
             Navigator.of(context).pushNamed('/quest-main');
           },
         ),

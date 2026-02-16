@@ -9,13 +9,13 @@ class InProgressQuest extends StatelessWidget {
     super.key,
     this.title = 'El Morro QR codes',
     this.description = 'Collect 3 hidden QR codes around El Morro',
-    required this.onContinue,
+    required this.onDetails,
     required this.onSeeMore,
   });
 
   final String title;
   final String description;
-  final VoidCallback onContinue;
+  final VoidCallback onDetails;
   final VoidCallback onSeeMore;
 
   @override
@@ -118,7 +118,7 @@ class InProgressQuest extends StatelessWidget {
               // Details button
               Expanded(
                 child: PrimaryButton(
-                  onPressed: onContinue,
+                  onPressed: onDetails,
                   text: 'Details',
                   borderRadius: radiusPill,
                 ),

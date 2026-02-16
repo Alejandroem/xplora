@@ -12,14 +12,14 @@ enum QuestState { browse, inProgress, completed }
 class QuestWidget extends StatelessWidget {
   final QuestState questState;
   final VoidCallback onStartAdventure;
-  final VoidCallback onContinue;
+  final VoidCallback onDetails;
   final VoidCallback onSeeMore;
 
   const QuestWidget({
     super.key,
     required this.questState,
     required this.onStartAdventure,
-    required this.onContinue,
+    required this.onDetails,
     required this.onSeeMore,
   });
 
@@ -28,7 +28,7 @@ class QuestWidget extends StatelessWidget {
     switch (questState) {
       case QuestState.inProgress:
         return InProgressQuest(
-          onContinue: onContinue,
+          onDetails: onDetails,
           onSeeMore: onSeeMore,
         );
       case QuestState.completed:
