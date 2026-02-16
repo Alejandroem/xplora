@@ -9,6 +9,7 @@ import '../../domain/models/signup_form.dart';
 import 'xplorauser_providers.dart';
 import 'settings_crud_providers.dart';
 import 'auth_service_providers.dart';
+import 'location_providers.dart';
 
 final isAuthenticatedProvider = StreamProvider.autoDispose((ref) {
   final authService = ref.watch(authServiceProvider);
@@ -90,13 +91,22 @@ final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) {
   });
 });
 
-/// Provider that formats user location from profile as "City, State/Country"
-/// Returns null since city/country fields have been removed from profile
+/// Provider that formats user location as "City, Country" from current GPS location
+/// Uses ISO country code (e.g., "San Juan, PR", "Rawalpindi, PK")
+/// Returns AsyncValue with location string if available, null otherwise
 final userLocationStringProvider =
     Provider.autoDispose<AsyncValue<String?>>((ref) {
-  // City and country fields removed from XploraProfile
-  // Always return null - location features will be added back when needed
-  return const AsyncValue.data(null);
+  // Check if location tracking is enabled
+  final isTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
+
+  if (!isTrackingEnabled) {
+    return const AsyncValue.data(null);
+  }
+
+  // Watch the geocoded location provider
+  final geocodedLocation = ref.watch(geocodedLocationProvider);
+
+  return geocodedLocation;
 });
 
 //provides an instance of XploraProfile based on the auth user

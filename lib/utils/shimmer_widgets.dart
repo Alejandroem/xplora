@@ -85,6 +85,23 @@ class ShimmerWidgets {
     );
   }
 
+  /// Shimmer for location text in app bar
+  static Widget locationTextShimmer({
+    required BuildContext context,
+  }) {
+    return baseShimmer(
+      context: context,
+      child: Container(
+        width: 85,
+        height: 12,
+        decoration: BoxDecoration(
+          color: context.colors.bgTertiary,
+          borderRadius: BorderRadius.circular(radiusSmall),
+        ),
+      ),
+    );
+  }
+
   /// Adventure card shimmer (matches CarouselCard design)
   static Widget adventureCardShimmer({
     required BuildContext context,

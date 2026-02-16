@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../application/providers/location_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
@@ -143,7 +144,13 @@ class EnableLocationPage extends ConsumerWidget {
                                 }
                                 return;
                               }
-              
+
+                              if(status.isGranted){
+                                // Invalidate auto enable provider to handle permission result
+                                // (consistent with signin flow - let provider check and handle)
+                                ref.invalidate(autoEnableLocationTrackingProvider);
+                              }
+
                               // Navigate to notifications page
                               if (context.mounted) {
                                 Navigator.of(context).pushReplacementNamed(

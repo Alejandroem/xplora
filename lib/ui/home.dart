@@ -230,22 +230,18 @@ class _HomeState extends ConsumerState<Home> {
 
   PreferredSizeWidget? getAppBar() {
     final bottomBar = ref.watch(bottomNavigationBarProvider);
-    // Watch user location for home screen
-    final userLocation = bottomBar == NavigationItem.home
-        ? ref.watch(userLocationStringProvider).value
-        : null;
+    // Watch user location for home screen (pass full AsyncValue to handle loading/error states)
+    final userLocationAsync = bottomBar == NavigationItem.home
+        ? ref.watch(userLocationStringProvider)
+        : const AsyncValue<String?>.data(null);
 
     return XplorAppBar(
       height: bottomBar == NavigationItem.home
-          ? 
-          // userLocation != null
-              // ? 
-              72
-              // : null // Let XplorAppBar calculate dynamic height
+          ? 72
           : bottomBar == NavigationItem.search
               ? 80.0
               : null,
-      userLocation: userLocation,
+      userLocationAsync: userLocationAsync,
     );
   }
 
@@ -288,6 +284,8 @@ class _HomeState extends ConsumerState<Home> {
               // Reset the status after dialog is shown
               ref.read(locationPermissionRequestStatusProvider.notifier).state =
                   LocationPermissionRequestStatus.none;
+            }else{
+              print('Not mounted so not showing dialog');
             }
           });
         }

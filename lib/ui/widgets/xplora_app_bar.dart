@@ -8,6 +8,7 @@ import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/filters_providers.dart';
+import '../../application/providers/location_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
@@ -18,11 +19,11 @@ import '../pages/filters_page.dart';
 
 class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final double? height;
-  final String? userLocation;
+  final AsyncValue<String?>? userLocationAsync;
 
-  /// Format: "City, State" (e.g., "San Juan, PR")
+  /// Format: "City, Country" using ISO country code (e.g., "San Juan, PR", "Rawalpindi, PK")
 
-  const XplorAppBar({super.key, this.height, this.userLocation});
+  const XplorAppBar({super.key, this.height, this.userLocationAsync});
 
   @override
   Size get preferredSize => Size.fromHeight(height ?? kToolbarHeight);
@@ -31,6 +32,8 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isAuthenticatedAsyncValue = ref.watch(isAuthenticatedProvider);
     final bottomBar = ref.watch(bottomNavigationBarProvider);
+    final isLocationTracking = ref.watch(locationTrackingEnabledProvider);
+    final locationState = ref.watch(locationProvider);
 
     return GlassAppBar(
       hideBottomDivider: true,
@@ -52,14 +55,41 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 //   //     context.isDarkMode ? bgPrimaryLight : bgPrimaryDark,
                 //   //     BlendMode.srcIn),
                 // ),
-                // if (userLocation != null)
-                  Text(
-                    // userLocation!,
-                    'San Juan, PR',
-                    style: bodySmallStyle.copyWith(
-                      color: context.colors.textSecondary,
-                    ),
-                  ),
+                // Handle location display based on AsyncValue state
+                if (userLocationAsync != null)
+                  userLocationAsync!.when(
+                    data: (location) {
+                      // Data loaded successfully - show location if available
+                      if (location != null && location.isNotEmpty) {
+                        return Text(
+                          location,
+                          style: bodySmallStyle.copyWith(
+                            color: context.colors.textSecondary,
+                          ),
+                        );
+                      }
+                      // Data is null - could be waiting for GPS or geocoding failed
+                      // Show shimmer if: tracking enabled AND (waiting for GPS OR loading)
+                      if (isLocationTracking &&
+                          (locationState.isLoading || locationState.position == null)) {
+                        return ShimmerWidgets.locationTextShimmer(context: context);
+                      }
+                      // Geocoding failed - hide
+                      return const SizedBox.shrink();
+                    },
+                    loading: () {
+                      // Geocoding in progress - show shimmer if tracking enabled
+                      return isLocationTracking
+                          ? ShimmerWidgets.locationTextShimmer(context: context)
+                          : const SizedBox.shrink();
+                    },
+                    error: (error, stack) {
+                      // Error - hide location
+                      return const SizedBox.shrink();
+                    },
+                  )
+                else
+                  const SizedBox.shrink(),
               ],
             )
           : bottomBar == NavigationItem.search
