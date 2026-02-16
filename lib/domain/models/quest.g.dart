@@ -55,4 +55,5 @@ const _$QuestTypeEnumMap = {
   QuestType.location: 'location',
   QuestType.timeLocation: 'timeLocation',
   QuestType.qr: 'qr',
+  QuestType.input: 'input',
 };

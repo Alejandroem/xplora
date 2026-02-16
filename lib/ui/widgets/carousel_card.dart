@@ -45,8 +45,8 @@ class _CarouselCardState extends State<CarouselCard> {
     // Build the image section
     Widget imageSection = ClipRRect(
       borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(radiusCard),
-        topRight: Radius.circular(radiusCard),
+        topLeft: Radius.circular(radiusLarge),
+        topRight: Radius.circular(radiusLarge),
       ),
       child: widget.heroTag != null
           ? Hero(
@@ -62,7 +62,9 @@ class _CarouselCardState extends State<CarouselCard> {
     }
 
     final cardChild = GlassContainer(
-      borderRadius: radiusCard,
+      border: const Border.fromBorderSide(BorderSide.none),
+      boxShadow: const [elevation1],
+      borderRadius: radiusLarge,
       padding: EdgeInsets.zero,
       child: Column(
         // Use max size when expanding image, min otherwise
@@ -73,31 +75,28 @@ class _CarouselCardState extends State<CarouselCard> {
 
           // Bottom content section
           Container(
-            padding: const EdgeInsets.all(spacing8),
+            width: double.infinity,
+            padding: const EdgeInsets.all(spacing12),
             decoration: BoxDecoration(
               color: context.colors.bgSecondary,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(radiusCard),
-                bottomRight: Radius.circular(radiusCard),
+                bottomLeft: Radius.circular(radiusLarge),
+                bottomRight: Radius.circular(radiusLarge),
               ),
-              boxShadow: const [elevation1],
             ),
             child: Column(
-              crossAxisAlignment: widget.bottomContent != null
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   widget.title,
-                  style: bodyTextStyle.copyWith(
+                  style: bodySmallStyle.copyWith(
                     color: context.colors.textPrimary,
+                    fontWeight: FontWeight.bold
                   ),
                   maxLines: widget.bottomContent != null ? 1 : 2,
                   overflow: TextOverflow.ellipsis,
-                  textAlign: widget.bottomContent != null
-                      ? TextAlign.start
-                      : TextAlign.center,
+                  textAlign: TextAlign.start,
                 ),
                 if (widget.bottomContent != null) ...[
                   const SizedBox(height: spacing4),
@@ -134,7 +133,7 @@ class _CarouselCardState extends State<CarouselCard> {
             ShimmerWidgets.imageShimmer(height: height, context: context),
         errorWidget: (context, url, error) {
           return Container(
-            color: widget.backgroundColor ?? context.colors.bgPrimary,
+            color: widget.backgroundColor ?? context.colors.bgSecondary,
             child: Center(
               child: Icon(
                 Icons.image_not_supported,

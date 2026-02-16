@@ -1,26 +1,24 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../domain/models/setting.dart';
 import '../../domain/services/auth_service.dart';
 import '../../domain/services/settings_crud_service.dart';
 import 'auth_service_providers.dart';
 import 'settings_crud_providers.dart';
 
-const _kIsDarkMode = 'isDarkMode';
-const _kIsNotificationsEnabled = 'isNotificationsEnabled';
-const _kIsLocationEnabled = 'isLocationEnabled';
-
-class SettingsStateNotifier extends StateNotifier<List<Setting>> {
+class SettingsStateNotifier extends StateNotifier<Map<String, dynamic>> {
   SettingsStateNotifier(
-    this.settingsCrudService,
     this.authService,
-  ) : super([]) {
+    this.settingsService,
+  ) : super({}) {
     _init();
   }
 
-  final SettingsCrudService settingsCrudService;
   final AuthService authService;
+  final SettingsCrudService settingsService;
 
   void _init() async {
     final user = await authService.getAuthUser();
@@ -32,298 +30,188 @@ class SettingsStateNotifier extends StateNotifier<List<Setting>> {
 
     print('SettingsStateNotifier: Loading settings for user ${user.id}');
 
-    final settings = await settingsCrudService.readByFilters([
-      {
-        'field': 'userId',
-        'operator': '==',
-        'value': user.id!,
-      }
-    ]);
-
-    print('SettingsStateNotifier: Loaded ${settings?.length ?? 0} settings');
-    if (settings != null) {
-      for (var setting in settings) {
-        print('Setting: ${setting.key} = ${setting.value}');
-      }
+    try {
+      final settings = await settingsService.getSettings(user.id!);
+      print('SettingsStateNotifier: Loaded settings');
+      state = settings;
+    } catch (e) {
+      print('SettingsStateNotifier: Error loading settings: $e');
     }
-
-    state = settings ?? [];
   }
 
   bool? isDarkMode() {
-    final darkModeIndex = state.indexWhere(
-      (setting) => setting.key == _kIsDarkMode,
-    );
-
-    if (darkModeIndex == -1) {
-      return null; // No preference set - will use system theme
+    try {
+      final accessibility = state['accessibility'] as Map<String, dynamic>?;
+      if (accessibility == null) return null;
+      return accessibility['dark_mode'] as bool?;
+    } catch (e) {
+      return null;
     }
-
-    return state[darkModeIndex].value as bool;
   }
 
   bool isNotificationsEnabled() {
-    final notificationsIndex = state.indexWhere(
-      (setting) => setting.key == _kIsNotificationsEnabled,
-    );
-
-    if (notificationsIndex == -1) {
+    try {
+      final notifications = state['notifications'] as Map<String, dynamic>?;
+      if (notifications == null) return false;
+      return notifications['push_enabled'] as bool? ?? false;
+    } catch (e) {
       return false;
-    }
-
-    return state[notificationsIndex].value as bool;
-  }
-
-  Future<void> toggleDarkMode() async {
-    final darkModeIndex = state.indexWhere(
-      (setting) => setting.key == _kIsDarkMode,
-    );
-
-    if (darkModeIndex == -1) {
-      // Create new setting if it doesn't exist
-      final user = await authService.getAuthUser();
-      if (user == null) return;
-
-      final newSetting = Setting(
-        key: _kIsDarkMode,
-        value: true,
-        userId: user.id!,
-        variableType: 'bool',
-        updatedAt: DateTime.now(),
-        id: null,
-      );
-
-      final created = await settingsCrudService.create(newSetting);
-
-      state = [...state, created];
-      return;
-    }
-
-    final currentDarkMode = state[darkModeIndex];
-
-    await settingsCrudService.update(
-      currentDarkMode.copyWith(
-        value: !(currentDarkMode.value as bool),
-      ),
-      currentDarkMode.id!,
-    );
-
-    state = [
-      ...state.sublist(0, darkModeIndex),
-      currentDarkMode.copyWith(
-        value: !(currentDarkMode.value as bool),
-      ),
-      ...state.sublist(darkModeIndex + 1),
-    ];
-  }
-
-  Future<void> setNotificationsEnabled(bool enabled) async {
-    final notificationsIndex = state.indexWhere(
-      (setting) => setting.key == _kIsNotificationsEnabled,
-    );
-    if (notificationsIndex == -1) {
-      // Create new setting if it doesn't exist
-      final user = await authService.getAuthUser();
-      if (user == null) return;
-
-      final newSetting = Setting(
-        key: _kIsNotificationsEnabled,
-        value: enabled,
-        userId: user.id!,
-        variableType: 'bool',
-        updatedAt: DateTime.now(),
-        id: null,
-      );
-
-      final created = await settingsCrudService.create(newSetting);
-
-      state = [...state, created];
-      return;
-    }
-
-    final currentNotifications = state[notificationsIndex];
-
-    // Only update if the value is different
-    if (currentNotifications.value == enabled) {
-      return;
-    }
-
-    await settingsCrudService.update(
-      currentNotifications.copyWith(
-        value: enabled,
-      ),
-      currentNotifications.id!,
-    );
-
-    state = [
-      ...state.sublist(0, notificationsIndex),
-      currentNotifications.copyWith(
-        value: enabled,
-      ),
-      ...state.sublist(notificationsIndex + 1),
-    ];
-  }
-
-  Future<void> toggleNotifications() async {
-    final notificationsIndex = state.indexWhere(
-      (setting) => setting.key == _kIsNotificationsEnabled,
-    );
-    if (notificationsIndex == -1) {
-      // Create new setting if it doesn't exist
-      final user = await authService.getAuthUser();
-      if (user == null) return;
-
-      final newSetting = Setting(
-        key: _kIsNotificationsEnabled,
-        value: true,
-        userId: user.id!,
-        variableType: 'bool',
-        updatedAt: DateTime.now(),
-        id: null,
-      );
-
-      final created = await settingsCrudService.create(newSetting);
-
-      state = [...state, created];
-      return;
-    }
-
-    final currentNotifications = state[notificationsIndex];
-
-    await settingsCrudService.update(
-      currentNotifications.copyWith(
-        value: !(currentNotifications.value as bool),
-      ),
-      currentNotifications.id!,
-    );
-
-    state = [
-      ...state.sublist(0, notificationsIndex),
-      currentNotifications.copyWith(
-        value: !(currentNotifications.value as bool),
-      ),
-      ...state.sublist(notificationsIndex + 1),
-    ];
-
-    if (!currentNotifications.value) {
-      await Permission.notification.request();
-    }
-  }
-
-  Future<void> setLocationEnabled(bool enabled) async {
-    final locationIndex = state.indexWhere(
-      (setting) => setting.key == _kIsLocationEnabled,
-    );
-    if (locationIndex == -1) {
-      // Create new setting if it doesn't exist
-      final user = await authService.getAuthUser();
-      if (user == null) return;
-
-      final newSetting = Setting(
-        key: _kIsLocationEnabled,
-        value: enabled,
-        userId: user.id!,
-        variableType: 'bool',
-        updatedAt: DateTime.now(),
-        id: null,
-      );
-
-      final created = await settingsCrudService.create(newSetting);
-
-      state = [...state, created];
-      return;
-    }
-
-    final currentLocation = state[locationIndex];
-
-    // Only update if the value is different
-    if (currentLocation.value == enabled) {
-      return;
-    }
-
-    await settingsCrudService.update(
-      currentLocation.copyWith(
-        value: enabled,
-      ),
-      currentLocation.id!,
-    );
-
-    state = [
-      ...state.sublist(0, locationIndex),
-      currentLocation.copyWith(
-        value: enabled,
-      ),
-      ...state.sublist(locationIndex + 1),
-    ];
-  }
-
-  Future<void> toggleLocation() async {
-    final locationIndex = state.indexWhere(
-      (setting) => setting.key == _kIsLocationEnabled,
-    );
-    if (locationIndex == -1) {
-      // Create new setting if it doesn't exist
-      final user = await authService.getAuthUser();
-      if (user == null) return;
-
-      final newSetting = Setting(
-        key: _kIsLocationEnabled,
-        value: true,
-        userId: user.id!,
-        variableType: 'bool',
-        updatedAt: DateTime.now(),
-        id: null,
-      );
-
-      final created = await settingsCrudService.create(newSetting);
-
-      state = [...state, created];
-      return;
-    }
-
-    final currentLocation = state[locationIndex];
-
-    await settingsCrudService.update(
-      currentLocation.copyWith(
-        value: !(currentLocation.value as bool),
-      ),
-      currentLocation.id!,
-    );
-
-    state = [
-      ...state.sublist(0, locationIndex),
-      currentLocation.copyWith(
-        value: !(currentLocation.value as bool),
-      ),
-      ...state.sublist(locationIndex + 1),
-    ];
-
-    if (!currentLocation.value) {
-      await Permission.location.request();
     }
   }
 
   bool isLocationEnabled() {
-    final locationIndex = state.indexWhere(
-      (setting) => setting.key == _kIsLocationEnabled,
-    );
-
-    if (locationIndex == -1) {
+    try {
+      final permissions = state['permissions'] as Map<String, dynamic>?;
+      if (permissions == null) return false;
+      return permissions['location'] as bool? ?? false;
+    } catch (e) {
       return false;
     }
+  }
 
-    return state[locationIndex].value as bool;
+  Future<void> toggleDarkMode() async {
+    final user = await authService.getAuthUser();
+    if (user == null) return;
+
+    final currentValue = isDarkMode() ?? false;
+    final newValue = !currentValue;
+
+    try {
+      await settingsService.toggleDarkMode(user.id!);
+
+      // Update local state
+      final newState = Map<String, dynamic>.from(state);
+      if (newState['accessibility'] == null) {
+        newState['accessibility'] = {};
+      }
+      (newState['accessibility'] as Map<String, dynamic>)['dark_mode'] =
+          newValue;
+      newState['updatedAt'] = Timestamp.now();
+      state = newState;
+    } catch (e) {
+      print('Error toggling dark mode: $e');
+    }
+  }
+
+  Future<void> setNotificationsEnabled(bool enabled) async {
+    final user = await authService.getAuthUser();
+    if (user == null) return;
+
+    // Only update if value is different
+    if (isNotificationsEnabled() == enabled) return;
+
+    try {
+      await settingsService.setNotificationsEnabled(user.id!, enabled);
+
+      // Update local state
+      final newState = Map<String, dynamic>.from(state);
+      if (newState['notifications'] == null) {
+        newState['notifications'] = {};
+      }
+      (newState['notifications'] as Map<String, dynamic>)['push_enabled'] =
+          enabled;
+      newState['updatedAt'] = Timestamp.now();
+      state = newState;
+    } catch (e) {
+      print('Error setting notifications: $e');
+      rethrow; // Rethrow to allow UI to handle the error
+    }
+  }
+
+  Future<void> toggleNotifications() async {
+    final user = await authService.getAuthUser();
+    if (user == null) return;
+
+    final currentValue = isNotificationsEnabled();
+    final newValue = !currentValue;
+
+    try {
+      await settingsService.toggleNotifications(user.id!);
+
+      // Update local state
+      final newState = Map<String, dynamic>.from(state);
+      if (newState['notifications'] == null) {
+        newState['notifications'] = {};
+      }
+      (newState['notifications'] as Map<String, dynamic>)['push_enabled'] =
+          newValue;
+      newState['updatedAt'] = Timestamp.now();
+      state = newState;
+
+      // Request permission if enabling
+      if (newValue) {
+        await Permission.notification.request();
+      }
+    } catch (e) {
+      print('Error toggling notifications: $e');
+    }
+  }
+
+  Future<void> setLocationEnabled(bool enabled) async {
+    final user = await authService.getAuthUser();
+    if (user == null) return;
+
+    // Only update if value is different
+    if (isLocationEnabled() == enabled) return;
+
+    try {
+      await settingsService.setLocationEnabled(user.id!, enabled);
+
+      // Update local state
+      final newState = Map<String, dynamic>.from(state);
+      if (newState['permissions'] == null) {
+        newState['permissions'] = {};
+      }
+      (newState['permissions'] as Map<String, dynamic>)['location'] = enabled;
+      newState['updatedAt'] = Timestamp.now();
+      state = newState;
+    } catch (e) {
+      print('Error setting location: $e');
+      rethrow; // Rethrow to allow UI to handle the error
+    }
+  }
+
+  Future<void> toggleLocation() async {
+    final user = await authService.getAuthUser();
+    if (user == null) return;
+
+    final currentValue = isLocationEnabled();
+    final newValue = !currentValue;
+
+    try {
+      await settingsService.toggleLocation(user.id!);
+
+      // Update local state
+      final newState = Map<String, dynamic>.from(state);
+      if (newState['permissions'] == null) {
+        newState['permissions'] = {};
+      }
+      (newState['permissions'] as Map<String, dynamic>)['location'] = newValue;
+      newState['updatedAt'] = Timestamp.now();
+      state = newState;
+
+      // Request permission if enabling
+      if (newValue) {
+        await Permission.location.request();
+      }
+    } catch (e) {
+      print('Error toggling location: $e');
+    }
   }
 }
 
 final settingsStateNotifierProvider =
-    StateNotifierProvider<SettingsStateNotifier, List<Setting>>((ref) {
+    StateNotifierProvider<SettingsStateNotifier, Map<String, dynamic>>((ref) {
   return SettingsStateNotifier(
-    ref.read(
-      settingsCrudServiceProvider,
-    ),
-    ref.read(
-      authServiceProvider,
-    ),
+    ref.read(authServiceProvider),
+    ref.read(settingsCrudServiceProvider),
   );
+});
+
+/// Provider that exposes only the dark mode value
+/// Rebuilds only when dark mode setting changes
+final isDarkModeProvider = Provider<bool?>((ref) {
+  final settings = ref.watch(settingsStateNotifierProvider);
+  final accessibility = settings['accessibility'] as Map<String, dynamic>?;
+  return accessibility?['dark_mode'] as bool?;
 });

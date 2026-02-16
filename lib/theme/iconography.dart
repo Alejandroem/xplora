@@ -28,3 +28,5 @@ const double iconSizeLarge = 24.0; /// Large icons (e.g., prominent actions)
 // Avatar/Profile Picture Sizes
 const double avatarRadiusSmall = 18.0; /// Small avatar radius (used in CircleAvatar)
 const double avatarSizeSmall = 36.0; /// Small avatar diameter (width/height for images)
+const double avatarRadiusMedium = 24.0; /// Medium avatar radius (used in CircleAvatar)
+const double avatarSizeMedium = 48.0; /// Medium avatar diameter (width/height for images)

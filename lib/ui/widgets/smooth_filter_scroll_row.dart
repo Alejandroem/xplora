@@ -15,6 +15,7 @@ class SmoothFilterScrollRow extends StatefulWidget {
   // final List<String> selectedActivityTypes;
   final Function(String) onFilterTap;
   // final Future<void> Function() onActivityTypesTap;
+  final bool alignCenter;
 
   const SmoothFilterScrollRow({
     super.key,
@@ -23,6 +24,7 @@ class SmoothFilterScrollRow extends StatefulWidget {
     // required this.selectedActivityTypes,
     required this.onFilterTap,
     // required this.onActivityTypesTap,
+    this.alignCenter = true
   });
 
   @override
@@ -257,73 +259,74 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: _scrollController,
-      scrollDirection: Axis.horizontal,
-      // Use BouncingScrollPhysics for natural, smooth scrolling behavior
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: [
-          // Build filter bubbles
-          ...widget.filters.asMap().entries.map((entry) {
-            final index = entry.key;
-            final filter = entry.value;
-            final isSelected = widget.selectedFilter == filter;
-
-            return Padding(
-              key: _filterKeys[index],
-              padding: const EdgeInsets.only(right: spacing8),
-              child: FilterBubble(
-                text: filter,
-                isSelected: isSelected,
-                onTap: () {
-                  // Animate to center this filter when tapped
-                  _centerItem(index);
-                  widget.onFilterTap(filter);
-                },
-              ),
-            );
-          }),
-
-          /*
-          // Activity Types dropdown bubble
-          Padding(
-            key: _filterKeys[widget.filters.length],
-            padding: const EdgeInsets.only(right: 8.0),
-            child: FilterBubble(
-              text: widget.selectedActivityTypes.isEmpty
-                  ? 'Specific'
-                  : 'Specific (${widget.selectedActivityTypes.length})',
-              isSelected: widget.selectedActivityTypes.isNotEmpty,
-              onTap: () async {
-                // Mark that modal is being opened
-                _activityTypesModalOpened = true;
-
-                // Animate to center before showing modal
-                _centerItem(widget.filters.length);
-
-                // Show modal and wait for it to close
-                await widget.onActivityTypesTap();
-
-                // Wait a brief moment for any state updates to propagate
-                await Future.delayed(const Duration(milliseconds: 50));
-
-                // If modal was closed and no activity types are selected, center active filter
-                if (mounted && _activityTypesModalOpened && widget.selectedActivityTypes.isEmpty) {
-                  _activityTypesModalOpened = false;
-                  _centerActiveFilter();
-                }
-              },
-              icon: Icon(
-                Icons.arrow_drop_down,
-                size: 18,
-                color: textPrimary,
-              ),
-              iconAtEnd: true,
-            ),
-          ),
-          */
-        ],
+    return Align(
+      alignment: widget.alignCenter ? AlignmentGeometry.center : AlignmentDirectional.topStart,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        // Use BouncingScrollPhysics for natural, smooth scrolling behavior
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: [
+            // Build filter tabs
+            ...widget.filters.asMap().entries.map((entry) {
+              final index = entry.key;
+              final filter = entry.value;
+              final isSelected = widget.selectedFilter == filter;
+    
+              return Padding(
+                key: _filterKeys[index],
+                padding: EdgeInsets.only(
+                  right: index < widget.filters.length - 1 ? spacing32 : 0,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    // Animate to center this filter when tapped
+                    _centerItem(index);
+                    widget.onFilterTap(filter);
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: spacing8),
+                    child: IntrinsicWidth(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            filter,
+                            textAlign: TextAlign.center,
+                            style: bodyTextStyle.copyWith(
+                              fontSize: 14,
+                              color: isSelected
+                                  ? context.colors.textPrimary
+                                  : context.colors.textSecondary.withValues(
+                                      alpha: 0.5,
+                                    ),
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                          const SizedBox(height: spacing8),
+                          // Indicator under text - matches text width exactly
+                          Container(
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? brandPrimary
+                                  : Colors.transparent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

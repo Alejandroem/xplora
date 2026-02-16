@@ -65,3 +65,11 @@ Color questSplashDark = const Color(0xFF414141); /// #414141 - Quest item press 
 
 // Quest List Tile Splash State (Light Mode)
 Color questSplashLight = const Color(0x14000000); /// #00000014 - Quest item press overlay
+
+// Switch Active State Glow
+BoxShadow switchActiveGlow = BoxShadow(
+  color: const Color(0xFFA855F7).withValues(alpha: 0.1), /// brandPrimary with 15% opacity
+  offset: const Offset(0, 0),
+  blurRadius: 8,
+  spreadRadius: 0,
+); /// Glow effect for active switch state

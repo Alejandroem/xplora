@@ -9,17 +9,13 @@ class AchievementsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // TODO: Replace with actual achievements count from user's data
+    const totalAchievements = 21; // Total number of achievements earned by the user
+
     return GradientBackground(
       child: Scaffold(
         appBar: GlassAppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: context.colors.iconColor,
-              size: iconSizeLarge,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          centerTitle: true, // Center the title
           title: Text(
             'Achievements',
             style: h2Style.copyWith(
@@ -29,67 +25,18 @@ class AchievementsPage extends ConsumerWidget {
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(spacing16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Featured Achievements section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Feature Achievements',
-                    style: h2Style.copyWith(
-                      color: context.colors.textPrimary,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      // TODO: Navigate to edit featured achievements
-                    },
-                    child: Text(
-                      'Edit',
-                      style: bodyTextStyle.copyWith(
-                        color: context.colors.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: spacing16),
-              // Featured achievements grid (3x2)
-              AchievementsGrid(
-                itemCount: 6,
-                achievementRadius: 48,
-                onTap: (index) {
-                  // TODO: Show achievement details
-                },
-              ),
-              const SizedBox(height: spacing24),
-              // Divider
-              Divider(
-                color: context.colors.border,
-                thickness: borderWidthDefault,
-              ),
-              const SizedBox(height: spacing24),
-              // All achievements section
-              Text(
-                'All',
-                style: h2Style.copyWith(
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: spacing16),
-              // All achievements grid (3 columns, many rows)
-              AchievementsGrid(
-                itemCount: 18, // Showing 18 achievements (6 rows)
-                achievementRadius: 48,
-                onTap: (index) {
-                  // TODO: Show achievement details
-                },
-              ),
-              const SizedBox(height: spacing24),
-            ],
+          child: AchievementsGrid(
+            itemCount: totalAchievements,
+            // earnedCount not specified = all achievements shown are earned
+            achievementSize: 110, // Larger circular badges
+            borderRadius: 60, // Circular (half of size)
+            borderColor: brandSecondary, // Teal/cyan colored border
+            borderWidth: borderWidthDefault,
+            iconColor: context.colors.iconColor.withValues(alpha: 0.2),
+            crossAxisSpacing: spacing24, // Horizontal spacing
+            onTap: (index) {
+              // TODO: Show achievement details
+            },
           ),
         ),
       ),

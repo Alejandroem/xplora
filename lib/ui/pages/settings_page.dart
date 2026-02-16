@@ -36,14 +36,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return GradientBackground(
       child: Scaffold(
         appBar: GlassAppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: context.colors.iconColor,
-              size: iconSizeLarge,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          height: 72,
           title: Text(
             'Settings',
             style: h2Style.copyWith(
@@ -52,71 +45,69 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
           centerTitle: true,
         ),
-        body: ListView(
-          padding: const EdgeInsets.symmetric(vertical: spacing8),
-          children: [
-            SettingsTile(
-              title: 'Account',
-              onTap: () {
-                Navigator.pushNamed(context, '/account-settings');
-              },
-            ),
-            SettingsTile(
-              title: 'Security',
-              onTap: () {
-                Navigator.pushNamed(context, '/security-settings');
-              },
-            ),
-            SettingsTile(
-              title: 'Notifications',
-              onTap: () {
-                Navigator.pushNamed(context, '/notification-settings');
-              },
-            ),
-            SettingsTile(
-              title: 'Permissions',
-              onTap: () {
-                Navigator.pushNamed(context, '/permission-settings');
-              },
-            ),
-            SettingsTile(
-              title: 'Game XP',
-              onTap: () {
-                // TODO: Navigate to game XP settings
-              },
-            ),
-            SettingsTile(
-              title: 'Privacy',
-              onTap: () {
-                // TODO: Navigate to privacy settings
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const PrivacyPolicyPage(),
-                //   ),
-                // );
-              },
-            ),
-            SettingsTile(
-              title: 'Accessibility',
-              onTap: () {
-                // TODO: Navigate to accessibility settings
-              },
-            ),
-            SwitchListTile(
-              title: Text(
-                'Dark Mode',
-                style: bodyTextStyle.copyWith(
-                  color: context.colors.textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(spacing16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SettingsTile(
+                title: 'Account',
+                onTap: () {
+                  Navigator.pushNamed(context, '/account-settings');
+                },
               ),
-              value: settingsProviderNotifier.isDarkMode() ?? false,
-              onChanged: (bool value) {
-                settingsProviderNotifier.toggleDarkMode();
-              },
-            ),
-          ],
+              SettingsTile(
+                title: 'Security',
+                onTap: () {
+                  Navigator.pushNamed(context, '/security-settings');
+                },
+              ),
+              SettingsTile(
+                title: 'Notifications',
+                onTap: () {
+                  Navigator.pushNamed(context, '/notification-settings');
+                },
+              ),
+              SettingsTile(
+                title: 'Permissions',
+                onTap: () {
+                  Navigator.pushNamed(context, '/permission-settings');
+                },
+              ),
+              SettingsTile(
+                title: 'Game XP',
+                onTap: () {
+                  Navigator.pushNamed(context, '/game-xp');
+                },
+              ),
+              SettingsTile(
+                title: 'Privacy',
+                onTap: () {
+                  Navigator.pushNamed(context, '/privacy-settings');
+                },
+              ),
+              SettingsTile(
+                title: 'Accessibility',
+                onTap: () {
+                  Navigator.pushNamed(context, '/accessibility-settings');
+                },
+              ),
+              // Dark and light mode toggle
+              // SwitchListTile(
+              //   title: Text(
+              //     'Dark Mode',
+              //     style: bodyTextStyle.copyWith(
+              //       color: context.colors.textPrimary,
+              //       fontWeight: FontWeight.w500,
+              //     ),
+              //   ),
+              //   value: settingsProviderNotifier.isDarkMode() ?? false,
+              //   onChanged: (bool value) {
+              //     settingsProviderNotifier.toggleDarkMode();
+              //   },
+              // ),
+            ],
+          ),
         ),
       ),
     );

@@ -5,7 +5,9 @@
       "Bash(dir:*)",
       "Bash(findstr:*)",
       "Bash(grep:*)",
-      "Bash(dart analyze:*)"
+      "Bash(dart analyze:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(ls:*)"
     ]
   }
 }

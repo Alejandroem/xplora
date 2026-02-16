@@ -1,13 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../notifiers/login_notifier.dart';
 import '../notifiers/signup_notifier.dart';
 import '../../domain/models/login_form.dart';
 import '../../domain/models/signup_form.dart';
-import '../../domain/models/xplora_profile.dart';
 import 'xplorauser_providers.dart';
 import 'settings_crud_providers.dart';
 import 'auth_service_providers.dart';
+import 'location_providers.dart';
 
 final isAuthenticatedProvider = StreamProvider.autoDispose((ref) {
   final authService = ref.watch(authServiceProvider);
@@ -30,81 +32,81 @@ final currentUserProvider = StreamProvider.autoDispose((ref) {
   return authService.getAuthUserStream();
 });
 
-final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) async* {
+final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) {
   final profileService = ref.watch(profileServiceProvider);
   final authenticationService = ref.watch(authServiceProvider);
 
-  // Keep the provider alive to prevent disposal during tab switches
-  ref.keepAlive();
+  // Initialize lastUserId from current auth state (ref.listen doesn't fire on initial value)
+  final initialAuthUserId = ref.read(currentAuthUserIdStreamProvider).value;
+  String? lastUserId = initialAuthUserId;
 
-  // Listen to the auth user stream to react to login/logout events
-  await for (final user in authenticationService.getAuthUserStream()) {
+  // Listen to auth changes and invalidate when user switches
+  ref.listen(currentAuthUserIdStreamProvider, (previous, next) {
+    final newUserId = next.value;
+
+    // Detect user switch: new user signs in after a different user
+    if (newUserId != null && lastUserId != null && lastUserId != newUserId) {
+      // User switched - invalidate to get fresh stream for new user
+      ref.invalidateSelf();
+      return;
+    }
+
+    // Track last non-null user
+    if (newUserId != null) {
+      lastUserId = newUserId;
+    }
+  });
+
+  // Keep alive during tab switches to prevent reload
+  Timer? keepAliveTimer;
+
+  ref.onCancel(() {
+    final link = ref.keepAlive();
+
+    // Auto-dispose after 60 seconds of inactivity
+    keepAliveTimer = Timer(const Duration(seconds: 60), () {
+      link.close();
+    });
+  });
+
+  ref.onResume(() {
+    keepAliveTimer?.cancel();
+  });
+
+  ref.onDispose(() {
+    keepAliveTimer?.cancel();
+  });
+
+  // Use asyncExpand to automatically switch streams when auth state changes
+  // This cancels the old profile stream and starts listening to the new user's profile
+  return authenticationService.getAuthUserStream().asyncExpand((user) {
     if (user == null) {
-      yield null;
-      continue;
+      // User signed out - emit null
+      return Stream.value(null);
     }
 
-    // First check if profile exists
-    final existingProfile = await profileService.read(user.id!);
-
-    // Create profile if it doesn't exist
-    if (existingProfile == null) {
-      await profileService.create(
-        XploraProfile(
-          id: null,
-          userId: user.id!,
-          experience: 0,
-          categories: [],
-          avatarUrl: '',
-          username: '',
-          bio: '',
-          preferredLanguage: '',
-          country: '',
-          city: '',
-          birthdayMonth: '',
-          birthdayYear: '',
-          gender: '',
-          primaryInterestCategory: '',
-          createdAt: '',
-          updatedAt: '',
-        ),
-      );
-    }
-
-    // Yield the current profile (read it fresh after potential creation)
-    final profile = await profileService.read(user.id!);
-    yield profile;
-  }
+    // User signed in - listen to their profile stream (real-time updates)
+    // When profile is created/updated, it will automatically emit here
+    return profileService.getStream(user.id!);
+  });
 });
 
-/// Provider that formats user location from profile as "City, State/Country"
-/// Returns null if user has no city/country set or is not authenticated
+/// Provider that formats user location as "City, Country" from current GPS location
+/// Uses ISO country code (e.g., "San Juan, PR", "Rawalpindi, PK")
+/// Returns AsyncValue with location string if available, null otherwise
 final userLocationStringProvider =
     Provider.autoDispose<AsyncValue<String?>>((ref) {
-  final profileAsync = ref.watch(createOrReadCurrentUserProfile);
+  // Check if location tracking is enabled
+  final isTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
 
-  return profileAsync.when(
-    data: (profile) {
-      if (profile == null) {
-        return const AsyncValue.data(null);
-      }
+  if (!isTrackingEnabled) {
+    return const AsyncValue.data(null);
+  }
 
-      final city = profile.city;
-      final country = profile.country;
+  // Watch the geocoded location provider
+  final geocodedLocation = ref.watch(geocodedLocationProvider);
 
-      // Only return location if both city and country/state are available
-      if (city != null &&
-          city.isNotEmpty &&
-          country != null &&
-          country.isNotEmpty) {
-        return AsyncValue.data('$city, $country');
-      } else {
-        return const AsyncValue.data(null);
-      }
-    },
-    loading: () => const AsyncValue.loading(),
-    error: (error, stack) => AsyncValue.error(error, stack),
-  );
+  return geocodedLocation;
 });
 
 //provides an instance of XploraProfile based on the auth user
@@ -123,6 +125,7 @@ final loginFormNotifierProvider =
     StateNotifierProvider.autoDispose<LoginFormNotifier, LoginForm>((ref) {
   final authService = ref.watch(authServiceProvider);
   final profileService = ref.watch(profileServiceProvider);
+  final userService = ref.watch(userServiceProvider);
   final settingsService = ref.watch(settingsCrudServiceProvider);
   return LoginFormNotifier(
     const LoginForm(
@@ -136,6 +139,7 @@ final loginFormNotifierProvider =
     ),
     authService,
     profileService,
+    userService,
     settingsService,
   );
 });

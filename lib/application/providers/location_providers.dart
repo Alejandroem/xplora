@@ -4,7 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:geolocator/geolocator.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' as location_pkg;
+import 'package:geocoding/geocoding.dart';
 
 import '../../domain/services/settings_crud_service.dart';
 import 'auth_service_providers.dart';
@@ -123,7 +124,7 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
   final authService = ref.watch(authServiceProvider);
   final isSignedIn = await authService.isSignedInFuture();
 
-  final location = Location();
+  final location = location_pkg.Location();
 
   if (isSignedIn) {
     // Check if location services are enabled
@@ -138,16 +139,16 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
     }
 
     // Check current permission status
-    PermissionStatus permission = await location.hasPermission();
+    location_pkg.PermissionStatus permission = await location.hasPermission();
 
-    if (permission == PermissionStatus.granted ||
-        permission == PermissionStatus.grantedLimited) {
+    if (permission == location_pkg.PermissionStatus.granted ||
+        permission == location_pkg.PermissionStatus.grantedLimited) {
       // Permission already granted, enable tracking
       print('🗺️ autoEnableLocationTrackingProvider: User has location permission, enabling tracking');
       ref.read(locationTrackingEnabledProvider.notifier).state = true;
       ref.read(locationProvider.notifier).initializeLocationTracking();
       ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.none;
-    } else if (permission == PermissionStatus.denied) {
+    } else if (permission == location_pkg.PermissionStatus.denied) {
       // Permission was denied or expired ("only this time" expired)
       // Automatically re-request permission for logged-in users
       print('🗺️ autoEnableLocationTrackingProvider: Permission denied/expired, automatically requesting...');
@@ -157,8 +158,8 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
       // Get settings notifier
       final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
 
-      if (permission == PermissionStatus.granted ||
-          permission == PermissionStatus.grantedLimited) {
+      if (permission == location_pkg.PermissionStatus.granted ||
+          permission == location_pkg.PermissionStatus.grantedLimited) {
         // Permission granted after request, enable tracking
         print('🗺️ autoEnableLocationTrackingProvider: Permission granted, enabling tracking');
         ref.read(locationTrackingEnabledProvider.notifier).state = true;
@@ -167,7 +168,7 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
 
         // Update settings - location enabled
         await settingsNotifier.setLocationEnabled(true);
-      } else if (permission == PermissionStatus.deniedForever) {
+      } else if (permission == location_pkg.PermissionStatus.deniedForever) {
         // Permission permanently denied after request
         print('🗺️ autoEnableLocationTrackingProvider: Permission permanently denied');
         ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.permanentlyDenied;
@@ -182,7 +183,7 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
         // Update settings - location denied
         await settingsNotifier.setLocationEnabled(false);
       }
-    } else if (permission == PermissionStatus.deniedForever) {
+    } else if (permission == location_pkg.PermissionStatus.deniedForever) {
       // Permission was already permanently denied
       print('🗺️ autoEnableLocationTrackingProvider: Permission permanently denied');
       ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.permanentlyDenied;
@@ -204,10 +205,10 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
     }
 
     // Check current permission status
-    PermissionStatus permission = await location.hasPermission();
+    location_pkg.PermissionStatus permission = await location.hasPermission();
 
-    if (permission == PermissionStatus.granted ||
-        permission == PermissionStatus.grantedLimited) {
+    if (permission == location_pkg.PermissionStatus.granted ||
+        permission == location_pkg.PermissionStatus.grantedLimited) {
       // Permission already granted, enable tracking
       print('🗺️ autoEnableLocationTrackingProvider: User has location permission, enabling tracking');
       ref.read(locationTrackingEnabledProvider.notifier).state = true;
@@ -229,13 +230,65 @@ final locationPermissionProvider = FutureProvider<bool>((ref) async {
 
     // Check permission status without requesting
     final permission = await Geolocator.checkPermission();
-    
+
     // Only return true if permission is already granted
     // Don't request permission here to avoid triggering dialogs
-    return permission == LocationPermission.always || 
+    return permission == LocationPermission.always ||
            permission == LocationPermission.whileInUse;
   } catch (e) {
     // If any error occurs, assume no permission
     return false;
+  }
+});
+
+/// Provider that converts current location to "City, Country" format
+/// Uses ISO country code (e.g., "San Juan, PR", "Rawalpindi, PK")
+/// Returns null if location is unavailable or geocoding fails
+final geocodedLocationProvider = FutureProvider<String?>((ref) async {
+  final locationState = ref.watch(locationProvider);
+  final position = locationState.position;
+
+  // Return null if no position available
+  if (position == null) {
+    return null;
+  }
+
+  try {
+    // await Future.delayed(const Duration(seconds: 5));
+    // throw Exception();
+    // Use geocoding to convert coordinates to address
+    final placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+
+    if (placemarks.isEmpty) {
+      return null;
+    }
+
+    final placemark = placemarks.first;
+    final city = placemark.locality;
+    final countryCode = placemark.isoCountryCode; // e.g., "US", "PR", "PK"
+
+    // Use ISO country code for consistency across all locations
+    // This avoids issues like:
+    // - Duplication: "San Juan, San Juan" (PR uses city as administrativeArea)
+    // - Long names: "Rawalpindi, Islamabad Capital Territory"
+    // - Inconsistencies: Different countries format administrativeArea differently
+    if (city != null && city.isNotEmpty && countryCode != null && countryCode.isNotEmpty) {
+      return '$city, $countryCode';
+    }
+
+    // Fallback to just city if no country code available
+    if (city != null && city.isNotEmpty) {
+      return city;
+    }
+
+    // Geocoding succeeded but couldn't extract useful info, return null
+    return null;
+  } catch (e) {
+    // Geocoding failed, hide location
+    print('🗺️ geocodedLocationProvider: Geocoding failed - $e');
+    return null;
   }
 });

@@ -15,7 +15,8 @@ class GradientBackground extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: height ?? MediaQuery.of(context).size.height,
       child: Container(
-        decoration: BoxDecoration(gradient: context.colors.baseBackground),
+        // decoration: BoxDecoration(gradient: context.colors.baseBackground),
+        color: context.colors.bgPrimary,
         child: child,
       ),
     );

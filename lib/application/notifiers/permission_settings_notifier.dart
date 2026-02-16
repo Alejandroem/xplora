@@ -6,12 +6,14 @@ class PermissionSettings {
   final bool cameraAccess;
   final bool motionActivity;
   final bool backgroundRefresh;
+  final bool notifications;
 
   const PermissionSettings({
     this.locationAccess = true,
     this.cameraAccess = true,
     this.motionActivity = true,
     this.backgroundRefresh = true,
+    this.notifications = true,
   });
 
   PermissionSettings copyWith({
@@ -19,12 +21,14 @@ class PermissionSettings {
     bool? cameraAccess,
     bool? motionActivity,
     bool? backgroundRefresh,
+    bool? notifications,
   }) {
     return PermissionSettings(
       locationAccess: locationAccess ?? this.locationAccess,
       cameraAccess: cameraAccess ?? this.cameraAccess,
       motionActivity: motionActivity ?? this.motionActivity,
       backgroundRefresh: backgroundRefresh ?? this.backgroundRefresh,
+      notifications: notifications ?? this.notifications,
     );
   }
 }
@@ -53,6 +57,12 @@ class PermissionSettingsNotifier extends StateNotifier<PermissionSettings> {
 
   void toggleBackgroundRefresh(bool value) {
     state = state.copyWith(backgroundRefresh: value);
+    // TODO: Save to storage/database
+    // TODO: Request/revoke actual system permission
+  }
+
+  void toggleNotifications(bool value) {
+    state = state.copyWith(notifications: value);
     // TODO: Save to storage/database
     // TODO: Request/revoke actual system permission
   }

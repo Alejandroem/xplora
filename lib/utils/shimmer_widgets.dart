@@ -85,110 +85,158 @@ class ShimmerWidgets {
     );
   }
 
+  /// Shimmer for location text in app bar
+  static Widget locationTextShimmer({
+    required BuildContext context,
+  }) {
+    return baseShimmer(
+      context: context,
+      child: Container(
+        width: 85,
+        height: 12,
+        decoration: BoxDecoration(
+          color: context.colors.bgTertiary,
+          borderRadius: BorderRadius.circular(radiusSmall),
+        ),
+      ),
+    );
+  }
+
   /// Adventure card shimmer (matches CarouselCard design)
   static Widget adventureCardShimmer({
     required BuildContext context,
-    double? width = 150,
-    double? imageHeight = 140,
+    double? width = 160,
+    double? imageHeight = 130,
+    bool isInGrid = false,
   }) {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: context.colors.bgSecondary,
-        borderRadius: BorderRadius.circular(radiusCard),
+        borderRadius: BorderRadius.circular(radiusLarge),
+        boxShadow: const [elevation1],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Image shimmer (top section)
-          baseShimmer(
-            context: context,
-            child: Container(
-              height: imageHeight,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: context.colors.bgTertiary,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(radiusCard),
-                  topRight: Radius.circular(radiusCard),
-                ),
-              ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radiusLarge),
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.colors.bgSecondary,
+            borderRadius: BorderRadius.circular(radiusLarge),
+            border: Border.all(
+              color: context.colors.cardContainerBorder,
+              width: borderWidthDefault,
             ),
           ),
-          // Bottom content section
-          Container(
-            padding: const EdgeInsets.all(spacing8),
-            decoration: BoxDecoration(
-              color: context.colors.bgSecondary,
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(radiusCard),
-                bottomRight: Radius.circular(radiusCard),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Title shimmer
-                baseShimmer(
-                  context: context,
-                  child: Container(
-                    width: 100,
-                    height: spacing16,
-                    decoration: BoxDecoration(
-                      color: context.colors.bgTertiary,
-                      borderRadius: BorderRadius.circular(radiusSmall),
+          child: Column(
+            mainAxisSize: isInGrid ? MainAxisSize.max : MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image shimmer (top section)
+              isInGrid
+                  ? Expanded(
+                      child: baseShimmer(
+                        context: context,
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgTertiary,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(radiusLarge),
+                              topRight: Radius.circular(radiusLarge),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : baseShimmer(
+                      context: context,
+                      child: Container(
+                        height: imageHeight,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: context.colors.bgTertiary,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(radiusLarge),
+                            topRight: Radius.circular(radiusLarge),
+                          ),
+                        ),
+                      ),
                     ),
+              // Bottom content section
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(spacing12),
+                decoration: BoxDecoration(
+                  color: context.colors.bgSecondary,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(radiusLarge),
+                    bottomRight: Radius.circular(radiusLarge),
                   ),
                 ),
-                const SizedBox(height: spacing4),
-                // City/State shimmer
-                baseShimmer(
-                  context: context,
-                  child: Container(
-                    width: 70,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: context.colors.bgTertiary,
-                      borderRadius: BorderRadius.circular(radiusSmall),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: spacing4),
-                // Category and XP row
-                Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Category shimmer
+                    const SizedBox(height: spacing4),
+                    // Title shimmer
                     baseShimmer(
                       context: context,
                       child: Container(
-                        width: 60,
-                        height: 13,
+                        width: 100,
+                        height: 14,
                         decoration: BoxDecoration(
                           color: context.colors.bgTertiary,
                           borderRadius: BorderRadius.circular(radiusSmall),
                         ),
                       ),
                     ),
-                    const Spacer(),
-                    // XP shimmer
-                    baseShimmer(
-                      context: context,
-                      child: Container(
-                        width: 50,
-                        height: 13,
-                        decoration: BoxDecoration(
-                          color: context.colors.bgTertiary,
-                          borderRadius: BorderRadius.circular(radiusSmall),
+                    // Bottom content based on card type
+                    if (isInGrid) ...[
+                      const SizedBox(height: spacing8),
+                      // Grid: only distance shimmer
+                      baseShimmer(
+                        context: context,
+                        child: Container(
+                          width: 60,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgTertiary,
+                            borderRadius: BorderRadius.circular(radiusSmall),
+                          ),
                         ),
                       ),
-                    ),
+                    ] else ...[
+                      const SizedBox(height: spacing8),
+                      // Carousel: city/state and distance
+                      baseShimmer(
+                        context: context,
+                        child: Container(
+                          width: 80,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgTertiary,
+                            borderRadius: BorderRadius.circular(radiusSmall),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: spacing4),
+                      baseShimmer(
+                        context: context,
+                        child: Container(
+                          width: 70,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgTertiary,
+                            borderRadius: BorderRadius.circular(radiusSmall),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

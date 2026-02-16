@@ -1,56 +1,65 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
-// TODO: Community will open community screen after MVP is ready.
-// The emblem (shield/crown) is a badge for the user's club/team.
+/// Community Widget - Explorer Network
+/// Shows information about the community feature (currently in beta)
 class CommunityWidget extends StatelessWidget {
   const CommunityWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data
-    const int activeFriends = 10;
-
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Community heading
         Text(
           'Community',
-          style: h2Style.copyWith(color: context.colors.textPrimary)
+          style: h3Style.copyWith(
+            color: context.colors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: spacing8),
-        SizedBox(
-          width: double.infinity,
+        Expanded(
           child: GlassContainer(
+            boxShadow: const [elevation1],
+            showBorder: false,
             padding: const EdgeInsets.all(spacing16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Crown/Shield icon
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Shield background
-                    Icon(
-                      Icons.shield,
-                      size: 64, // 64
-                      color: context.colors.textPrimary.withOpacity(0.2),
-                    ),
-                    // Crown on top
-                    Icon(
-                      Icons.emoji_events,
-                      size: 32,
-                      color: context.colors.textPrimary,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: spacing12),
-
-                // Active friends count
+                const SizedBox(height: 4),
+                // Main title
                 Text(
-                  '$activeFriends Friends Active',
-                  style: bodySmallStyle.copyWith(color: context.colors.textSecondary)
+                  'Explorer Network',
+                  style: bodyTextStyle.copyWith(
+                    color: context.colors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                const SizedBox(height: 10),
+
+                // Description
+                // Text(
+                //   'Join and create clubs with membership',
+                //   style: bodySmallStyle.copyWith(
+                //     color: context.colors.textPrimary,
+                //     fontSize: 13
+                //   ),
+                // ),
+                // const SizedBox(height: spacing4),
+
+                // Status label
+                Text(
+                  'Status: Closed (Beta)',
+                  style: bodyTextStyle.copyWith(
+                    color: context.colors.textTertiary.withValues(alpha: 0.8),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13
+                  ),
+                ),
+                // const SizedBox(height: spacing16),
               ],
             ),
           ),

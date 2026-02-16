@@ -1,86 +1,108 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../theme.dart';
+import '../components/quest_components.dart';
+import 'quest_widget.dart' show QuestState;
 
-class StreakWidget extends StatelessWidget {
+class StreakWidget extends ConsumerWidget {
   const StreakWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Dummy data
-    const int currentStreak = 6;
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the test quest state
+    // final questState = ref.watch(testQuestStateProvider);
 
-    // Generate week days based on current streak
-    final weekDays = List.generate(7, (index) => index < currentStreak);
+    // Dummy data
+    int currentStreak = 3; // Test with multi-week streak
+    const int visibleDays = 7;
+    // Always show 7 days, starting from first circle
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // STREAK heading
-        Text(
-          'Streak',
-          style: h2Style.copyWith(color: context.colors.textPrimary)
-        ),
+        Text('Streak',
+            style: h3Style.copyWith(
+                color: context.colors.textPrimary,
+                fontWeight: FontWeight.bold)),
         const SizedBox(height: spacing8),
-        GlassContainer(
-          padding: const EdgeInsets.all(spacing16),
-          child: Column(
-            children: [
-              /*
-              // Streak count with custom arc progress
-              SizedBox(
-                width: spacing48 + spacing32, // 80
-                height: spacing48 + spacing32, // 80
-                child: Stack(
-                  alignment: Alignment.center,
+        Expanded(
+          child: GlassContainer(
+            showBorder: false,
+            boxShadow: const [elevation1],
+            padding: const EdgeInsets.all(spacing16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 4),
+                // Header with icon and title
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Custom arc progress
-                    CustomPaint(
-                      size: const Size(spacing48 + spacing32, spacing48 + spacing32),
-                      painter: _StreakArcPainter(
-                        progress: currentStreak / 7,
-                        backgroundColor: context.colors.border,
-                        progressColor: context.colors.textPrimary,
-                        strokeWidth: borderWidthDefault * 4,
-                      ),
+                    SvgPicture.asset(
+                      'assets/svg/flame.svg',
+                      colorFilter:
+                          ColorFilter.mode(brandSecondary, BlendMode.srcIn),
+                      width: iconSizeLarge,
+                      height: iconSizeLarge,
                     ),
-                    // Streak number in center
-                    Text(
-                      '$currentStreak',
-                      style: h1Style.copyWith(
-                        color: context.colors.textPrimary,
+                    const SizedBox(width: spacing12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '$currentStreak-Day Streak',
+                            style: bodyTextStyle.copyWith(
+                              color: context.colors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
+                          const SizedBox(height: spacing12),
+                          // Day indicators (dots)
+                          Wrap(
+                            spacing: spacing8,
+                            runSpacing: spacing8,
+                            children: List.generate(visibleDays, (index) {
+                              return _DayIndicator(
+                                index: index,
+                                currentStreak: currentStreak,
+                              );
+                            }),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-              */
-              // Streak number
-              GlassContainer(
-                bgColor: context.colors.bgTertiary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: spacing24,
-                  vertical: spacing12,
-                ),
-                borderRadius: 100,
-                child: Text(
-                  '$currentStreak',
-                  style: h1Style.copyWith(
-                    color: context.colors.textPrimary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: spacing16),
 
-              // Week days indicators
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(7, (index) {
-                  final hasStreak = weekDays[index];
-                  return _DayIndicator(hasStreak: hasStreak);
-                }),
-              ),
-            ],
+                // Description text
+                // Text(
+                //   'Stay consistent to unlock rewards',
+                //   // currentStreak > 0
+                //   //     ? 'You\'ve explored $currentStreak ${currentStreak == 1 ? 'day' : 'days'} in a row.'
+                //   //     : 'Start your exploration streak today!',
+                //   style: bodySmallStyle.copyWith(
+                //     color: context.colors.textSecondary,
+                //   ),
+                // ),
+                // const SizedBox(height: 6),
+
+                // if (questState == QuestState.inProgress ||
+                //     questState == QuestState.completed) ...[
+                //   const SizedBox(height: spacing12),
+                //   Text(
+                //     'Keep up the momentum',
+                //     style: bodySmallStyle.copyWith(
+                //         color: context.colors.textSecondary, fontSize: 11),
+                //   )
+                // ],
+                // const SizedBox(height: spacing16),
+              ],
+            ),
           ),
         ),
       ],
@@ -89,93 +111,41 @@ class StreakWidget extends StatelessWidget {
 }
 
 class _DayIndicator extends StatelessWidget {
-  final bool hasStreak;
+  final int index;
+  final int currentStreak;
 
-  const _DayIndicator({required this.hasStreak});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 16,
-      height: 16,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: hasStreak ? context.colors.textPrimary : Colors.transparent,
-        border: Border.all(
-          color: hasStreak ? Colors.transparent : context.colors.border,
-          width: borderWidthDefault,
-        ),
-      ),
-      child: hasStreak
-          ? Icon(
-              Icons.check,
-              size: 14,
-              color: context.colors.bgPrimary,
-            )
-          : null,
-    );
-  }
-}
-
-/*
-class _StreakArcPainter extends CustomPainter {
-  final double progress; // 0.0 to 1.0
-  final Color backgroundColor;
-  final Color progressColor;
-  final double strokeWidth;
-
-  _StreakArcPainter({
-    required this.progress,
-    required this.backgroundColor,
-    required this.progressColor,
-    required this.strokeWidth,
+  const _DayIndicator({
+    required this.index,
+    required this.currentStreak,
   });
 
   @override
-  void paint(Canvas canvas, Size size) {
-    // Move center down to position arc lower
-    final center = Offset(size.width / 2, (size.height / 2) + 8);
-    final radius = (size.width - strokeWidth) / 2;
+  Widget build(BuildContext context) {
+    // Calculate position within current week (0-6)
+    // For multi-week streaks, show only current week's progress
+    final currentWeekPosition =
+        currentStreak > 0 ? (currentStreak - 1) % 7 : -1;
 
-    // Background arc (full semicircle from left to right)
-    final backgroundPaint = Paint()
-      ..color = backgroundColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+    // Determine states
+    final isCompleted = index <= currentWeekPosition;
+    final isCurrentTarget =
+        index == currentWeekPosition + 1 && currentWeekPosition < 6;
 
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      pi, // Start from left (180 degrees)
-      pi, // Sweep 180 degrees to right
-      false,
-      backgroundPaint,
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isCompleted
+            ? brandSecondary
+            : context.colors.textPrimary.withValues(alpha: 0.2),
+        border: isCurrentTarget
+            ? Border.all(
+                color: brandSecondary,
+                width: borderWidthDefault,
+              )
+            : null,
+      ),
     );
-
-    // Progress arc (fills from left to right based on progress)
-    if (progress > 0) {
-      final progressPaint = Paint()
-        ..color = progressColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth
-        ..strokeCap = StrokeCap.round;
-
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        pi, // Start from left (180 degrees)
-        pi * progress, // Sweep based on progress (0 to 180 degrees)
-        false,
-        progressPaint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _StreakArcPainter oldDelegate) {
-    return oldDelegate.progress != progress ||
-        oldDelegate.backgroundColor != backgroundColor ||
-        oldDelegate.progressColor != progressColor ||
-        oldDelegate.strokeWidth != strokeWidth;
   }
 }
-*/

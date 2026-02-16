@@ -22,54 +22,32 @@ class _BottomNavigationBarState
     final currentIndex = ref.watch(bottomNavigationBarProvider);
 
     return GlassBottomNavBar(
-      items: <BottomNavigationBarItem>[
-      const BottomNavigationBarItem(
+      items: const <BottomNavigationBarItem>[
+      BottomNavigationBarItem(
         icon: Icon(
           LucideIcons.home,
         ),
         label: '',
       ),
-      const BottomNavigationBarItem(
+      BottomNavigationBarItem(
         icon: Icon(
           LucideIcons.search,
         ),
         label: '',
       ),
       BottomNavigationBarItem(
-        icon: Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: currentIndex == NavigationItem.xpc
-                  ? brandPrimary
-                  : context.colors.textSecondary,
-              width: 2,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              'XPC',
-              style: bodyTextStyle.copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: currentIndex == NavigationItem.xpc
-                    ? brandPrimary
-                    : context.colors.textSecondary,
-              ),
-            ),
-          ),
+        icon: Icon(
+          LucideIcons.coins,
         ),
         label: '',
       ),
-      const BottomNavigationBarItem(
+      BottomNavigationBarItem(
         icon: Icon(
           LucideIcons.store,
         ),
         label: '',
       ),
-      const BottomNavigationBarItem(
+      BottomNavigationBarItem(
         icon: Icon(
           LucideIcons.bell,
         ),

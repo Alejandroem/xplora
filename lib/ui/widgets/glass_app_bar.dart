@@ -22,6 +22,15 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Optional center title
   final bool centerTitle;
 
+  /// Optional automatically imply leading (back button)
+  final bool automaticallyImplyLeading;
+
+  /// Optional bottom widget (e.g., tabs)
+  final PreferredSizeWidget? bottom;
+
+  /// Optional hide bottom divider
+  final bool hideBottomDivider;
+
   const GlassAppBar({
     super.key,
     this.title,
@@ -30,6 +39,9 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leadingWidth,
     this.height,
     this.centerTitle = false,
+    this.automaticallyImplyLeading = true,
+    this.bottom,
+    this.hideBottomDivider = false,
   });
 
   @override
@@ -37,73 +49,79 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
+          bottom: hideBottomDivider ? BorderSide.none : BorderSide(
             color: context.colors.border,
 
             /// Thin divider at bottom
             width: borderWidthDefault,
           ),
         ),
-        boxShadow: const [
-          elevation1,
-        ],
       ),
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: spacing12,
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.colors.bgPrimary,
+        ),
+        child: AppBar(
+          backgroundColor: context.colors.bgPrimary,
+          scrolledUnderElevation: 0,
+          toolbarHeight: height ?? kToolbarHeight,
+          automaticallyImplyLeading: automaticallyImplyLeading,
+          leading: leading ??
+              (automaticallyImplyLeading
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: context.colors.iconColor,
+                        size: iconSizeLarge,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: IconButton.styleFrom(
+                        backgroundColor: context.colors.bgSecondary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(radiusMedium),
+                        ),
+                      ),
+                    )
+                  : null),
+          leadingWidth: leadingWidth,
+          title: title is Widget
+              ? title
+              : title is String
+                  ? title == 'logo'
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(
+                              'assets/png/xplora-logo.png',
+                              height: 24,
+                              width: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text('Xplra', style: h3Style),
+                          ],
+                        )
+                      : Text(title, style: h2Style)
+                  : null,
+          centerTitle: centerTitle,
+          actions: actions,
+          bottom: bottom,
+          // backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4),
+          // backgroundColor: Colors.transparent,
 
-            /// Light blur for floating feel
-            sigmaY: spacing12,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient:
-                  context.isDarkMode ? baseBackgroundDark : baseBackgroundLight,
-              // color: Colors.white.withOpacity(0.5),
-            ),
-            child: AppBar(
-              scrolledUnderElevation: 0,
-              toolbarHeight: height ?? kToolbarHeight,
-              leading: leading,
-              leadingWidth: leadingWidth,
-              title: title is Widget
-                  ? title
-                  : title is String
-                      ? title == 'logo'
-                          ? Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  'assets/png/xplora-logo.png',
-                                  height: 24,
-                                  width: 24,
-                                ),
-                                const SizedBox(width: 8),
-                                Text('Xplra', style: h3Style),
-                              ],
-                            )
-                          : Text(title, style: h2Style)
-                      : null,
-              centerTitle: centerTitle,
-              actions: actions,
-              // backgroundColor: const Color.fromRGBO(18, 18, 18, 0.4),
-              backgroundColor: Colors.transparent,
+          /// Transparent to show gradient with glass effect
+          elevation: 0,
 
-              /// Transparent to show gradient with glass effect
-              elevation: 0,
+          /// No shadow, using blur instead
+          iconTheme: IconThemeData(color: context.colors.textPrimary),
 
-              /// No shadow, using blur instead
-              iconTheme: IconThemeData(color: context.colors.textPrimary),
-
-              /// Icon color
-            ),
-          ),
+          /// Icon color
         ),
       ),
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(height ?? kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(
+        (height ?? kToolbarHeight) + (bottom?.preferredSize.height ?? 0.0),
+      );
 }

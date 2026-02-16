@@ -7,6 +7,7 @@ enum QuestType {
   location,
   timeLocation,
   qr,
+  input,
 }
 
 @freezed

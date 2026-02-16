@@ -125,8 +125,12 @@ final nearbyAdventuresProvider = StreamProvider<List<Adventure>>((ref) async* {
       }
 
       final userLocation = ref.watch(locationProvider);
-      if (userLocation.isLoading || userLocation.position == null) {
+      if (userLocation.isLoading) {
         [];
+        continue;
+      }
+      if (userLocation.position == null) {
+        yield adventures;
         continue;
       }
 

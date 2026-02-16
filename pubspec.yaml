@@ -24,6 +24,7 @@ dependencies:
   google_fonts: ^6.3.2
   percent_indicator: ^4.2.3
   qr_code_scanner: ^1.0.1
+  mobile_scanner: ^7.1.4
   firebase_auth: ^5.1.2
   url_launcher: ^6.3.1
   location: ^7.0.0
@@ -44,7 +45,10 @@ dependencies:
   shimmer: ^3.0.0
   share_plus: ^10.1.2
   google_sign_in: ^7.2.0
+  sign_in_with_apple: ^7.0.1
+  crypto: ^3.0.7
   device_preview_plus: ^2.3.2
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   flutter_test:

@@ -22,10 +22,13 @@ abstract class AuthService {
 
   Future<void> sendEmailVerification();
 
-  Future<void> updateName(String name);
-
   Future<void> updateEmail(String email);
 
   /// Returns a record with the user, whether this is a new user (first Google sign-in), and optional photo URL
-  Future<({XploraUser user, bool isNewUser, String? photoUrl})> signInWithGoogle();
+  Future<({XploraUser user, bool isNewUser, String? photoUrl})>
+      signInWithGoogle();
+
+  /// Returns a record with the user, whether this is a new user (first Apple sign-in), and optional photo URL
+  Future<({XploraUser user, bool isNewUser, String? photoUrl})>
+      signInWithApple();
 }

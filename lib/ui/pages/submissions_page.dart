@@ -17,6 +17,8 @@ class PlaceSubmission {
   final String? imageUrl;
   final SubmissionStatus status;
   final DateTime submittedAt;
+  final int? xpEarned;
+  final String? rejectionReason;
 
   PlaceSubmission({
     required this.id,
@@ -24,6 +26,8 @@ class PlaceSubmission {
     this.imageUrl,
     required this.status,
     required this.submittedAt,
+    this.xpEarned,
+    this.rejectionReason,
   });
 
   String get timeAgo {
@@ -53,7 +57,7 @@ class PlaceSubmission {
   Color get statusColor {
     switch (status) {
       case SubmissionStatus.pending:
-        return const Color(0xffFFC107); // Amber for pending
+        return warningColor;
       case SubmissionStatus.approved:
         return successColor;
       case SubmissionStatus.rejected:
@@ -75,15 +79,14 @@ class SubmissionsPage extends ConsumerWidget {
       child: Scaffold(
         appBar: const GlassAppBar(
           title: 'Submissions',
-          centerTitle: false,
+          centerTitle: true,
+          height: 64,
         ),
         body: submissions.isEmpty
             ? _buildEmptyState(context)
             : ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: spacing16,
-                  vertical: spacing16,
-                ),
+                padding: const EdgeInsets.fromLTRB(
+                    spacing16, spacing24, spacing16, spacing16),
                 itemCount: submissions.length,
                 itemBuilder: (context, index) {
                   return Padding(
@@ -143,12 +146,14 @@ class SubmissionsPage extends ConsumerWidget {
         placeName: 'Ocean Park Beach',
         status: SubmissionStatus.approved,
         submittedAt: DateTime.now().subtract(const Duration(days: 2)),
+        xpEarned: 50,
       ),
       PlaceSubmission(
         id: '3',
         placeName: 'Ocean Park Beach',
         status: SubmissionStatus.rejected,
         submittedAt: DateTime.now().subtract(const Duration(days: 2)),
+        rejectionReason: 'Needs Improvement',
       ),
     ];
   }
@@ -165,7 +170,6 @@ class _SubmissionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 90,
       decoration: BoxDecoration(
         color: context.colors.bgSecondary,
         borderRadius: BorderRadius.circular(radiusMedium),
@@ -174,93 +178,141 @@ class _SubmissionTile extends StatelessWidget {
           width: borderWidthDefault,
         ),
       ),
+      padding: const EdgeInsets.all(spacing16),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image placeholder with padding
-          Padding(
-            padding: const EdgeInsets.all(spacing8),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(radiusSmall),
-              child: Container(
-                width: 64,
-                height: 64,
-                color: context.colors.bgTertiary,
-                child: submission.imageUrl != null
-                    ? Image.network(
-                        submission.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Center(
-                          child: Icon(
-                            Icons.image,
-                            color: context.colors.textSecondary,
-                            size: iconSizeLarge,
-                          ),
-                        ),
-                      )
-                    : Center(
+          // Image placeholder
+          ClipRRect(
+            borderRadius: BorderRadius.circular(radiusMedium),
+            child: Container(
+              width: 75,
+              height: 75,
+              color: context.colors.bgTertiary,
+              child: submission.imageUrl != null
+                  ? Image.network(
+                      submission.imageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Center(
                         child: Icon(
                           Icons.image,
                           color: context.colors.textSecondary,
                           size: iconSizeLarge,
                         ),
                       ),
-              ),
+                    )
+                  : Center(
+                      child: Icon(
+                        Icons.image,
+                        color: context.colors.textSecondary,
+                        size: iconSizeLarge,
+                      ),
+                    ),
             ),
           ),
+
+          const SizedBox(width: spacing12),
 
           // Content
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: spacing12,
-                vertical: spacing8,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    submission.placeName,
-                    style: bodyTextStyle.copyWith(
-                      color: context.colors.textPrimary,
-                      fontWeight: FontWeight.w600,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Top row: Title and XP badge
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        submission.placeName,
+                        style: bodyTextStyle.copyWith(
+                          color: context.colors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: spacing4),
-                  Row(
-                    children: [
-                      Text(
-                        'Status: ${submission.statusText}',
-                        style: captionStyle.copyWith(
-                          color: context.colors.textSecondary,
+                    // XP Badge for approved submissions
+                    if (submission.status == SubmissionStatus.approved &&
+                        submission.xpEarned != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: spacing12,
+                          vertical: spacing4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: brandSecondary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: brandSecondary.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          '${submission.xpEarned}xp',
+                          style: bodySmallStyle.copyWith(
+                            color: brandSecondary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
-                      const Spacer(),
-                      Text(
-                        submission.timeAgo,
-                        style: captionStyle.copyWith(
-                          color: context.colors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+                  ],
+                ),
 
-          // Status indicator
-          Container(
-            width: spacing48,
-            height: 90,
-            decoration: BoxDecoration(
-              color: submission.statusColor,
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(radiusMedium),
-                bottomRight: Radius.circular(radiusMedium),
-              ),
+                const SizedBox(height: spacing4),
+            
+                // Status row
+                Row(
+                  children: [
+                    Text(
+                      'Status: ',
+                      style: bodySmallStyle.copyWith(
+                        color: context.colors.textSecondary
+                            .withValues(alpha: 0.8),
+                      ),
+                    ),
+                    Text(
+                      submission.statusText,
+                      style: bodySmallStyle.copyWith(
+                        color: submission.statusColor,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: spacing4),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Rejection reason for rejected submissions
+                    if (submission.status == SubmissionStatus.rejected &&
+                        submission.rejectionReason != null)
+                      Text(
+                        submission.rejectionReason!,
+                        style: bodySmallStyle.copyWith(
+                          color: errorColor,
+                          fontSize: 12,
+                        ),
+                      )
+                    else
+                      const SizedBox(),
+            
+                    // Timestamp
+                    Text(
+                      submission.timeAgo,
+                      style: bodySmallStyle.copyWith(
+                        color: context.colors.textSecondary
+                            .withValues(alpha: 0.5),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],

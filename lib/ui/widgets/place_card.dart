@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../application/providers/location_providers.dart';
 import '../../domain/models/adventure.dart';
 import '../../theme.dart';
-import '../pages/adventure_detail.dart';
+import '../pages/place_detail.dart';
 import 'carousel_card.dart';
 
 class PlaceCard extends ConsumerWidget {
@@ -27,10 +27,12 @@ class PlaceCard extends ConsumerWidget {
         adventure.latitude,
         adventure.longitude,
       );
-      if (distance < 1000) {
-        return '${distance.toStringAsFixed(0)}m';
+      // Convert meters to miles (1 mile = 1609.34 meters)
+      final miles = distance / 1609.34;
+      if (miles < 0.1) {
+        return '${(distance * 3.28084).toStringAsFixed(0)} ft. away';
       } else {
-        return '${(distance / 1000).toStringAsFixed(0)}km';
+        return '${miles.toStringAsFixed(1)} mi. away';
       }
     }
     return '--';
@@ -43,63 +45,57 @@ class PlaceCard extends ConsumerWidget {
       title: adventure.title,
       heroTag:
           'adventure-image-${adventure.id}-${isInGrid ? 'grid' : 'carousel'}',
-      width: isInGrid ? null : 150,
+      width: isInGrid ? null : 160,
       // For grid: use expandImage to fill available space
       // For carousel: use fixed height
       expandImage: isInGrid,
-      imageHeight: isInGrid ? null : 140,
+      imageHeight: isInGrid ? null : 130,
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => AdventureDetail(
+            builder: (context) => PlaceDetail(
               isInGrid ? 'grid' : 'carousel',
               adventure,
             ),
           ),
         );
       },
-      bottomContent: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('City, State',
-              style: bodySmallStyle.copyWith(
-                fontSize: 12,
-                color: context.colors.textSecondary,
-              )),
-          const SizedBox(height: spacing4),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Category',
+      bottomContent: isInGrid
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _getDistance(ref),
                   style: bodySmallStyle.copyWith(
-                    fontSize: 13,
-                    color: context.colors.textTertiary,
+                    fontSize: 12,
+                    color: context.colors.textSecondary.withValues(alpha: 0.6),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
                 ),
-              ),
-              const SizedBox(width: spacing4),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      '+${adventure.experience.toInt()} XP',
-                      style: xpNumberStyle.copyWith(
-                        color: xpColor,
-                        fontSize: 13,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'San Juan, PR',
+                  style: bodySmallStyle.copyWith(
+                    fontSize: 12,
+                    color: context.colors.textSecondary.withValues(alpha: 0.6),
                   ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  _getDistance(ref),
+                  style: bodySmallStyle.copyWith(
+                    fontSize: 12,
+                    color: context.colors.textSecondary.withValues(alpha: 0.6),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

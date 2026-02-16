@@ -1,18 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../theme.dart';
 import '../widgets/streak_summary_widget.dart';
 import '../widgets/quest_tabs.dart';
+import '../widgets/app_bar_tabs.dart';
 
 /// Quest Main Screen - Browse and manage quests
 /// App bar includes back button, title, and QR code scanner
-class QuestMainScreen extends StatelessWidget {
+class QuestMainScreen extends ConsumerStatefulWidget {
   const QuestMainScreen({super.key, this.initialTab});
 
   final QuestTab? initialTab;
 
   @override
+  ConsumerState<QuestMainScreen> createState() => _QuestMainScreenState();
+}
+
+class _QuestMainScreenState extends ConsumerState<QuestMainScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Set initial tab if provided
+    if (widget.initialTab != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(questTabProvider.notifier).state = widget.initialTab!;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final selectedTab = ref.watch(questTabProvider);
+    final selectedIndex = selectedTab.index;
+
     return GradientBackground(
       child: Scaffold(
         appBar: GlassAppBar(
@@ -22,21 +43,22 @@ class QuestMainScreen extends StatelessWidget {
               color: context.colors.textPrimary,
             ),
           ),
+          hideBottomDivider: true,
           centerTitle: true,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: context.colors.iconColor,
-              size: iconSizeLarge,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
+          height: 64,
+          bottom: AppBarTabs(
+            tabs: const ['Todo', 'In Progress'],
+            selectedIndex: selectedIndex,
+            onTabSelected: (index) {
+              ref.read(questTabProvider.notifier).state = QuestTab.values[index];
+            },
           ),
           actions: [
             IconButton(
               icon: Icon(
-                Icons.qr_code_scanner,
+                Icons.more_horiz,
                 color: context.colors.iconColor,
-                size: iconSizeLarge,
+                size: 32,
               ),
               onPressed: () {
                 // TODO: Implement QR code scanner for quest verification
@@ -45,26 +67,8 @@ class QuestMainScreen extends StatelessWidget {
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Streak Summary at the top (non-scrollable)
-              const StreakSummaryWidget(
-                currentXp: 5787, // TODO: Get from user profile provider
-                totalXp: 8000, // TODO: Get from level calculation
-                dayStreak: 13, // TODO: Get from streak provider
-                streakStartDayIndex:
-                    2, // 0 = Mon, 1 = Tue, etc. TODO: Get from streak provider
-              ),
-              const SizedBox(height: spacing16),
-
-              // Quest tabs + placeholder content
-              Expanded(
-                child: QuestTabs(initialTab: initialTab),
-              ),
-            ],
-          ),
+          padding: const EdgeInsets.fromLTRB(spacing16, spacing8, spacing16, 0),
+          child: QuestTabContent(selectedTab: selectedTab),
         ),
       ),
     );

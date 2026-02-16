@@ -17,6 +17,7 @@ class XploraTextField extends StatefulWidget {
   final void Function(String)? onChanged;
   final int? maxLines;
   final bool isEnabled;
+  final bool readOnly;
   final int? maxLength;
   final FocusNode? focusNode;
   final void Function(PointerEvent)? onTapOutside;
@@ -36,6 +37,7 @@ class XploraTextField extends StatefulWidget {
     this.onChanged,
     this.maxLines = 1,
     this.isEnabled = true,
+    this.readOnly = false,
     this.maxLength,
     this.focusNode,
     this.onTapOutside,
@@ -91,7 +93,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
           Text(
             widget.labelText!,
             style: bodySmallStyle.copyWith(
-              color: hasError ? errorColor : context.colors.textPrimary,
+              color: hasError ? errorColor : context.colors.textPrimary
             ),
           ),
           const SizedBox(height: spacing8),
@@ -112,6 +114,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
           maxLines: widget.maxLines,
           maxLength: widget.maxLength,
           enabled: widget.isEnabled,
+          readOnly: widget.readOnly,
           validator: (value) {
             final error = widget.validator?.call(value);
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -126,7 +129,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
           style: bodySmallStyle,
           decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: captionStyle,
+            hintStyle: captionStyle.copyWith(color: context.colors.textPrimary.withValues(alpha: 0.5)),
             errorStyle: const TextStyle(height: 0, fontSize: 0), // Hide default error
             counterText: '', // Hide default counter, we'll show it custom below
             suffixIcon: widget.suffixIcon,

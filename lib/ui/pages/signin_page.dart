@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../theme.dart';
@@ -7,7 +12,6 @@ import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../utils/snackbar_utils.dart';
-import '../widgets/social_icon_button.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -17,83 +21,139 @@ class SignInPage extends ConsumerStatefulWidget {
 }
 
 class _SignInPageState extends ConsumerState<SignInPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Reset form state when screen is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(loginFormNotifierProvider);
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const GlassAppBar(
-        title: 'logo',
-        centerTitle: true,
-      ),
-      body: GradientBackground(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+              horizontal: spacing16, vertical: spacing32),
+          child: Form(
+            autovalidateMode: AutovalidateMode.onUnfocus,
+            key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Sign In title
-                Center(
-                  child: Text(
-                    'Sign In',
-                    style: h1Style,
-                  ),
-                ),
-                const SizedBox(height: 8),
+                const SizedBox(height: spacing48),
 
-                Center(
-                  child: Text(
-                    'Welcome back! Sign in to continue your adventure',
-                    style: bodyTextStyle,
-                    textAlign: TextAlign.center,
+                // Welcome back title
+                Text(
+                  'Welcome back',
+                  style: h1Style.copyWith(
+                    color: context.colors.textPrimary,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: spacing8),
 
-                // Email field
+                // Subtitle
+                Text(
+                  'Sign in to continue',
+                  style: h3Style.copyWith(
+                    color: context.colors.textPrimary.withValues(alpha: 0.6),
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: spacing32),
+
+                // Email or Username field
                 XploraTextField(
-                  labelText: 'Email',
-                  hintText: 'Enter your email address',
+                  controller: _emailController,
+                  hintText: 'Email or Username',
                   keyboardType: TextInputType.emailAddress,
-                  prefixIcon: Icon(
-                    Icons.email_outlined,
-                    color: context.colors.textSecondary,
-                    size: 20,
-                  ),
+                  textInputAction: TextInputAction.next,
+                  prefixIcon: Padding(
+                      padding: const EdgeInsets.all(spacing12),
+                      child: Icon(
+                        LucideIcons.user,
+                        color:
+                            context.colors.textPrimary.withValues(alpha: 0.5),
+                        size: 22,
+                      )),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Email or Username is required';
+                    } else if (value.trim().length < 3) {
+                      return 'Email or Username must be at least 3 characters';
+                    }
+                    return null;
+                  },
                   onChanged: (value) {
                     ref
                         .read(loginFormNotifierProvider.notifier)
                         .setEmail(value.trim());
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: spacing16),
 
                 // Password field
                 Consumer(
                   builder: (context, ref, child) {
                     final loginState = ref.watch(loginFormNotifierProvider);
                     return XploraTextField(
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
+                      controller: _passwordController,
+                      hintText: 'Password',
                       obscureText: loginState.obscureText,
-                      prefixIcon: Icon(
-                        Icons.lock_outline,
-                        color: context.colors.textSecondary,
-                        size: 20,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          ref
-                              .read(loginFormNotifierProvider.notifier)
-                              .toggleObscureText();
-                        },
-                        icon: Icon(
-                          loginState.obscureText
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: context.colors.textSecondary,
-                          size: 20,
+                      textInputAction: TextInputAction.done,
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(spacing12),
+                        child: SvgPicture.asset(
+                          'assets/svg/lock.svg',
+                          width: 22,
+                          height: 22,
+                          colorFilter: ColorFilter.mode(
+                            context.colors.textPrimary.withValues(alpha: 0.5),
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: spacing8),
+                        child: IconButton(
+                          onPressed: () {
+                            ref
+                                .read(loginFormNotifierProvider.notifier)
+                                .toggleObscureText();
+                          },
+                          icon: Icon(
+                            loginState.obscureText
+                                ? LucideIcons.eyeOff
+                                : LucideIcons.eye,
+                            color: brandSecondary,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Password is required';
+                        }
+                        if (value.trim().length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
                       onChanged: (value) {
                         ref
                             .read(loginFormNotifierProvider.notifier)
@@ -102,120 +162,154 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     );
                   },
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: spacing12),
 
-                // Sign In button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final loginState = ref.watch(loginFormNotifierProvider);
-                      return PrimaryButton(
-                        text:
-                            loginState.isLoading ? 'Signing in...' : 'Sign in',
-                        onPressed: loginState.isLoading
-                            ? null
-                            : () async {
-                                final loginNotifier = ref
-                                    .read(loginFormNotifierProvider.notifier);
+                // Forgot password link
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      // TODO: Implement forgot password
+                      showXploraSnackBar(
+                        context,
+                        'Forgot password feature coming soon!',
+                      );
+                    },
+                    child: Text(
+                      'Forgot password?',
+                      style: bodySmallStyle.copyWith(
+                        color: brandSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: spacing32),
 
-                                try {
-                                  await loginNotifier.login();
+                // Log In button
+                Consumer(
+                  builder: (context, ref, child) {
+                    final loginState = ref.watch(loginFormNotifierProvider);
+                    return PrimaryButton(
+                      text: loginState.isLoading ? 'Logging in...' : 'Log In',
+                      onPressed: loginState.isLoading
+                          ? null
+                          : () async {
+                              // Validate form
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
 
-                                  // Check for errors
-                                  final finalState =
-                                      ref.read(loginFormNotifierProvider);
-                                  if (finalState.errors.isNotEmpty) {
-                                    if (context.mounted) {
-                                      showXploraSnackBar(
-                                        context,
-                                        finalState.errors.first,
-                                        isError: true,
-                                      );
-                                    }
-                                  } else {
-                                    // Success - refresh settings and navigate
-                                    if (context.mounted) {
-                                      // Refresh settings to ensure they're loaded
-                                      ref.invalidate(
-                                          settingsStateNotifierProvider);
+                              final loginNotifier =
+                                  ref.read(loginFormNotifierProvider.notifier);
 
-                                      // Refresh location to ensure it's loaded
-                                      ref.invalidate(nearbyAdventuresProvider);
+                              try {
+                                // Perform login
+                                await loginNotifier.login();
 
-                                      // Refresh auto enable location provider
-                                      ref.invalidate(
-                                          autoEnableLocationTrackingProvider);
-
-                                      showXploraSnackBar(
-                                        context,
-                                        'Signed in successfully!',
-                                      );
-                                      Navigator.of(context).pop();
-                                    }
-                                  }
-                                } catch (e) {
-                                  // Get the current state to show the actual error
-                                  final finalState =
-                                      ref.read(loginFormNotifierProvider);
+                                // Check for server-side errors
+                                final finalState =
+                                    ref.read(loginFormNotifierProvider);
+                                if (finalState.errors.isNotEmpty) {
                                   if (context.mounted) {
                                     showXploraSnackBar(
                                       context,
-                                      finalState.errors.isNotEmpty
-                                          ? finalState.errors.first
-                                          : 'Sign in failed. Please try again.',
+                                      finalState.errors.first,
                                       isError: true,
                                     );
                                   }
+                                } else {
+                                  // Success - refresh settings and navigate
+                                  if (context.mounted) {
+                                    // Refresh settings to ensure they're loaded
+                                    ref.invalidate(
+                                        settingsStateNotifierProvider);
+
+                                    // Refresh location to ensure it's loaded
+                                    ref.invalidate(nearbyAdventuresProvider);
+
+                                    // Refresh auto enable location provider
+                                    ref.invalidate(
+                                        autoEnableLocationTrackingProvider);
+
+                                    showXploraSnackBar(
+                                      context,
+                                      'Signed in successfully!',
+                                    );
+                                    Navigator.of(context).pop();
+                                  }
                                 }
-                              },
-                      );
-                    },
-                  ),
+                              } catch (e) {
+                                // General error in snackbar
+                                final finalState =
+                                    ref.read(loginFormNotifierProvider);
+                                if (context.mounted) {
+                                  final errorMessage =
+                                      finalState.errors.isNotEmpty
+                                          ? finalState.errors.first
+                                          : 'Sign in failed. Please try again.';
+                                  showXploraSnackBar(
+                                    context,
+                                    errorMessage,
+                                    isError: true,
+                                  );
+                                }
+                              }
+                            },
+                    );
+                  },
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: spacing32),
 
                 // Divider with "or" text
                 Row(
                   children: [
                     Expanded(
                       child: Divider(
-                        color: context.colors.border,
+                        color:
+                            context.colors.textPrimary.withValues(alpha: 0.15),
                         thickness: 1,
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: spacing16),
                       child: Text(
-                        'or continue with',
+                        'or',
                         style: bodyTextStyle.copyWith(
-                          color: context.colors.textSecondary,
-                          fontSize: 14,
+                          color:
+                              context.colors.textPrimary.withValues(alpha: 0.5),
                         ),
                       ),
                     ),
                     Expanded(
                       child: Divider(
-                        color: context.colors.border,
+                        color:
+                            context.colors.textPrimary.withValues(alpha: 0.15),
                         thickness: 1,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: spacing32),
 
-                // Social sign in buttons
+                // Social sign-in buttons
                 Consumer(
                   builder: (context, ref, child) {
                     final loginState = ref.watch(loginFormNotifierProvider);
                     final isLoading = loginState.isLoading;
 
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    return Column(
                       children: [
-                        SocialIconButton(
-                          iconPath: 'assets/png/google-icon.png',
+                        // Continue with Google
+                        SecondaryButton(
+                          height: 50,
+                          text: 'Continue with Google',
+                          icon: SvgPicture.asset(
+                            'assets/svg/google.svg',
+                            width: 20,
+                            height: 20,
+                          ),
                           onPressed: isLoading
                               ? null
                               : () async {
@@ -239,11 +333,17 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                       );
                                     }
                                   } else {
-                                    // Success - verify by checking if we have a user
-                                    final authService = ref.read(authServiceProvider);
-                                    final currentUser = await authService.getAuthUser();
-                                    
-                                      if (currentUser != null && context.mounted) {
+                                    // CRITICAL: Verify user is actually authenticated
+                                    // When user cancels Google sign-in, errors remain empty
+                                    // (silent cancellation for better UX), but no user is signed in.
+                                    // This check prevents navigation/settings loading when no one is authenticated.
+                                    final authService =
+                                        ref.read(authServiceProvider);
+                                    final currentUser =
+                                        await authService.getAuthUser();
+
+                                    if (currentUser != null &&
+                                        context.mounted) {
                                       // Success - refresh settings and navigate
                                       // Refresh settings to ensure they're loaded
                                       ref.invalidate(
@@ -259,83 +359,158 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
                                       // Navigate to complete profile if new user, otherwise pop
                                       if (finalState.needsProfileCompletion) {
-                                        print('Navigating to complete-profile page');
-                                        Navigator.of(context)
-                                            .pushReplacementNamed(
-                                                '/complete-profile');
+                                        Navigator.pushReplacementNamed(
+                                            context, '/choose-username');
                                       } else {
                                         // Refresh location to ensure it's loaded
-                                        ref.invalidate(nearbyAdventuresProvider);
+                                        ref.invalidate(
+                                            nearbyAdventuresProvider);
 
                                         // Refresh auto enable location provider
                                         ref.invalidate(
                                             autoEnableLocationTrackingProvider);
 
-                                        print('UI - Navigating back (existing user)');
                                         Navigator.of(context).pop();
                                       }
                                     }
                                   }
                                 },
                         ),
-                        SocialIconButton(
-                          icon: Icons.apple,
+                        const SizedBox(height: spacing16),
+
+                        // Continue with Apple
+                        if (!kIsWeb &&
+                            defaultTargetPlatform == TargetPlatform.iOS) ...[
+                          SecondaryButton(
+                            height: 50,
+                            text: 'Continue with Apple',
+                            icon: Icon(
+                              Icons.apple,
+                              color: context.colors.textPrimary,
+                              size: 20,
+                            ),
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    final loginNotifier = ref.read(
+                                        loginFormNotifierProvider.notifier);
+
+                                    // Trigger Apple Sign-In
+                                    await loginNotifier.loginWithApple();
+
+                                    // Check for errors and handle navigation
+                                    final finalState =
+                                        ref.read(loginFormNotifierProvider);
+
+                                    if (finalState.errors.isNotEmpty) {
+                                      // Show error message in UI (user cancellation won't have errors)
+                                      if (context.mounted) {
+                                        showXploraSnackBar(
+                                          context,
+                                          finalState.errors.first,
+                                          isError: true,
+                                        );
+                                      }
+                                    } else {
+                                      // CRITICAL: Verify user is actually authenticated
+                                      // When user cancels Apple sign-in, errors remain empty
+                                      // (silent cancellation for better UX), but no user is signed in.
+                                      // This check prevents navigation/settings loading when no one is authenticated.
+                                      final authService =
+                                          ref.read(authServiceProvider);
+                                      final currentUser =
+                                          await authService.getAuthUser();
+
+                                      if (currentUser != null &&
+                                          context.mounted) {
+                                        // Success - refresh settings and navigate
+                                        // Refresh settings to ensure they're loaded
+                                        ref.invalidate(
+                                            settingsStateNotifierProvider);
+
+                                        // Show appropriate message based on whether it's a new user
+                                        showXploraSnackBar(
+                                          context,
+                                          finalState.needsProfileCompletion
+                                              ? 'Signed up successfully!'
+                                              : 'Signed in successfully!',
+                                        );
+
+                                        // Navigate to complete profile if new user, otherwise pop
+                                        if (finalState.needsProfileCompletion) {
+                                          Navigator.pushReplacementNamed(
+                                              context, '/choose-username');
+                                        } else {
+                                          // Refresh location to ensure it's loaded
+                                          ref.invalidate(
+                                              nearbyAdventuresProvider);
+
+                                          // Refresh auto enable location provider
+                                          ref.invalidate(
+                                              autoEnableLocationTrackingProvider);
+
+                                          Navigator.of(context).pop();
+                                        }
+                                      }
+                                    }
+                                  },
+                          ),
+                          const SizedBox(height: spacing16),
+                        ],
+
+                        // Continue as Guest
+                        SecondaryButton(
+                          height: 50,
+                          text: 'Continue as Guest',
+                          icon: Icon(
+                            LucideIcons.user,
+                            color: context.colors.textPrimary
+                                .withValues(alpha: 0.7),
+                            size: 20,
+                          ),
                           onPressed: isLoading
                               ? null
                               : () {
-                                  // TODO: Implement Apple sign in
-                                  showXploraSnackBar(
-                                    context,
-                                    'Apple sign in coming soon!',
-                                  );
+                                  Navigator.of(context).pop();
                                 },
                         ),
-                        SocialIconButton(
-                          iconPath: 'assets/png/github-icon.png',
-                          onPressed: isLoading
+
+                        const SizedBox(height: spacing16),
+
+                        // Footer text
+                        GestureDetector(
+                          onTap: isLoading
                               ? null
-                              : () {
-                                  // TODO: Implement GitHub sign in
-                                  showXploraSnackBar(
-                                    context,
-                                    'GitHub sign in coming soon!',
-                                  );
+                              : () async {
+                                  await Navigator.of(context)
+                                      .pushNamed('/signup');
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                 },
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Don't have an account? ",
+                                  style: h3Style.copyWith(
+                                      color: context.colors.textPrimary
+                                          .withValues(alpha: 0.7),
+                                      fontSize: 14),
+                                ),
+                                TextSpan(
+                                  text: 'Sign up',
+                                  style: h3Style.copyWith(
+                                      color: brandSecondary, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ],
                     );
                   },
                 ),
-
-                const SizedBox(height: 48),
-
-                // Footer text
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushReplacementNamed('/signup');
-                    },
-                    child: Text.rich(
-                      style: bodyTextStyle,
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "Don't have an account? ",
-                            style: bodyTextStyle
-                          ),
-                          TextSpan(
-                            text: 'Sign up',
-                            style: bodyTextStyle.copyWith(
-                              color: brandPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
+                const SizedBox(height: spacing24),
               ],
             ),
           ),

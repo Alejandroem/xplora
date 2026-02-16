@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
-import '../../application/providers/profile_providers.dart' as profile_providers;
+import '../../application/providers/profile_providers.dart'
+    as profile_providers;
 import '../../application/providers/xplorauser_providers.dart';
 import '../../domain/models/xplora_user.dart';
 import '../../theme.dart';
+import '../dialogs/delete_account_confirmation_dialog.dart';
 import '../widgets/settings_tile.dart';
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
@@ -19,49 +21,20 @@ class AccountSettingsPage extends ConsumerStatefulWidget {
 
 class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   Widget _buildInfoItem(BuildContext context, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: spacing16,
-        vertical: spacing8,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: bodyTextStyle.copyWith(
-              color: context.colors.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: spacing4),
-          Text(
-            value,
-            style: bodyTextStyle.copyWith(
-              color: context.colors.textSecondary,
-            ),
-          ),
-        ],
-      ),
+    return XploraTextField(
+      controller: TextEditingController(text: value),
+      labelText: label,
+      readOnly: true,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final userAsync = ref.watch(currentAuthUserStreamProvider);
-    final profileAsync = ref.watch(createOrReadCurrentUserProfile);
 
     return GradientBackground(
       child: Scaffold(
         appBar: GlassAppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: context.colors.iconColor,
-              size: iconSizeLarge,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
           title: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -80,7 +53,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ],
           ),
           centerTitle: true,
-          height: 65,
+          height: 94,
         ),
         body: userAsync.when(
           data: (user) {
@@ -95,87 +68,75 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               );
             }
 
-            return ListView(
-              padding: const EdgeInsets.symmetric(vertical: spacing8),
-              children: [
-                // Profile Information Section
-                Padding(
-                  padding: const EdgeInsets.all(spacing16),
-                  child: Text(
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(spacing16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: spacing16,
+                children: [
+                  // Profile Information Section
+                  Text(
                     'Profile Information',
                     style: h3Style.copyWith(
                       color: context.colors.textPrimary,
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-                profileAsync.when(
-                  data: (profile) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoItem(
-                          context,
-                          'Username',
-                          profile?.username != null && profile!.username!.isNotEmpty
-                              ? '@${profile.username}'
-                              : 'Not set',
-                        ),
-                        _buildInfoItem(
-                          context,
-                          'Display Name',
-                          user.displayName.isNotEmpty
-                              ? user.displayName
-                              : 'Not set',
-                        ),
-                      ],
-                    );
-                  },
-                  loading: () => const SizedBox(),
-                  error: (_, __) => const SizedBox(),
-                ),
-                _buildInfoItem(
-                  context,
-                  'Email',
-                  user.email,
-                ),
-                _buildInfoItem(
-                  context,
-                  'Phone Number',
-                  '+1 (555) 123-4567', // Dummy for now
-                ),
-                _buildInfoItem(
-                  context,
-                  'Account Type',
-                  'Xplorer', // Dummy for now
-                ),
-                const SizedBox(height: spacing24),
-                // Account Management Section
-                Padding(
-                  padding: const EdgeInsets.all(spacing16),
-                  child: Text(
-                    'Account Management',
-                    style: h3Style.copyWith(
-                      color: context.colors.textPrimary,
-                      fontWeight: FontWeight.w700,
+                  _buildInfoItem(
+                    context,
+                    'Username',
+                    user.username.isNotEmpty ? '@${user.username}' : 'Not set',
+                  ),
+                  _buildInfoItem(
+                    context,
+                    'Display Name',
+                    user.displayName.isNotEmpty ? user.displayName : 'Not set',
+                  ),
+                  _buildInfoItem(
+                    context,
+                    'Email',
+                    user.email,
+                  ),
+                  _buildInfoItem(
+                    context,
+                    'Date of Birth',
+                    '12-1-2000', // Dummy for now
+                  ),
+                  _buildInfoItem(
+                    context,
+                    'Account Type',
+                    'Free', // Dummy for now Account type will be- Free or the subscription plan name
+                  ),
+                  // Account Management Section
+                  Padding(
+                    padding: const EdgeInsets.only(top: spacing8),
+                    child: Text(
+                      'Account Management',
+                      style: h3Style.copyWith(
+                        color: context.colors.textPrimary,
+                      ),
                     ),
                   ),
-                ),
-                SettingsTile(
-                  title: 'Delete Account',
-                  showTrailing: false,
-                  onTap: () async {
-                    // TODO: Show confirmation dialog for delete account
-                    final xploraProfileProvider = ref.read(profile_providers.profileServiceProvider);
-                    final authProvider = ref.read(authServiceProvider);
-                    await xploraProfileProvider.delete(user.id!);
-                    await authProvider.deleteAccount();
-                    if (context.mounted) {
-                      Navigator.popUntil(context, (route) => route.isFirst);
-                    }
-                  },
-                ),
-              ],
+                  PrimaryButton(
+                    text: 'Delete Account',
+                    onPressed: () async {
+                      // Show confirmation dialog
+                      final confirmed =
+                          await showDeleteAccountConfirmationDialog(context);
+
+                      if (confirmed == true && context.mounted) {
+                        final xploraProfileProvider =
+                            ref.read(profile_providers.profileServiceProvider);
+                        final authProvider = ref.read(authServiceProvider);
+                        await xploraProfileProvider.delete(user.id!);
+                        await authProvider.deleteAccount();
+                        if (context.mounted) {
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
             );
           },
           loading: () => Center(
@@ -224,7 +185,7 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = ref.watch(authServiceProvider);
+    final userService = ref.watch(userServiceProvider);
 
     return Scaffold(
       appBar: const GlassAppBar(
@@ -247,17 +208,17 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
                 onPressed: () async {
                   final newDisplayName = displayNameController.text.trim();
                   try {
-                    await authService.updateName(newDisplayName);
-                    ref.read(userServiceProvider).update(
-                          widget.user.copyWith(displayName: newDisplayName),
-                          widget.user.id!,
-                        );
+                    await userService.updateName(
+                      widget.user.id!,
+                      newDisplayName,
+                    );
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             'Display name updated',
-                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary),
                           ),
                           backgroundColor: brandPrimary,
                         ),
@@ -270,7 +231,8 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
                         SnackBar(
                           content: Text(
                             'Failed to update display name: $e',
-                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary),
                           ),
                           backgroundColor: errorColor,
                         ),
@@ -286,7 +248,6 @@ class _EditDisplayNamePageState extends ConsumerState<EditDisplayNamePage> {
     );
   }
 }
-
 
 class EditEmailPage extends ConsumerStatefulWidget {
   final XploraUser user;
@@ -349,7 +310,8 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
                         SnackBar(
                           content: Text(
                             'Email updated',
-                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary),
                           ),
                           backgroundColor: brandPrimary,
                         ),
@@ -362,7 +324,8 @@ class _EditEmailPageState extends ConsumerState<EditEmailPage> {
                         SnackBar(
                           content: Text(
                             'Failed to update email: $e',
-                            style: bodyTextStyle.copyWith(color: context.colors.textPrimary),
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary),
                           ),
                           backgroundColor: errorColor,
                         ),

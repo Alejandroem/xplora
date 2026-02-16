@@ -6,6 +6,8 @@ import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
+import '../dialogs/security_settings_page/logout_dialog.dart';
+import '../dialogs/security_settings_page/reset_account_access_dialog.dart';
 import '../widgets/settings_tile.dart';
 
 class SecuritySettingsPage extends ConsumerWidget {
@@ -16,14 +18,6 @@ class SecuritySettingsPage extends ConsumerWidget {
     return GradientBackground(
       child: Scaffold(
         appBar: GlassAppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: context.colors.iconColor,
-              size: iconSizeLarge,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
           title: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -42,12 +36,14 @@ class SecuritySettingsPage extends ConsumerWidget {
             ],
           ),
           centerTitle: true,
-          height: 65, // kToolbarHeight = 56
+          height: 94, // kToolbarHeight = 56
         ),
-        body: ListView(
-          padding: const EdgeInsets.symmetric(vertical: spacing8),
-          children: [
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(spacing16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             SettingsTile(
+              leadingIcon: 'assets/svg/lock.svg',
               title: 'Change Password',
               subtitle: 'Update your account password.',
               onTap: () {
@@ -55,6 +51,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               },
             ),
             SettingsTile(
+              leadingIcon: 'assets/svg/shield-check.svg',
               title: 'Two-Factor Authentication',
               subtitle: 'Add an extra layer of security.',
               onTap: () {
@@ -62,6 +59,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               },
             ),
             SettingsTile(
+              leadingIcon: 'assets/svg/monitor.svg',
               title: 'Login Sessions',
               subtitle: 'Review devices logged into your account.',
               onTap: () {
@@ -69,6 +67,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               },
             ),
             SettingsTile(
+              leadingIcon: 'assets/svg/clock.svg',
               title: 'Recent Activity',
               subtitle: 'View recent sign-ins and actions.',
               onTap: () {
@@ -76,6 +75,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               },
             ),
             SettingsTile(
+              leadingIcon: 'assets/svg/envelope.svg',
               title: 'Recovery Email/Phone',
               subtitle: 'Used when you get locked out.',
               onTap: () {
@@ -84,46 +84,55 @@ class SecuritySettingsPage extends ConsumerWidget {
             ),
             const SizedBox(height: spacing24),
             // Danger Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: spacing16),
-              child: Text(
-                'Danger Section',
-                style: h3Style.copyWith(
-                  color: context.colors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
+            Text(
+              'Danger Section',
+              style: h3Style.copyWith(
+                color: context.colors.textPrimary,
+                fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: spacing8),
-            SettingsTile(
-              title: 'Reset Account Access',
-              showTrailing: false,
-              onTap: () {
-                // TODO: Show confirmation dialog for reset account access
+            const SizedBox(height: spacing24),
+            PrimaryButton(
+              text: 'Reset Account Access',
+              onPressed: () async {
+                // Show confirmation dialog
+                final confirmed = await showResetAccountAccessDialog(context);
+
+                // if (confirmed == true && context.mounted) {
+                //   // TODO: Implement reset account access logic
+                //   showXploraSnackBar(
+                //     context,
+                //     'Account access reset successfully',
+                //   );
+                // }
               },
             ),
-            SettingsTile(
-              title: 'Logout All Devices',
-              showTrailing: false,
-              onTap: () async {
-                // TODO: Show confirmation dialog for logout all devices
-                final authProvider = ref.read(authServiceProvider);
-                await authProvider.signOut();
-                ref.invalidate(nearbyAdventuresProvider);
+            const SizedBox(height: spacing16),
+            SecondaryButton(
+              text: 'Logout',
+              onPressed: () async {
+                // Show confirmation dialog
+                final confirmed = await showLogoutDialog(context);
 
-                //pop until /
-                if (context.mounted) {
-                  showXploraSnackBar(
-                    context,
-                    'Logged out successfully',
-                  );
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                  ref.read(bottomNavigationBarProvider.notifier).state =
-                      NavigationItem.home;
+                if (confirmed == true && context.mounted) {
+                  final authProvider = ref.read(authServiceProvider);
+                  await authProvider.signOut();
+                  ref.invalidate(nearbyAdventuresProvider);
+
+                  //pop until /
+                  if (context.mounted) {
+                    showXploraSnackBar(
+                      context,
+                      'Logged out successfully',
+                    );
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                    ref.read(bottomNavigationBarProvider.notifier).state =
+                        NavigationItem.home;
+                  }
                 }
               },
             ),
-          ],
+          ]),
         ),
       ),
     );

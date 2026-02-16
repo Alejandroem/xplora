@@ -22,80 +22,114 @@ class ContributeSection extends ConsumerWidget {
             final notifier = ref.read(contributeExpandedProvider.notifier);
             notifier.state = !notifier.state;
           },
-          child: GlassContainer(
-            borderRadius: radiusLarge,
-            padding: const EdgeInsets.symmetric(
-              horizontal: spacing16,
-              vertical: spacing12,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Contribute',
-                  style: h3Style.copyWith(
-                    color: context.colors.textPrimary,
+          child: SizedBox(
+            // height: 59,
+            child: GlassContainer(
+              borderRadius: isExpanded ? null : 14,
+              customBorderRadius: isExpanded
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(radiusMedium),
+                      topRight: Radius.circular(radiusMedium),
+                    )
+                  : null,
+              padding: const EdgeInsets.all(spacing16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Contribute',
+                    style: bodyTextStyle.copyWith(
+                      color: context.colors.textPrimary,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
-                ),
-                Icon(
-                  isExpanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  color: context.colors.textPrimary,
-                ),
-              ],
+                  Icon(
+                    isExpanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: isExpanded ? context.colors.textPrimary : context.colors.textPrimary.withValues(alpha: 0.7),
+                    size: 25,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
         if (isExpanded) ...[
-          const SizedBox(height: spacing8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(radiusLarge),
-            child: Container(
-              decoration: BoxDecoration(
-                color: context.colors.bgSecondary,
-                borderRadius: BorderRadius.circular(radiusLarge),
-                border: Border.all(
+          Container(
+            decoration: BoxDecoration(
+              color: context.colors.bgSecondary,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(radiusLarge),
+                bottomRight: Radius.circular(radiusLarge),
+              ),
+              border: Border(
+                left: BorderSide(
+                  color: context.colors.border,
+                  width: borderWidthDefault,
+                ),
+                right: BorderSide(
+                  color: context.colors.border,
+                  width: borderWidthDefault,
+                ),
+                bottom: BorderSide(
                   color: context.colors.border,
                   width: borderWidthDefault,
                 ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _ContributeRow(
-                    title: 'Submit a Place',
-                    subtitle: 'Help improve the map and earn XP.',
-                    trailing: Icon(
-                      Icons.add,
-                      size: iconSizeMedium,
-                      color: context.colors.textPrimary,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: spacing12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _ContributeRow(
+                  title: 'Submissions status',
+                  subtitle:
+                      'View pending, approved, or rejected contributions.',
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: spacing16,
+                      vertical: spacing8,
                     ),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/submit-place');
-                    },
-                  ),
-                  Divider(
-                    height: 1,
-                    color: context.colors.border,
-                  ),
-                  _ContributeRow(
-                    title: 'Your Submissions',
-                    subtitle:
-                        'View pending, approved, or rejected contributions.',
-                    trailing: Text(
-                      'view',
+                    decoration: BoxDecoration(
+                      color: context.colors.textPrimary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(radiusSmall),
+                    ),
+                    child: Text(
+                      'View',
                       style: bodySmallStyle.copyWith(
-                        color: context.colors.textSecondary,
+                        color: context.colors.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/submissions');
-                    },
                   ),
-                ],
-              ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/submissions');
+                  },
+                ),
+                const SizedBox(height: spacing8),
+                _ContributeRow(
+                  title: 'Submit a Place',
+                  subtitle: 'Help improve the map and earn XP.',
+                  trailing: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: brandPrimary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(radiusMedium),
+                      border: Border.all(color: brandPrimary.withValues(alpha: 0.3), width: 0.5)
+                    ),
+                    child: Icon(
+                      Icons.add_rounded,
+                      size: 24,
+                      color: brandPrimary,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/submit-place');
+                  },
+                ),
+              ],
             ),
           ),
         ],
@@ -121,46 +155,51 @@ class _ContributeRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        overlayColor: MaterialStateProperty.resolveWith((states) {
-          if (!states.contains(MaterialState.pressed)) return null;
-          return isDark ? questSplashDark : questSplashLight;
-        }),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacing16,
-            vertical: spacing12,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: bodyTextStyle.copyWith(
-                        color: context.colors.textPrimary,
-                        fontWeight: FontWeight.w600,
+    return Container(
+      decoration: BoxDecoration(
+        color: context.colors.bgTertiary,
+        borderRadius: BorderRadius.circular(radiusMedium),
+        border: Border.all(color: context.colors.border, width: borderWidthDefault)
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(radiusMedium),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (!states.contains(WidgetState.pressed)) return null;
+            return isDark ? questSplashDark : questSplashLight;
+          }),
+          child: Padding(
+            padding: const EdgeInsets.all(spacing16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: bodyTextStyle.copyWith(
+                          color: context.colors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: spacing4),
-                    Text(
-                      subtitle,
-                      style: bodyTextStyle.copyWith(
-                        color: context.colors.textSecondary,
+                      const SizedBox(height: spacing4),
+                      Text(
+                        subtitle,
+                        style: bodySmallStyle.copyWith(
+                          color: context.colors.textPrimary.withValues(alpha: 0.6),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: spacing12),
-              trailing,
-            ],
+                const SizedBox(width: spacing12),
+                trailing,
+              ],
+            ),
           ),
         ),
       ),

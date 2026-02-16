@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../application/providers/adventure_providers.dart';
-import '../../domain/models/adventure_in_progress.dart';
 import '../../theme.dart';
 import '../pages/quest_main_screen.dart';
-import '../widgets/current_quest.dart';
-import '../widgets/glass_container.dart';
-import '../widgets/primary_button.dart';
 import '../widgets/quest_tabs.dart';
-import '../widgets/quest_widget.dart';
-import '../widgets/secondary_button.dart';
+import '../widgets/quest_widget.dart' show QuestWidget, QuestState;
+
+// Test state provider for cycling through quest states
+final testQuestStateProvider =
+    StateProvider<QuestState>((ref) => QuestState.browse);
 
 class QuestComponents extends ConsumerStatefulWidget {
   const QuestComponents({super.key});
@@ -21,36 +19,43 @@ class QuestComponents extends ConsumerStatefulWidget {
 }
 
 class _QuestComponentsState extends ConsumerState<QuestComponents> {
+  void _cycleQuestState() {
+    final currentState = ref.read(testQuestStateProvider);
+    final nextState = switch (currentState) {
+      QuestState.browse => QuestState.inProgress,
+      QuestState.inProgress => QuestState.completed,
+      QuestState.completed => QuestState.browse,
+    };
+    ref.read(testQuestStateProvider.notifier).state = nextState;
+  }
+
   @override
   Widget build(BuildContext context) {
     // final questInProgress = ref.watch(adventureInProgressTrackerProvider);
-    final hasQuestInProgress = false;
+    final questState = ref.watch(testQuestStateProvider);
+
+    // Determine next state for button text
+    final nextState = switch (questState) {
+      QuestState.browse => 'In-Progress',
+      QuestState.inProgress => 'Completed',
+      QuestState.completed => 'Browse',
+    };
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Title Section
-        Text(
-          'Quest',
-          style: h2Style,
-        ),
+        Text('Quest',
+            style: h3Style.copyWith(
+                color: context.colors.textPrimary,
+                fontWeight: FontWeight.bold)),
         const SizedBox(height: spacing8),
-        // Quest Widget
         QuestWidget(
-          hasQuestInProgress: hasQuestInProgress,
-          availableCount: 20, // TODO: Replace with actual count from provider
-          nearbyCount: 3, // TODO: Replace with actual count from provider
-          onBrowseQuest: () {
+          questState: questState,
+          onStartAdventure: () {
             Navigator.of(context).pushNamed('/quest-main');
           },
-          onSeeQuestDetails: () {
-            // TODO: See quest details opens the quest detail screen.
-          },
-          onMoreQuest: () {
-            // TODO: More quest opens the main quest to-do tab screen.
-            Navigator.of(context).pushNamed('/quest-main');
-          },
-          onQueue: () {
+          onContinue: () {
+            // TODO: Continue the current quest
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const QuestMainScreen(
@@ -59,6 +64,15 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
               ),
             );
           },
+          onSeeMore: () {
+            Navigator.of(context).pushNamed('/quest-main');
+          },
+        ),
+        const SizedBox(height: spacing12),
+        // Test button to cycle through states
+        SecondaryButton(
+          onPressed: _cycleQuestState,
+          text: 'Test: Switch to $nextState Quest State',
         ),
       ],
     );

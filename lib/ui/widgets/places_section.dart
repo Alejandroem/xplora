@@ -127,12 +127,12 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     // final selectedActivityTypes = ref.watch(selectedActivityTypesProvider);
 
     // Check if location tracking is enabled (user granted permission through custom dialog)
-    final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
-
-    if (!locationTrackingEnabled) {
-      return const SizedBox
-          .shrink(); // Don't show carousel if location tracking not enabled
-    }
+    // final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
+    //
+    // if (!locationTrackingEnabled) {
+    //   return const SizedBox
+    //       .shrink(); // Don't show carousel if location tracking not enabled
+    // }
 
     final selectedFilter = ref.watch(selectedCarouselFilterProvider);
     final filters = ['Nearby', 'For You', 'Following'];
@@ -140,24 +140,28 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding:
-              const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
-          child: Text(
-            'Places',
-            style: h2Style,
-          ),
-        ),
         const SizedBox(height: spacing8),
         // Filter Bubble Row
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: spacing16),
           child: SmoothFilterScrollRow(
+            alignCenter: false,
             filters: filters,
             selectedFilter: selectedFilter,
             onFilterTap: (filter) {
               ref.read(selectedCarouselFilterProvider.notifier).state = filter;
             },
+          ),
+        ),
+        Padding(
+          padding:
+              const EdgeInsets.fromLTRB(spacing16, spacing12, spacing16, 0),
+          child: Text(
+            'Places',
+            style: h3Style.copyWith(
+              color: context.colors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: spacing16),
@@ -166,7 +170,7 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
             // Show "Coming soon" for 'For You' and 'Following' filters
             if (selectedFilter == 'For You' || selectedFilter == 'Following') {
               return SizedBox(
-                height: 150,
+                height: 210,
                 child: _buildComingSoon(
                   context: context,
                   icon: selectedFilter == 'For You'
@@ -224,6 +228,7 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
                   loading: () {
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
+                      clipBehavior: Clip.none,
                       child: IntrinsicHeight(
                         child: Row(
                           children: [

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../domain/models/quest.dart' as quest_model;
 import '../../theme.dart';
 import 'contribute_section.dart';
+import 'custom_dropdown.dart';
 
 enum QuestTab { todo, inProgress, completed }
 
@@ -16,157 +19,75 @@ final questTabProvider =
 final questCategoryExpandedProvider =
     StateProvider.autoDispose<Set<String>>((ref) => <String>{});
 
+/// Provider for selected location in quest todo tab
+/// TODO: When user location is enabled, automatically select the nearest
+/// location from the available dropdown options based on GPS coordinates
+final selectedLocationProvider =
+    StateProvider.autoDispose<String>((ref) => 'San Juan, PR');
+
 class _QuestCategory {
   final String id;
   final String title;
   final List<_QuestItem> quests;
+  final int priority;
 
   const _QuestCategory({
     required this.id,
     required this.title,
     required this.quests,
+    required this.priority,
   });
 }
+
+enum QuestType { location, qr, input }
 
 class _QuestItem {
   final String title;
-  final String subtitle;
+  final QuestType type;
   final int xp;
   final bool enabled;
 
+  // For location type: duration in minutes
+  final int? durationMinutes;
+
+  // For QR and input types: progress tracking
+  final int? currentProgress;
+  final int? totalProgress;
+
+  // For active quest: detailed information
+  final String? description;
+  final String? hint;
+
   const _QuestItem({
     required this.title,
-    required this.subtitle,
+    required this.type,
     required this.xp,
     this.enabled = true,
+    this.durationMinutes,
+    this.currentProgress,
+    this.totalProgress,
+    this.description,
+    this.hint,
   });
-}
 
-/// Segmented quest tabs + placeholder content.
-///
-/// Uses design-system components (GlassContainer, spacing, typography)
-/// and Riverpod state instead of setState.
-class QuestTabs extends ConsumerStatefulWidget {
-  const QuestTabs({super.key, this.initialTab});
-
-  final QuestTab? initialTab;
-
-  @override
-  ConsumerState<QuestTabs> createState() => _QuestTabsState();
-}
-
-class _QuestTabsState extends ConsumerState<QuestTabs> {
-  @override
-  void initState() {
-    super.initState();
-    // Set initial tab if provided
-    if (widget.initialTab != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(questTabProvider.notifier).state = widget.initialTab!;
-      });
+  double? get progressPercentage {
+    if (currentProgress != null &&
+        totalProgress != null &&
+        totalProgress! > 0) {
+      return currentProgress! / totalProgress!;
     }
+    return null;
   }
+}
+
+/// Quest tab content - displays content based on selected tab
+class QuestTabContent extends ConsumerWidget {
+  const QuestTabContent({super.key, required this.selectedTab});
+
+  final QuestTab selectedTab;
 
   @override
-  Widget build(BuildContext context) {
-    final selectedTab = ref.watch(questTabProvider);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GlassContainer(
-          borderRadius: radiusPill,
-          padding: const EdgeInsets.all(spacing4),
-          child: Row(
-            children: [
-              Expanded(
-                child: _buildTabButton(
-                  context: context,
-                  ref: ref,
-                  label: 'To-do',
-                  tab: QuestTab.todo,
-                  selectedTab: selectedTab,
-                ),
-              ),
-              Expanded(
-                child: _buildTabButton(
-                  context: context,
-                  ref: ref,
-                  label: 'In Progress',
-                  tab: QuestTab.inProgress,
-                  selectedTab: selectedTab,
-                ),
-              ),
-              Expanded(
-                child: _buildTabButton(
-                  context: context,
-                  ref: ref,
-                  label: 'Completed',
-                  tab: QuestTab.completed,
-                  selectedTab: selectedTab,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: spacing16),
-        Expanded(
-          child: _buildTabContent(context, ref, selectedTab),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTabButton({
-    required BuildContext context,
-    required WidgetRef ref,
-    required String label,
-    required QuestTab tab,
-    required QuestTab selectedTab,
-  }) {
-    final isSelected = selectedTab == tab;
-
-    return TextButton(
-      onPressed: () {
-        if (!isSelected) {
-          ref.read(questTabProvider.notifier).state = tab;
-        }
-      },
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(
-          vertical: spacing8,
-          horizontal: spacing12,
-        ),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusPill),
-        ),
-        backgroundColor:
-            isSelected ? context.colors.bgTertiary : Colors.transparent,
-        foregroundColor: isSelected
-            ? context.colors.textPrimary
-            : context.colors.textSecondary,
-      ),
-      child: Center(
-        child: Text(
-          label,
-          style: bodyTextStyle.copyWith(
-            color: isSelected
-                ? context.colors.textPrimary
-                : context.colors.textSecondary,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTabContent(
-    BuildContext context,
-    WidgetRef ref,
-    QuestTab selectedTab,
-  ) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (selectedTab == QuestTab.todo) {
       return _TodoTabContent(ref: ref);
     } else if (selectedTab == QuestTab.inProgress) {
@@ -212,18 +133,24 @@ class _QuestTabsState extends ConsumerState<QuestTabs> {
 class _InProgressTabContent extends StatelessWidget {
   const _InProgressTabContent();
 
-  static const _queued = [
-    _QuestItem(
-      title: 'Queued Quest',
-      subtitle: 'This quest is waiting in your queue.',
-      xp: 25,
-    ),
-    _QuestItem(
-      title: 'Another Queued Quest',
-      subtitle: 'Short description for the queued quest.',
-      xp: 35,
-    ),
-  ];
+  static const _activeQuest = _QuestItem(
+    title: 'El Morro Entry phrase',
+    type: QuestType.input,
+    description: 'Find the hidden entry phrases on the front historical monument.',
+    hint: 'They\'ll become useful in the future.',
+    currentProgress: 1,
+    totalProgress: 3,
+    xp: 60,
+  );
+
+  static const _upNext = _QuestItem(
+    title: 'Fly a kite at El Morro',
+    type: QuestType.location,
+    durationMinutes: 30,
+    currentProgress: 0,
+    totalProgress: 1,
+    xp: 50,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -234,58 +161,184 @@ class _InProgressTabContent extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // In-progress quest description (no heading)
-            GlassContainer(
-              borderRadius: radiusLarge,
-              padding: const EdgeInsets.all(spacing16),
-              child: Text(
-                'You\'re currently on an adventure! This is where the in-progress '
-                'quest description will appear, with details about what to do next '
-                'and how to complete your quest.',
-                style: bodyTextStyle.copyWith(
-                  color: context.colors.textSecondary,
-                ),
-              ),
-            ),
-            const SizedBox(height: spacing16),
-        
-            // Queued section heading
+            // Active Quest heading
             Text(
-              'Queued',
-              style: h3Style.copyWith(
+              'Active Quest',
+              style: h1Style.copyWith(
                 color: context.colors.textPrimary,
+                fontSize: 24
               ),
             ),
             const SizedBox(height: spacing8),
-        
-            // Queued quests list, using same quest item UI as To-do
-            ClipRRect(
-              borderRadius: BorderRadius.circular(radiusLarge),
-              child: Container(
+
+            // Active quest card
+            const _ActiveQuestCard(quest: _activeQuest),
+            const SizedBox(height: spacing16),
+
+            // Up Next section heading
+            Text(
+              'Up Next',
+              style: h1Style.copyWith(
+                color: context.colors.textPrimary,
+                fontSize: 24,
+              ),
+            ),
+            const SizedBox(height: spacing8),
+
+            // Up Next quest tile with minus icon
+            const _QuestListTile(item: _upNext, showMinusIcon: true),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Active Quest Card - displays detailed information about the current active quest
+class _ActiveQuestCard extends StatelessWidget {
+  const _ActiveQuestCard({required this.quest});
+
+  final _QuestItem quest;
+
+  String _getQuestTypeIcon() {
+    switch (quest.type) {
+      case QuestType.location:
+        return 'assets/svg/location-pin.svg';
+      case QuestType.qr:
+        return 'assets/svg/scan-grey.svg';
+      case QuestType.input:
+        return 'assets/svg/edit-grey.svg';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.colors.bgSecondary,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: context.colors.border,
+          width: borderWidthDefault,
+        ),
+      ),
+      padding: const EdgeInsets.all(spacing16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top row: Icon, Title + Description, XP badge
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Quest type icon in circular container
+              Container(
+                width: 45,
+                height: 45,
                 decoration: BoxDecoration(
-                  color: context.colors.bgSecondary,
-                  borderRadius: BorderRadius.circular(radiusLarge),
-                  border: Border.all(
-                    color: context.colors.border,
-                    width: borderWidthDefault,
+                  color: context.colors.bgTertiary,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(10),
                   ),
                 ),
+                child: Center(
+                  child: SvgPicture.asset(
+                    _getQuestTypeIcon(),
+                    width: 24,
+                    height: 24,
+                    colorFilter: ColorFilter.mode(
+                      context.colors.iconColor.withValues(alpha: 0.7),
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: spacing12),
+              // Title and Description
+              Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (var i = 0; i < _queued.length; i++) ...[
-                      _QuestListTile(item: _queued[i]),
-                      if (i != _queued.length - 1)
-                        Divider(
-                          height: 1,
-                          color: context.colors.border,
+                    Text(
+                      quest.title,
+                      style: bodyTextStyle.copyWith(
+                        color: context.colors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    if (quest.description != null) ...[
+                      const SizedBox(height: spacing4),
+                      Text(
+                        quest.description!,
+                        style: bodySmallStyle.copyWith(
+                          color: context.colors.textSecondary,
                         ),
+                      ),
                     ],
                   ],
                 ),
               ),
+              const SizedBox(width: spacing12),
+              // XP badge
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: spacing12,
+                  vertical: spacing4,
+                ),
+                decoration: BoxDecoration(
+                  color: brandSecondary.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: brandSecondary.withValues(alpha: 0.3),
+                    width: borderWidthDefault,
+                  ),
+                ),
+                child: Text(
+                  '${quest.xp}xp',
+                  style: bodySmallStyle.copyWith(
+                    color: brandSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Hint text (if available)
+          if (quest.hint != null) ...[
+            const SizedBox(height: spacing24),
+            Text(
+              'Hint: ${quest.hint}',
+              style: bodySmallStyle.copyWith(
+                color: context.colors.textPrimary,
+              ),
             ),
           ],
-        ),
+          // Progress section
+          if (quest.currentProgress != null && quest.totalProgress != null) ...[
+            const SizedBox(height: spacing8),
+            // Progress text
+            Text(
+              '${quest.currentProgress}/${quest.totalProgress} completed',
+              style: bodySmallStyle.copyWith(
+                color: context.colors.textSecondary.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: 2),
+            // Progress bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(radiusMedium),
+              child: SizedBox(
+                height: 6,
+                child: LinearProgressIndicator(
+                  value: quest.progressPercentage,
+                  backgroundColor: context.colors.bgTertiary,
+                  valueColor: AlwaysStoppedAnimation<Color>(brandSecondary),
+                  borderRadius: BorderRadius.circular(radiusMedium),
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -297,17 +350,24 @@ class _CompletedTabContent extends StatelessWidget {
   static const _completed = [
     _QuestItem(
       title: 'Completed Quest',
-      subtitle: 'You finished this adventure. Great job!',
+      type: QuestType.location,
+      durationMinutes: 3,
+      currentProgress: 1,
+      totalProgress: 1,
       xp: 25,
     ),
     _QuestItem(
       title: 'Beach Cleanup',
-      subtitle: 'Helped clean the local beach.',
+      type: QuestType.qr,
+      currentProgress: 5,
+      totalProgress: 5,
       xp: 40,
     ),
     _QuestItem(
       title: 'City Explorer',
-      subtitle: 'Visited 3 new locations in the city.',
+      type: QuestType.input,
+      currentProgress: 3,
+      totalProgress: 3,
       xp: 60,
     ),
   ];
@@ -360,49 +420,72 @@ class _TodoTabContent extends ConsumerWidget {
 
   static const _categories = [
     _QuestCategory(
-      id: 'go_adventure',
-      title: 'Go Adventure!',
+      id: 'adventure',
+      title: 'Adventure',
+      priority: 1,
       quests: [
         _QuestItem(
-          title: 'Quest Title',
-          subtitle: 'Short Description',
-          xp: 25,
+          title: 'La Garita del Diablo',
+          type: QuestType.location,
+          durationMinutes: 1,
+          currentProgress: 0,
+          totalProgress: 1,
+          xp: 50,
         ),
         _QuestItem(
-          title: 'Quest Title',
-          subtitle: 'Short Description',
-          xp: 25,
+          title: 'Collect El Morro QR codes',
+          type: QuestType.qr,
+          currentProgress: 1,
+          totalProgress: 3,
+          xp: 30,
         ),
         _QuestItem(
-          title: 'Quest Title',
-          subtitle: 'Short Description',
-          xp: 25,
+          title: 'El Morro secret',
+          type: QuestType.input,
+          currentProgress: 0,
+          totalProgress: 1,
+          xp: 20,
         ),
       ],
     ),
     _QuestCategory(
-      id: 'daily',
-      title: 'Daily Quests',
+      id: 'challenges',
+      title: 'Challenges',
+      priority: 2,
       quests: [
         _QuestItem(
-          title: 'Daily Quest',
-          subtitle: 'Short Description',
+          title: 'Challange 1',
+          type: QuestType.location,
+          durationMinutes: 2,
+          currentProgress: 0,
+          totalProgress: 1,
           xp: 15,
         ),
         _QuestItem(
-          title: 'Daily Quest',
-          subtitle: 'Short Description',
+          title: 'Challenge 2',
+          type: QuestType.qr,
+          currentProgress: 0,
+          totalProgress: 2,
           xp: 15,
         ),
       ],
+    ),
+    _QuestCategory(
+      id: 'empty_category',
+      title: 'Empty Category (Test)',
+      priority: 3,
+      quests: [], // This category has no quests and should NOT show
     ),
     _QuestCategory(
       id: 'activities',
       title: 'Activities',
+      priority: 4,
       quests: [
         _QuestItem(
           title: 'Activity Quest',
-          subtitle: 'Short Description',
+          type: QuestType.input,
+          currentProgress: 0,
+          totalProgress: 1,
           xp: 10,
           enabled: false,
         ),
@@ -413,14 +496,40 @@ class _TodoTabContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final expanded = ref.watch(questCategoryExpandedProvider);
+    final selectedLocation = ref.watch(selectedLocationProvider);
+
+    // Filter categories to only show those that have quests, then sort by priority
+    final availableCategories = _categories
+        .where((category) => category.quests.isNotEmpty)
+        .toList()
+      ..sort((a, b) => a.priority.compareTo(b.priority));
 
     return SingleChildScrollView(
+      padding: const EdgeInsets.only(top: spacing8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Quest categories
-          ...List.generate(_categories.length, (index) {
-            final category = _categories[index];
+          // Location dropdown
+          CustomDropdown(
+            label: 'Location',
+            value: selectedLocation,
+            items: const [
+              'San Juan, PR',
+              'New York, NY',
+              'Los Angeles, CA',
+              'Miami, FL',
+              'Chicago, IL',
+            ],
+            onChanged: (newLocation) {
+              ref.read(selectedLocationProvider.notifier).state = newLocation;
+            },
+            showLabel: false,
+            width: MediaQuery.sizeOf(context).width * 0.42,
+          ),
+          const SizedBox(height: spacing16),
+          // Quest categories (only those with available quests)
+          ...List.generate(availableCategories.length, (index) {
+            final category = availableCategories[index];
             final isExpanded = expanded.contains(category.id);
             return Column(
               children: [
@@ -428,7 +537,8 @@ class _TodoTabContent extends ConsumerWidget {
                   category: category,
                   isExpanded: isExpanded,
                   onToggle: () {
-                    final notifier = ref.read(questCategoryExpandedProvider.notifier);
+                    final notifier =
+                        ref.read(questCategoryExpandedProvider.notifier);
                     final current = Set<String>.from(notifier.state);
                     if (isExpanded) {
                       current.remove(category.id);
@@ -438,12 +548,13 @@ class _TodoTabContent extends ConsumerWidget {
                     notifier.state = current;
                   },
                 ),
-                if (index < _categories.length - 1) const SizedBox(height: spacing8),
+                if (index < availableCategories.length - 1)
+                  const SizedBox(height: spacing12),
               ],
             );
           }),
-          // Extra spacing before Contribute section
-          const SizedBox(height: spacing24),
+          // Spacing before Contribute section
+          const SizedBox(height: spacing12),
           // Contribute section at the end
           const ContributeSection(),
           const SizedBox(height: spacing16),
@@ -470,55 +581,44 @@ class _QuestCategoryTile extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: onToggle,
-          child: GlassContainer(
-            borderRadius: radiusLarge,
-            padding: const EdgeInsets.symmetric(
-              horizontal: spacing16,
-              vertical: spacing12,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  category.title,
-                  style: h3Style.copyWith(
-                    color: context.colors.textPrimary,
+          child: SizedBox(
+            // height: 59,
+            child: GlassContainer(
+              borderRadius: radiusMedium,
+              padding: const EdgeInsets.all(spacing16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    category.title,
+                    style: bodyTextStyle.copyWith(
+                        color: context.colors.textPrimary,
+                        fontWeight: FontWeight.bold),
                   ),
-                ),
-                Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  color: context.colors.textPrimary,
-                ),
-              ],
+                  Icon(
+                    isExpanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: isExpanded
+                        ? context.colors.textPrimary
+                        : context.colors.textPrimary.withValues(alpha: 0.7),
+                    size: 25,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
         if (isExpanded) ...[
-          const SizedBox(height: spacing4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(radiusLarge),
-            child: Container(
-              decoration: BoxDecoration(
-                color: context.colors.bgSecondary,
-                borderRadius: BorderRadius.circular(radiusLarge),
-                border: Border.all(
-                  color: context.colors.border,
-                  width: borderWidthDefault,
-                ),
-              ),
-              child: Column(
-                children: [
-                  for (var i = 0; i < category.quests.length; i++) ...[
-                    _QuestListTile(item: category.quests[i]),
-                    if (i != category.quests.length - 1)
-                      Divider(
-                        height: 1,
-                        color: context.colors.border,
-                      ),
-                  ],
-                ],
-              ),
-            ),
+          const SizedBox(height: spacing12),
+          Column(
+            children: [
+              for (var i = 0; i < category.quests.length; i++) ...[
+                _QuestListTile(item: category.quests[i]),
+                if (i != category.quests.length - 1)
+                  const SizedBox(height: spacing12),
+              ],
+            ],
           ),
         ],
       ],
@@ -527,86 +627,247 @@ class _QuestCategoryTile extends StatelessWidget {
 }
 
 class _QuestListTile extends StatelessWidget {
-  const _QuestListTile({required this.item});
+  const _QuestListTile({required this.item, this.showMinusIcon = false});
 
   final _QuestItem item;
+  final bool showMinusIcon;
+
+  String _getQuestTypeIcon() {
+    switch (item.type) {
+      case QuestType.location:
+        return 'assets/svg/location-pin.svg';
+      case QuestType.qr:
+        return 'assets/svg/scan-grey.svg';
+      case QuestType.input:
+        return 'assets/svg/edit-grey.svg';
+    }
+  }
+
+  String _getProgressText() {
+    if (item.type == QuestType.location && item.durationMinutes != null) {
+      return '${item.durationMinutes} min.';
+    } else if (item.currentProgress != null && item.totalProgress != null) {
+      return '${item.currentProgress}/${item.totalProgress} completed';
+    }
+    return '';
+  }
+
+  /// Convert _QuestItem to Quest model for navigation
+  /// This is temporary mock data conversion until real data is integrated
+  quest_model.Quest _toQuest() {
+    // Map local QuestType to domain QuestType
+    final domainQuestType = item.type == QuestType.location
+        ? quest_model.QuestType.location
+        : item.type == QuestType.qr
+            ? quest_model.QuestType.qr
+            : quest_model.QuestType.input;
+
+    return quest_model.Quest(
+      id: 'mock-${item.title.toLowerCase().replaceAll(' ', '-')}',
+      userId: null,
+      questId: 'quest-${item.title.toLowerCase().replaceAll(' ', '-')}',
+      category: 'Adventure',
+      title: item.title,
+      shortDescription: item.description ?? item.title,
+      longDescription: item.description ??
+          'A quiet corner in the city holds a secret. Find it, observe what makes it special, and unlock its story.',
+      imageUrl: 'https://picsum.photos/400/300',
+      experience: item.xp.toDouble(),
+      stepType: domainQuestType,
+      timeInSeconds: item.durationMinutes != null ? item.durationMinutes! * 60 : null,
+      stepLatitude: null,
+      stepLongitude: null,
+      distance: null,
+      stepCode: null,
+      hasNotified: null,
+      completedAt: null,
+      hoursToCompleteAgain: null,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final isEnabled = item.enabled;
-
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final showProgressBar = item.progressPercentage != null;
 
-    return Material(
-      // Keep transparent so the outer card's border and background
-      // remain visible even for disabled items.
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: isEnabled ? () {} : null,
-        overlayColor: MaterialStateProperty.resolveWith((states) {
-          if (!states.contains(MaterialState.pressed)) return null;
-          return isDark ? questSplashDark : questSplashLight;
-        }),
-        child: Container(
-          // Keep row background transparent so the outer card border
-          // (including rounded corners) is always visible, even when disabled.
+    return Container(
+      decoration: BoxDecoration(
+        color: context.colors.bgSecondary,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: context.colors.border,
+          width: borderWidthDefault,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Material(
           color: Colors.transparent,
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacing16,
-            vertical: spacing12,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: isEnabled
-                      ? context.colors.bgTertiary
-                      : context.colors.elevated,
-                  borderRadius: BorderRadius.circular(radiusSmall),
-                ),
-              ),
-              const SizedBox(width: spacing12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: bodyTextStyle.copyWith(
-                        color: isEnabled
-                            ? context.colors.textPrimary
-                            : context.colors.textDisabled,
-                        fontWeight: FontWeight.w600,
+          child: InkWell(
+            onTap: isEnabled
+                ? () {
+                    // Navigate to quest detail screen
+                    Navigator.pushNamed(
+                      context,
+                      '/quest-detail',
+                      arguments: _toQuest(),
+                    );
+                  }
+                : null,
+            overlayColor: MaterialStateProperty.resolveWith((states) {
+              if (!states.contains(MaterialState.pressed)) return null;
+              return isDark ? questSplashDark : questSplashLight;
+            }),
+            child: Stack(
+              children: [
+                Container(
+                  color: Colors.transparent,
+                  padding: const EdgeInsets.all(spacing16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Quest type icon in circular container
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: context.colors.bgTertiary,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                            child: Center(
+                              child: SvgPicture.asset(
+                                _getQuestTypeIcon(),
+                                width: 20,
+                                height: 20,
+                                colorFilter: ColorFilter.mode(
+                                  context.colors.iconColor
+                                      .withValues(alpha: 0.7),
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: spacing12),
+                          // Title and progress text
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: bodyTextStyle.copyWith(
+                                      color: isEnabled
+                                          ? context.colors.textPrimary
+                                          : context.colors.textDisabled,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: spacing4),
+                                Row(
+                                  children: [
+                                    if (item.type == QuestType.location &&
+                                        item.durationMinutes != null) ...[
+                                      SvgPicture.asset(
+                                        'assets/svg/grey-clock-2.svg',
+                                        width: 20,
+                                        height: 20,
+                                      ),
+                                      const SizedBox(width: spacing4),
+                                    ],
+                                    Text(
+                                      _getProgressText(),
+                                      style: bodySmallStyle.copyWith(
+                                        color: isEnabled
+                                            ? context.colors.textSecondary.withValues(alpha: 0.6)
+                                            : context.colors.textDisabled,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: spacing12,),
+                          // XP badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: spacing12,
+                              vertical: spacing4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: brandSecondary.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(radiusSmall),
+                              border: Border.all(
+                                  color: brandSecondary.withValues(alpha: 0.3),
+                                  width: borderWidthDefault),
+                            ),
+                            child: Text(
+                              '${item.xp}xp',
+                              style: bodySmallStyle.copyWith(
+                                color: brandSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: spacing12),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: spacing4),
-                    Text(
-                      item.subtitle,
-                      style: bodyTextStyle.copyWith(
-                        color: isEnabled
-                            ? context.colors.textSecondary
-                            : context.colors.textDisabled,
-                      ),
-                    ),
-                  ],
+                      // Progress bar
+                      if (showProgressBar) ...[
+                        const SizedBox(height: spacing12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(radiusMedium),
+                          child: SizedBox(
+                            height: 6,
+                            child: LinearProgressIndicator(
+                              value: item.progressPercentage,
+                              backgroundColor: context.colors.bgTertiary,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(brandSecondary),
+                              borderRadius: BorderRadius.circular(radiusMedium),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: spacing12),
-              Text(
-                '+${item.xp} XP',
-                style: bodyTextStyle.copyWith(
-                  color: isEnabled ? xpColor : context.colors.textDisabled,
-                  fontWeight: FontWeight.w600,
+                // +/- icon positioned at top right
+                Positioned(
+                  top: -10,
+                  right: -10,
+                  child: IconButton(
+                    onPressed: isEnabled
+                        ? () {
+                            // TODO: Implement quest movement
+                            // + icon: When pressed, move the quest to "Up Next" section
+                            // in the in-progress tab (queued for the active quest slot)
+                            // - icon: When pressed, move the quest out of "Up Next" section
+                            // back to the todo tab
+                          }
+                        : null,
+                    icon: Icon(
+                      showMinusIcon ? Icons.remove : Icons.add,
+                      size: 20,
+                      color: isEnabled
+                          ? context.colors.iconColor
+                          : context.colors.textDisabled,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-

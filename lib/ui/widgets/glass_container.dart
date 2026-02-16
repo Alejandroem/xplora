@@ -7,40 +7,57 @@ import '../../theme.dart';
 class GlassContainer extends StatelessWidget {
   final Widget child;
   final double? borderRadius;
+  final BorderRadiusGeometry? customBorderRadius;
   final EdgeInsetsGeometry? padding;
-  final double? blur; /// Backdrop blur amount (default: 12px)
   final Border? border;
   final Color? bgColor;
+  final List<BoxShadow>? boxShadow;
+  final double? width;
+  final double? height;
+  final bool showBorder;
 
   const GlassContainer({
     super.key,
     required this.child,
     this.borderRadius,
+    this.customBorderRadius,
     this.padding,
-    this.blur,
     this.border,
-    this.bgColor
+    this.bgColor,
+    this.boxShadow,
+    this.width,
+    this.height,
+    this.showBorder = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius ?? radiusMedium),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: blur ?? cardContainerBlur.toDouble(),
-          sigmaY: blur ?? cardContainerBlur.toDouble(),
-        ),
+    final effectiveBorderRadius = customBorderRadius ??
+        BorderRadius.circular(borderRadius ?? radiusMedium);
+
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: effectiveBorderRadius,
+        boxShadow: boxShadow,
+      ),
+      child: ClipRRect(
+        borderRadius: effectiveBorderRadius,
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: bgColor ?? context.colors.bgSecondary, /// rgba(18,18,18,0.65)
-            borderRadius: BorderRadius.circular(borderRadius ?? radiusMedium),
-            border: border ?? Border.all(
-              color: context.colors.cardContainerBorder, /// #8A2BE2 at 10% opacity
-              width: borderWidthDefault,
-            ),
-            boxShadow: const [elevation1],
+            color: bgColor ?? context.colors.bgSecondary,
+
+            /// rgba(18,18,18,0.65)
+            borderRadius: effectiveBorderRadius,
+            border: showBorder ? border ??
+                Border.all(
+                  color: context.colors.cardContainerBorder,
+
+                  /// #8A2BE2 at 10% opacity
+                  width: borderWidthDefault,
+                ) : null,
           ),
           child: child,
         ),
