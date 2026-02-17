@@ -677,6 +677,7 @@ class _QuestDetailState extends ConsumerState<QuestDetail> {
                   widget.quest.stepType == QuestType.qr ||
                   widget.quest.stepType == QuestType.input
               ? PrimaryButton(
+                  height: 48,
                   text: _getButtonText(),
                   onPressed: _getButtonOnPressed(),
                 )

@@ -66,7 +66,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
     }
 
     return SizedBox(
-      height: widget.height ?? 48,
+      height: widget.height,
       child: MouseRegion(
         onEnter: (_) {
           if (!isDisabled) {

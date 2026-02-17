@@ -376,12 +376,12 @@ class FirebaseAuthService extends AuthService {
       if (appleCredential.givenName != null &&
           appleCredential.familyName != null) {
         displayName =
-            '${appleCredential.givenName} ${appleCredential.familyName}'.trim();
+            '${appleCredential.givenName!.trim()} ${appleCredential.familyName}'.trim();
       } else if (appleCredential.givenName != null) {
-        displayName = appleCredential.givenName!;
+        displayName = appleCredential.givenName!.trim();
       } else if (userCredential.user?.displayName != null) {
         // Fallback to Firebase user display name if available
-        displayName = userCredential.user!.displayName!;
+        displayName = userCredential.user!.displayName!.trim();
       }
 
       CollectionReference collectionReference =
