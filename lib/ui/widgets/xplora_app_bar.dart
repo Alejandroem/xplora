@@ -185,19 +185,19 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 child: InkWell(
                   onTap: () {
                     // Check if user is authenticated
-                    final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
-                    final userId = userIdAsync.value;
-
-                    if (userId == null) {
-                      // User not logged in - show info message
-                      showXploraSnackBar(
-                        context,
-                        'Please sign in to scan QR codes',
-                        isInfo: true,
-                        duration: const Duration(seconds: 2),
-                      );
-                      return;
-                    }
+                    // final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+                    // final userId = userIdAsync.value;
+                    //
+                    // if (userId == null) {
+                    //   // User not logged in - show info message
+                    //   showXploraSnackBar(
+                    //     context,
+                    //     'Please sign in to scan QR codes',
+                    //     isInfo: true,
+                    //     duration: const Duration(seconds: 2),
+                    //   );
+                    //   return;
+                    // }
 
                     // User is authenticated - allow navigation
                     Navigator.pushNamed(context, '/enable-location');

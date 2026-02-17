@@ -34,14 +34,14 @@ class _SearchRowState extends ConsumerState<SearchRow> {
       return Expanded(
         child: InkWell(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => PlaceDetail(
-                  'other',
-                  model,
-                ),
-              ),
-            );
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) => PlaceDetail(
+            //       'other',
+            //       model,
+            //     ),
+            //   ),
+            // );
           },
           child: Container(
             decoration: BoxDecoration(

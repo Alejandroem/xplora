@@ -69,16 +69,16 @@ class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
                             final adventure = snapshot.data as Adventure;
                             return ListTile(
                               onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return PlaceDetail(
-                                        'bookmarks',
-                                        adventure,
-                                      );
-                                    },
-                                  ),
-                                );
+                                // Navigator.of(context).push(
+                                //   MaterialPageRoute(
+                                //     builder: (context) {
+                                //       return PlaceDetail(
+                                //         'bookmarks',
+                                //         adventure,
+                                //       );
+                                //     },
+                                //   ),
+                                // );
                               },
                               contentPadding: const EdgeInsets.all(8.0),
                               shape: RoundedRectangleBorder(

@@ -113,12 +113,12 @@ class _FeaturedAdventureState extends ConsumerState<FeaturedAdventure> {
                               horizontal: 10, vertical: 4),
                           child: InkWell(
                             onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      PlaceDetail('featured', data[index]),
-                                ),
-                              );
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //     builder: (context) =>
+                              //         PlaceDetail('featured', data[index]),
+                              //   ),
+                              // );
                             },
                             child: data[index].featuredImages == null
                                 ? const SizedBox.shrink()

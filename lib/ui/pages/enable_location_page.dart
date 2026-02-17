@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:location/location.dart' as location_pkg;
 import '../../application/providers/location_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../theme.dart';
@@ -13,9 +16,127 @@ final _locationLoadingStateProvider = StateProvider.autoDispose<String?>((ref) =
 class EnableLocationPage extends ConsumerWidget {
   const EnableLocationPage({super.key});
 
+  /// Checks and requests location service enablement
+  Future<bool> _ensureLocationServiceEnabled(BuildContext context) async {
+    final location = location_pkg.Location();
+
+    bool serviceEnabled = await location.serviceEnabled();
+    if (serviceEnabled) {
+      print('Location service is already enabled');
+      return true;
+    }
+
+    print('Location service is not enabled, requesting...');
+    serviceEnabled = await location.requestService();
+
+    if (!serviceEnabled) {
+      print('User declined to enable location service');
+    }
+
+    return serviceEnabled;
+  }
+
+  /// Requests location permission and returns the status
+  Future<PermissionStatus> _requestLocationPermission() async {
+    try {
+      final status = await Permission.location.request();
+      print('Location permission status: $status');
+      return status;
+    } catch (e) {
+      print('Failed to request location permission: $e');
+      rethrow;
+    }
+  }
+
+  /// Handles the allow location flow
+  Future<void> _handleAllowLocation(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+
+    // Step 1: Ensure location service is enabled
+    final serviceEnabled = await _ensureLocationServiceEnabled(context);
+    if (!serviceEnabled) {
+      await settingsNotifier.setLocationEnabled(false);
+
+      if (context.mounted) {
+        showXploraSnackBar(
+          context,
+          'Location service must be enabled to use location features',
+          isInfo: true,
+          duration: const Duration(seconds: 3),
+        );
+      }
+      return;
+    }
+
+    // Step 2: Request location permission
+    PermissionStatus status;
+    try {
+      status = await _requestLocationPermission();
+    } catch (e) {
+      if (context.mounted) {
+        showXploraSnackBar(
+          context,
+          'Failed to request location permission',
+          isError: true,
+        );
+      }
+      return;
+    }
+
+    // Step 3: Save permission state
+    try {
+      await settingsNotifier.setLocationEnabled(status.isGranted);
+    } catch (e) {
+      if (context.mounted) {
+        showXploraSnackBar(
+          context,
+          'Failed to save location settings',
+          isError: true,
+        );
+      }
+      return;
+    }
+
+    // Step 4: If granted, invalidate auto enable provider
+    if (status.isGranted) {
+      ref.invalidate(autoEnableLocationTrackingProvider);
+    }
+
+    // Step 5: Navigate to next page
+    if (context.mounted) {
+      Navigator.of(context).pushReplacementNamed('/enable-notifications');
+    }
+  }
+
+  /// Handles the "maybe later" flow
+  Future<void> _handleMaybeLater(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
+
+    try {
+      await settingsNotifier.setLocationEnabled(false);
+
+      if (context.mounted) {
+        Navigator.of(context).pushReplacementNamed('/enable-notifications');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showXploraSnackBar(
+          context,
+          'Failed to save location settings',
+          isError: true,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
     final loadingState = ref.watch(_locationLoadingStateProvider);
 
     final isAllowLoading = loadingState == 'allow';
@@ -107,58 +228,10 @@ class EnableLocationPage extends ConsumerWidget {
                         PrimaryButton(
                           text: isAllowLoading ? 'Loading...' : 'Allow Location',
                           onPressed: loadingState != null ? null : () async {
-                            // Set loading state
                             ref.read(_locationLoadingStateProvider.notifier).state = 'allow';
-              
                             try {
-                              // Request location permission
-                              PermissionStatus status;
-                              try {
-                                status = await Permission.location.request();
-                                print('Location permission status: $status');
-                              } catch (e) {
-                                // Show permission request error
-                                if (context.mounted) {
-                                  showXploraSnackBar(
-                                    context,
-                                    'Failed to request location permission',
-                                    isError: true,
-                                  );
-                                }
-                                return;
-                              }
-              
-                              // Update settings based on permission result
-                              try {
-                                await settingsNotifier.setLocationEnabled(
-                                  status.isGranted,
-                                );
-                              } catch (e) {
-                                // Show save error
-                                if (context.mounted) {
-                                  showXploraSnackBar(
-                                    context,
-                                    'Failed to save location settings',
-                                    isError: true,
-                                  );
-                                }
-                                return;
-                              }
-
-                              if(status.isGranted){
-                                // Invalidate auto enable provider to handle permission result
-                                // (consistent with signin flow - let provider check and handle)
-                                ref.invalidate(autoEnableLocationTrackingProvider);
-                              }
-
-                              // Navigate to notifications page
-                              if (context.mounted) {
-                                Navigator.of(context).pushReplacementNamed(
-                                  '/enable-notifications',
-                                );
-                              }
+                              await _handleAllowLocation(context, ref);
                             } finally {
-                              // Clear loading state
                               ref.read(_locationLoadingStateProvider.notifier).state = null;
                             }
                           },
@@ -170,30 +243,10 @@ class EnableLocationPage extends ConsumerWidget {
                         SecondaryButton(
                           text: isLaterLoading ? 'Loading...' : 'Maybe Later',
                           onPressed: loadingState != null ? null : () async {
-                            // Set loading state
                             ref.read(_locationLoadingStateProvider.notifier).state = 'later';
-              
                             try {
-                              // Set location permission to false in settings
-                              await settingsNotifier.setLocationEnabled(false);
-              
-                              // Skip location permission and proceed to notifications
-                              if (context.mounted) {
-                                Navigator.of(context).pushReplacementNamed(
-                                  '/enable-notifications',
-                                );
-                              }
-                            } catch (e) {
-                              // Show error in snackbar
-                              if (context.mounted) {
-                                showXploraSnackBar(
-                                  context,
-                                  'Failed to save location settings',
-                                  isError: true,
-                                );
-                              }
+                              await _handleMaybeLater(context, ref);
                             } finally {
-                              // Clear loading state
                               ref.read(_locationLoadingStateProvider.notifier).state = null;
                             }
                           },

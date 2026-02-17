@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../application/providers/auth_providers.dart';
 import '../../domain/models/quest.dart' as quest_model;
 import '../../theme.dart';
+import '../../utils/snackbar_utils.dart';
 import 'contribute_section.dart';
 import 'custom_dropdown.dart';
 
@@ -28,7 +30,7 @@ final selectedLocationProvider =
 class _QuestCategory {
   final String id;
   final String title;
-  final List<_QuestItem> quests;
+  final List<QuestItem> quests;
   final int priority;
 
   const _QuestCategory({
@@ -41,7 +43,7 @@ class _QuestCategory {
 
 enum QuestType { location, qr, input }
 
-class _QuestItem {
+class QuestItem {
   final String title;
   final QuestType type;
   final int xp;
@@ -58,7 +60,7 @@ class _QuestItem {
   final String? description;
   final String? hint;
 
-  const _QuestItem({
+  const QuestItem({
     required this.title,
     required this.type,
     required this.xp,
@@ -133,7 +135,7 @@ class QuestTabContent extends ConsumerWidget {
 class _InProgressTabContent extends StatelessWidget {
   const _InProgressTabContent();
 
-  static const _activeQuest = _QuestItem(
+  static const _activeQuest = QuestItem(
     title: 'El Morro Entry phrase',
     type: QuestType.input,
     description: 'Find the hidden entry phrases on the front historical monument.',
@@ -143,7 +145,7 @@ class _InProgressTabContent extends StatelessWidget {
     xp: 60,
   );
 
-  static const _upNext = _QuestItem(
+  static const _upNext = QuestItem(
     title: 'Fly a kite at El Morro',
     type: QuestType.location,
     durationMinutes: 30,
@@ -186,7 +188,7 @@ class _InProgressTabContent extends StatelessWidget {
             const SizedBox(height: spacing8),
 
             // Up Next quest tile with minus icon
-            const _QuestListTile(item: _upNext, showMinusIcon: true),
+            const QuestListTile(item: _upNext, showMinusIcon: true),
           ],
         ),
       ),
@@ -198,7 +200,7 @@ class _InProgressTabContent extends StatelessWidget {
 class _ActiveQuestCard extends StatelessWidget {
   const _ActiveQuestCard({required this.quest});
 
-  final _QuestItem quest;
+  final QuestItem quest;
 
   String _getQuestTypeIcon() {
     switch (quest.type) {
@@ -348,7 +350,7 @@ class _CompletedTabContent extends StatelessWidget {
   const _CompletedTabContent();
 
   static const _completed = [
-    _QuestItem(
+    QuestItem(
       title: 'Completed Quest',
       type: QuestType.location,
       durationMinutes: 3,
@@ -356,14 +358,14 @@ class _CompletedTabContent extends StatelessWidget {
       totalProgress: 1,
       xp: 25,
     ),
-    _QuestItem(
+    QuestItem(
       title: 'Beach Cleanup',
       type: QuestType.qr,
       currentProgress: 5,
       totalProgress: 5,
       xp: 40,
     ),
-    _QuestItem(
+    QuestItem(
       title: 'City Explorer',
       type: QuestType.input,
       currentProgress: 3,
@@ -395,7 +397,7 @@ class _CompletedTabContent extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     for (var i = 0; i < _completed.length; i++) ...[
-                      _QuestListTile(item: _completed[i]),
+                      QuestListTile(item: _completed[i]),
                       if (i != _completed.length - 1)
                         Divider(
                           height: 1,
@@ -424,7 +426,7 @@ class _TodoTabContent extends ConsumerWidget {
       title: 'Adventure',
       priority: 1,
       quests: [
-        _QuestItem(
+        QuestItem(
           title: 'La Garita del Diablo',
           type: QuestType.location,
           durationMinutes: 1,
@@ -432,14 +434,14 @@ class _TodoTabContent extends ConsumerWidget {
           totalProgress: 1,
           xp: 50,
         ),
-        _QuestItem(
+        QuestItem(
           title: 'Collect El Morro QR codes',
           type: QuestType.qr,
           currentProgress: 1,
           totalProgress: 3,
           xp: 30,
         ),
-        _QuestItem(
+        QuestItem(
           title: 'El Morro secret',
           type: QuestType.input,
           currentProgress: 0,
@@ -453,7 +455,7 @@ class _TodoTabContent extends ConsumerWidget {
       title: 'Challenges',
       priority: 2,
       quests: [
-        _QuestItem(
+        QuestItem(
           title: 'Challange 1',
           type: QuestType.location,
           durationMinutes: 2,
@@ -461,7 +463,7 @@ class _TodoTabContent extends ConsumerWidget {
           totalProgress: 1,
           xp: 15,
         ),
-        _QuestItem(
+        QuestItem(
           title: 'Challenge 2',
           type: QuestType.qr,
           currentProgress: 0,
@@ -481,7 +483,7 @@ class _TodoTabContent extends ConsumerWidget {
       title: 'Activities',
       priority: 4,
       quests: [
-        _QuestItem(
+        QuestItem(
           title: 'Activity Quest',
           type: QuestType.input,
           currentProgress: 0,
@@ -614,7 +616,7 @@ class _QuestCategoryTile extends StatelessWidget {
           Column(
             children: [
               for (var i = 0; i < category.quests.length; i++) ...[
-                _QuestListTile(item: category.quests[i]),
+                QuestListTile(item: category.quests[i]),
                 if (i != category.quests.length - 1)
                   const SizedBox(height: spacing12),
               ],
@@ -626,10 +628,10 @@ class _QuestCategoryTile extends StatelessWidget {
   }
 }
 
-class _QuestListTile extends StatelessWidget {
-  const _QuestListTile({required this.item, this.showMinusIcon = false});
+class QuestListTile extends ConsumerWidget {
+  const QuestListTile({super.key, required this.item, this.showMinusIcon = false});
 
-  final _QuestItem item;
+  final QuestItem item;
   final bool showMinusIcon;
 
   String _getQuestTypeIcon() {
@@ -652,7 +654,7 @@ class _QuestListTile extends StatelessWidget {
     return '';
   }
 
-  /// Convert _QuestItem to Quest model for navigation
+  /// Convert QuestItem to Quest model for navigation
   /// This is temporary mock data conversion until real data is integrated
   quest_model.Quest _toQuest() {
     // Map local QuestType to domain QuestType
@@ -686,7 +688,7 @@ class _QuestListTile extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isEnabled = item.enabled;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final showProgressBar = item.progressPercentage != null;
@@ -707,6 +709,21 @@ class _QuestListTile extends StatelessWidget {
           child: InkWell(
             onTap: isEnabled
                 ? () {
+                    // Check if user is authenticated
+                    final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+                    final userId = userIdAsync.value;
+
+                    if (userId == null) {
+                      // User not logged in - show message
+                      showXploraSnackBar(
+                        context,
+                        'Please sign in to access quest details',
+                        isInfo: true,
+                        duration: const Duration(seconds: 2),
+                      );
+                      return;
+                    }
+
                     // Navigate to quest detail screen
                     Navigator.pushNamed(
                       context,
@@ -847,6 +864,21 @@ class _QuestListTile extends StatelessWidget {
                   child: IconButton(
                     onPressed: isEnabled
                         ? () {
+                            // Check if user is authenticated
+                            final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+                            final userId = userIdAsync.value;
+
+                            if (userId == null) {
+                              // User not logged in - show message
+                              showXploraSnackBar(
+                                context,
+                                'Please sign in to manage your quest queue',
+                                isInfo: true,
+                                duration: const Duration(seconds: 2),
+                              );
+                              return;
+                            }
+
                             // TODO: Implement quest movement
                             // + icon: When pressed, move the quest to "Up Next" section
                             // in the in-progress tab (queued for the active quest slot)

@@ -31,14 +31,13 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
     ref.read(testQuestStateProvider.notifier).state = nextState;
   }
 
+  // Get current user ID
+  String? get _currentUserId => ref.read(currentAuthUserIdStreamProvider).value;
+
   @override
   Widget build(BuildContext context) {
     // final questInProgress = ref.watch(adventureInProgressTrackerProvider);
     final questState = ref.watch(testQuestStateProvider);
-
-    // Watch user ID to react to auth state changes (login/logout)
-    final userIdAsync = ref.watch(currentAuthUserIdStreamProvider);
-    final userId = userIdAsync.value;
 
     // Determine next state for button text
     final nextState = switch (questState) {
@@ -58,7 +57,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
         QuestWidget(
           questState: questState,
           onStartAdventure: () {
-            if (userId == null) {
+            if (_currentUserId == null) {
               showXploraSnackBar(
                 context,
                 'Please sign in to start quest',
@@ -67,11 +66,10 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
               );
               return;
             }
-
             Navigator.of(context).pushNamed('/quest-main');
           },
           onDetails: () {
-            if (userId == null) {
+            if (_currentUserId == null) {
               showXploraSnackBar(
                 context,
                 'Please sign in to view quest details',
@@ -80,7 +78,6 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
               );
               return;
             }
-
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const QuestMainScreen(
@@ -90,7 +87,7 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
             );
           },
           onSeeMore: () {
-            if (userId == null) {
+            if (_currentUserId == null) {
               showXploraSnackBar(
                 context,
                 'Please sign in to view more quests',
@@ -99,7 +96,6 @@ class _QuestComponentsState extends ConsumerState<QuestComponents> {
               );
               return;
             }
-
             Navigator.of(context).pushNamed('/quest-main');
           },
         ),

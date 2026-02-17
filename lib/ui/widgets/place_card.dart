@@ -4,28 +4,46 @@ import 'package:geolocator/geolocator.dart';
 
 import '../../application/providers/location_providers.dart';
 import '../../domain/models/adventure.dart';
+import '../../domain/models/place.dart';
 import '../../theme.dart';
 import '../pages/place_detail.dart';
 import 'carousel_card.dart';
 
 class PlaceCard extends ConsumerWidget {
-  final Adventure adventure;
+  final dynamic item; // Can be either Place or Adventure
   final bool isInGrid;
 
   const PlaceCard(
-    this.adventure, {
+    this.item, {
     super.key,
     this.isInGrid = false,
   });
 
+  bool get _isPlace => item is Place;
+  bool get _isAdventure => item is Adventure;
+
   String _getDistance(WidgetRef ref) {
     final location = ref.watch(locationProvider);
     if (location.position != null) {
+      double lat, lng;
+
+      if (_isPlace) {
+        final place = item as Place;
+        lat = place.geo['lat']!;
+        lng = place.geo['lng']!;
+      } else if (_isAdventure) {
+        final adventure = item as Adventure;
+        lat = adventure.latitude;
+        lng = adventure.longitude;
+      } else {
+        return '--';
+      }
+
       final distance = Geolocator.distanceBetween(
         location.position!.latitude,
         location.position!.longitude,
-        adventure.latitude,
-        adventure.longitude,
+        lat,
+        lng,
       );
       // Convert meters to miles (1 mile = 1609.34 meters)
       final miles = distance / 1609.34;
@@ -40,11 +58,37 @@ class PlaceCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    String imageUrl;
+    String title;
+    String heroTag;
+    String? subtitle;
+
+    if (_isPlace) {
+      final place = item as Place;
+      imageUrl = place.imageUrls.isNotEmpty
+          ? place.imageUrls.first
+          : '';
+      title = place.name;
+      heroTag = 'place-image-${place.placeId}-${isInGrid ? 'grid' : 'carousel'}';
+      subtitle = place.address;
+    } else if (_isAdventure) {
+      final adventure = item as Adventure;
+      imageUrl = adventure.imageUrl;
+      title = adventure.title;
+      heroTag = 'adventure-image-${adventure.id}-${isInGrid ? 'grid' : 'carousel'}';
+      subtitle = null; // Adventures don't have address, using hardcoded value below
+    } else {
+      // Fallback
+      imageUrl = 'https://via.placeholder.com/300x200';
+      title = 'Unknown';
+      heroTag = 'unknown-${isInGrid ? 'grid' : 'carousel'}';
+      subtitle = null;
+    }
+
     return CarouselCard(
-      imageUrl: adventure.imageUrl,
-      title: adventure.title,
-      heroTag:
-          'adventure-image-${adventure.id}-${isInGrid ? 'grid' : 'carousel'}',
+      imageUrl: imageUrl,
+      title: title,
+      heroTag: heroTag,
       width: isInGrid ? null : 160,
       // For grid: use expandImage to fill available space
       // For carousel: use fixed height
@@ -55,7 +99,7 @@ class PlaceCard extends ConsumerWidget {
           MaterialPageRoute(
             builder: (context) => PlaceDetail(
               isInGrid ? 'grid' : 'carousel',
-              adventure,
+              item,
             ),
           ),
         );
@@ -79,7 +123,7 @@ class PlaceCard extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'San Juan, PR',
+                  subtitle ?? 'San Juan, PR',
                   style: bodySmallStyle.copyWith(
                     fontSize: 12,
                     color: context.colors.textSecondary.withValues(alpha: 0.6),

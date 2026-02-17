@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/auth_providers.dart';
-import '../../application/providers/location_providers.dart';
 import '../../application/providers/navigation_providers.dart';
-import '../../domain/models/adventure.dart';
+import '../../application/providers/place_providers.dart';
+import '../../domain/models/place.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 import '../../utils/snackbar_utils.dart';
@@ -199,33 +198,21 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
               );
             }
 
-            // Show nearby adventures for 'Nearby' filter
-            return ref.watch(nearbyAdventuresProvider).when(
-                  data: (adventures) {
-                    /*
-                    // Filter adventures based on selected activity types
-                      List<Adventure> filteredAdventures = adventures;
-
-                      if (selectedActivityTypes.isNotEmpty) {
-                        filteredAdventures = adventures
-                            .where((adventure) =>
-                                selectedActivityTypes.contains(adventure.category))
-                            .toList();
-                      }
-                     */
-
-                    if (adventures.isNotEmpty) {
+            // Show nearby places for 'Nearby' filter
+            return ref.watch(nearbyPlacesProvider).when(
+                  data: (places) {
+                    if (places.isNotEmpty) {
                       const maxCards = 20;
-                      final displayedAdventures =
-                          adventures.take(maxCards).toList();
-                      final hasMore = adventures.length > maxCards;
+                      final displayedPlaces =
+                          places.take(maxCards).toList();
+                      final hasMore = places.length > maxCards;
 
-                      return CarouselWidget<Adventure>(
-                        items: displayedAdventures,
-                        itemBuilder: (adventure, index) => Padding(
+                      return CarouselWidget<Place>(
+                        items: displayedPlaces,
+                        itemBuilder: (place, index) => Padding(
                           padding:
                               EdgeInsets.only(left: index == 0 ? spacing16 : 0),
-                          child: PlaceCard(adventure),
+                          child: PlaceCard(place),
                         ),
                         hasMore: hasMore,
                         onSeeMoreTap: () {

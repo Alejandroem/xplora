@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as location_pkg;
 import 'package:geocoding/geocoding.dart';
+import 'package:permission_handler/permission_handler.dart' as permission_handler;
 
 import '../../domain/services/settings_crud_service.dart';
 import 'auth_service_providers.dart';
@@ -107,6 +109,28 @@ final locationTrackingEnabledProvider = StateProvider<bool>((ref) {
   return false;
 });
 
+// Helper function to check and request location service
+Future<bool> _checkLocationService(location_pkg.Location location) async {
+  bool serviceEnabled = await location.serviceEnabled();
+  if (!serviceEnabled) {
+    print('🗺️ Location services are not enabled, requesting...');
+    serviceEnabled = await location.requestService();
+    if (!serviceEnabled) {
+      print('🗺️ User declined to enable location services');
+      return false;
+    }
+  }
+  return true;
+}
+
+// Helper function to enable location tracking
+void _enableLocationTracking(Ref ref) {
+  print('🗺️ Enabling location tracking');
+  ref.read(locationTrackingEnabledProvider.notifier).state = true;
+  ref.read(locationProvider.notifier).initializeLocationTracking();
+  ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.none;
+}
+
 // Enum to represent location permission request status
 enum LocationPermissionRequestStatus {
   none,           // No request needed
@@ -127,94 +151,84 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
   final location = location_pkg.Location();
 
   if (isSignedIn) {
-    // Check if location services are enabled
-    bool serviceEnabled = await location.serviceEnabled();
+    // === Authenticated User Flow ===
+    print('🗺️ autoEnableLocationTrackingProvider: User authenticated');
+
+    // Check and request location service if needed
+    final serviceEnabled = await _checkLocationService(location);
     if (!serviceEnabled) {
-      print('🗺️ autoEnableLocationTrackingProvider: Location services are not enabled, requesting...');
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        print('🗺️ autoEnableLocationTrackingProvider: User declined to enable location services');
-        return;
-      }
+      return; // Service not enabled, exit early
     }
 
-    // Check current permission status
-    location_pkg.PermissionStatus permission = await location.hasPermission();
+    // Get current permission status (using permission_handler)
+    permission_handler.PermissionStatus permission = await permission_handler.Permission.location.status;
 
-    if (permission == location_pkg.PermissionStatus.granted ||
-        permission == location_pkg.PermissionStatus.grantedLimited) {
+    if (permission.isGranted || permission.isLimited) {
       // Permission already granted, enable tracking
-      print('🗺️ autoEnableLocationTrackingProvider: User has location permission, enabling tracking');
-      ref.read(locationTrackingEnabledProvider.notifier).state = true;
-      ref.read(locationProvider.notifier).initializeLocationTracking();
-      ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.none;
-    } else if (permission == location_pkg.PermissionStatus.denied) {
-      // Permission was denied or expired ("only this time" expired)
-      // Automatically re-request permission for logged-in users
-      print('🗺️ autoEnableLocationTrackingProvider: Permission denied/expired, automatically requesting...');
-
-      permission = await location.requestPermission();
+      print('🗺️ User has location permission');
+      _enableLocationTracking(ref);
+    } else if (permission.isDenied) {
+      // Permission denied or expired - auto-request for logged-in users
+      print('🗺️ Permission denied/expired, automatically requesting...');
+      permission = await permission_handler.Permission.location.request();
 
       // Get settings notifier
       final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);
 
-      if (permission == location_pkg.PermissionStatus.granted ||
-          permission == location_pkg.PermissionStatus.grantedLimited) {
-        // Permission granted after request, enable tracking
-        print('🗺️ autoEnableLocationTrackingProvider: Permission granted, enabling tracking');
-        ref.read(locationTrackingEnabledProvider.notifier).state = true;
-        ref.read(locationProvider.notifier).initializeLocationTracking();
-        ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.none;
-
-        // Update settings - location enabled
+      if (permission.isGranted || permission.isLimited) {
+        // Permission granted after request
+        print('🗺️ Permission granted');
+        _enableLocationTracking(ref);
         await settingsNotifier.setLocationEnabled(true);
-      } else if (permission == location_pkg.PermissionStatus.deniedForever) {
-        // Permission permanently denied after request
-        print('🗺️ autoEnableLocationTrackingProvider: Permission permanently denied');
+      } else if (permission.isPermanentlyDenied) {
+        // Permission permanently denied
+        print('🗺️ Permission permanently denied');
         ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.permanentlyDenied;
 
         // Update settings - location denied
         await settingsNotifier.setLocationEnabled(false);
       } else {
         // User denied the request
-        print('🗺️ autoEnableLocationTrackingProvider: User denied permission request');
+        print('🗺️ User denied permission request');
         ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.none;
 
         // Update settings - location denied
         await settingsNotifier.setLocationEnabled(false);
       }
-    } else if (permission == location_pkg.PermissionStatus.deniedForever) {
+    } else if (permission.isPermanentlyDenied) {
       // Permission was already permanently denied
-      print('🗺️ autoEnableLocationTrackingProvider: Permission permanently denied');
+      print('🗺️ Permission permanently denied');
       ref.read(locationPermissionRequestStatusProvider.notifier).state = LocationPermissionRequestStatus.permanentlyDenied;
     } else {
-      print('🗺️ autoEnableLocationTrackingProvider: Unknown permission status: $permission');
+      print('🗺️ Unknown permission status: $permission');
     }
   } else {
-    print('🗺️ autoEnableLocationTrackingProvider: User is not authenticated, only checking location service');
+    // === Non-Authenticated User Flow ===
+    // Only check (don't request) service and permission status
+    print('🗺️ autoEnableLocationTrackingProvider: User not authenticated, checking status only');
 
-    // Check if location services are enabled
-    bool serviceEnabled = await location.serviceEnabled();
+    // Check if location service is enabled (without requesting)
+    final serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
-      print('🗺️ autoEnableLocationTrackingProvider: Location services are not enabled, requesting...');
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        print('🗺️ autoEnableLocationTrackingProvider: User declined to enable location services');
-        return;
-      }
+      print('🗺️ Location service is not enabled');
+      return;
     }
+    print('🗺️ Location service is enabled');
 
-    // Check current permission status
-    location_pkg.PermissionStatus permission = await location.hasPermission();
+    // Check permission status (without requesting)
+    final permission = await permission_handler.Permission.location.status;
 
-    if (permission == location_pkg.PermissionStatus.granted ||
-        permission == location_pkg.PermissionStatus.grantedLimited) {
-      // Permission already granted, enable tracking
-      print('🗺️ autoEnableLocationTrackingProvider: User has location permission, enabling tracking');
+    if (permission.isGranted || permission.isLimited) {
+      // Permission already granted, enable tracking (without updating permission status)
+      print('🗺️ Location permission is granted, enabling tracking');
       ref.read(locationTrackingEnabledProvider.notifier).state = true;
       ref.read(locationProvider.notifier).initializeLocationTracking();
-    }else{
-      print('🗺️ autoEnableLocationTrackingProvider: User has no location permission');
+    } else if (permission.isDenied) {
+      print('🗺️ Location permission is denied');
+    } else if (permission.isPermanentlyDenied) {
+      print('🗺️ Location permission is permanently denied');
+    } else {
+      print('🗺️ Location permission status: $permission');
     }
   }
 });

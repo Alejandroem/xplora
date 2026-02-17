@@ -5,11 +5,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/boomark_providers.dart';
 import '../../domain/models/adventure.dart';
+import '../../domain/models/place.dart';
 import '../../domain/models/bookmark.dart';
 import '../../theme.dart';
+import '../../utils/snackbar_utils.dart';
+import '../widgets/quest_tabs.dart';
 
 final descriptionExpandedProvider =
     StateProvider.autoDispose<bool>((ref) => false);
@@ -26,8 +30,8 @@ final menuExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class PlaceDetail extends ConsumerStatefulWidget {
   final String source;
-  final Adventure adventure;
-  const PlaceDetail(this.source, this.adventure, {super.key});
+  final dynamic item; // Can be either Place or Adventure
+  const PlaceDetail(this.source, this.item, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PlaceDetailState();
@@ -38,6 +42,9 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
   final PageController _pageController = PageController();
   bool _isProcessingBookmark = false;
 
+  bool get _isPlace => widget.item is Place;
+  bool get _isAdventure => widget.item is Adventure;
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -46,13 +53,19 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Support multiple images - for now using single image
-    final images = [
-      widget.adventure.imageUrl,
-      widget.adventure.imageUrl,
-      widget.adventure.imageUrl,
-      widget.adventure.imageUrl
-    ];
+    // Get images based on item type
+    final List<String> images;
+    if (_isPlace) {
+      final place = widget.item as Place;
+      images = place.imageUrls.isNotEmpty
+          ? place.imageUrls
+          : ['', ''];
+    } else if (_isAdventure) {
+      final adventure = widget.item as Adventure;
+      images = [adventure.imageUrl];
+    } else {
+      images = ['https://via.placeholder.com/300x200'];
+    }
 
     return GradientBackground(
       child: Scaffold(
@@ -75,7 +88,9 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                         children: [
                           // Place name
                           Text(
-                            widget.adventure.title,
+                            _isPlace
+                                ? (widget.item as Place).name
+                                : (widget.item as Adventure).title,
                             style: h1Style.copyWith(
                                 color: context.colors.textPrimary,
                                 fontSize: 30),
@@ -87,7 +102,9 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                             spacing: spacing12,
                             children: [
                               Text(
-                                'Rincon, PR',
+                                _isPlace
+                                    ? (widget.item as Place).address ?? 'No address'
+                                    : 'Rincon, PR',
                                 style: bodyTextStyle.copyWith(
                                   color: context.colors.textSecondary
                                       .withValues(alpha: 0.7),
@@ -188,7 +205,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                 errorWidget: (context, url, error) {
                   return Container(
                     height: 384,
-                    color: context.colors.bgSecondary,
+                    // color: context.colors.bgSecondary,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -298,7 +315,11 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
   Widget _buildMenuButton() {
     final isMenuExpanded = ref.watch(menuExpandedProvider);
 
-    return ref.watch(adventureBookmarkProvider(widget.adventure.id!)).when(
+    final entityId = _isPlace
+        ? (widget.item as Place).placeId!
+        : (widget.item as Adventure).id!;
+
+    return ref.watch(adventureBookmarkProvider(entityId)).when(
           data: (bookmarks) {
             final bookmark = bookmarks != null && bookmarks.isNotEmpty
                 ? bookmarks.first
@@ -313,6 +334,21 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                 _buildIconButton(
                   icon: Icons.more_horiz,
                   onPressed: () {
+                    // Check if user is authenticated
+                    final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+                    final userId = userIdAsync.value;
+
+                    if (userId == null) {
+                      // User not logged in - show message and don't change filter
+                      showXploraSnackBar(
+                        context,
+                        'Please sign in to access menu options',
+                        isInfo: true,
+                        duration: const Duration(seconds: 2),
+                      );
+                      return;
+                    }
+
                     ref.read(menuExpandedProvider.notifier).state =
                         !isMenuExpanded;
                   },
@@ -431,12 +467,16 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
         return;
       }
 
+      final entityId = _isPlace
+          ? (widget.item as Place).placeId!
+          : (widget.item as Adventure).id!;
+
       if (bookmark == null) {
         await bookmarkCrudService.create(
           Bookmark(
             id: null,
             type: BookmarkType.adventure,
-            entityId: widget.adventure.id!,
+            entityId: entityId,
             userId: user.id!,
           ),
         );
@@ -444,7 +484,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
         await bookmarkCrudService.delete(bookmark.id!);
       }
 
-      ref.invalidate(adventureBookmarkProvider(widget.adventure.id!));
+      ref.invalidate(adventureBookmarkProvider(entityId));
     } finally {
       setState(() {
         _isProcessingBookmark = false;
@@ -453,9 +493,13 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
   }
 
   void _handleShare() {
+    final name = _isPlace
+        ? (widget.item as Place).name
+        : (widget.item as Adventure).title;
+
     Share.share(
-      'Check out ${widget.adventure.title}!',
-      subject: widget.adventure.title,
+      'Check out $name!',
+      subject: name,
     );
   }
 
@@ -477,7 +521,9 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
             ),
           ),
           child: Text(
-            '${widget.adventure.experience.toInt()}xp',
+            _isAdventure
+                ? '${(widget.item as Adventure).experience.toInt()}xp'
+                : '50xp', // TODO: Add experience field to Place model
             style: bodySmallStyle.copyWith(
               color: brandSecondary,
               fontWeight: FontWeight.bold
@@ -490,8 +536,34 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
         SecondaryButton(
           text: 'Directions',
           onPressed: () async {
+            // Check if user is authenticated
+            final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+            final userId = userIdAsync.value;
+
+            if (userId == null) {
+              // User not logged in - show message
+              showXploraSnackBar(
+                context,
+                'Please sign in to get directions',
+                isInfo: true,
+                duration: const Duration(seconds: 2),
+              );
+              return;
+            }
+
+            double lat, lng;
+            if (_isPlace) {
+              final place = widget.item as Place;
+              lat = place.geo['lat']!;
+              lng = place.geo['lng']!;
+            } else {
+              final adventure = widget.item as Adventure;
+              lat = adventure.latitude;
+              lng = adventure.longitude;
+            }
+
             final url = Uri.parse(
-              'https://www.google.com/maps/search/?api=1&query=${widget.adventure.latitude},${widget.adventure.longitude}',
+              'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
             );
             if (await canLaunchUrl(url)) {
               await launchUrl(url);
@@ -507,9 +579,16 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
   Widget _buildDescription() {
     final isExpanded = ref.watch(descriptionExpandedProvider);
 
-    final descriptionText = widget.adventure.longDescription.isNotEmpty
-        ? widget.adventure.longDescription
-        : widget.adventure.shortDescription;
+    final String descriptionText;
+    if (_isAdventure) {
+      final adventure = widget.item as Adventure;
+      descriptionText = adventure.longDescription.isNotEmpty
+          ? adventure.longDescription
+          : adventure.shortDescription;
+    } else {
+      // TODO: Add description field to Place model
+      descriptionText = 'Explore this amazing place and earn XP!';
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -555,20 +634,20 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
   Widget _buildQuestAccordionPlaceholder() {
     // Quest data - TODO: Replace with actual quest data from backend
     final quests = [
-      {
-        'title': 'Scan hidden QR',
-        'icon': 'assets/svg/scan-grey.svg',
-        'completed': 1,
-        'total': 3,
-        'xp': 30,
-      },
-      {
-        'title': 'Find secret message',
-        'icon': 'assets/svg/edit-grey.svg',
-        'completed': 0,
-        'total': 1,
-        'xp': 30,
-      },
+      const QuestItem(
+        title: 'Scan hidden QR',
+        type: QuestType.qr,
+        currentProgress: 1,
+        totalProgress: 3,
+        xp: 30,
+      ),
+      const QuestItem(
+        title: 'Find secret message',
+        type: QuestType.input,
+        currentProgress: 0,
+        totalProgress: 1,
+        xp: 30,
+      ),
     ];
 
     return Column(
@@ -584,111 +663,11 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
         ),
         const SizedBox(height: spacing16),
 
-        // Quest items
+        // Quest items using QuestListTile
         ...quests.map((quest) {
-          final completed = quest['completed'] as int;
-          final total = quest['total'] as int;
-          final progress = total > 0 ? completed / total : 0.0;
-
           return Container(
             margin: const EdgeInsets.only(bottom: spacing16),
-            child: GlassContainer(
-              bgColor: context.colors.bgSecondary.withValues(alpha: 0.5),
-              borderRadius: radiusMedium,
-              padding: const EdgeInsets.all(spacing16),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Quest icon
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: context.colors.bgTertiary,
-                          borderRadius: BorderRadius.circular(radiusSmall),
-                        ),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            quest['icon'] as String,
-                            width: 24,
-                            height: 24,
-                            colorFilter: ColorFilter.mode(context.colors.textPrimary.withValues(alpha: 0.6), BlendMode.srcIn),
-                          ),
-                        )
-                      ),
-                      const SizedBox(width: spacing16),
-
-                      // Quest info
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              quest['title'] as String,
-                              style: bodySmallStyle.copyWith(
-                                color: context.colors.textPrimary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15
-                              ),
-                            ),
-                            const SizedBox(height: spacing4),
-                            Text(
-                              '$completed/$total completed',
-                              style: bodySmallStyle.copyWith(
-                                color: context.colors.textSecondary.withValues(alpha: 0.6),
-                                fontSize: 13
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // XP badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: spacing12,
-                          vertical: spacing4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: brandSecondary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(radiusSmall),
-                          border: Border.all(
-                            color: brandSecondary.withValues(alpha: 0.3),
-                            width: borderWidthDefault,
-                          ),
-                        ),
-                        child: Text(
-                          '${quest['xp']}xp',
-                          style: bodySmallStyle.copyWith(
-                            color: brandSecondary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Progress bar
-                  if (total > 0) ...[
-                    const SizedBox(height: spacing12),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(radiusSmall),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 6,
-                        backgroundColor:
-                            context.colors.bgTertiary.withValues(alpha: 0.3),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          brandSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
+            child: QuestListTile(item: quest),
           );
         }),
       ],
@@ -696,8 +675,14 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
   }
 
   String _formatLocation() {
-    // TODO: Parse actual city, state from latitude/longitude or add location field to Adventure model
+    // TODO: Parse actual city, state from latitude/longitude or add location field to Place/Adventure model
     // For now, return coordinates as placeholder
-    return '${widget.adventure.latitude.toStringAsFixed(4)}, ${widget.adventure.longitude.toStringAsFixed(4)}';
+    if (_isPlace) {
+      final place = widget.item as Place;
+      return '${place.geo['lat']!.toStringAsFixed(4)}, ${place.geo['lng']!.toStringAsFixed(4)}';
+    } else {
+      final adventure = widget.item as Adventure;
+      return '${adventure.latitude.toStringAsFixed(4)}, ${adventure.longitude.toStringAsFixed(4)}';
+    }
   }
 }
