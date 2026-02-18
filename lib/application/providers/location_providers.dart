@@ -82,7 +82,8 @@ class LocationNotifier extends StateNotifier<LocationState> {
                 position.latitude,
                 position.longitude,
               ) >=
-              3) {
+              10) {
+        print('🗺️ LocationNotifier: Position changed significantly');
         state = LocationState(position: position, isLoading: false);
       } else {
         // Position hasn't changed significantly, just clear loading
@@ -163,6 +164,8 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
     // Get current permission status (using permission_handler)
     permission_handler.PermissionStatus permission = await permission_handler.Permission.location.status;
 
+    print('🗺️ Permission status: $permission');
+
     if (permission.isGranted || permission.isLimited) {
       // Permission already granted, enable tracking
       print('🗺️ User has location permission');
@@ -171,6 +174,8 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
       // Permission denied or expired - auto-request for logged-in users
       print('🗺️ Permission denied/expired, automatically requesting...');
       permission = await permission_handler.Permission.location.request();
+
+      print('🗺️ Permission status after request: $permission');
 
       // Get settings notifier
       final settingsNotifier = ref.read(settingsStateNotifierProvider.notifier);

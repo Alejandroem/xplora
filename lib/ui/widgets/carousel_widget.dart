@@ -47,11 +47,22 @@ class _CarouselWidgetState<T> extends State<CarouselWidget<T>> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            for (int index = 0; index < widget.items.length; index++) ...[
-              widget.itemBuilder(widget.items[index], index),
-              if (index < widget.items.length - 1 || widget.hasMore)
-                const SizedBox(width: spacing8),
-            ],
+            for (int index = 0; index < widget.items.length; index++) ...() {
+              final isFirst = index == 0;
+              final isLast = index == widget.items.length - 1 && !widget.hasMore;
+
+              return [
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: isFirst ? spacing16 : 0,
+                    right: isLast ? spacing16 : 0,
+                  ),
+                  child: widget.itemBuilder(widget.items[index], index),
+                ),
+                if (index < widget.items.length - 1 || widget.hasMore)
+                  const SizedBox(width: spacing8),
+              ];
+            }(),
             if (widget.hasMore) SeeMoreCard(onTap: widget.onSeeMoreTap),
           ],
         ),

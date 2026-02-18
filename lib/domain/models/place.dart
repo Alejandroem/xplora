@@ -14,6 +14,7 @@ class Place with _$Place {
     required List<String> categories,
     @Default([]) List<String> imageUrls,
     String? address,
+    String? location,
     @Default('seed') String source,
     @Default('active') String status,
     @TimestampConverter() Timestamp? createdAt,

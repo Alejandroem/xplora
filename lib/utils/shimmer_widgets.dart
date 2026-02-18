@@ -121,10 +121,6 @@ class ShimmerWidgets {
           decoration: BoxDecoration(
             color: context.colors.bgSecondary,
             borderRadius: BorderRadius.circular(radiusLarge),
-            border: Border.all(
-              color: context.colors.cardContainerBorder,
-              width: borderWidthDefault,
-            ),
           ),
           child: Column(
             mainAxisSize: isInGrid ? MainAxisSize.max : MainAxisSize.min,

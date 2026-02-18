@@ -6,7 +6,7 @@ import '../../utils/shimmer_widgets.dart';
 /// Generic Carousel Card (no entrance animations)
 /// Uses Column layout for clean, predictable structure
 class CarouselCard extends StatefulWidget {
-  final String imageUrl;
+  final String? imageUrl;
   final String title;
   final String? heroTag;
   final VoidCallback onTap;
@@ -22,7 +22,7 @@ class CarouselCard extends StatefulWidget {
 
   const CarouselCard({
     super.key,
-    required this.imageUrl,
+    this.imageUrl,
     required this.title,
     this.heroTag,
     required this.onTap,
@@ -127,7 +127,7 @@ class _CarouselCardState extends State<CarouselCard> {
       height: height,
       width: double.infinity,
       child: CachedNetworkImage(
-        imageUrl: widget.imageUrl,
+        imageUrl: widget.imageUrl ?? '',
         fit: widget.imageFit ?? BoxFit.cover,
         placeholder: (context, url) =>
             ShimmerWidgets.imageShimmer(height: height, context: context),

@@ -61,8 +61,8 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
       _filterKeys.add(GlobalKey());
     }
 
-    // Listen for scroll events to detect when user stops scrolling
-    _scrollController.addListener(_onScroll);
+    // // Listen for scroll events to detect when user stops scrolling
+    // _scrollController.addListener(_onScroll);
   }
 
   /*
@@ -104,7 +104,7 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
+    // _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
@@ -282,7 +282,7 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
                 child: GestureDetector(
                   onTap: () {
                     // Animate to center this filter when tapped
-                    _centerItem(index);
+                    // _centerItem(index);
                     widget.onFilterTap(filter);
                   },
                   behavior: HitTestBehavior.opaque,

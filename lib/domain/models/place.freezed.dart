@@ -27,6 +27,7 @@ mixin _$Place {
   List<String> get categories => throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
   String? get address => throw _privateConstructorUsedError;
+  String? get location => throw _privateConstructorUsedError;
   String get source => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   @TimestampConverter()
@@ -52,6 +53,7 @@ abstract class $PlaceCopyWith<$Res> {
       List<String> categories,
       List<String> imageUrls,
       String? address,
+      String? location,
       String source,
       String status,
       @TimestampConverter() Timestamp? createdAt,
@@ -78,6 +80,7 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
     Object? categories = null,
     Object? imageUrls = null,
     Object? address = freezed,
+    Object? location = freezed,
     Object? source = null,
     Object? status = null,
     Object? createdAt = freezed,
@@ -111,6 +114,10 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
       address: freezed == address
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
+              as String?,
+      location: freezed == location
+          ? _value.location
+          : location // ignore: cast_nullable_to_non_nullable
               as String?,
       source: null == source
           ? _value.source
@@ -147,6 +154,7 @@ abstract class _$$PlaceImplCopyWith<$Res> implements $PlaceCopyWith<$Res> {
       List<String> categories,
       List<String> imageUrls,
       String? address,
+      String? location,
       String source,
       String status,
       @TimestampConverter() Timestamp? createdAt,
@@ -171,6 +179,7 @@ class __$$PlaceImplCopyWithImpl<$Res>
     Object? categories = null,
     Object? imageUrls = null,
     Object? address = freezed,
+    Object? location = freezed,
     Object? source = null,
     Object? status = null,
     Object? createdAt = freezed,
@@ -205,6 +214,10 @@ class __$$PlaceImplCopyWithImpl<$Res>
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
               as String?,
+      location: freezed == location
+          ? _value.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as String?,
       source: null == source
           ? _value.source
           : source // ignore: cast_nullable_to_non_nullable
@@ -236,6 +249,7 @@ class _$PlaceImpl implements _Place {
       required final List<String> categories,
       final List<String> imageUrls = const [],
       this.address,
+      this.location,
       this.source = 'seed',
       this.status = 'active',
       @TimestampConverter() this.createdAt,
@@ -281,6 +295,8 @@ class _$PlaceImpl implements _Place {
   @override
   final String? address;
   @override
+  final String? location;
+  @override
   @JsonKey()
   final String source;
   @override
@@ -295,7 +311,7 @@ class _$PlaceImpl implements _Place {
 
   @override
   String toString() {
-    return 'Place(placeId: $placeId, name: $name, geo: $geo, geohash: $geohash, categories: $categories, imageUrls: $imageUrls, address: $address, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Place(placeId: $placeId, name: $name, geo: $geo, geohash: $geohash, categories: $categories, imageUrls: $imageUrls, address: $address, location: $location, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -312,6 +328,8 @@ class _$PlaceImpl implements _Place {
             const DeepCollectionEquality()
                 .equals(other._imageUrls, _imageUrls) &&
             (identical(other.address, address) || other.address == address) &&
+            (identical(other.location, location) ||
+                other.location == location) &&
             (identical(other.source, source) || other.source == source) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.createdAt, createdAt) ||
@@ -331,6 +349,7 @@ class _$PlaceImpl implements _Place {
       const DeepCollectionEquality().hash(_categories),
       const DeepCollectionEquality().hash(_imageUrls),
       address,
+      location,
       source,
       status,
       createdAt,
@@ -359,6 +378,7 @@ abstract class _Place implements Place {
       required final List<String> categories,
       final List<String> imageUrls,
       final String? address,
+      final String? location,
       final String source,
       final String status,
       @TimestampConverter() final Timestamp? createdAt,
@@ -380,6 +400,8 @@ abstract class _Place implements Place {
   List<String> get imageUrls;
   @override
   String? get address;
+  @override
+  String? get location;
   @override
   String get source;
   @override

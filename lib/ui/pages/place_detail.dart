@@ -12,6 +12,7 @@ import '../../domain/models/adventure.dart';
 import '../../domain/models/place.dart';
 import '../../domain/models/bookmark.dart';
 import '../../theme.dart';
+import '../../utils/shimmer_widgets.dart';
 import '../../utils/snackbar_utils.dart';
 import '../widgets/quest_tabs.dart';
 
@@ -59,7 +60,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
       final place = widget.item as Place;
       images = place.imageUrls.isNotEmpty
           ? place.imageUrls
-          : ['', ''];
+          : [];
     } else if (_isAdventure) {
       final adventure = widget.item as Adventure;
       images = [adventure.imageUrl];
@@ -103,7 +104,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                             children: [
                               Text(
                                 _isPlace
-                                    ? (widget.item as Place).address ?? 'No address'
+                                    ? (widget.item as Place).location ?? 'No location'
                                     : 'Rincon, PR',
                                 style: bodyTextStyle.copyWith(
                                   color: context.colors.textSecondary
@@ -131,15 +132,15 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: spacing4),
+                          const SizedBox(height: spacing12),
 
                           // XP and Directions buttons
                           _buildActionButtons(),
-                          const SizedBox(height: spacing16),
+                          const SizedBox(height: spacing24),
 
                           // Description
                           _buildDescription(),
-                          const SizedBox(height: spacing16),
+                          const SizedBox(height: spacing24),
 
                           // Quest accordion placeholder
                           _buildQuestAccordionPlaceholder(),
@@ -188,7 +189,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
       child: Stack(
         children: [
           // Image carousel
-          PageView.builder(
+          images.isNotEmpty ? PageView.builder(
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
@@ -203,40 +204,16 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorWidget: (context, url, error) {
-                  return Container(
+                  return SizedBox(
                     height: 384,
                     // color: context.colors.bgSecondary,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: errorColor,
-                          size: iconSizeLarge * 2,
-                        ),
-                        const SizedBox(height: spacing8),
-                        Text(
-                          'Failed to load image',
-                          style: bodyTextStyle.copyWith(
-                            color: errorColor,
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: _buildPlaceholderImage(),
                   );
                 },
-                placeholder: (context, url) => Container(
-                  height: 384,
-                  color: context.colors.bgSecondary,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: brandPrimary,
-                    ),
-                  ),
-                ),
+                placeholder: (context, url) => ShimmerWidgets.imageShimmer(height: 384, context: context),
               );
             },
-          ),
+          ) : _buildPlaceholderImage(),
 
           // Carousel indicators (only show if more than 1 image)
           if (images.length > 1)
@@ -593,30 +570,31 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'About this place',
-              style: bodySmallStyle.copyWith(
-                color: context.colors.textPrimary,
-                fontWeight: FontWeight.bold
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            final notifier = ref.read(descriptionExpandedProvider.notifier);
+            notifier.state = !notifier.state;
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'About this place',
+                style: bodySmallStyle.copyWith(
+                  color: context.colors.textPrimary,
+                  fontWeight: FontWeight.bold
+                ),
               ),
-            ),
-            IconButton(
-              onPressed: () {
-                final notifier = ref.read(descriptionExpandedProvider.notifier);
-                notifier.state = !notifier.state;
-              },
-              icon: Icon(
-                isExpanded
-                    ? Icons.keyboard_arrow_up_rounded
-                    : Icons.keyboard_arrow_down_rounded,
-                size: spacing32,
-                color: context.colors.textPrimary,
-              ),
-            ),
-          ],
+              Icon(
+                  isExpanded
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  size: spacing32,
+                  color: context.colors.textPrimary,
+                ),
+            ],
+          ),
         ),
         if (isExpanded) ...[
           const SizedBox(height: spacing4),
@@ -684,5 +662,15 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
       final adventure = widget.item as Adventure;
       return '${adventure.latitude.toStringAsFixed(4)}, ${adventure.longitude.toStringAsFixed(4)}';
     }
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Center(
+      child: Icon(
+        Icons.image_not_supported,
+        size: iconSizeLarge * 2,
+        color: context.colors.textSecondary,
+      ),
+    );
   }
 }

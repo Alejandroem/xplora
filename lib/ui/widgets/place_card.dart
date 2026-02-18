@@ -58,7 +58,7 @@ class PlaceCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String imageUrl;
+    String? imageUrl;
     String title;
     String heroTag;
     String? subtitle;
@@ -67,10 +67,10 @@ class PlaceCard extends ConsumerWidget {
       final place = item as Place;
       imageUrl = place.imageUrls.isNotEmpty
           ? place.imageUrls.first
-          : '';
+          : null;
       title = place.name;
       heroTag = 'place-image-${place.placeId}-${isInGrid ? 'grid' : 'carousel'}';
-      subtitle = place.address;
+      subtitle = place.location;
     } else if (_isAdventure) {
       final adventure = item as Adventure;
       imageUrl = adventure.imageUrl;

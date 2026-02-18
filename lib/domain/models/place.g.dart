@@ -21,6 +21,7 @@ _$PlaceImpl _$$PlaceImplFromJson(Map<String, dynamic> json) => _$PlaceImpl(
               .toList() ??
           const [],
       address: json['address'] as String?,
+      location: json['location'] as String?,
       source: json['source'] as String? ?? 'seed',
       status: json['status'] as String? ?? 'active',
       createdAt: const TimestampConverter().fromJson(json['createdAt']),
@@ -36,6 +37,7 @@ Map<String, dynamic> _$$PlaceImplToJson(_$PlaceImpl instance) =>
       'categories': instance.categories,
       'imageUrls': instance.imageUrls,
       'address': instance.address,
+      'location': instance.location,
       'source': instance.source,
       'status': instance.status,
       'createdAt': const TimestampConverter().toJson(instance.createdAt),

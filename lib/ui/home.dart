@@ -276,7 +276,7 @@ class _HomeState extends ConsumerState<Home> {
                 print('User opened settings to enable location permission');
                 // After dialog closes, check if user enabled permission from settings
                 // and re-check the autoEnableLocationTrackingProvider
-                ref.invalidate(autoEnableLocationTrackingProvider);
+                // ref.invalidate(autoEnableLocationTrackingProvider);
               } else {
                 print('User declined to enable location permission');
               }

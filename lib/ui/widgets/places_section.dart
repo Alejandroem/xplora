@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/auth_providers.dart';
+import '../../application/providers/location_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../application/providers/place_providers.dart';
 import '../../domain/models/place.dart';
@@ -187,7 +188,7 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
             // Show "Coming soon" for 'For You' and 'Following' filters
             if (selectedFilter == 'For You' || selectedFilter == 'Following') {
               return SizedBox(
-                height: 210,
+                height: 218,
                 child: _buildComingSoon(
                   context: context,
                   icon: selectedFilter == 'For You'
@@ -196,6 +197,29 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
                   title: selectedFilter,
                 ),
               );
+            }
+
+            // Check location state for 'Nearby' filter
+            final locationState = ref.watch(locationProvider);
+            final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
+            final autoEnableLocationAsync = ref.watch(autoEnableLocationTrackingProvider);
+
+            // Show loading shimmer while checking location permission
+            if (autoEnableLocationAsync.isLoading) {
+              return _buildLoadingShimmer(context);
+            }
+
+            // Show location disabled message if location tracking is not enabled
+            if (!locationTrackingEnabled) {
+              return SizedBox(
+                height: 218,
+                child: _buildLocationDisabled(context),
+              );
+            }
+
+            // Show loading shimmer while location is being loaded or position not yet available
+            if (locationState.position == null) {
+              return _buildLoadingShimmer(context);
             }
 
             // Show nearby places for 'Nearby' filter
@@ -209,11 +233,7 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
 
                       return CarouselWidget<Place>(
                         items: displayedPlaces,
-                        itemBuilder: (place, index) => Padding(
-                          padding:
-                              EdgeInsets.only(left: index == 0 ? spacing16 : 0),
-                          child: PlaceCard(place),
-                        ),
+                        itemBuilder: (place, index) => PlaceCard(place),
                         hasMore: hasMore,
                         onSeeMoreTap: () {
                           ref.read(bottomNavigationBarProvider.notifier).state =
@@ -221,38 +241,19 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
                         },
                       );
                     } else {
-                      return Center(
-                        child: Text(
-                          'No places found',
-                          style: bodyTextStyle.copyWith(
-                              color: context.colors.textSecondary),
+                      return SizedBox(
+                        height: 218,
+                        child: Center(
+                          child: Text(
+                            'No places found nearby',
+                            style: bodyTextStyle.copyWith(
+                                color: context.colors.textSecondary),
+                          ),
                         ),
                       );
                     }
                   },
-                  loading: () {
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      clipBehavior: Clip.none,
-                      child: IntrinsicHeight(
-                        child: Row(
-                          children: [
-                            for (int index = 0; index < 3; index++) ...[
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: index == 0 ? spacing16 : 0,
-                                  right: index == 2 ? spacing16 : 0,
-                                ),
-                                child: ShimmerWidgets.adventureCardShimmer(
-                                    context: context),
-                              ),
-                              if (index < 2) const SizedBox(width: spacing8),
-                            ],
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                  loading: () => _buildLoadingShimmer(context),
                   error: (error, stack) => Center(
                     child: Text(
                       'Error: $error',
@@ -291,6 +292,63 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
           const SizedBox(height: spacing8),
           Text(
             'Coming soon',
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Loading shimmer for place cards
+  Widget _buildLoadingShimmer(BuildContext context) {
+    return SizedBox(
+      height: 218,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              for (int index = 0; index < 3; index++) ...[
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: index == 0 ? spacing16 : 0,
+                    right: index == 2 ? spacing16 : 0,
+                  ),
+                  child: ShimmerWidgets.adventureCardShimmer(context: context),
+                ),
+                if (index < 2) const SizedBox(width: spacing8),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Location disabled placeholder
+  Widget _buildLocationDisabled(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.location_off_outlined,
+            size: iconSizeLarge * 2,
+            color: context.colors.textSecondary,
+          ),
+          const SizedBox(height: spacing16),
+          Text(
+            'Location Required',
+            style: h3Style.copyWith(
+              color: context.colors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: spacing8),
+          Text(
+            'Enable location to see nearby places',
             style: bodyTextStyle.copyWith(
               color: context.colors.textSecondary,
             ),

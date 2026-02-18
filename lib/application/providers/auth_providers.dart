@@ -57,24 +57,10 @@ final createOrReadCurrentUserProfile = StreamProvider.autoDispose((ref) {
     }
   });
 
-  // Keep alive during tab switches to prevent reload
-  Timer? keepAliveTimer;
-
+  // Keep alive indefinitely during tab switches to prevent reload
+  // User profile is core app data and should stay cached for the session
   ref.onCancel(() {
-    final link = ref.keepAlive();
-
-    // Auto-dispose after 60 seconds of inactivity
-    keepAliveTimer = Timer(const Duration(seconds: 60), () {
-      link.close();
-    });
-  });
-
-  ref.onResume(() {
-    keepAliveTimer?.cancel();
-  });
-
-  ref.onDispose(() {
-    keepAliveTimer?.cancel();
+    ref.keepAlive();
   });
 
   // Use asyncExpand to automatically switch streams when auth state changes

@@ -192,7 +192,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     bool showLoadingShimmer = false,
   }) {
     return GridView.builder(
-      clipBehavior: Clip.none,
       controller: controller,
       padding: const EdgeInsets.symmetric(vertical: spacing16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -217,7 +216,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   // Loading state with shimmer grid
   Widget _buildLoadingGrid() {
     return GridView.builder(
-      clipBehavior: Clip.none,
       padding: const EdgeInsets.symmetric(vertical: spacing16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,

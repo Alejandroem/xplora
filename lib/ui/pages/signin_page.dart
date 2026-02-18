@@ -49,7 +49,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           padding: const EdgeInsets.symmetric(
               horizontal: spacing16, vertical: spacing32),
           child: Form(
-            autovalidateMode: AutovalidateMode.onUnfocus,
+            // autovalidateMode: AutovalidateMode.onUnfocus,
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
