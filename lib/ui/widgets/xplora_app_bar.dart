@@ -351,7 +351,7 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
                       onPressed: () {
                         _searchController.clear();
                         ref.read(searchQueryProvider.notifier).state = '';
-                        FocusScope.of(context).unfocus();
+                        FocusManager.instance.primaryFocus?.unfocus();
                       },
                       icon: Icon(
                         Icons.clear,

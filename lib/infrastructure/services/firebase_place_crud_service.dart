@@ -16,4 +16,31 @@ class FirebasePlaceCrudService extends FirebaseCrudService<Place>
                 toFirestore: (entity, _) => entity.toJson(),
               ),
         );
+
+  @override
+  Future<List<Place>?> readPaginated({
+    required int limit,
+    Place? startAfter,
+    List<Map<String, dynamic>>? filters,
+  }) async {
+    var query = filters != null && filters.isNotEmpty
+        ? getQueryFromFilters(filters)
+        : collection as Query<Place>;
+
+    query = query.orderBy(FieldPath.documentId);
+
+    if (startAfter != null) {
+      final docId = startAfter.placeId;
+      if (docId != null) {
+        final docSnapshot = await collection.doc(docId).get();
+        if (docSnapshot.exists) {
+          query = query.startAfterDocument(docSnapshot);
+        }
+      }
+    }
+
+    query = query.limit(limit);
+    final querySnapshot = await query.get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
 }

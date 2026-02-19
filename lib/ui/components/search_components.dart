@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/auth_providers.dart';
-import '../../domain/models/adventure.dart';
+import '../../application/providers/place_providers.dart';
+import '../../domain/models/place.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 import '../../utils/snackbar_utils.dart';
@@ -34,9 +34,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
 
     // Load initial data only if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final state = ref.read(paginatedAdventuresProvider);
-      if (state.adventures.isEmpty && !state.isLoading) {
-        ref.read(paginatedAdventuresProvider.notifier).loadInitial();
+      final state = ref.read(paginatedPlacesProvider);
+      if (state.places.isEmpty && !state.isLoading) {
+        ref.read(paginatedPlacesProvider.notifier).loadInitial();
       }
     });
   }
@@ -44,14 +44,14 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   void _onScroll() {
     if (!mounted) return;
 
-    final state = ref.read(paginatedAdventuresProvider);
+    final state = ref.read(paginatedPlacesProvider);
 
     // Don't trigger if already loading or no more content
     if (state.isLoading || !state.hasMore) return;
 
     // Load more when near bottom
     if (_isNearBottom) {
-      ref.read(paginatedAdventuresProvider.notifier).loadMore();
+      ref.read(paginatedPlacesProvider.notifier).loadMore();
     }
   }
 
@@ -66,10 +66,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void scrollToCategory(String categoryId) {
-    if (categoryId.isEmpty) return;
   }
 
   @override
@@ -140,22 +136,22 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
 
   // Paginated content for when there's no search query
   Widget _buildPaginatedContent() {
-    final state = ref.watch(paginatedAdventuresProvider);
+    final state = ref.watch(paginatedPlacesProvider);
 
-    if (state.error != null && state.adventures.isEmpty) {
+    if (state.error != null && state.places.isEmpty) {
       return _buildError(state.error!);
     }
 
-    if (state.isLoading && state.adventures.isEmpty) {
+    if (state.places.isEmpty && (state.isLoading || state.hasMore)) {
       return _buildLoadingGrid();
     }
 
-    if (state.adventures.isEmpty && !state.isLoading) {
+    if (state.places.isEmpty) {
       return _buildEmpty();
     }
 
-    return _buildAdventuresGrid(
-      adventures: state.adventures,
+    return _buildPlacesGrid(
+      places: state.places,
       controller: _scrollController,
       showLoadingShimmer: state.hasMore,
     );
@@ -163,22 +159,22 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
 
   // Search results for when user types a search query
   Widget _buildSearchResults(String searchQuery) {
-    final allAdventures = ref.watch(allAdventuresProvider);
+    final allPlaces = ref.watch(allPlacesProvider);
 
-    return allAdventures.when(
-      data: (adventures) {
+    return allPlaces.when(
+      data: (places) {
         final query = searchQuery.toLowerCase();
-        final filteredAdventures = adventures.where((adventure) {
-          return adventure.title.toLowerCase().contains(query) ||
-              // adventure.shortDescription.toLowerCase().contains(query) ||
-              adventure.longDescription.toLowerCase().contains(query);
+        final filteredPlaces = places.where((place) {
+          return place.name.toLowerCase().contains(query) ||
+              (place.address?.toLowerCase().contains(query) ?? false) ||
+              (place.location?.toLowerCase().contains(query) ?? false);
         }).toList();
 
-        if (filteredAdventures.isEmpty) {
-          return _buildEmpty();
+        if (filteredPlaces.isEmpty) {
+          return _buildNoSearchResults(searchQuery);
         }
 
-        return _buildAdventuresGrid(adventures: filteredAdventures);
+        return _buildPlacesGrid(places: filteredPlaces);
       },
       loading: () => _buildLoadingGrid(),
       error: (error, _) => _buildError(error.toString()),
@@ -186,8 +182,8 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   }
 
   // Common grid builder
-  Widget _buildAdventuresGrid({
-    required List<Adventure> adventures,
+  Widget _buildPlacesGrid({
+    required List<Place> places,
     ScrollController? controller,
     bool showLoadingShimmer = false,
   }) {
@@ -200,15 +196,15 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
         crossAxisSpacing: spacing12,
         mainAxisSpacing: spacing12,
       ),
-      itemCount: adventures.length + (showLoadingShimmer ? 2 : 0),
+      itemCount: places.length + (showLoadingShimmer ? 2 : 0),
       itemBuilder: (context, index) {
-        if (index >= adventures.length) {
+        if (index >= places.length) {
           return ShimmerWidgets.adventureCardShimmer(
             context: context,
             isInGrid: true,
           );
         }
-        return PlaceCard(adventures[index], isInGrid: true);
+        return PlaceCard(places[index], isInGrid: true);
       },
     );
   }
@@ -270,6 +266,37 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     );
   }
 
+  // No search results state
+  Widget _buildNoSearchResults(String query) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off,
+            size: iconSizeLarge * 2,
+            color: context.colors.textSecondary,
+          ),
+          const SizedBox(height: spacing16),
+          Text(
+            'No results for "$query"',
+            style: h3Style.copyWith(
+              color: context.colors.textPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: spacing8),
+          Text(
+            'Try a different search term',
+            style: bodyTextStyle.copyWith(
+              color: context.colors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Nearby content - TODO: Implement distance sorting
   Widget _buildNearbyContent(String searchQuery) {
     return _buildComingSoon(
@@ -286,7 +313,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     );
   }
 
-  // Saved content - TODO: Implement saved/bookmarked adventures
+  // Saved content - TODO: Implement saved/bookmarked places
   Widget _buildSavedContent(String searchQuery) {
     return _buildComingSoon(
       icon: Icons.bookmark_border,

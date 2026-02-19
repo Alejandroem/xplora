@@ -103,7 +103,7 @@ class _XploraTextFieldState extends State<XploraTextField> {
         TextFormField(
           focusNode: widget.focusNode,
           onTapOutside: widget.onTapOutside ?? (event) {
-            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
           },
           controller: widget.controller,
           obscureText: widget.obscureText,

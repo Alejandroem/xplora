@@ -481,10 +481,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                         GestureDetector(
                           onTap: isLoading
                               ? null
-                              : () async {
-                                  await Navigator.of(context)
+                              : () {
+                                  Navigator.of(context)
                                       .pushNamed('/signup');
-                                  FocusManager.instance.primaryFocus?.unfocus();
                                 },
                           child: Text.rich(
                             TextSpan(

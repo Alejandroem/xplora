@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../domain/models/place.dart';
 import '../../domain/services/place_crud_service.dart';
 import '../../infrastructure/services/firebase_place_crud_service.dart';
+import '../notifiers/paginated_places_notifier.dart';
 import 'location_providers.dart';
 
 final placeCrudServiceProvider = Provider<PlaceCrudService>((ref) {
@@ -14,17 +15,15 @@ final nearbyPlacesProvider = FutureProvider<List<Place>>((ref) async {
   final placeCrudService = ref.watch(placeCrudServiceProvider);
   final locationState = ref.watch(locationProvider);
 
-  // Get all places from the places collection
-  final places = await placeCrudService.readByFilters([]);
+  final places = await placeCrudService.readByFilters([
+    {'field': 'status', 'operator': '==', 'value': 'active'},
+  ]);
 
   if (places == null || places.isEmpty) {
     return [];
   }
 
-  // Filter to only show active places
-  final activePlaces = places.where(
-    (place) => place.status == 'active',
-  ).toList();
+  final activePlaces = places;
 
   // Filter and sort by distance if user location is available
   if (locationState.position != null) {
@@ -68,3 +67,21 @@ final nearbyPlacesProvider = FutureProvider<List<Place>>((ref) async {
 
   return activePlaces;
 });
+
+final allPlacesProvider = FutureProvider.autoDispose<List<Place>>((ref) async {
+  final placeCrudService = ref.watch(placeCrudServiceProvider);
+
+  final places = await placeCrudService.readByFilters([
+    {'field': 'status', 'operator': '==', 'value': 'active'},
+  ]);
+
+  return places ?? [];
+});
+
+final paginatedPlacesProvider =
+    StateNotifierProvider<PaginatedPlacesNotifier, PaginatedPlacesState>(
+  (ref) {
+    final placeCrudService = ref.watch(placeCrudServiceProvider);
+    return PaginatedPlacesNotifier(placeCrudService);
+  },
+);
