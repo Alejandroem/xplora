@@ -6,9 +6,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../application/providers/auth_providers.dart';
+import '../../application/providers/location_providers.dart';
+import '../../utils/location_utils.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/boomark_providers.dart';
-import '../../domain/models/adventure.dart';
 import '../../domain/models/place.dart';
 import '../../domain/models/bookmark.dart';
 import '../../theme.dart';
@@ -21,6 +22,11 @@ final descriptionExpandedProvider =
 
 final menuExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
 
+final currentImageIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
+
+final isProcessingBookmarkProvider =
+    StateProvider.autoDispose<bool>((ref) => false);
+
 // TODO: Place Details Screen
 // - Image carousel (1-4 images) with indicators
 // - Back, share, and save icons overlaid on carousel
@@ -31,7 +37,7 @@ final menuExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class PlaceDetail extends ConsumerStatefulWidget {
   final String source;
-  final dynamic item; // Can be either Place or Adventure
+  final Place item;
   const PlaceDetail(this.source, this.item, {super.key});
 
   @override
@@ -39,13 +45,7 @@ class PlaceDetail extends ConsumerStatefulWidget {
 }
 
 class _PlaceDetailState extends ConsumerState<PlaceDetail> {
-  int _currentImageIndex = 0;
   final PageController _pageController = PageController();
-  bool _isProcessingBookmark = false;
-
-  bool get _isPlace => widget.item is Place;
-  bool get _isAdventure => widget.item is Adventure;
-
   @override
   void dispose() {
     _pageController.dispose();
@@ -54,19 +54,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // Get images based on item type
-    final List<String> images;
-    if (_isPlace) {
-      final place = widget.item as Place;
-      images = place.imageUrls.isNotEmpty
-          ? place.imageUrls
-          : [];
-    } else if (_isAdventure) {
-      final adventure = widget.item as Adventure;
-      images = [adventure.imageUrl];
-    } else {
-      images = ['https://via.placeholder.com/300x200'];
-    }
+    final images = widget.item.imageUrls;
 
     return GradientBackground(
       child: Scaffold(
@@ -83,15 +71,14 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
 
                     // Content section
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(spacing16, 13, spacing16, spacing16),
+                      padding: const EdgeInsets.fromLTRB(
+                          spacing16, 13, spacing16, spacing16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Place name
                           Text(
-                            _isPlace
-                                ? (widget.item as Place).name
-                                : (widget.item as Adventure).title,
+                            widget.item.name,
                             style: h1Style.copyWith(
                                 color: context.colors.textPrimary,
                                 fontSize: 30),
@@ -103,31 +90,32 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                             spacing: spacing12,
                             children: [
                               Text(
-                                _isPlace
-                                    ? (widget.item as Place).location ?? 'No location'
-                                    : 'Rincon, PR',
+                                widget.item.location ?? 'Rincon, PR',
                                 style: bodyTextStyle.copyWith(
                                   color: context.colors.textSecondary
                                       .withValues(alpha: 0.7),
                                 ),
                               ),
-
                               Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: context.colors.textSecondary.withValues(alpha: .4),
+                                  color: context.colors.textSecondary
+                                      .withValues(alpha: .4),
                                 ),
                                 width: 6,
                                 height: 6,
                               ),
-
-                              // Distance from user (if available)
-                              // TODO: Calculate actual distance from user location
-                              Text(
-                                '1 mi away',
-                                style: bodySmallStyle.copyWith(
-                                  color: context.colors.textSecondary
-                                      .withValues(alpha: 0.7),
+                              Consumer(
+                                builder: (context, ref, _) => Text(
+                                  formatDistance(
+                                    ref.watch(locationProvider),
+                                    widget.item.geo['lat']!,
+                                    widget.item.geo['lng']!,
+                                  ),
+                                  style: bodySmallStyle.copyWith(
+                                    color: context.colors.textSecondary
+                                        .withValues(alpha: 0.7),
+                                  ),
                                 ),
                               ),
                             ],
@@ -189,31 +177,28 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
       child: Stack(
         children: [
           // Image carousel
-          images.isNotEmpty ? PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentImageIndex = index;
-              });
-            },
-            itemCount: images.length,
-            itemBuilder: (context, index) {
-              return CachedNetworkImage(
-                imageUrl: images[index],
-                height: 384,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) {
-                  return SizedBox(
-                    height: 384,
-                    // color: context.colors.bgSecondary,
-                    child: _buildPlaceholderImage(),
-                  );
-                },
-                placeholder: (context, url) => ShimmerWidgets.imageShimmer(height: 384, context: context),
-              );
-            },
-          ) : _buildPlaceholderImage(),
+          images.isNotEmpty
+              ? PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    ref.read(currentImageIndexProvider.notifier).state = index;
+                  },
+                  itemCount: images.length,
+                  itemBuilder: (context, index) {
+                    return CachedNetworkImage(
+                      imageUrl: images[index],
+                      height: 384,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) {
+                        return _buildImagePlaceholder();
+                      },
+                      placeholder: (context, url) =>
+                          ShimmerWidgets.imageShimmer(context: context),
+                    );
+                  },
+                )
+              : _buildImagePlaceholder(),
 
           // Carousel indicators (only show if more than 1 image)
           if (images.length > 1)
@@ -221,38 +206,44 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
               bottom: spacing16,
               left: 0,
               right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  images.length,
-                  (index) {
-                    final isActive = _currentImageIndex == index;
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: spacing4),
-                      child: GlassContainer(
-                        width: isActive ? 20 : 16,
-                        height: isActive ? 20 : 16,
-                        showBorder: false,
-                        borderRadius: isActive ? radiusSmall : 7,
-                        bgColor:
-                            context.colors.bgSecondary.withValues(alpha: 0.7),
-                        child: Center(
-                          child: Container(
-                            width: isActive ? 10 : 8,
-                            height: isActive ? 10 : 8,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isActive
-                                  ? context.colors.iconColor
-                                  : context.colors.iconColor
-                                      .withValues(alpha: 0.6),
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final currentIndex = ref.watch(currentImageIndexProvider);
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      images.length,
+                      (index) {
+                        final isActive = currentIndex == index;
+                        return Container(
+                          margin:
+                              const EdgeInsets.symmetric(horizontal: spacing4),
+                          child: GlassContainer(
+                            width: isActive ? 20 : 16,
+                            height: isActive ? 20 : 16,
+                            showBorder: false,
+                            borderRadius: isActive ? radiusSmall : 7,
+                            bgColor: context.colors.bgSecondary
+                                .withValues(alpha: 0.7),
+                            child: Center(
+                              child: Container(
+                                width: isActive ? 10 : 8,
+                                height: isActive ? 10 : 8,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isActive
+                                      ? context.colors.iconColor
+                                      : context.colors.iconColor
+                                          .withValues(alpha: 0.6),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
             ),
         ],
@@ -291,10 +282,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
 
   Widget _buildMenuButton() {
     final isMenuExpanded = ref.watch(menuExpandedProvider);
-
-    final entityId = _isPlace
-        ? (widget.item as Place).placeId!
-        : (widget.item as Adventure).id!;
+    final entityId = widget.item.placeId!;
 
     return ref.watch(adventureBookmarkProvider(entityId)).when(
           data: (bookmarks) {
@@ -312,11 +300,11 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                   icon: Icons.more_horiz,
                   onPressed: () {
                     // Check if user is authenticated
-                    final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
+                    final userIdAsync =
+                        ref.read(currentAuthUserIdStreamProvider);
                     final userId = userIdAsync.value;
 
                     if (userId == null) {
-                      // User not logged in - show message and don't change filter
                       showXploraSnackBar(
                         context,
                         'Please sign in to access menu options',
@@ -355,12 +343,12 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  onPressed: _isProcessingBookmark
+                                  onPressed: ref.watch(isProcessingBookmarkProvider)
                                       ? null
                                       : () async {
                                           await _handleBookmarkToggle(bookmark);
                                         },
-                                  icon: _isProcessingBookmark
+                                  icon: ref.watch(isProcessingBookmarkProvider)
                                       ? SizedBox(
                                           width: 22,
                                           height: 22,
@@ -393,7 +381,10 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                                     _handleShare();
                                   },
                                   icon: SvgPicture.asset('assets/svg/send.svg',
-                                      color: context.colors.iconColor,
+                                      colorFilter: ColorFilter.mode(
+                                        context.colors.iconColor,
+                                        BlendMode.srcIn,
+                                      ),
                                       width: 22,
                                       height: 22),
                                 ),
@@ -426,11 +417,9 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
   }
 
   Future<void> _handleBookmarkToggle(Bookmark? bookmark) async {
-    if (_isProcessingBookmark) return;
+    if (ref.read(isProcessingBookmarkProvider)) return;
 
-    setState(() {
-      _isProcessingBookmark = true;
-    });
+    ref.read(isProcessingBookmarkProvider.notifier).state = true;
 
     try {
       final bookmarkCrudService = ref.read(boomarkCrudServiceProvider);
@@ -438,15 +427,11 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
       final user = await authService.getAuthUser();
 
       if (user == null) {
-        setState(() {
-          _isProcessingBookmark = false;
-        });
+        ref.read(isProcessingBookmarkProvider.notifier).state = false;
         return;
       }
 
-      final entityId = _isPlace
-          ? (widget.item as Place).placeId!
-          : (widget.item as Adventure).id!;
+      final entityId = widget.item.placeId!;
 
       if (bookmark == null) {
         await bookmarkCrudService.create(
@@ -463,17 +448,12 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
 
       ref.invalidate(adventureBookmarkProvider(entityId));
     } finally {
-      setState(() {
-        _isProcessingBookmark = false;
-      });
+      ref.read(isProcessingBookmarkProvider.notifier).state = false;
     }
   }
 
   void _handleShare() {
-    final name = _isPlace
-        ? (widget.item as Place).name
-        : (widget.item as Adventure).title;
-
+    final name = widget.item.name;
     Share.share(
       'Check out $name!',
       subject: name,
@@ -498,12 +478,10 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
             ),
           ),
           child: Text(
-            _isAdventure
-                ? '${(widget.item as Adventure).experience.toInt()}xp'
-                : '50xp', // TODO: Add experience field to Place model
+            '${widget.item.xp}xp',
             style: bodySmallStyle.copyWith(
               color: brandSecondary,
-              fontWeight: FontWeight.bold
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -513,12 +491,10 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
         SecondaryButton(
           text: 'Directions',
           onPressed: () async {
-            // Check if user is authenticated
             final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
             final userId = userIdAsync.value;
 
             if (userId == null) {
-              // User not logged in - show message
               showXploraSnackBar(
                 context,
                 'Please sign in to get directions',
@@ -528,24 +504,16 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
               return;
             }
 
-            double lat, lng;
-            if (_isPlace) {
-              final place = widget.item as Place;
-              lat = place.geo['lat']!;
-              lng = place.geo['lng']!;
-            } else {
-              final adventure = widget.item as Adventure;
-              lat = adventure.latitude;
-              lng = adventure.longitude;
-            }
-
+            final lat = widget.item.geo['lat']!;
+            final lng = widget.item.geo['lng']!;
             final url = Uri.parse(
               'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
             );
             if (await canLaunchUrl(url)) {
               await launchUrl(url);
             } else {
-              throw 'Could not launch $url';
+              if(!mounted) return;
+              showXploraSnackBar(context, 'Error showing directions. Please try again later', isError: true);
             }
           },
         ),
@@ -556,16 +524,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
   Widget _buildDescription() {
     final isExpanded = ref.watch(descriptionExpandedProvider);
 
-    final String descriptionText;
-    if (_isAdventure) {
-      final adventure = widget.item as Adventure;
-      descriptionText = adventure.longDescription.isNotEmpty
-          ? adventure.longDescription
-          : adventure.shortDescription;
-    } else {
-      // TODO: Add description field to Place model
-      descriptionText = 'Explore this amazing place and earn XP!';
-    }
+    final descriptionText = widget.item.description ?? 'Explore this amazing place and earn XP!';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -583,16 +542,16 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                 'About this place',
                 style: bodySmallStyle.copyWith(
                   color: context.colors.textPrimary,
-                  fontWeight: FontWeight.bold
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Icon(
-                  isExpanded
-                      ? Icons.keyboard_arrow_up_rounded
-                      : Icons.keyboard_arrow_down_rounded,
-                  size: spacing32,
-                  color: context.colors.textPrimary,
-                ),
+                isExpanded
+                    ? Icons.keyboard_arrow_up_rounded
+                    : Icons.keyboard_arrow_down_rounded,
+                size: spacing32,
+                color: context.colors.textPrimary,
+              ),
             ],
           ),
         ),
@@ -631,17 +590,14 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Quest heading
         Text(
           'Quest',
           style: h2Style.copyWith(
             color: context.colors.textPrimary,
-            fontWeight: FontWeight.bold
+            fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: spacing16),
-
-        // Quest items using QuestListTile
         ...quests.map((quest) {
           return Container(
             margin: const EdgeInsets.only(bottom: spacing16),
@@ -652,19 +608,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
     );
   }
 
-  String _formatLocation() {
-    // TODO: Parse actual city, state from latitude/longitude or add location field to Place/Adventure model
-    // For now, return coordinates as placeholder
-    if (_isPlace) {
-      final place = widget.item as Place;
-      return '${place.geo['lat']!.toStringAsFixed(4)}, ${place.geo['lng']!.toStringAsFixed(4)}';
-    } else {
-      final adventure = widget.item as Adventure;
-      return '${adventure.latitude.toStringAsFixed(4)}, ${adventure.longitude.toStringAsFixed(4)}';
-    }
-  }
-
-  Widget _buildPlaceholderImage() {
+  Widget _buildImagePlaceholder() {
     return Center(
       child: Icon(
         Icons.image_not_supported,

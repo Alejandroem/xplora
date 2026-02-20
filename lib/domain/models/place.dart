@@ -15,6 +15,8 @@ class Place with _$Place {
     @Default([]) List<String> imageUrls,
     String? address,
     String? location,
+    String? description,
+    @Default(0) int xp,
     @Default('seed') String source,
     @Default('active') String status,
     @TimestampConverter() Timestamp? createdAt,

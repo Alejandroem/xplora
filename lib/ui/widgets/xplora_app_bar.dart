@@ -373,6 +373,8 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
                 size: iconSizeLarge,
               ),
               onPressed: () {
+                showXploraSnackBar(context, 'Advanced filters for places coming soon!');
+                return;
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const FiltersPage(),

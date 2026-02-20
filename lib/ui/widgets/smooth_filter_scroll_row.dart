@@ -260,7 +260,7 @@ class _SmoothFilterScrollRowState extends State<SmoothFilterScrollRow>
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: widget.alignCenter ? AlignmentGeometry.center : AlignmentDirectional.topStart,
+      alignment: widget.alignCenter ? AlignmentGeometry.center : AlignmentGeometry.centerLeft,
       child: SingleChildScrollView(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
