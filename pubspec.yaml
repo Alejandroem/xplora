@@ -27,6 +27,7 @@ dependencies:
   mobile_scanner: ^7.1.4
   firebase_auth: ^5.1.2
   url_launcher: ^6.3.1
+  map_launcher: ^4.4.3
   location: ^7.0.0
   geolocator: ^10.0.0
   carousel_slider: ^5.0.0

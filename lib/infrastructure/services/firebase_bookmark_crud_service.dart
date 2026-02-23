@@ -6,9 +6,12 @@ import 'firebase_crud_service.dart';
 
 class FirebaseBookmarkCrudService extends FirebaseCrudService<Bookmark>
     implements BookmarkCrudService {
-  FirebaseBookmarkCrudService()
+  final String userId;
+
+  FirebaseBookmarkCrudService(this.userId)
       : super(
           FirebaseFirestore.instance
+              .doc('users/$userId')
               .collection('bookmarks')
               .withConverter<Bookmark>(
                 fromFirestore: (snapshot, _) =>
@@ -16,4 +19,13 @@ class FirebaseBookmarkCrudService extends FirebaseCrudService<Bookmark>
                 toFirestore: (entity, _) => entity.toJson(),
               ),
         );
+
+  @override
+  Future<Bookmark> create(Bookmark entity) async {
+    final withTimestamp = entity.copyWith(createdAt: Timestamp.now());
+    final docRef = collection.doc(entity.id);
+    await docRef.set(withTimestamp);
+    final snapshot = await docRef.get();
+    return snapshot.data()!;
+  }
 }

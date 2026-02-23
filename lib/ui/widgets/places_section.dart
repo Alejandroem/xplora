@@ -306,6 +306,7 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     return SizedBox(
       height: 218,
       child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         child: IntrinsicHeight(

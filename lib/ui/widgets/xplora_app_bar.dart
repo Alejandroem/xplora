@@ -342,7 +342,7 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
             return XploraTextField(
               controller: _searchController,
               onChanged: (value) {
-                ref.read(searchQueryProvider.notifier).state = value.trim();
+                ref.read(searchQueryProvider.notifier).state = value;
               },
               hintText: 'Search',
               textCapitalization: TextCapitalization.sentences,

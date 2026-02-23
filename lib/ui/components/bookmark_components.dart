@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/boomark_providers.dart';
-import '../../domain/models/adventure.dart';
+import '../../application/providers/place_providers.dart';
 import '../../domain/models/bookmark.dart';
+import '../../domain/models/place.dart';
 import '../../theme.dart';
 import '../pages/place_detail.dart';
 
@@ -24,7 +24,7 @@ class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
         horizontal: 16.0,
         vertical: 8.0,
       ),
-      child: ref.watch(currentUserBoomarksStreamProvider).when(
+      child: ref.watch(currentUserBookmarksStreamProvider).when(
             data: (bookmarks) {
               if (bookmarks == null || bookmarks.isEmpty) {
                 return const Column(
@@ -36,7 +36,7 @@ class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
                     ),
                     SizedBox(height: 16),
                     Text(
-                      'Go to the search page to bookmark adventures.',
+                      'Go to the search page to bookmark places.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
@@ -56,54 +56,53 @@ class _BoomarkComponentsState extends ConsumerState<BoomarkComponents> {
                   itemCount: bookmarks.length,
                   itemBuilder: (context, index) {
                     final bookmark = bookmarks[index];
-                    final adventureCrudService = ref.read(
-                      adventuresCrudServiceProvider,
-                    );
+                    final placeCrudService = ref.read(placeCrudServiceProvider);
 
-                    if (bookmark.type == BookmarkType.adventure) {
+                    if (bookmark.type == BookmarkType.place) {
                       return FutureBuilder(
-                        future: adventureCrudService.read(bookmark.entityId),
+                        future: placeCrudService.read(bookmark.id),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
-                            final adventure = snapshot.data as Adventure;
+                            final place = snapshot.data as Place;
+                            final imageUrl = place.imageUrls.isNotEmpty
+                                ? place.imageUrls.first
+                                : null;
                             return ListTile(
                               onTap: () {
-                                // Navigator.of(context).push(
-                                //   MaterialPageRoute(
-                                //     builder: (context) {
-                                //       return PlaceDetail(
-                                //         'bookmarks',
-                                //         adventure,
-                                //       );
-                                //     },
-                                //   ),
-                                // );
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return PlaceDetail(
+                                        'bookmarks',
+                                        place,
+                                      );
+                                    },
+                                  ),
+                                );
                               },
                               contentPadding: const EdgeInsets.all(8.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15.0),
                               ),
                               tileColor: context.colors.bgSecondary,
-                              leading: Image.network(
-                                adventure.imageUrl,
-                                width: 50,
-                                height: 50,
-                              ),
-                              title: Text(
-                                adventure.title,
-                              ),
-                              subtitle: Text(
-                                adventure.shortDescription,
-                              ),
+                              leading: imageUrl != null
+                                  ? Image.network(
+                                      imageUrl,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Icon(Icons.place, size: 50),
+                              title: Text(place.name),
+                              subtitle: Text(place.description ?? ''),
                               trailing: IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () async {
                                   await ref
-                                      .read(boomarkCrudServiceProvider)
-                                      .delete(bookmark.id!);
-                                  ref.invalidate(
-                                      currentUserBoomarksStreamProvider);
+                                      .read(bookmarkToggleProvider(bookmark.id)
+                                          .notifier)
+                                      .toggle(bookmark);
                                 },
                               ),
                             );

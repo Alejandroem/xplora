@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/auth_providers.dart';
+import '../../application/providers/boomark_providers.dart';
 import '../../application/providers/place_providers.dart';
 import '../../domain/models/place.dart';
 import '../../theme.dart';
@@ -70,44 +71,53 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
 
   @override
   Widget build(BuildContext context) {
-    final searchQuery = ref.watch(searchQueryProvider);
-    final selectedFilter = ref.watch(selectedSearchFilterProvider);
-    final isSearching = searchQuery.isNotEmpty;
-
     return GradientBackground(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(spacing16, spacing16, spacing16, 0),
         child: Column(
           children: [
-            // Fixed filter row at the top
+            // Filter row — only rebuilds when selectedFilter changes
             SizedBox(
               width: double.infinity,
-              child: SmoothFilterScrollRow(
-                filters: const ['All', 'Nearby', 'Recommended', 'Saved'],
-                selectedFilter: selectedFilter,
-                onFilterTap: (filter) {
-                  // Check if user is authenticated (read current value in callback)
-                  final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
-                  final userId = userIdAsync.value;
-
-                  if (userId == null) {
-                    showXploraSnackBar(
-                      context,
-                      'Please sign in to use filters',
-                      isInfo: true,
-                      duration: const Duration(seconds: 2),
-                    );
-                    return;
-                  }
-
-                  // User is authenticated - allow filter change
-                  ref.read(selectedSearchFilterProvider.notifier).state = filter;
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final selectedFilter =
+                      ref.watch(selectedSearchFilterProvider);
+                  return SmoothFilterScrollRow(
+                    filters: const ['All', 'Nearby', 'Recommended', 'Saved'],
+                    selectedFilter: selectedFilter,
+                    onFilterTap: (filter) {
+                      final userId =
+                          ref.read(currentAuthUserIdStreamProvider).value;
+                      if (userId == null) {
+                        showXploraSnackBar(
+                          context,
+                          'Please sign in to use filters',
+                          isInfo: true,
+                          duration: const Duration(seconds: 2),
+                        );
+                        return;
+                      }
+                      ref.read(selectedSearchFilterProvider.notifier).state =
+                          filter;
+                    },
+                  );
                 },
               ),
             ),
-            // Scrollable content area
+            // Content area — only rebuilds when query or filter changes,
+            // and only the active tab's data providers are watched
             Expanded(
-              child: _buildFilteredContent(selectedFilter, searchQuery, isSearching),
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final searchQuery = ref.watch(searchQueryProvider).trim();
+                  final selectedFilter =
+                      ref.watch(selectedSearchFilterProvider);
+                  final isSearching = searchQuery.isNotEmpty;
+                  return _buildFilteredContent(
+                      ref, selectedFilter, searchQuery, isSearching);
+                },
+              ),
             ),
           ],
         ),
@@ -115,27 +125,30 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     );
   }
 
-  Widget _buildFilteredContent(String selectedFilter, String searchQuery, bool isSearching) {
-    // Handle different filter cases
+  Widget _buildFilteredContent(
+    WidgetRef ref,
+    String selectedFilter,
+    String searchQuery,
+    bool isSearching,
+  ) {
     switch (selectedFilter) {
       case 'Nearby':
-        return _buildNearbyContent(searchQuery);
+        return _buildComingSoon(icon: Icons.near_me, title: 'Nearby Places');
       case 'Recommended':
-        // TODO: Implement recommended logic
-        return _buildRecommendedContent(searchQuery);
+        return _buildComingSoon(
+            icon: Icons.recommend, title: 'Recommended Places');
       case 'Saved':
-        // TODO: Implement saved logic
-        return _buildSavedContent(searchQuery);
+        return _buildSavedContent(ref, searchQuery);
       case 'All':
       default:
         return isSearching
-            ? _buildSearchResults(searchQuery)
-            : _buildPaginatedContent();
+            ? _buildSearchResults(ref, searchQuery)
+            : _buildPaginatedContent(ref);
     }
   }
 
   // Paginated content for when there's no search query
-  Widget _buildPaginatedContent() {
+  Widget _buildPaginatedContent(WidgetRef ref) {
     final state = ref.watch(paginatedPlacesProvider);
 
     if (state.error != null && state.places.isEmpty) {
@@ -158,7 +171,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   }
 
   // Search results for when user types a search query
-  Widget _buildSearchResults(String searchQuery) {
+  Widget _buildSearchResults(WidgetRef ref, String searchQuery) {
     final allPlaces = ref.watch(allPlacesProvider);
 
     return allPlaces.when(
@@ -212,6 +225,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   // Loading state with shimmer grid
   Widget _buildLoadingGrid() {
     return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: spacing16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -297,28 +311,55 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     );
   }
 
-  // Nearby content - TODO: Implement distance sorting
-  Widget _buildNearbyContent(String searchQuery) {
-    return _buildComingSoon(
-      icon: Icons.near_me,
-      title: 'Nearby Places',
-    );
-  }
+  Widget _buildSavedContent(WidgetRef ref, String searchQuery) {
+    return ref.watch(savedPlacesProvider).when(
+          data: (places) {
+            if (places.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.bookmark_border,
+                      size: iconSizeLarge * 2,
+                      color: context.colors.textSecondary,
+                    ),
+                    const SizedBox(height: spacing16),
+                    Text(
+                      'No saved places yet',
+                      style: h3Style.copyWith(
+                        color: context.colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: spacing8),
+                    Text(
+                      'Tap the bookmark icon on any place to save it',
+                      style: bodyTextStyle.copyWith(
+                        color: context.colors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
 
-  // Recommended content - TODO: Implement recommendation logic
-  Widget _buildRecommendedContent(String searchQuery) {
-    return _buildComingSoon(
-      icon: Icons.recommend,
-      title: 'Recommended Places',
-    );
-  }
+            final query = searchQuery.toLowerCase();
+            final filtered = query.isEmpty
+                ? places
+                : places.where((p) {
+                    return p.name.toLowerCase().contains(query) ||
+                        (p.location?.toLowerCase().contains(query) ?? false) ||
+                        (p.address?.toLowerCase().contains(query) ?? false);
+                  }).toList();
 
-  // Saved content - TODO: Implement saved/bookmarked places
-  Widget _buildSavedContent(String searchQuery) {
-    return _buildComingSoon(
-      icon: Icons.bookmark_border,
-      title: 'Saved Places',
-    );
+            if (filtered.isEmpty) return _buildNoSearchResults(searchQuery);
+
+            return _buildPlacesGrid(places: filtered);
+          },
+          loading: () => _buildLoadingGrid(),
+          error: (error, _) => _buildError(error.toString()),
+        );
   }
 
   // Common "Coming soon" placeholder

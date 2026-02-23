@@ -20,10 +20,10 @@ Bookmark _$BookmarkFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Bookmark {
-  String? get id => throw _privateConstructorUsedError;
-  String get entityId => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError;
   BookmarkType get type => throw _privateConstructorUsedError;
-  String get userId => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  Timestamp? get createdAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -36,7 +36,10 @@ abstract class $BookmarkCopyWith<$Res> {
   factory $BookmarkCopyWith(Bookmark value, $Res Function(Bookmark) then) =
       _$BookmarkCopyWithImpl<$Res, Bookmark>;
   @useResult
-  $Res call({String? id, String entityId, BookmarkType type, String userId});
+  $Res call(
+      {String id,
+      BookmarkType type,
+      @TimestampConverter() Timestamp? createdAt});
 }
 
 /// @nodoc
@@ -52,28 +55,23 @@ class _$BookmarkCopyWithImpl<$Res, $Val extends Bookmark>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? entityId = null,
+    Object? id = null,
     Object? type = null,
-    Object? userId = null,
+    Object? createdAt = freezed,
   }) {
     return _then(_value.copyWith(
-      id: freezed == id
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String?,
-      entityId: null == entityId
-          ? _value.entityId
-          : entityId // ignore: cast_nullable_to_non_nullable
               as String,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as BookmarkType,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as Timestamp?,
     ) as $Val);
   }
 }
@@ -86,7 +84,10 @@ abstract class _$$BookmarkImplCopyWith<$Res>
       __$$BookmarkImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? id, String entityId, BookmarkType type, String userId});
+  $Res call(
+      {String id,
+      BookmarkType type,
+      @TimestampConverter() Timestamp? createdAt});
 }
 
 /// @nodoc
@@ -100,28 +101,23 @@ class __$$BookmarkImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? entityId = null,
+    Object? id = null,
     Object? type = null,
-    Object? userId = null,
+    Object? createdAt = freezed,
   }) {
     return _then(_$BookmarkImpl(
-      id: freezed == id
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String?,
-      entityId: null == entityId
-          ? _value.entityId
-          : entityId // ignore: cast_nullable_to_non_nullable
               as String,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as BookmarkType,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as Timestamp?,
     ));
   }
 }
@@ -131,25 +127,23 @@ class __$$BookmarkImplCopyWithImpl<$Res>
 class _$BookmarkImpl implements _Bookmark {
   const _$BookmarkImpl(
       {required this.id,
-      required this.entityId,
       required this.type,
-      required this.userId});
+      @TimestampConverter() this.createdAt});
 
   factory _$BookmarkImpl.fromJson(Map<String, dynamic> json) =>
       _$$BookmarkImplFromJson(json);
 
   @override
-  final String? id;
-  @override
-  final String entityId;
+  final String id;
   @override
   final BookmarkType type;
   @override
-  final String userId;
+  @TimestampConverter()
+  final Timestamp? createdAt;
 
   @override
   String toString() {
-    return 'Bookmark(id: $id, entityId: $entityId, type: $type, userId: $userId)';
+    return 'Bookmark(id: $id, type: $type, createdAt: $createdAt)';
   }
 
   @override
@@ -158,15 +152,14 @@ class _$BookmarkImpl implements _Bookmark {
         (other.runtimeType == runtimeType &&
             other is _$BookmarkImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.entityId, entityId) ||
-                other.entityId == entityId) &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.userId, userId) || other.userId == userId));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, entityId, type, userId);
+  int get hashCode => Object.hash(runtimeType, id, type, createdAt);
 
   @JsonKey(ignore: true)
   @override
@@ -184,22 +177,20 @@ class _$BookmarkImpl implements _Bookmark {
 
 abstract class _Bookmark implements Bookmark {
   const factory _Bookmark(
-      {required final String? id,
-      required final String entityId,
+      {required final String id,
       required final BookmarkType type,
-      required final String userId}) = _$BookmarkImpl;
+      @TimestampConverter() final Timestamp? createdAt}) = _$BookmarkImpl;
 
   factory _Bookmark.fromJson(Map<String, dynamic> json) =
       _$BookmarkImpl.fromJson;
 
   @override
-  String? get id;
-  @override
-  String get entityId;
+  String get id;
   @override
   BookmarkType get type;
   @override
-  String get userId;
+  @TimestampConverter()
+  Timestamp? get createdAt;
   @override
   @JsonKey(ignore: true)
   _$$BookmarkImplCopyWith<_$BookmarkImpl> get copyWith =>

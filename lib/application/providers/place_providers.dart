@@ -28,7 +28,7 @@ final nearbyPlacesProvider = FutureProvider<List<Place>>((ref) async {
   // Filter and sort by distance if user location is available
   if (locationState.position != null) {
     final userPosition = locationState.position!;
-    const maxDistanceInMiles = 20.0;
+    const maxDistanceInMiles = 3.0;
     const metersPerMile = 1609.34;
     const maxDistanceInMeters = maxDistanceInMiles * metersPerMile;
 

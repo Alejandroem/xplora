@@ -2,16 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../utils/location_utils.dart';
-import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/boomark_providers.dart';
 import '../../domain/models/place.dart';
-import '../../domain/models/bookmark.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 import '../../utils/snackbar_utils.dart';
@@ -23,9 +21,6 @@ final descriptionExpandedProvider =
 final menuExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 final currentImageIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
-
-final isProcessingBookmarkProvider =
-    StateProvider.autoDispose<bool>((ref) => false);
 
 // TODO: Place Details Screen
 // - Image carousel (1-4 images) with indicators
@@ -159,7 +154,7 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                       ),
 
                       // Three-dot menu button
-                      _buildMenuButton(),
+                      _PlaceMenuButton(item: widget.item),
                     ],
                   ),
                 ),
@@ -280,186 +275,6 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
     );
   }
 
-  Widget _buildMenuButton() {
-    final isMenuExpanded = ref.watch(menuExpandedProvider);
-    final entityId = widget.item.placeId!;
-
-    return ref.watch(adventureBookmarkProvider(entityId)).when(
-          data: (bookmarks) {
-            final bookmark = bookmarks != null && bookmarks.isNotEmpty
-                ? bookmarks.first
-                : null;
-            final isBookmarked = bookmark != null;
-
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // Three-dot button
-                _buildIconButton(
-                  icon: Icons.more_horiz,
-                  onPressed: () {
-                    // Check if user is authenticated
-                    final userIdAsync =
-                        ref.read(currentAuthUserIdStreamProvider);
-                    final userId = userIdAsync.value;
-
-                    if (userId == null) {
-                      showXploraSnackBar(
-                        context,
-                        'Please sign in to access menu options',
-                        isInfo: true,
-                        duration: const Duration(seconds: 2),
-                      );
-                      return;
-                    }
-
-                    ref.read(menuExpandedProvider.notifier).state =
-                        !isMenuExpanded;
-                  },
-                  borderRadius: radiusPill,
-                  bgAlpha: 0.7,
-                  iconSize: 32,
-                  iconColor: context.colors.iconColor,
-                ),
-
-                // Expanded menu items
-                isMenuExpanded
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const SizedBox(height: spacing8),
-                          GlassContainer(
-                            showBorder: false,
-                            bgColor: context.colors.bgSecondary
-                                .withValues(alpha: 0.7),
-                            borderRadius: radiusMedium,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: spacing8,
-                              vertical: 2,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: ref.watch(isProcessingBookmarkProvider)
-                                      ? null
-                                      : () async {
-                                          await _handleBookmarkToggle(bookmark);
-                                        },
-                                  icon: ref.watch(isProcessingBookmarkProvider)
-                                      ? SizedBox(
-                                          width: 22,
-                                          height: 22,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    context.colors.iconColor),
-                                          ),
-                                        )
-                                      : isBookmarked
-                                          ? Icon(
-                                              Icons.bookmark,
-                                              size: 26,
-                                              color: context.colors.iconColor,
-                                            )
-                                          : SvgPicture.asset(
-                                              'assets/svg/bookmark.svg',
-                                              colorFilter: ColorFilter.mode(
-                                                context.colors.iconColor,
-                                                BlendMode.srcIn,
-                                              ),
-                                              width: 22,
-                                              height: 22,
-                                            ),
-                                ),
-                                const SizedBox(width: spacing12),
-                                IconButton(
-                                  onPressed: () {
-                                    _handleShare();
-                                  },
-                                  icon: SvgPicture.asset('assets/svg/send.svg',
-                                      colorFilter: ColorFilter.mode(
-                                        context.colors.iconColor,
-                                        BlendMode.srcIn,
-                                      ),
-                                      width: 22,
-                                      height: 22),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : const SizedBox.shrink(),
-              ],
-            );
-          },
-          loading: () => _buildIconButton(
-            icon: Icons.more_horiz,
-            onPressed: null,
-            borderRadius: radiusPill,
-            bgAlpha: 0.7,
-            iconSize: 32,
-            iconColor: context.colors.iconColor,
-          ),
-          error: (error, stack) => _buildIconButton(
-            icon: Icons.more_horiz,
-            onPressed: null,
-            borderRadius: radiusPill,
-            bgAlpha: 0.7,
-            iconSize: 32,
-            iconColor: context.colors.iconColor,
-          ),
-        );
-  }
-
-  Future<void> _handleBookmarkToggle(Bookmark? bookmark) async {
-    if (ref.read(isProcessingBookmarkProvider)) return;
-
-    ref.read(isProcessingBookmarkProvider.notifier).state = true;
-
-    try {
-      final bookmarkCrudService = ref.read(boomarkCrudServiceProvider);
-      final authService = ref.read(authServiceProvider);
-      final user = await authService.getAuthUser();
-
-      if (user == null) {
-        ref.read(isProcessingBookmarkProvider.notifier).state = false;
-        return;
-      }
-
-      final entityId = widget.item.placeId!;
-
-      if (bookmark == null) {
-        await bookmarkCrudService.create(
-          Bookmark(
-            id: null,
-            type: BookmarkType.adventure,
-            entityId: entityId,
-            userId: user.id!,
-          ),
-        );
-      } else {
-        await bookmarkCrudService.delete(bookmark.id!);
-      }
-
-      ref.invalidate(adventureBookmarkProvider(entityId));
-    } finally {
-      ref.read(isProcessingBookmarkProvider.notifier).state = false;
-    }
-  }
-
-  void _handleShare() {
-    final name = widget.item.name;
-    Share.share(
-      'Check out $name!',
-      subject: name,
-    );
-  }
-
   Widget _buildActionButtons() {
     return Row(
       children: [
@@ -490,34 +305,49 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
         // Directions button
         SecondaryButton(
           text: 'Directions',
-          onPressed: () async {
-            final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
-            final userId = userIdAsync.value;
-
-            if (userId == null) {
-              showXploraSnackBar(
-                context,
-                'Please sign in to get directions',
-                isInfo: true,
-                duration: const Duration(seconds: 2),
-              );
-              return;
-            }
-
-            final lat = widget.item.geo['lat']!;
-            final lng = widget.item.geo['lng']!;
-            final url = Uri.parse(
-              'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
-            );
-            if (await canLaunchUrl(url)) {
-              await launchUrl(url);
-            } else {
-              if(!mounted) return;
-              showXploraSnackBar(context, 'Error showing directions. Please try again later', isError: true);
-            }
-          },
+          onPressed: _showMapOptions,
         ),
       ],
+    );
+  }
+
+  Future<void> _showMapOptions() async {
+    List<AvailableMap> availableMaps;
+    try {
+      availableMaps = await MapLauncher.installedMaps;
+    } catch (_) {
+      if (!mounted) return;
+      showXploraSnackBar(context, 'Could not load map apps', isError: true);
+      return;
+    }
+
+    if (!mounted) return;
+
+    if (availableMaps.isEmpty) {
+      showXploraSnackBar(context, 'No map apps found on your device', isError: true);
+      return;
+    }
+
+    final coords = Coords(widget.item.geo['lat']!, widget.item.geo['lng']!);
+    final title = widget.item.name;
+
+    if (availableMaps.length == 1) {
+      await availableMaps.first.showDirections(
+        destination: coords,
+        destinationTitle: title,
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _MapOptionsSheet(
+        maps: availableMaps,
+        coords: coords,
+        title: title,
+      ),
     );
   }
 
@@ -614,6 +444,301 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
         Icons.image_not_supported,
         size: iconSizeLarge * 2,
         color: context.colors.textSecondary,
+      ),
+    );
+  }
+}
+
+class _PlaceMenuButton extends ConsumerWidget {
+  final Place item;
+
+  const _PlaceMenuButton({required this.item});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entityId = item.placeId!;
+    final isMenuExpanded = ref.watch(menuExpandedProvider);
+    final isProcessing = ref.watch(bookmarkToggleProvider(entityId)).isLoading;
+
+    return ref.watch(placeBookmarkProvider(entityId)).when(
+          data: (bookmark) {
+            final isBookmarked = bookmark != null;
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildIconButton(
+                  context,
+                  icon: Icons.more_horiz,
+                  onPressed: () {
+                    final userIdAsync =
+                        ref.read(currentAuthUserIdStreamProvider);
+                    final userId = userIdAsync.value;
+
+                    if (userId == null) {
+                      showXploraSnackBar(
+                        context,
+                        'Please sign in to access menu options',
+                        isInfo: true,
+                        duration: const Duration(seconds: 2),
+                      );
+                      return;
+                    }
+
+                    ref.read(menuExpandedProvider.notifier).state =
+                        !isMenuExpanded;
+                  },
+                  borderRadius: radiusPill,
+                  bgAlpha: 0.7,
+                  iconSize: 32,
+                  iconColor: context.colors.iconColor,
+                ),
+                if (isMenuExpanded) ...[
+                  const SizedBox(height: spacing8),
+                  GlassContainer(
+                    showBorder: false,
+                    bgColor:
+                        context.colors.bgSecondary.withValues(alpha: 0.7),
+                    borderRadius: radiusMedium,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: spacing8,
+                      vertical: 2,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: isProcessing
+                              ? null
+                              : () async {
+                                  final wasBookmarked = bookmark != null;
+                                  await ref
+                                      .read(bookmarkToggleProvider(entityId)
+                                          .notifier)
+                                      .toggle(bookmark);
+                                  if (!context.mounted) return;
+                                  final state = ref
+                                      .read(bookmarkToggleProvider(entityId));
+                                  if (state.hasError) {
+                                    showXploraSnackBar(
+                                      context,
+                                      'Something went wrong. Please try again.',
+                                      isError: true,
+                                    );
+                                  } else {
+                                    showXploraSnackBar(
+                                      context,
+                                      wasBookmarked
+                                          ? 'Place removed'
+                                          : 'Place saved',
+                                    );
+                                  }
+                                },
+                          icon: isProcessing
+                              ? SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        context.colors.iconColor),
+                                  ),
+                                )
+                              : SvgPicture.asset(
+                                  isBookmarked
+                                      ? 'assets/svg/bookmarked.svg'
+                                      : 'assets/svg/bookmark.svg',
+                                      colorFilter: ColorFilter.mode(
+                                        context.colors.iconColor,
+                                        BlendMode.srcIn,
+                                      ),
+                                      width: 22,
+                                      height: 22,
+                                    ),
+                        ),
+                        const SizedBox(width: spacing12),
+                        IconButton(
+                          onPressed: () => _sharePlace(item),
+                          icon: SvgPicture.asset(
+                            'assets/svg/send.svg',
+                            colorFilter: ColorFilter.mode(
+                              context.colors.iconColor,
+                              BlendMode.srcIn,
+                            ),
+                            width: 22,
+                            height: 22,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
+          loading: () => _buildIconButton(
+            context,
+            icon: Icons.more_horiz,
+            onPressed: null,
+            borderRadius: radiusPill,
+            bgAlpha: 0.7,
+            iconSize: 32,
+            iconColor: context.colors.iconColor,
+          ),
+          error: (_, __) => _buildIconButton(
+            context,
+            icon: Icons.more_horiz,
+            onPressed: null,
+            borderRadius: radiusPill,
+            bgAlpha: 0.7,
+            iconSize: 32,
+            iconColor: context.colors.iconColor,
+          ),
+        );
+  }
+
+  void _sharePlace(Place place) {
+    final name = place.name;
+    final location = place.location;
+    final address = place.address;
+    final description = place.description;
+    final lat = place.geo['lat']!;
+    final lng = place.geo['lng']!;
+    final categories = place.categories;
+
+    final mapsUrl = 'https://maps.google.com/?q=$lat,$lng';
+
+    final buffer = StringBuffer();
+    buffer.writeln('📍 $name');
+
+    if (location != null && location.isNotEmpty) {
+      buffer.writeln(location);
+    } else if (address != null && address.isNotEmpty) {
+      buffer.writeln(address);
+    }
+
+    if (categories.isNotEmpty) {
+      buffer.writeln(categories.map((c) => '#$c').join(' '));
+    }
+
+    if (description != null && description.isNotEmpty) {
+      buffer.writeln();
+      final snippet = description.length > 120
+          ? '${description.substring(0, 120).trimRight()}...'
+          : description;
+      buffer.writeln(snippet);
+    }
+
+    buffer.writeln();
+    buffer.writeln('🗺️ $mapsUrl');
+    buffer.writeln();
+    buffer.write('Discovered on Xplra 🌍');
+
+    Share.share(buffer.toString(), subject: name);
+  }
+
+  Widget _buildIconButton(
+    BuildContext context, {
+    required IconData icon,
+    required VoidCallback? onPressed,
+    double borderRadius = radiusMedium,
+    double bgAlpha = 0.7,
+    double iconSize = 26,
+    Color? iconColor,
+    EdgeInsets? padding,
+  }) {
+    return Material(
+      color: context.colors.bgSecondary.withValues(alpha: bgAlpha),
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(borderRadius),
+        splashColor: context.colors.textPrimary.withValues(alpha: 0.2),
+        highlightColor: context.colors.textPrimary.withValues(alpha: 0.15),
+        child: Container(
+          padding: padding ?? const EdgeInsets.all(spacing8),
+          child: Icon(
+            icon,
+            size: iconSize,
+            color: iconColor ?? context.colors.textPrimary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MapOptionsSheet extends StatelessWidget {
+  final List<AvailableMap> maps;
+  final Coords coords;
+  final String title;
+
+  const _MapOptionsSheet({
+    required this.maps,
+    required this.coords,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(radiusMedium),
+      ),
+      child: Material(
+        color: context.colors.bgSecondary,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            spacing16,
+            spacing24,
+            spacing16,
+            spacing32 + MediaQuery.of(context).padding.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Get directions with',
+                style: h3Style.copyWith(color: context.colors.textPrimary),
+              ),
+              const SizedBox(height: spacing16),
+              ...maps.map(
+                (map) => InkWell(
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await map.showDirections(
+                      destination: coords,
+                      destinationTitle: title,
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(radiusMedium),
+                  splashColor: context.colors.textPrimary.withValues(alpha: 0.1),
+                  highlightColor: context.colors.textPrimary.withValues(alpha: 0.06),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: spacing12,
+                      horizontal: spacing8,
+                    ),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(map.icon, width: 32, height: 32),
+                        const SizedBox(width: spacing16),
+                        Text(
+                          map.mapName,
+                          style: bodyTextStyle.copyWith(
+                            color: context.colors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
