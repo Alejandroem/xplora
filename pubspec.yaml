@@ -73,6 +73,7 @@ flutter:
     - assets/svg/
     - assets/png/
     - assets/data/
+    - assets/category_icons/
 
   fonts:
     - family: Jura
