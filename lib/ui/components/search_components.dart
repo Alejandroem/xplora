@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/boomark_providers.dart';
+import '../../application/providers/location_providers.dart';
 import '../../application/providers/place_providers.dart';
 import '../../domain/models/place.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 import '../../utils/snackbar_utils.dart';
+import '../widgets/nearby_places_states.dart';
 import '../widgets/place_card.dart';
 import '../widgets/smooth_filter_scroll_row.dart';
 
@@ -113,9 +115,8 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                   final searchQuery = ref.watch(searchQueryProvider).trim();
                   final selectedFilter =
                       ref.watch(selectedSearchFilterProvider);
-                  final isSearching = searchQuery.isNotEmpty;
                   return _buildFilteredContent(
-                      ref, selectedFilter, searchQuery, isSearching);
+                      ref, selectedFilter, searchQuery);
                 },
               ),
             ),
@@ -129,11 +130,10 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     WidgetRef ref,
     String selectedFilter,
     String searchQuery,
-    bool isSearching,
   ) {
     switch (selectedFilter) {
       case 'Nearby':
-        return _buildComingSoon(icon: Icons.near_me, title: 'Nearby Places');
+        return _buildNearbyContent(ref, searchQuery);
       case 'Recommended':
         return _buildComingSoon(
             icon: Icons.recommend, title: 'Recommended Places');
@@ -141,14 +141,14 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
         return _buildSavedContent(ref, searchQuery);
       case 'All':
       default:
-        return isSearching
-            ? _buildSearchResults(ref, searchQuery)
-            : _buildPaginatedContent(ref);
+        return searchQuery.isNotEmpty
+            ? _buildAllSearchResults(ref, searchQuery)
+            : _buildAllContent(ref);
     }
   }
 
-  // Paginated content for when there's no search query
-  Widget _buildPaginatedContent(WidgetRef ref) {
+  // Default browse content for the All tab — paginated, no search query active
+  Widget _buildAllContent(WidgetRef ref) {
     final state = ref.watch(paginatedPlacesProvider);
 
     if (state.error != null && state.places.isEmpty) {
@@ -170,28 +170,31 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     );
   }
 
-  // Search results for when user types a search query
-  Widget _buildSearchResults(WidgetRef ref, String searchQuery) {
+  // All tab search — fetches all places then filters by query
+  Widget _buildAllSearchResults(WidgetRef ref, String searchQuery) {
     final allPlaces = ref.watch(allPlacesProvider);
 
     return allPlaces.when(
-      data: (places) {
-        final query = searchQuery.toLowerCase();
-        final filteredPlaces = places.where((place) {
-          return place.name.toLowerCase().contains(query) ||
-              (place.address?.toLowerCase().contains(query) ?? false) ||
-              (place.location?.toLowerCase().contains(query) ?? false);
-        }).toList();
-
-        if (filteredPlaces.isEmpty) {
-          return _buildNoSearchResults(searchQuery);
-        }
-
-        return _buildPlacesGrid(places: filteredPlaces);
-      },
+      data: (places) => _buildFilteredGrid(places, searchQuery),
       loading: () => _buildLoadingGrid(),
       error: (error, _) => _buildError(error.toString()),
     );
+  }
+
+  // Filters places by search query then builds the grid.
+  // Used by all tabs that support in-tab search (Nearby, Saved, All/search).
+  Widget _buildFilteredGrid(List<Place> places, String searchQuery) {
+    if (searchQuery.isEmpty) return _buildPlacesGrid(places: places);
+
+    final query = searchQuery.toLowerCase();
+    final filtered = places.where((p) {
+      return p.name.toLowerCase().contains(query) ||
+          (p.address?.toLowerCase().contains(query) ?? false) ||
+          (p.location?.toLowerCase().contains(query) ?? false);
+    }).toList();
+
+    if (filtered.isEmpty) return _buildNoSearchResults(searchQuery);
+    return _buildPlacesGrid(places: filtered);
   }
 
   // Common grid builder
@@ -311,6 +314,27 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     );
   }
 
+  Widget _buildNearbyContent(WidgetRef ref, String searchQuery) {
+    switch (ref.watch(locationReadinessProvider)) {
+      case LocationReadiness.loading:
+        return _buildLoadingGrid();
+      case LocationReadiness.disabled:
+        return const LocationRequiredState();
+      case LocationReadiness.ready:
+    }
+
+    return ref.watch(nearbyPlacesProvider).when(
+      loading: () => _buildLoadingGrid(),
+      error: (error, _) => _buildError(error.toString()),
+      data: (places) {
+        // add 20 places check similar to home
+        if (places.isEmpty) return const NearbyEmptyState();
+
+        return _buildFilteredGrid(places, searchQuery);
+      },
+    );
+  }
+
   Widget _buildSavedContent(WidgetRef ref, String searchQuery) {
     return ref.watch(savedPlacesProvider).when(
           data: (places) {
@@ -344,18 +368,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
               );
             }
 
-            final query = searchQuery.toLowerCase();
-            final filtered = query.isEmpty
-                ? places
-                : places.where((p) {
-                    return p.name.toLowerCase().contains(query) ||
-                        (p.location?.toLowerCase().contains(query) ?? false) ||
-                        (p.address?.toLowerCase().contains(query) ?? false);
-                  }).toList();
-
-            if (filtered.isEmpty) return _buildNoSearchResults(searchQuery);
-
-            return _buildPlacesGrid(places: filtered);
+            return _buildFilteredGrid(places, searchQuery);
           },
           loading: () => _buildLoadingGrid(),
           error: (error, _) => _buildError(error.toString()),

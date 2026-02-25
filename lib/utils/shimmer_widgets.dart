@@ -102,6 +102,64 @@ class ShimmerWidgets {
     );
   }
 
+  /// Shimmer grid for the interests selection screen (matches InterestButton layout)
+  static Widget interestGridShimmer({
+    required BuildContext context,
+    int itemCount = 10,
+  }) {
+    // Wrap the entire grid in a single Shimmer so all items animate in sync
+    return Shimmer.fromColors(
+      baseColor: context.colors.bgSecondary,
+      highlightColor: context.colors.bgTertiary,
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 2.5,
+          crossAxisSpacing: spacing12,
+          mainAxisSpacing: spacing12,
+        ),
+        itemCount: itemCount,
+        itemBuilder: (_, index) => Container(
+          decoration: BoxDecoration(
+            color: context.colors.bgTertiary,
+            borderRadius: BorderRadius.circular(radiusLarge),
+          ),
+          padding: const EdgeInsets.all(spacing16),
+          child: Row(
+            children: [
+              // Icon placeholder
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: context.colors.bgSecondary,
+                  borderRadius: BorderRadius.circular(radiusSmall),
+                ),
+              ),
+              const SizedBox(width: spacing16),
+              // Label placeholder — varies width slightly for a natural look
+              Expanded(
+                child: FractionallySizedBox(
+                  widthFactor: index.isEven ? 0.75 : 0.55,
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: context.colors.bgSecondary,
+                      borderRadius: BorderRadius.circular(radiusSmall),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   /// Adventure card shimmer (matches CarouselCard design)
   static Widget adventureCardShimmer({
     required BuildContext context,

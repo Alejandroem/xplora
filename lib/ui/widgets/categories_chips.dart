@@ -114,7 +114,7 @@ class CategoryCarouselCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CarouselCard(
-      imageUrl: category.imageUrl,
+      imageUrl: category.icon,
       title: category.name,
       backgroundColor: Colors.white,
       imagePadding: const EdgeInsets.all(16.0),

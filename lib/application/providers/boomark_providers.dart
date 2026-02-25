@@ -67,8 +67,11 @@ final currentUserPlaceBookmarksStreamProvider =
 });
 
 final savedPlacesProvider = FutureProvider<List<Place>>((ref) async {
+  // Using .future instead of .valueOrNull so this provider stays in loading
+  // state until the stream emits its first value — prevents the false
+  // "No saved places" flash on first app install/login.
   final bookmarks =
-      ref.watch(currentUserPlaceBookmarksStreamProvider).valueOrNull;
+      await ref.watch(currentUserPlaceBookmarksStreamProvider.future);
 
   if (bookmarks == null || bookmarks.isEmpty) return [];
 

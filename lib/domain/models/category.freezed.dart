@@ -22,7 +22,19 @@ Category _$CategoryFromJson(Map<String, dynamic> json) {
 mixin _$Category {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get imageUrl => throw _privateConstructorUsedError;
+  String get icon => throw _privateConstructorUsedError;
+  String get interestName => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
+  bool get isVisibleInInterests => throw _privateConstructorUsedError;
+  int get interestsOrder => throw _privateConstructorUsedError;
+  int get placeOrder => throw _privateConstructorUsedError;
+  int get level => throw _privateConstructorUsedError;
+  String? get parentId => throw _privateConstructorUsedError;
+  List<String> get ancestorIds => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  Timestamp? get createdAt => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  Timestamp? get updatedAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -35,7 +47,20 @@ abstract class $CategoryCopyWith<$Res> {
   factory $CategoryCopyWith(Category value, $Res Function(Category) then) =
       _$CategoryCopyWithImpl<$Res, Category>;
   @useResult
-  $Res call({String id, String name, String imageUrl});
+  $Res call(
+      {String id,
+      String name,
+      String icon,
+      String interestName,
+      bool isActive,
+      bool isVisibleInInterests,
+      int interestsOrder,
+      int placeOrder,
+      int level,
+      String? parentId,
+      List<String> ancestorIds,
+      @TimestampConverter() Timestamp? createdAt,
+      @TimestampConverter() Timestamp? updatedAt});
 }
 
 /// @nodoc
@@ -53,7 +78,17 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? imageUrl = null,
+    Object? icon = null,
+    Object? interestName = null,
+    Object? isActive = null,
+    Object? isVisibleInInterests = null,
+    Object? interestsOrder = null,
+    Object? placeOrder = null,
+    Object? level = null,
+    Object? parentId = freezed,
+    Object? ancestorIds = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -64,10 +99,50 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      imageUrl: null == imageUrl
-          ? _value.imageUrl
-          : imageUrl // ignore: cast_nullable_to_non_nullable
+      icon: null == icon
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
               as String,
+      interestName: null == interestName
+          ? _value.interestName
+          : interestName // ignore: cast_nullable_to_non_nullable
+              as String,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isVisibleInInterests: null == isVisibleInInterests
+          ? _value.isVisibleInInterests
+          : isVisibleInInterests // ignore: cast_nullable_to_non_nullable
+              as bool,
+      interestsOrder: null == interestsOrder
+          ? _value.interestsOrder
+          : interestsOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+      placeOrder: null == placeOrder
+          ? _value.placeOrder
+          : placeOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
+      parentId: freezed == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      ancestorIds: null == ancestorIds
+          ? _value.ancestorIds
+          : ancestorIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as Timestamp?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as Timestamp?,
     ) as $Val);
   }
 }
@@ -80,7 +155,20 @@ abstract class _$$CategoryImplCopyWith<$Res>
       __$$CategoryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name, String imageUrl});
+  $Res call(
+      {String id,
+      String name,
+      String icon,
+      String interestName,
+      bool isActive,
+      bool isVisibleInInterests,
+      int interestsOrder,
+      int placeOrder,
+      int level,
+      String? parentId,
+      List<String> ancestorIds,
+      @TimestampConverter() Timestamp? createdAt,
+      @TimestampConverter() Timestamp? updatedAt});
 }
 
 /// @nodoc
@@ -96,7 +184,17 @@ class __$$CategoryImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? imageUrl = null,
+    Object? icon = null,
+    Object? interestName = null,
+    Object? isActive = null,
+    Object? isVisibleInInterests = null,
+    Object? interestsOrder = null,
+    Object? placeOrder = null,
+    Object? level = null,
+    Object? parentId = freezed,
+    Object? ancestorIds = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(_$CategoryImpl(
       id: null == id
@@ -107,10 +205,50 @@ class __$$CategoryImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      imageUrl: null == imageUrl
-          ? _value.imageUrl
-          : imageUrl // ignore: cast_nullable_to_non_nullable
+      icon: null == icon
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
               as String,
+      interestName: null == interestName
+          ? _value.interestName
+          : interestName // ignore: cast_nullable_to_non_nullable
+              as String,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isVisibleInInterests: null == isVisibleInInterests
+          ? _value.isVisibleInInterests
+          : isVisibleInInterests // ignore: cast_nullable_to_non_nullable
+              as bool,
+      interestsOrder: null == interestsOrder
+          ? _value.interestsOrder
+          : interestsOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+      placeOrder: null == placeOrder
+          ? _value.placeOrder
+          : placeOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
+      parentId: freezed == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      ancestorIds: null == ancestorIds
+          ? _value._ancestorIds
+          : ancestorIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as Timestamp?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as Timestamp?,
     ));
   }
 }
@@ -119,7 +257,20 @@ class __$$CategoryImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CategoryImpl implements _Category {
   const _$CategoryImpl(
-      {required this.id, required this.name, required this.imageUrl});
+      {required this.id,
+      required this.name,
+      this.icon = '',
+      this.interestName = '',
+      this.isActive = false,
+      this.isVisibleInInterests = false,
+      this.interestsOrder = 0,
+      this.placeOrder = 0,
+      this.level = 0,
+      this.parentId,
+      final List<String> ancestorIds = const [],
+      @TimestampConverter() this.createdAt,
+      @TimestampConverter() this.updatedAt})
+      : _ancestorIds = ancestorIds;
 
   factory _$CategoryImpl.fromJson(Map<String, dynamic> json) =>
       _$$CategoryImplFromJson(json);
@@ -129,11 +280,47 @@ class _$CategoryImpl implements _Category {
   @override
   final String name;
   @override
-  final String imageUrl;
+  @JsonKey()
+  final String icon;
+  @override
+  @JsonKey()
+  final String interestName;
+  @override
+  @JsonKey()
+  final bool isActive;
+  @override
+  @JsonKey()
+  final bool isVisibleInInterests;
+  @override
+  @JsonKey()
+  final int interestsOrder;
+  @override
+  @JsonKey()
+  final int placeOrder;
+  @override
+  @JsonKey()
+  final int level;
+  @override
+  final String? parentId;
+  final List<String> _ancestorIds;
+  @override
+  @JsonKey()
+  List<String> get ancestorIds {
+    if (_ancestorIds is EqualUnmodifiableListView) return _ancestorIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_ancestorIds);
+  }
+
+  @override
+  @TimestampConverter()
+  final Timestamp? createdAt;
+  @override
+  @TimestampConverter()
+  final Timestamp? updatedAt;
 
   @override
   String toString() {
-    return 'Category(id: $id, name: $name, imageUrl: $imageUrl)';
+    return 'Category(id: $id, name: $name, icon: $icon, interestName: $interestName, isActive: $isActive, isVisibleInInterests: $isVisibleInInterests, interestsOrder: $interestsOrder, placeOrder: $placeOrder, level: $level, parentId: $parentId, ancestorIds: $ancestorIds, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -143,13 +330,45 @@ class _$CategoryImpl implements _Category {
             other is _$CategoryImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.imageUrl, imageUrl) ||
-                other.imageUrl == imageUrl));
+            (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.interestName, interestName) ||
+                other.interestName == interestName) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.isVisibleInInterests, isVisibleInInterests) ||
+                other.isVisibleInInterests == isVisibleInInterests) &&
+            (identical(other.interestsOrder, interestsOrder) ||
+                other.interestsOrder == interestsOrder) &&
+            (identical(other.placeOrder, placeOrder) ||
+                other.placeOrder == placeOrder) &&
+            (identical(other.level, level) || other.level == level) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
+            const DeepCollectionEquality()
+                .equals(other._ancestorIds, _ancestorIds) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, imageUrl);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      icon,
+      interestName,
+      isActive,
+      isVisibleInInterests,
+      interestsOrder,
+      placeOrder,
+      level,
+      parentId,
+      const DeepCollectionEquality().hash(_ancestorIds),
+      createdAt,
+      updatedAt);
 
   @JsonKey(ignore: true)
   @override
@@ -169,7 +388,17 @@ abstract class _Category implements Category {
   const factory _Category(
       {required final String id,
       required final String name,
-      required final String imageUrl}) = _$CategoryImpl;
+      final String icon,
+      final String interestName,
+      final bool isActive,
+      final bool isVisibleInInterests,
+      final int interestsOrder,
+      final int placeOrder,
+      final int level,
+      final String? parentId,
+      final List<String> ancestorIds,
+      @TimestampConverter() final Timestamp? createdAt,
+      @TimestampConverter() final Timestamp? updatedAt}) = _$CategoryImpl;
 
   factory _Category.fromJson(Map<String, dynamic> json) =
       _$CategoryImpl.fromJson;
@@ -179,7 +408,29 @@ abstract class _Category implements Category {
   @override
   String get name;
   @override
-  String get imageUrl;
+  String get icon;
+  @override
+  String get interestName;
+  @override
+  bool get isActive;
+  @override
+  bool get isVisibleInInterests;
+  @override
+  int get interestsOrder;
+  @override
+  int get placeOrder;
+  @override
+  int get level;
+  @override
+  String? get parentId;
+  @override
+  List<String> get ancestorIds;
+  @override
+  @TimestampConverter()
+  Timestamp? get createdAt;
+  @override
+  @TimestampConverter()
+  Timestamp? get updatedAt;
   @override
   @JsonKey(ignore: true)
   _$$CategoryImplCopyWith<_$CategoryImpl> get copyWith =>

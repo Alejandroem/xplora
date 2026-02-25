@@ -200,7 +200,7 @@ class XplorAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     // }
 
                     // User is authenticated - allow navigation
-                    Navigator.pushNamed(context, '/enable-location');
+                    Navigator.pushNamed(context, '/choose-interests');
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(spacing8),

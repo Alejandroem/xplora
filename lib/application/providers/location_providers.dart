@@ -238,6 +238,24 @@ final autoEnableLocationTrackingProvider = FutureProvider<void>((ref) async {
   }
 });
 
+/// Represents the readiness of the user's location for nearby features.
+enum LocationReadiness { loading, disabled, ready }
+
+/// Single provider that consolidates all location state checks.
+/// Consumers switch on this instead of repeating the 3-check pattern.
+final locationReadinessProvider = Provider<LocationReadiness>((ref) {
+  if (ref.watch(autoEnableLocationTrackingProvider).isLoading) {
+    return LocationReadiness.loading;
+  }
+  if (!ref.watch(locationTrackingEnabledProvider)) {
+    return LocationReadiness.disabled;
+  }
+  if (ref.watch(locationProvider).position == null) {
+    return LocationReadiness.loading;
+  }
+  return LocationReadiness.ready;
+});
+
 // Provider to check if location permission is granted
 final locationPermissionProvider = FutureProvider<bool>((ref) async {
   try {

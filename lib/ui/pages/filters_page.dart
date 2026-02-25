@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/category_providers.dart';
@@ -192,11 +193,14 @@ class FiltersPage extends ConsumerWidget {
                                     .map((category) {
                                   return FilterBubble(
                                     text: category.name,
-                                    icon: Image.network(
-                                      category.imageUrl,
+                                    icon: SvgPicture.network(
+                                      category.icon,
                                       height: 20,
                                       width: 20,
-                                      color: context.colors.textPrimary,
+                                      colorFilter: ColorFilter.mode(
+                                        context.colors.textPrimary,
+                                        BlendMode.srcIn,
+                                      ),
                                     ),
                                     isSelected: ref.watch(selectedCategoriesProvider) == category.id,
                                     onTap: () {

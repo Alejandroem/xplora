@@ -47,32 +47,26 @@ class InterestsNotifier extends StateNotifier<InterestsState> {
     state = const InterestsState();
   }
 
-  /// Save interests to user profile
-  /// Returns true if successful, false otherwise
-  Future<bool> saveInterests(List<String> interestLabels) async {
-    // Validate that at least one interest is selected
-    if (interestLabels.isEmpty) {
-      return false;
-    }
+  /// Save interests to user profile.
+  /// Expects a deduplicated list of category IDs (ancestors already removed).
+  /// Returns true if successful, false otherwise.
+  Future<bool> saveInterests(List<String> interestIds) async {
+    if (interestIds.isEmpty) return false;
 
     try {
-      // Set loading state
       state = state.copyWith(isSaving: true);
 
-      // Get current user ID
       final user = await authService.getAuthUser();
       if (user == null || user.id == null) {
         state = state.copyWith(isSaving: false);
         return false;
       }
 
-      // Update interests field in profile
       final success = await profileService.updateFields(
         user.id!,
-        {'interests': interestLabels},
+        {'interests': interestIds},
       );
 
-      // Update state
       state = state.copyWith(isSaving: false);
       return success;
     } catch (e) {

@@ -9,8 +9,13 @@ import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 import '../../utils/snackbar_utils.dart';
 import 'carousel_widget.dart';
+import 'nearby_places_states.dart';
 import 'place_card.dart';
 import 'smooth_filter_scroll_row.dart';
+
+// Height of the carousel section — matches the place card height so
+// loading/empty/disabled states occupy the same space as real cards.
+const double _kCarouselSectionHeight = 218.0;
 
 /*
 // Provider for selected activity types (multiple)
@@ -187,42 +192,24 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
           builder: (context, ref, child) {
             // Show "Coming soon" for 'For You' and 'Following' filters
             if (selectedFilter == 'For You' || selectedFilter == 'Following') {
-              return SizedBox(
-                height: 218,
-                child: _buildComingSoon(
-                  context: context,
-                  icon: selectedFilter == 'For You'
-                      ? Icons.auto_awesome
-                      : Icons.people_outline,
-                  title: selectedFilter,
-                ),
+              return _buildComingSoon(
+                context: context,
+                icon: selectedFilter == 'For You'
+                    ? Icons.auto_awesome
+                    : Icons.people_outline,
+                title: selectedFilter,
               );
             }
 
-            // Check location state for 'Nearby' filter
-            final locationState = ref.watch(locationProvider);
-            final locationTrackingEnabled = ref.watch(locationTrackingEnabledProvider);
-            final autoEnableLocationAsync = ref.watch(autoEnableLocationTrackingProvider);
-
-            // Show loading shimmer while checking location permission
-            if (autoEnableLocationAsync.isLoading) {
-              return _buildLoadingShimmer(context);
+            // Resolve all location checks through the centralized provider
+            switch (ref.watch(locationReadinessProvider)) {
+              case LocationReadiness.loading:
+                return _buildLoadingShimmer(context);
+              case LocationReadiness.disabled:
+                return _buildLocationDisabled();
+              case LocationReadiness.ready:
             }
 
-            // Show location disabled message if location tracking is not enabled
-            if (!locationTrackingEnabled) {
-              return SizedBox(
-                height: 218,
-                child: _buildLocationDisabled(context),
-              );
-            }
-
-            // Show loading shimmer while location is being loaded or position not yet available
-            if (locationState.position == null) {
-              return _buildLoadingShimmer(context);
-            }
-
-            // Show nearby places for 'Nearby' filter
             return ref.watch(nearbyPlacesProvider).when(
                   data: (places) {
                     if (places.isNotEmpty) {
@@ -241,15 +228,9 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
                         },
                       );
                     } else {
-                      return SizedBox(
-                        height: 218,
-                        child: Center(
-                          child: Text(
-                            'No places found nearby',
-                            style: bodyTextStyle.copyWith(
-                                color: context.colors.textSecondary),
-                          ),
-                        ),
+                      return const SizedBox(
+                        height: _kCarouselSectionHeight,
+                        child: NearbyEmptyState(),
                       );
                     }
                   },
@@ -273,30 +254,33 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     required IconData icon,
     required String title,
   }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: iconSizeLarge * 2,
-            color: context.colors.textSecondary,
-          ),
-          const SizedBox(height: spacing16),
-          Text(
-            title,
-            style: h3Style.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: spacing8),
-          Text(
-            'Coming soon',
-            style: bodyTextStyle.copyWith(
+    return SizedBox(
+      height: _kCarouselSectionHeight,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: iconSizeLarge * 2,
               color: context.colors.textSecondary,
             ),
-          ),
-        ],
+            const SizedBox(height: spacing16),
+            Text(
+              title,
+              style: h3Style.copyWith(
+                color: context.colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: spacing8),
+            Text(
+              'Coming soon',
+              style: bodyTextStyle.copyWith(
+                color: context.colors.textSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -304,7 +288,7 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
   /// Loading shimmer for place cards
   Widget _buildLoadingShimmer(BuildContext context) {
     return SizedBox(
-      height: 218,
+      height: _kCarouselSectionHeight,
       child: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         scrollDirection: Axis.horizontal,
@@ -329,33 +313,10 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
     );
   }
 
-  /// Location disabled placeholder
-  Widget _buildLocationDisabled(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.location_off_outlined,
-            size: iconSizeLarge * 2,
-            color: context.colors.textSecondary,
-          ),
-          const SizedBox(height: spacing16),
-          Text(
-            'Location Required',
-            style: h3Style.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: spacing8),
-          Text(
-            'Enable location to see nearby places',
-            style: bodyTextStyle.copyWith(
-              color: context.colors.textSecondary,
-            ),
-          ),
-        ],
-      ),
+  Widget _buildLocationDisabled() {
+    return const SizedBox(
+      height: _kCarouselSectionHeight,
+      child: LocationRequiredState(),
     );
   }
 }

@@ -9,7 +9,7 @@ class FirebaseCategoryCrudService extends FirebaseCrudService<Category>
   FirebaseCategoryCrudService()
       : super(
           FirebaseFirestore.instance
-              .collection('categories')
+              .collection('adminCategories')
               .withConverter<Category>(
                 fromFirestore: (snapshot, _) =>
                     Category.fromJson(snapshot.data()!),
