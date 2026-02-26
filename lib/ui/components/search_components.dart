@@ -189,7 +189,6 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     final query = searchQuery.toLowerCase();
     final filtered = places.where((p) {
       return p.name.toLowerCase().contains(query) ||
-          (p.address?.toLowerCase().contains(query) ?? false) ||
           (p.location?.toLowerCase().contains(query) ?? false);
     }).toList();
 
@@ -327,10 +326,12 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
       loading: () => _buildLoadingGrid(),
       error: (error, _) => _buildError(error.toString()),
       data: (places) {
-        // add 20 places check similar to home
         if (places.isEmpty) return const NearbyEmptyState();
 
-        return _buildFilteredGrid(places, searchQuery);
+        const maxCards = 20;
+        final displayedPlaces = places.take(maxCards).toList();
+
+        return _buildFilteredGrid(displayedPlaces, searchQuery);
       },
     );
   }

@@ -13,6 +13,16 @@ final allCategories = StreamProvider.autoDispose<List<Category>>((ref) {
   return categoryService.streamByFilters([]).map((list) => list ?? []);
 });
 
+// Requires composite index: isActive ASC, placeOrder ASC
+final placeCategoriesProvider = FutureProvider.autoDispose<List<Category>>((ref) async {
+  final categoryService = ref.watch(categoryServiceProvider);
+  final categories = await categoryService.readByFilters(
+    [{'field': 'isActive', 'operator': '==', 'value': true}],
+    orderBy: 'placeOrder',
+  );
+  return categories ?? [];
+});
+
 final interestCategoriesProvider =
     FutureProvider.autoDispose<List<Category>>((ref) async {
   final categoryService = ref.watch(categoryServiceProvider);

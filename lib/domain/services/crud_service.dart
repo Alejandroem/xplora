@@ -9,7 +9,11 @@ abstract class CrudService<T> {
   Future<T> update(T entity, String id);
   Future<void> delete(String id);
   Future<List<T>> list();
-  Future<List<T>?> readByFilters(List<Map<String, dynamic>> filters);
+  Future<List<T>?> readByFilters(
+    List<Map<String, dynamic>> filters, {
+    String? orderBy,
+    bool descending = false,
+  });
   Stream<List<T>?> streamByFilters(List<Map<String, dynamic>> filters);
   Future<List<T>?> readPaginated({
     required int limit,

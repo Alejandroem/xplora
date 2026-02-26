@@ -1,149 +1,141 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../domain/models/category.dart';
 import '../../theme.dart';
 
-/// Bottom sheet for selecting categories with expandable sections
-class CategorySelectionBottomSheet extends ConsumerStatefulWidget {
-  final Map<String, List<String>> categoryData;
+const double _radioCheckSize = 14.0;
+
+/// Bottom sheet for selecting categories with expandable sections.
+/// Selections are stored as Map<parentId, selectedChildId>.
+class CategorySelectionBottomSheet extends StatefulWidget {
+  final List<Category> categories;
   final Map<String, String?> initialSelections;
-  final Function(Map<String, String?>) onSelectionChanged;
+  final void Function(Map<String, String?>) onSelectionChanged;
 
   const CategorySelectionBottomSheet({
     super.key,
-    required this.categoryData,
+    required this.categories,
     required this.initialSelections,
     required this.onSelectionChanged,
   });
 
   @override
-  ConsumerState<CategorySelectionBottomSheet> createState() =>
+  State<CategorySelectionBottomSheet> createState() =>
       _CategorySelectionBottomSheetState();
 }
 
 class _CategorySelectionBottomSheetState
-    extends ConsumerState<CategorySelectionBottomSheet> {
+    extends State<CategorySelectionBottomSheet> {
   late Map<String, String?> _selections;
   final Set<String> _expandedCategories = {};
+
+  late List<Category> _visibleRoots;
+  late Map<String, List<Category>> _childrenByParent;
+  late Map<String, String> _idToName;
 
   @override
   void initState() {
     super.initState();
     _selections = Map.from(widget.initialSelections);
+    _buildHierarchy();
   }
 
-  IconData _getIconForCategory(String category) {
-    switch (category) {
-      case 'Outdoors & Nature':
-        return Icons.park;
-      case 'Sports & Fitness':
-        return Icons.fitness_center;
-      case 'Art & Culture':
-        return Icons.palette;
-      case 'Entertainment':
-        return Icons.theater_comedy;
-      case 'Other':
-        return Icons.category;
-      case 'Group Type':
-        return Icons.people;
-      case 'Difficulty':
-        return Icons.trending_up;
-      case 'Best Time to Visit':
-        return Icons.access_time;
-      case 'Vibe Tag':
-        return Icons.mood;
-      case 'Food & Drink':
-        return Icons.restaurant;
-      case 'Shopping & Local':
-        return Icons.shopping_bag;
-      case 'Relax & Wellness':
-        return Icons.spa;
-      case 'Accommodations':
-        return Icons.hotel;
-      case 'Coworking':
-        return Icons.work;
-      default:
-        return Icons.label;
+  void _buildHierarchy() {
+    // Provider already sorted by placeOrder — relative order preserved per group
+    final roots = widget.categories.where((c) => c.parentId == null).toList();
+
+    _childrenByParent = {};
+    for (final c in widget.categories) {
+      if (c.parentId != null) {
+        _childrenByParent.putIfAbsent(c.parentId!, () => []).add(c);
+      }
     }
+
+    _idToName = {for (final c in widget.categories) c.id: c.name};
+    _visibleRoots = roots
+        .where((r) => _childrenByParent[r.id]?.isNotEmpty ?? false)
+        .toList();
   }
 
-  void _toggleCategory(String category) {
+  Widget _buildParentIcon(String url) {
+    final isSvg = url.toLowerCase().contains('.svg');
+    if (isSvg) {
+      return SvgPicture.network(
+        url,
+        width: iconSizeMedium,
+        height: iconSizeMedium,
+        colorFilter:
+            ColorFilter.mode(context.colors.textSecondary, BlendMode.srcIn),
+      );
+    }
+    return CachedNetworkImage(
+      imageUrl: url,
+      width: iconSizeMedium,
+      height: iconSizeMedium,
+      fit: BoxFit.contain,
+      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+    );
+  }
+
+  void _toggleCategory(String parentId) {
     setState(() {
-      if (_expandedCategories.contains(category)) {
-        _expandedCategories.remove(category);
+      if (_expandedCategories.contains(parentId)) {
+        _expandedCategories.remove(parentId);
       } else {
-        _expandedCategories.add(category);
+        _expandedCategories.add(parentId);
       }
     });
   }
 
-  void _selectChild(String parent, String child) {
+  void _selectChild(String parentId, String childId) {
     setState(() {
-      // If the same child is already selected, deselect it
-      if (_selections[parent] == child) {
-        _selections[parent] = null;
-      } else {
-        _selections[parent] = child;
-      }
+      _selections[parentId] =
+          _selections[parentId] == childId ? null : childId;
     });
-    // Auto-save selection with new map instance
     widget.onSelectionChanged(Map.from(_selections));
   }
 
   void _clearAll() {
     setState(() {
-      _selections = {
-        for (var key in _selections.keys) key: null,
-      };
+      _selections = {};
     });
-    // Auto-save after clearing with new map instance
-    widget.onSelectionChanged(Map.from(_selections));
+    widget.onSelectionChanged({});
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: screenHeight * 0.85,
-      ),
+      constraints:
+          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
       decoration: BoxDecoration(
         color: context.colors.bgPrimary,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(radiusLarge),
-        ),
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(radiusLarge)),
         border: Border(
           top: BorderSide(
-            color: context.colors.border,
-            width: borderWidthDefault,
-          ),
+              color: context.colors.border, width: borderWidthDefault),
         ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Header
           _buildHeader(),
-
-          // Scrollable category list
           Flexible(
             child: ListView(
-              shrinkWrap: true,
               padding: const EdgeInsets.symmetric(horizontal: spacing16),
               children: [
                 const SizedBox(height: spacing16),
-                ...widget.categoryData.entries
-                    .where((entry) => entry.value.isNotEmpty)
-                    .map((entry) => _buildCategorySection(
-                          entry.key,
-                          entry.value,
-                        )),
+                ..._visibleRoots.map(
+                  (root) => _buildCategorySection(
+                    root,
+                    _childrenByParent[root.id]!,
+                  ),
+                ),
               ],
             ),
           ),
-
-          // Action buttons
           _buildActionButtons(),
         ],
       ),
@@ -156,9 +148,7 @@ class _CategorySelectionBottomSheetState
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: context.colors.border,
-            width: borderWidthDefault,
-          ),
+              color: context.colors.border, width: borderWidthDefault),
         ),
       ),
       child: Row(
@@ -166,9 +156,7 @@ class _CategorySelectionBottomSheetState
           Expanded(
             child: Text(
               'Select Categories',
-              style: h3Style.copyWith(
-                color: context.colors.textPrimary,
-              ),
+              style: h3Style.copyWith(color: context.colors.textPrimary),
             ),
           ),
           GestureDetector(
@@ -179,15 +167,10 @@ class _CategorySelectionBottomSheetState
                 color: context.colors.bgSecondary,
                 borderRadius: BorderRadius.circular(radiusSmall),
                 border: Border.all(
-                  color: context.colors.border,
-                  width: borderWidthDefault,
-                ),
+                    color: context.colors.border, width: borderWidthDefault),
               ),
-              child: Icon(
-                Icons.close,
-                size: iconSizeMedium,
-                color: context.colors.textSecondary,
-              ),
+              child: Icon(Icons.close,
+                  size: iconSizeMedium, color: context.colors.textSecondary),
             ),
           ),
         ],
@@ -195,26 +178,24 @@ class _CategorySelectionBottomSheetState
     );
   }
 
-  Widget _buildCategorySection(String parent, List<String> children) {
-    final isExpanded = _expandedCategories.contains(parent);
-    final selectedChild = _selections[parent];
-    final icon = _getIconForCategory(parent);
+  Widget _buildCategorySection(Category parent, List<Category> children) {
+    final isExpanded = _expandedCategories.contains(parent.id);
+    final selectedChildId = _selections[parent.id];
+    final selectedChildName =
+        selectedChildId != null ? _idToName[selectedChildId] : null;
 
     return Container(
       margin: const EdgeInsets.only(bottom: spacing12),
       decoration: BoxDecoration(
         color: context.colors.bgSecondary,
         borderRadius: BorderRadius.circular(radiusMedium),
-        border: Border.all(
-          color: context.colors.border,
-          width: borderWidthDefault,
-        ),
+        border:
+            Border.all(color: context.colors.border, width: borderWidthDefault),
       ),
       child: Column(
         children: [
-          // Parent header (tappable to expand/collapse)
           GestureDetector(
-            onTap: () => _toggleCategory(parent),
+            onTap: () => _toggleCategory(parent.id),
             child: Container(
               padding: const EdgeInsets.all(spacing16),
               decoration: BoxDecoration(
@@ -225,36 +206,31 @@ class _CategorySelectionBottomSheetState
               ),
               child: Row(
                 children: [
-                  Icon(
-                    icon,
-                    size: iconSizeMedium,
-                    color: context.colors.textSecondary,
-                  ),
-                  const SizedBox(width: spacing12),
+                  if (parent.icon.isNotEmpty) ...[
+                    _buildParentIcon(parent.icon),
+                    const SizedBox(width: spacing12),
+                  ],
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          parent,
+                          parent.name,
                           style: bodyTextStyle.copyWith(
                             color: context.colors.textPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (selectedChild != null && !isExpanded) ...[
+                        if (!isExpanded) ...[
                           const SizedBox(height: spacing4),
                           Text(
-                            'Selected: $selectedChild',
-                            style: captionStyle
-                          ),
-                        ],
-                        if (selectedChild == null && !isExpanded) ...[
-                          const SizedBox(height: spacing4),
-                          Text(
-                            'No selection',
+                            selectedChildName != null
+                                ? 'Selected: $selectedChildName'
+                                : 'No selection',
                             style: captionStyle.copyWith(
-                              color: context.colors.textSecondary,
+                              color: selectedChildName != null
+                                  ? null
+                                  : context.colors.textSecondary,
                             ),
                           ),
                         ],
@@ -272,81 +248,18 @@ class _CategorySelectionBottomSheetState
               ),
             ),
           ),
-
-          // Children (shown when expanded)
           if (isExpanded)
             Container(
               padding: const EdgeInsets.fromLTRB(
-                spacing16,
-                spacing8,
-                spacing16,
-                spacing16,
-              ),
+                  spacing16, spacing8, spacing16, spacing16),
               child: Column(
-                children: children.map((child) {
-                  final isSelected = selectedChild == child;
-                  return GestureDetector(
-                    onTap: () => _selectChild(parent, child),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: spacing8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: spacing16,
-                        vertical: spacing12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? brandPrimary.withValues(alpha: 0.1)
-                            : context.colors.bgPrimary,
-                        borderRadius: BorderRadius.circular(radiusSmall),
-                        border: Border.all(
-                          color: isSelected
-                              ? brandPrimary
-                              : context.colors.border,
-                          width: isSelected ? 2 : borderWidthDefault,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected
-                                    ? brandPrimary
-                                    : context.colors.border,
-                                width: 2,
-                              ),
-                              color: isSelected
-                                  ? brandPrimary
-                                  : Colors.transparent,
-                            ),
-                            child: isSelected
-                                ? Icon(
-                                    Icons.check,
-                                    size: 14,
-                                    color: whiteClr,
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: spacing12),
-                          Expanded(
-                            child: Text(
-                              child,
-                              style: bodyTextStyle.copyWith(
-                                color: context.colors.textPrimary,
-                                fontWeight: isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
+                children: children
+                    .map((child) => _buildChildItem(
+                          child: child,
+                          parentId: parent.id,
+                          isSelected: selectedChildId == child.id,
+                        ))
+                    .toList(),
               ),
             ),
         ],
@@ -354,18 +267,70 @@ class _CategorySelectionBottomSheetState
     );
   }
 
+  Widget _buildChildItem({
+    required Category child,
+    required String parentId,
+    required bool isSelected,
+  }) {
+    return GestureDetector(
+      onTap: () => _selectChild(parentId, child.id),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: spacing8),
+        padding: const EdgeInsets.symmetric(
+            horizontal: spacing16, vertical: spacing12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? brandPrimary.withValues(alpha: 0.1)
+              : context.colors.bgPrimary,
+          borderRadius: BorderRadius.circular(radiusSmall),
+          border: Border.all(
+            color: isSelected ? brandPrimary : context.colors.border,
+            width: isSelected ? 2 : borderWidthDefault,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: iconSizeMedium,
+              height: iconSizeMedium,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? brandPrimary : context.colors.border,
+                  width: 2,
+                ),
+                color: isSelected ? brandPrimary : Colors.transparent,
+              ),
+              child: isSelected
+                  ? Icon(Icons.check, size: _radioCheckSize, color: whiteClr)
+                  : null,
+            ),
+            const SizedBox(width: spacing12),
+            Expanded(
+              child: Text(
+                child.name,
+                style: bodyTextStyle.copyWith(
+                  color: context.colors.textPrimary,
+                  fontWeight:
+                      isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildActionButtons() {
-    final selectionCount =
-        _selections.values.where((v) => v != null).length;
+    final selectionCount = _selections.values.where((v) => v != null).length;
 
     return Container(
       padding: const EdgeInsets.all(spacing16),
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: context.colors.border,
-            width: borderWidthDefault,
-          ),
+              color: context.colors.border, width: borderWidthDefault),
         ),
       ),
       child: SafeArea(
@@ -377,9 +342,8 @@ class _CategorySelectionBottomSheetState
               selectionCount > 0
                   ? '$selectionCount ${selectionCount == 1 ? 'category' : 'categories'} selected'
                   : 'No categories selected',
-              style: bodySmallStyle.copyWith(
-                color: context.colors.textSecondary,
-              ),
+              style:
+                  bodySmallStyle.copyWith(color: context.colors.textSecondary),
             ),
             const SizedBox(height: spacing12),
             SecondaryButton(

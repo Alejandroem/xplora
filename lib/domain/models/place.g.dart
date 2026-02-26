@@ -6,21 +6,38 @@ part of 'place.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_$CategorySelectionImpl _$$CategorySelectionImplFromJson(
+        Map<String, dynamic> json) =>
+    _$CategorySelectionImpl(
+      selectedId: json['selectedId'] as String,
+      path:
+          (json['path'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+              const [],
+    );
+
+Map<String, dynamic> _$$CategorySelectionImplToJson(
+        _$CategorySelectionImpl instance) =>
+    <String, dynamic>{
+      'selectedId': instance.selectedId,
+      'path': instance.path,
+    };
+
 _$PlaceImpl _$$PlaceImplFromJson(Map<String, dynamic> json) => _$PlaceImpl(
-      placeId: json['placeId'] as String?,
+      placeId: json['placeId'] as String,
       name: json['name'] as String,
       geo: (json['geo'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(k, (e as num).toDouble()),
       ),
       geohash: json['geohash'] as String,
-      categories: (json['categories'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
+      categorySelections: (json['categorySelections'] as List<dynamic>?)
+              ?.map(
+                  (e) => CategorySelection.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       imageUrls: (json['imageUrls'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
-      address: json['address'] as String?,
       location: json['location'] as String?,
       description: json['description'] as String?,
       xp: (json['xp'] as num?)?.toInt() ?? 0,
@@ -36,9 +53,8 @@ Map<String, dynamic> _$$PlaceImplToJson(_$PlaceImpl instance) =>
       'name': instance.name,
       'geo': instance.geo,
       'geohash': instance.geohash,
-      'categories': instance.categories,
+      'categorySelections': instance.categorySelections,
       'imageUrls': instance.imageUrls,
-      'address': instance.address,
       'location': instance.location,
       'description': instance.description,
       'xp': instance.xp,

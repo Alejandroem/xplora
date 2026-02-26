@@ -170,7 +170,11 @@ class FirebaseXploraProfileCrudService implements XploraProfileService {
   }
 
   @override
-  Future<List<XploraProfile>?> readByFilters(List<Map<String, dynamic>> filters) async {
+  Future<List<XploraProfile>?> readByFilters(
+    List<Map<String, dynamic>> filters, {
+    String? orderBy,
+    bool descending = false,
+  }) async {
     throw UnimplementedError('Filtering profiles is not supported for user subcollections');
   }
 

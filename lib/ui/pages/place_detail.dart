@@ -601,11 +601,11 @@ class _PlaceMenuButton extends ConsumerWidget {
   void _sharePlace(Place place) {
     final name = place.name;
     final location = place.location;
-    final address = place.address;
     final description = place.description;
     final lat = place.geo['lat']!;
     final lng = place.geo['lng']!;
-    final categories = place.categories;
+    // final categoryIds =
+        // place.categorySelections.map((cs) => cs.selectedId).toList();
 
     final mapsUrl = 'https://maps.google.com/?q=$lat,$lng';
 
@@ -614,13 +614,11 @@ class _PlaceMenuButton extends ConsumerWidget {
 
     if (location != null && location.isNotEmpty) {
       buffer.writeln(location);
-    } else if (address != null && address.isNotEmpty) {
-      buffer.writeln(address);
     }
 
-    if (categories.isNotEmpty) {
-      buffer.writeln(categories.map((c) => '#$c').join(' '));
-    }
+    // if (categoryIds.isNotEmpty) {
+    //   buffer.writeln(categoryIds.map((c) => '#$c').join(' '));
+    // }
 
     if (description != null && description.isNotEmpty) {
       buffer.writeln();

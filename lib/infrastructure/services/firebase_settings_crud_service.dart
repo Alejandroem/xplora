@@ -170,7 +170,11 @@ class FirebaseSettingsCrudService implements SettingsCrudService {
   }
 
   @override
-  Future<List<Setting>?> readByFilters(List<Map<String, dynamic>> filters) async {
+  Future<List<Setting>?> readByFilters(
+    List<Map<String, dynamic>> filters, {
+    String? orderBy,
+    bool descending = false,
+  }) async {
     String? userId;
 
     for (final filter in filters) {

@@ -139,8 +139,15 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
   }
 
   @override
-  Future<List<T>?> readByFilters(List<Map<String, dynamic>> filters) async {
-    final query = getQueryFromFilters(filters);
+  Future<List<T>?> readByFilters(
+    List<Map<String, dynamic>> filters, {
+    String? orderBy,
+    bool descending = false,
+  }) async {
+    var query = getQueryFromFilters(filters);
+    if (orderBy != null) {
+      query = query.orderBy(orderBy, descending: descending);
+    }
     final querySnapshot = await query.get();
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }

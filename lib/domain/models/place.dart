@@ -5,15 +5,25 @@ part 'place.freezed.dart';
 part 'place.g.dart';
 
 @freezed
+class CategorySelection with _$CategorySelection {
+  const factory CategorySelection({
+    required String selectedId,
+    @Default([]) List<String> path,
+  }) = _CategorySelection;
+
+  factory CategorySelection.fromJson(Map<String, dynamic> json) =>
+      _$CategorySelectionFromJson(json);
+}
+
+@freezed
 class Place with _$Place {
   const factory Place({
-    required String? placeId,
+    required String placeId,
     required String name,
     required Map<String, double> geo,
     required String geohash,
-    required List<String> categories,
+    @Default([]) List<CategorySelection> categorySelections,
     @Default([]) List<String> imageUrls,
-    String? address,
     String? location,
     String? description,
     @Default(0) int xp,

@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../application/providers/category_providers.dart';
+import '../../domain/models/place.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
 import '../widgets/xplora_text_field.dart';
@@ -17,114 +19,9 @@ import 'drop_pin_map_page.dart';
 final selectedPlaceImagesProvider =
     StateProvider.autoDispose<List<String>>((ref) => []);
 
-/// Provider to manage all category selections
+/// Provider to manage all category selections (parentId → selectedChildId)
 final categorySelectionsProvider =
-    StateProvider.autoDispose<Map<String, String?>>((ref) => {
-          'Outdoors & Nature': null,
-          'Sports & Fitness': null,
-          'Art & Culture': null,
-          'Entertainment': null,
-          'Other': null,
-          'Group Type': null,
-          'Difficulty': null,
-          'Best Time to Visit': null,
-          'Vibe Tag': null,
-          'Food & Drink': null,
-          'Shopping & Local': null,
-          'Relax & Wellness': null,
-          'Accommodations': null,
-          'Coworking': null,
-        });
-
-/// Category data
-const Map<String, List<String>> categoryData = {
-  'Outdoors & Nature': [
-    'Park',
-    'Beach',
-    'Trail',
-    'Scenic Views',
-    'Nature Reserve',
-    'Camping',
-    'River',
-    'Lake',
-    'Picnic',
-  ],
-  'Sports & Fitness': [
-    'Running',
-    'Hiking',
-    'Walking',
-    'Soccer/Futbol',
-    'Basketball',
-    'Tennis',
-    'Pickleball',
-    'Skateboarding',
-    'Cycling',
-    'Physical Activities',
-    'Gym',
-    'Weightlifting',
-    'Racing',
-  ],
-  'Art & Culture': [
-    'Street Art',
-    'Landmark',
-    'Art Markets',
-    'Fashion',
-  ],
-  'Entertainment': [
-    'Live Music',
-    'Pop-up',
-    'Nightlife',
-    'Event Venue',
-    'Theater',
-    'Comedy',
-    'Poetry',
-  ],
-  'Other': [
-    'Secret Spot',
-    'Family-Friendly',
-    'Spiritual Site',
-    'Public Transport',
-  ],
-  'Group Type': [
-    'Solo',
-    'Couple',
-    'Friends',
-    'Family',
-    'Groups',
-  ],
-  'Cost Range': [
-    /*'Free',
-      'Low',
-      'Medium',
-      'Premium'*/
-  ],
-  'Difficulty': [
-    'Easy',
-    'Moderate',
-    'Hard',
-  ],
-  'Best Time to Visit': [
-    'Morning',
-    'Afternoon',
-    'Evening',
-    'Night',
-  ],
-  'Vibe Tag': [
-    'Chill',
-    'Social',
-    'Adventurous',
-    'High-Energy',
-    'Romantic',
-    'Creative',
-    'Competitive',
-    'Scenic',
-  ],
-  'Food & Drink': [],
-  'Shopping & Local': [],
-  'Relax & Wellness': [],
-  'Accommodations': [],
-  'Coworking': [],
-};
+    StateProvider.autoDispose<Map<String, String?>>((ref) => {});
 
 /// Model to store selected location data
 class SelectedLocation {
@@ -583,38 +480,36 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
     );
   }
 
-  void _handleSubmit() {
-    // Validate form
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+  Future<void> _handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    // Get all form data
     final selectedImages = ref.read(selectedPlaceImagesProvider);
     final selectedLocation = ref.read(selectedLocationProvider);
     final categorySelections = ref.read(categorySelectionsProvider);
 
-    // Validate images (at least 1 required)
     if (selectedImages.isEmpty) {
-      showXploraSnackBar(
-        context,
-        'Please add at least one image',
-        isError: true,
-      );
+      showXploraSnackBar(context, 'Please add at least one image',
+          isError: true);
       return;
     }
 
-    // Validate location
     if (selectedLocation == null) {
-      showXploraSnackBar(
-        context,
-        'Please select a location',
-        isError: true,
-      );
+      showXploraSnackBar(context, 'Please select a location', isError: true);
       return;
     }
 
-    // Print all form data
+    final categories = await ref.read(placeCategoriesProvider.future);
+    final selectedCategorySelections = categorySelections.entries
+        .where((e) => e.value != null)
+        .map((e) {
+          final child = categories.firstWhere((c) => c.id == e.value);
+          return CategorySelection(
+            selectedId: child.id,
+            path: [...child.ancestorIds, child.id],
+          );
+        })
+        .toList();
+
     print('=== SUBMIT PLACE DATA ===');
     print('Place Name: ${_placeNameController.text}');
     print('Description: ${_descriptionController.text}');
@@ -627,15 +522,13 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
     print('  Longitude: ${selectedLocation.longitude}');
     print('  Address: ${selectedLocation.address ?? 'N/A'}');
     print('  Place Name: ${selectedLocation.placeName ?? 'N/A'}');
-    print('\nCategories:');
-    categorySelections.forEach((parent, child) {
-      if (child != null) {
-        print('  $parent: $child');
-      }
-    });
+    print('\nCategories (${selectedCategorySelections.length}):');
+    for (final s in selectedCategorySelections) {
+      print('  selectedId: ${s.selectedId}, path: ${s.path}');
+    }
     print('=== END SUBMIT DATA ===\n');
 
-    // Show success dialog
+    // TODO: submit place with selectedCategorySelections
     _showSuccessDialog();
   }
 
@@ -689,6 +582,9 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
   }
 
   Future<void> _showCategorySelectionBottomSheet() async {
+    final categories = await ref.read(placeCategoriesProvider.future);
+    if (!mounted) return;
+
     final currentSelections = ref.read(categorySelectionsProvider);
 
     await showModalBottomSheet<void>(
@@ -696,10 +592,9 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => CategorySelectionBottomSheet(
-        categoryData: categoryData,
+        categories: categories,
         initialSelections: currentSelections,
         onSelectionChanged: (selections) {
-          // Auto-save selections as they change
           ref.read(categorySelectionsProvider.notifier).state = selections;
         },
       ),
@@ -713,6 +608,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
     final categorySelections = ref.watch(categorySelectionsProvider);
     final selectedCount =
         categorySelections.values.where((v) => v != null).length;
+    final categoriesAsync = ref.watch(placeCategoriesProvider);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -786,7 +682,9 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
               const SizedBox(height: spacing8),
               SecondaryButton(
                 text: 'Choose categories',
-                onPressed: _showCategorySelectionBottomSheet,
+                onPressed: categoriesAsync.isLoading
+                    ? null
+                    : _showCategorySelectionBottomSheet,
               ),
               const SizedBox(height: spacing4),
               Text(

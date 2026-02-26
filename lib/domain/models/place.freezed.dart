@@ -14,19 +14,184 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
+CategorySelection _$CategorySelectionFromJson(Map<String, dynamic> json) {
+  return _CategorySelection.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CategorySelection {
+  String get selectedId => throw _privateConstructorUsedError;
+  List<String> get path => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $CategorySelectionCopyWith<CategorySelection> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CategorySelectionCopyWith<$Res> {
+  factory $CategorySelectionCopyWith(
+          CategorySelection value, $Res Function(CategorySelection) then) =
+      _$CategorySelectionCopyWithImpl<$Res, CategorySelection>;
+  @useResult
+  $Res call({String selectedId, List<String> path});
+}
+
+/// @nodoc
+class _$CategorySelectionCopyWithImpl<$Res, $Val extends CategorySelection>
+    implements $CategorySelectionCopyWith<$Res> {
+  _$CategorySelectionCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? selectedId = null,
+    Object? path = null,
+  }) {
+    return _then(_value.copyWith(
+      selectedId: null == selectedId
+          ? _value.selectedId
+          : selectedId // ignore: cast_nullable_to_non_nullable
+              as String,
+      path: null == path
+          ? _value.path
+          : path // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$CategorySelectionImplCopyWith<$Res>
+    implements $CategorySelectionCopyWith<$Res> {
+  factory _$$CategorySelectionImplCopyWith(_$CategorySelectionImpl value,
+          $Res Function(_$CategorySelectionImpl) then) =
+      __$$CategorySelectionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String selectedId, List<String> path});
+}
+
+/// @nodoc
+class __$$CategorySelectionImplCopyWithImpl<$Res>
+    extends _$CategorySelectionCopyWithImpl<$Res, _$CategorySelectionImpl>
+    implements _$$CategorySelectionImplCopyWith<$Res> {
+  __$$CategorySelectionImplCopyWithImpl(_$CategorySelectionImpl _value,
+      $Res Function(_$CategorySelectionImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? selectedId = null,
+    Object? path = null,
+  }) {
+    return _then(_$CategorySelectionImpl(
+      selectedId: null == selectedId
+          ? _value.selectedId
+          : selectedId // ignore: cast_nullable_to_non_nullable
+              as String,
+      path: null == path
+          ? _value._path
+          : path // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CategorySelectionImpl implements _CategorySelection {
+  const _$CategorySelectionImpl(
+      {required this.selectedId, final List<String> path = const []})
+      : _path = path;
+
+  factory _$CategorySelectionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CategorySelectionImplFromJson(json);
+
+  @override
+  final String selectedId;
+  final List<String> _path;
+  @override
+  @JsonKey()
+  List<String> get path {
+    if (_path is EqualUnmodifiableListView) return _path;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_path);
+  }
+
+  @override
+  String toString() {
+    return 'CategorySelection(selectedId: $selectedId, path: $path)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CategorySelectionImpl &&
+            (identical(other.selectedId, selectedId) ||
+                other.selectedId == selectedId) &&
+            const DeepCollectionEquality().equals(other._path, _path));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, selectedId, const DeepCollectionEquality().hash(_path));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CategorySelectionImplCopyWith<_$CategorySelectionImpl> get copyWith =>
+      __$$CategorySelectionImplCopyWithImpl<_$CategorySelectionImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CategorySelectionImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _CategorySelection implements CategorySelection {
+  const factory _CategorySelection(
+      {required final String selectedId,
+      final List<String> path}) = _$CategorySelectionImpl;
+
+  factory _CategorySelection.fromJson(Map<String, dynamic> json) =
+      _$CategorySelectionImpl.fromJson;
+
+  @override
+  String get selectedId;
+  @override
+  List<String> get path;
+  @override
+  @JsonKey(ignore: true)
+  _$$CategorySelectionImplCopyWith<_$CategorySelectionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 Place _$PlaceFromJson(Map<String, dynamic> json) {
   return _Place.fromJson(json);
 }
 
 /// @nodoc
 mixin _$Place {
-  String? get placeId => throw _privateConstructorUsedError;
+  String get placeId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   Map<String, double> get geo => throw _privateConstructorUsedError;
   String get geohash => throw _privateConstructorUsedError;
-  List<String> get categories => throw _privateConstructorUsedError;
+  List<CategorySelection> get categorySelections =>
+      throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
-  String? get address => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   int get xp => throw _privateConstructorUsedError;
@@ -48,13 +213,12 @@ abstract class $PlaceCopyWith<$Res> {
       _$PlaceCopyWithImpl<$Res, Place>;
   @useResult
   $Res call(
-      {String? placeId,
+      {String placeId,
       String name,
       Map<String, double> geo,
       String geohash,
-      List<String> categories,
+      List<CategorySelection> categorySelections,
       List<String> imageUrls,
-      String? address,
       String? location,
       String? description,
       int xp,
@@ -77,13 +241,12 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? placeId = freezed,
+    Object? placeId = null,
     Object? name = null,
     Object? geo = null,
     Object? geohash = null,
-    Object? categories = null,
+    Object? categorySelections = null,
     Object? imageUrls = null,
-    Object? address = freezed,
     Object? location = freezed,
     Object? description = freezed,
     Object? xp = null,
@@ -93,10 +256,10 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
     Object? updatedAt = freezed,
   }) {
     return _then(_value.copyWith(
-      placeId: freezed == placeId
+      placeId: null == placeId
           ? _value.placeId
           : placeId // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -109,18 +272,14 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
           ? _value.geohash
           : geohash // ignore: cast_nullable_to_non_nullable
               as String,
-      categories: null == categories
-          ? _value.categories
-          : categories // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      categorySelections: null == categorySelections
+          ? _value.categorySelections
+          : categorySelections // ignore: cast_nullable_to_non_nullable
+              as List<CategorySelection>,
       imageUrls: null == imageUrls
           ? _value.imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
       location: freezed == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -161,13 +320,12 @@ abstract class _$$PlaceImplCopyWith<$Res> implements $PlaceCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String? placeId,
+      {String placeId,
       String name,
       Map<String, double> geo,
       String geohash,
-      List<String> categories,
+      List<CategorySelection> categorySelections,
       List<String> imageUrls,
-      String? address,
       String? location,
       String? description,
       int xp,
@@ -188,13 +346,12 @@ class __$$PlaceImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? placeId = freezed,
+    Object? placeId = null,
     Object? name = null,
     Object? geo = null,
     Object? geohash = null,
-    Object? categories = null,
+    Object? categorySelections = null,
     Object? imageUrls = null,
-    Object? address = freezed,
     Object? location = freezed,
     Object? description = freezed,
     Object? xp = null,
@@ -204,10 +361,10 @@ class __$$PlaceImplCopyWithImpl<$Res>
     Object? updatedAt = freezed,
   }) {
     return _then(_$PlaceImpl(
-      placeId: freezed == placeId
+      placeId: null == placeId
           ? _value.placeId
           : placeId // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -220,18 +377,14 @@ class __$$PlaceImplCopyWithImpl<$Res>
           ? _value.geohash
           : geohash // ignore: cast_nullable_to_non_nullable
               as String,
-      categories: null == categories
-          ? _value._categories
-          : categories // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      categorySelections: null == categorySelections
+          ? _value._categorySelections
+          : categorySelections // ignore: cast_nullable_to_non_nullable
+              as List<CategorySelection>,
       imageUrls: null == imageUrls
           ? _value._imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      address: freezed == address
-          ? _value.address
-          : address // ignore: cast_nullable_to_non_nullable
-              as String?,
       location: freezed == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -272,9 +425,8 @@ class _$PlaceImpl implements _Place {
       required this.name,
       required final Map<String, double> geo,
       required this.geohash,
-      required final List<String> categories,
+      final List<CategorySelection> categorySelections = const [],
       final List<String> imageUrls = const [],
-      this.address,
       this.location,
       this.description,
       this.xp = 0,
@@ -283,14 +435,14 @@ class _$PlaceImpl implements _Place {
       @TimestampConverter() this.createdAt,
       @TimestampConverter() this.updatedAt})
       : _geo = geo,
-        _categories = categories,
+        _categorySelections = categorySelections,
         _imageUrls = imageUrls;
 
   factory _$PlaceImpl.fromJson(Map<String, dynamic> json) =>
       _$$PlaceImplFromJson(json);
 
   @override
-  final String? placeId;
+  final String placeId;
   @override
   final String name;
   final Map<String, double> _geo;
@@ -303,12 +455,14 @@ class _$PlaceImpl implements _Place {
 
   @override
   final String geohash;
-  final List<String> _categories;
+  final List<CategorySelection> _categorySelections;
   @override
-  List<String> get categories {
-    if (_categories is EqualUnmodifiableListView) return _categories;
+  @JsonKey()
+  List<CategorySelection> get categorySelections {
+    if (_categorySelections is EqualUnmodifiableListView)
+      return _categorySelections;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_categories);
+    return EqualUnmodifiableListView(_categorySelections);
   }
 
   final List<String> _imageUrls;
@@ -320,8 +474,6 @@ class _$PlaceImpl implements _Place {
     return EqualUnmodifiableListView(_imageUrls);
   }
 
-  @override
-  final String? address;
   @override
   final String? location;
   @override
@@ -344,7 +496,7 @@ class _$PlaceImpl implements _Place {
 
   @override
   String toString() {
-    return 'Place(placeId: $placeId, name: $name, geo: $geo, geohash: $geohash, categories: $categories, imageUrls: $imageUrls, address: $address, location: $location, description: $description, xp: $xp, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Place(placeId: $placeId, name: $name, geo: $geo, geohash: $geohash, categorySelections: $categorySelections, imageUrls: $imageUrls, location: $location, description: $description, xp: $xp, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -357,10 +509,9 @@ class _$PlaceImpl implements _Place {
             const DeepCollectionEquality().equals(other._geo, _geo) &&
             (identical(other.geohash, geohash) || other.geohash == geohash) &&
             const DeepCollectionEquality()
-                .equals(other._categories, _categories) &&
+                .equals(other._categorySelections, _categorySelections) &&
             const DeepCollectionEquality()
                 .equals(other._imageUrls, _imageUrls) &&
-            (identical(other.address, address) || other.address == address) &&
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.description, description) ||
@@ -382,9 +533,8 @@ class _$PlaceImpl implements _Place {
       name,
       const DeepCollectionEquality().hash(_geo),
       geohash,
-      const DeepCollectionEquality().hash(_categories),
+      const DeepCollectionEquality().hash(_categorySelections),
       const DeepCollectionEquality().hash(_imageUrls),
-      address,
       location,
       description,
       xp,
@@ -409,13 +559,12 @@ class _$PlaceImpl implements _Place {
 
 abstract class _Place implements Place {
   const factory _Place(
-      {required final String? placeId,
+      {required final String placeId,
       required final String name,
       required final Map<String, double> geo,
       required final String geohash,
-      required final List<String> categories,
+      final List<CategorySelection> categorySelections,
       final List<String> imageUrls,
-      final String? address,
       final String? location,
       final String? description,
       final int xp,
@@ -427,7 +576,7 @@ abstract class _Place implements Place {
   factory _Place.fromJson(Map<String, dynamic> json) = _$PlaceImpl.fromJson;
 
   @override
-  String? get placeId;
+  String get placeId;
   @override
   String get name;
   @override
@@ -435,11 +584,9 @@ abstract class _Place implements Place {
   @override
   String get geohash;
   @override
-  List<String> get categories;
+  List<CategorySelection> get categorySelections;
   @override
   List<String> get imageUrls;
-  @override
-  String? get address;
   @override
   String? get location;
   @override
