@@ -32,11 +32,7 @@ class ProfilePage extends ConsumerWidget {
       final imagePickerService = ref.read(imagePickerServiceProvider);
 
       // Pick image from gallery with automatic compression
-      final result = await imagePickerService.pickImageFromGallery(
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
+      final result = await imagePickerService.pickImageFromGallery();
 
       if (result != null) {
         // Get current user ID
@@ -69,7 +65,7 @@ class ProfilePage extends ConsumerWidget {
         final storageService = ref.read(storageServiceProvider);
         final downloadUrl = await storageService.uploadImage(
           result.path,
-          userId, // Use userId as filename to overwrite previous avatar
+          'profile_images/$userId', // userId as filename to overwrite previous avatar
         );
 
         // Update profile with new avatar URL

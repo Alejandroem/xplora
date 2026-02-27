@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Exception thrown when image picking fails
 class ImagePickerException implements Exception {
@@ -174,25 +175,27 @@ class ImagePickerService {
       // Re-throw our custom exceptions
       rethrow;
     } catch (e) {
-      // Handle platform-specific errors
-      final errorMessage = e.toString().toLowerCase();
-
-      if (errorMessage.contains('permission')) {
+      final photosStatus = await Permission.photos.status;
+      if (photosStatus.isPermanentlyDenied) {
         throw ImagePickerException(
-          'Gallery permission denied. Please enable photo library access in settings.',
+          'Photo library access is permanently denied. Please enable it in Settings.',
           e,
         );
-      } else if (errorMessage.contains('not available')) {
+      } else if (photosStatus.isDenied) {
+        throw ImagePickerException(
+          'Photo library permission denied.',
+          e,
+        );
+      }
+
+      if (e.toString().toLowerCase().contains('not available')) {
         throw ImagePickerException(
           'Gallery is not available on this device.',
           e,
         );
-      } else {
-        throw ImagePickerException(
-          'Failed to pick image from gallery.',
-          e,
-        );
       }
+
+      throw ImagePickerException('Failed to pick image from gallery.', e);
     }
   }
 
@@ -253,25 +256,27 @@ class ImagePickerService {
       // Re-throw our custom exceptions
       rethrow;
     } catch (e) {
-      // Handle platform-specific errors
-      final errorMessage = e.toString().toLowerCase();
-
-      if (errorMessage.contains('permission')) {
+      final cameraStatus = await Permission.camera.status;
+      if (cameraStatus.isPermanentlyDenied) {
         throw ImagePickerException(
-          'Camera permission denied. Please enable camera access in settings.',
+          'Camera access is permanently denied. Please enable it in Settings.',
           e,
         );
-      } else if (errorMessage.contains('not available')) {
+      } else if (cameraStatus.isDenied) {
+        throw ImagePickerException(
+          'Camera permission denied.',
+          e,
+        );
+      }
+
+      if (e.toString().toLowerCase().contains('not available')) {
         throw ImagePickerException(
           'Camera is not available on this device.',
           e,
         );
-      } else {
-        throw ImagePickerException(
-          'Failed to capture image from camera.',
-          e,
-        );
       }
+
+      throw ImagePickerException('Failed to capture image from camera.', e);
     }
   }
 }

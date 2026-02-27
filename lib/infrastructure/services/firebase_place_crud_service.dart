@@ -13,9 +13,19 @@ class FirebasePlaceCrudService extends FirebaseCrudService<Place>
               .withConverter<Place>(
                 fromFirestore: (snapshot, _) => Place.fromJson(
                     {...snapshot.data()!, 'placeId': snapshot.id}),
-                toFirestore: (entity, _) => entity.toJson(),
+                toFirestore: (entity, _) => {
+                ...entity.toJson(),
+                // json_serializable doesn't call .toJson() on nested objects
+                // without explicitToJson:true, so we fix it manually here.
+                'categorySelections': entity.categorySelections
+                    .map((e) => e.toJson())
+                    .toList(),
+              },
               ),
         );
+
+  @override
+  String generateId() => collection.doc().id;
 
   @override
   Future<List<Place>?> readPaginated({

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/category.dart';
 import '../../domain/services/categories_crud_service.dart';
 import '../../infrastructure/services/firebase_category_crud_service.dart';
+import '../notifiers/category_selection_notifier.dart';
 
 final categoryServiceProvider = Provider<CategoryCrudService>((ref) {
   return FirebaseCategoryCrudService();
@@ -34,3 +35,8 @@ final interestCategoriesProvider =
   result.sort((a, b) => a.interestsOrder.compareTo(b.interestsOrder));
   return result;
 });
+
+final categorySelectionProvider = StateNotifierProvider.autoDispose<
+    CategorySelectionNotifier, CategorySelectionState>(
+  (ref) => CategorySelectionNotifier(),
+);

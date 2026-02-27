@@ -3,54 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../application/providers/category_providers.dart';
-import '../../domain/models/place.dart';
+import '../../application/providers/image_picker_providers.dart';
+import '../../application/providers/submit_place_providers.dart';
+import '../../domain/services/image_picker_service.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
-import '../widgets/xplora_text_field.dart';
-import '../widgets/secondary_button.dart';
 import '../widgets/category_selection_bottom_sheet.dart';
 import '../dialogs/base_dialog.dart';
 import 'drop_pin_map_page.dart';
-
-/// Provider to manage the list of selected images for place submission.
-final selectedPlaceImagesProvider =
-    StateProvider.autoDispose<List<String>>((ref) => []);
-
-/// Provider to manage all category selections (parentId → selectedChildId)
-final categorySelectionsProvider =
-    StateProvider.autoDispose<Map<String, String?>>((ref) => {});
-
-/// Model to store selected location data
-class SelectedLocation {
-  final double latitude;
-  final double longitude;
-  final String? address;
-  final String? placeName;
-
-  SelectedLocation({
-    required this.latitude,
-    required this.longitude,
-    this.address,
-    this.placeName,
-  });
-
-  String get displayText {
-    if (placeName != null && placeName!.isNotEmpty) {
-      return placeName!;
-    }
-    if (address != null && address!.isNotEmpty) {
-      return address!;
-    }
-    return '${latitude.toStringAsFixed(6)}, ${longitude.toStringAsFixed(6)}';
-  }
-}
-
-/// Provider to manage the selected location for place submission.
-final selectedLocationProvider =
-    StateProvider.autoDispose<SelectedLocation?>((ref) => null);
 
 /// Screen where users can submit a new place to the platform.
 /// Users can help improve the map and earn XP by contributing places.
@@ -62,17 +24,18 @@ class SubmitPlacePage extends ConsumerStatefulWidget {
 }
 
 class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
-  final ImagePicker _picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
   final _placeNameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _imageListScrollController = ScrollController();
 
-  static const int _maxImages = 4;
+  static const int _imageQuality = 80;
 
   @override
   void dispose() {
     _placeNameController.dispose();
     _descriptionController.dispose();
+    _imageListScrollController.dispose();
     super.dispose();
   }
 
@@ -111,7 +74,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
                   label: 'Camera',
                   onTap: () {
                     Navigator.pop(context);
-                    _pickImage(ImageSource.camera);
+                    _pickImage(fromCamera: true);
                   },
                 ),
                 _buildSourceOption(
@@ -119,7 +82,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
                   label: 'Gallery',
                   onTap: () {
                     Navigator.pop(context);
-                    _pickImage(ImageSource.gallery);
+                    _pickImage(fromCamera: false);
                   },
                 ),
               ],
@@ -129,7 +92,6 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
         ),
       ),
     );
-    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   Widget _buildSourceOption({
@@ -173,45 +135,46 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
     );
   }
 
-  Future<void> _pickImage(ImageSource source) async {
-    final images = ref.read(selectedPlaceImagesProvider);
-    if (images.length >= _maxImages) return;
+  Future<void> _pickImage({required bool fromCamera}) async {
+    final notifier = ref.read(selectedPlaceImagesProvider.notifier);
+    if (!notifier.canAddMore) return;
+
+    final service = ref.read(imagePickerServiceProvider);
 
     try {
-      final XFile? image = await _picker.pickImage(
-        source: source,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 80,
-      );
+      final result = fromCamera
+          ? await service.pickImageFromCamera()
+          : await service.pickImageFromGallery();
 
-      if (image != null) {
-        ref.read(selectedPlaceImagesProvider.notifier).state = [
-          ...images,
-          image.path,
-        ];
+      if (result != null) {
+        notifier.add(result.path);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_imageListScrollController.hasClients) {
+            _imageListScrollController.animateTo(
+              _imageListScrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      }
+    } on ImagePickerException catch (e) {
+      if (mounted) {
+        showXploraSnackBar(context, e.message, isError: true);
       }
     } catch (e) {
-      print(e);
       if (mounted) {
-        showXploraSnackBar(context, 'Error picking image: $e', isError: true);
+        showXploraSnackBar(context, 'Failed to pick image.', isError: true);
       }
     }
   }
 
   void _removeImage(int index) {
-    final images = ref.read(selectedPlaceImagesProvider);
-    final newImages = List<String>.from(images)..removeAt(index);
-    ref.read(selectedPlaceImagesProvider.notifier).state = newImages;
+    ref.read(selectedPlaceImagesProvider.notifier).remove(index);
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
-    final selectedImages = ref.watch(selectedPlaceImagesProvider);
-    final canAddMore = selectedImages.length < _maxImages;
-
+  Widget build(BuildContext context) {
     return GradientBackground(
       child: Scaffold(
         appBar: const GlassAppBar(
@@ -226,8 +189,14 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Image Upload Section
-                _buildImageUploadSection(selectedImages, canAddMore),
+                // Image Upload Section — scoped Consumer so only this rebuilds
+                Consumer(
+                  builder: (context, ref, _) {
+                    final selectedImages = ref.watch(selectedPlaceImagesProvider);
+                    final canAddMore = selectedImages.length < SelectedImagesNotifier.maxImages;
+                    return _buildImageUploadSection(selectedImages, canAddMore);
+                  },
+                ),
 
                 const SizedBox(height: spacing24),
 
@@ -266,6 +235,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
               child: images.isEmpty
                   ? _buildPlaceholderContainer()
                   : ListView.separated(
+                      controller: _imageListScrollController,
                       scrollDirection: Axis.horizontal,
                       itemCount: images.length,
                       separatorBuilder: (_, __) =>
@@ -458,9 +428,16 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
           const SizedBox(height: spacing24),
 
           // Submit Button
-          PrimaryButton(
-            text: 'Submit Place',
-            onPressed: _handleSubmit,
+          Consumer(
+            builder: (context, ref, _) {
+              final isLoading = ref.watch(
+                placeSubmissionProvider.select((s) => s.isLoading),
+              );
+              return PrimaryButton(
+                text: isLoading ? 'Submitting...' : 'Submit Place',
+                onPressed: isLoading ? null : _handleSubmit,
+              );
+            },
           ),
 
           const SizedBox(height: spacing16),
@@ -499,37 +476,29 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
     }
 
     final categories = await ref.read(placeCategoriesProvider.future);
-    final selectedCategorySelections = categorySelections.entries
-        .where((e) => e.value != null)
-        .map((e) {
-          final child = categories.firstWhere((c) => c.id == e.value);
-          return CategorySelection(
-            selectedId: child.id,
-            path: [...child.ancestorIds, child.id],
-          );
-        })
-        .toList();
+    if (!mounted) return;
 
-    print('=== SUBMIT PLACE DATA ===');
-    print('Place Name: ${_placeNameController.text}');
-    print('Description: ${_descriptionController.text}');
-    print('\nImages (${selectedImages.length}):');
-    for (var i = 0; i < selectedImages.length; i++) {
-      print('  Image ${i + 1}: ${selectedImages[i]}');
-    }
-    print('\nLocation:');
-    print('  Latitude: ${selectedLocation.latitude}');
-    print('  Longitude: ${selectedLocation.longitude}');
-    print('  Address: ${selectedLocation.address ?? 'N/A'}');
-    print('  Place Name: ${selectedLocation.placeName ?? 'N/A'}');
-    print('\nCategories (${selectedCategorySelections.length}):');
-    for (final s in selectedCategorySelections) {
-      print('  selectedId: ${s.selectedId}, path: ${s.path}');
-    }
-    print('=== END SUBMIT DATA ===\n');
+    await ref.read(placeSubmissionProvider.notifier).submit(
+          name: _placeNameController.text.trim(),
+          description: _descriptionController.text.trim(),
+          location: selectedLocation,
+          imagePaths: selectedImages,
+          categorySelections: categorySelections,
+          categories: categories,
+        );
 
-    // TODO: submit place with selectedCategorySelections
-    _showSuccessDialog();
+    if (!mounted) return;
+
+    final error = ref.read(placeSubmissionProvider).error;
+    if (error != null) {
+      showXploraSnackBar(
+        context,
+        'Failed to submit place. Please try again.',
+        isError: true,
+      );
+    } else {
+      _showSuccessDialog();
+    }
   }
 
   void _showSuccessDialog() {
@@ -599,103 +568,107 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
         },
       ),
     );
-
-    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   Widget _buildLocationCategorySection() {
-    final selectedLocation = ref.watch(selectedLocationProvider);
-    final categorySelections = ref.watch(categorySelectionsProvider);
-    final selectedCount =
-        categorySelections.values.where((v) => v != null).length;
-    final categoriesAsync = ref.watch(placeCategoriesProvider);
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Location Section
+        // Location Section — only rebuilds when location changes
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Location',
-                style: bodySmallStyle.copyWith(
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: spacing8),
-              SecondaryButton(
-                icon: SvgPicture.asset(
-                  'assets/svg/location-pin.svg',
-                  width: 18,
-                  height: 18,
-                  colorFilter: ColorFilter.mode(
-                      context.colors.textPrimary, BlendMode.srcIn),
-                ),
-                text: selectedLocation == null ? 'Drop Pin' : 'Edit Pin',
-                onPressed: () async {
-                  final result = await Navigator.push<SelectedLocation>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DropPinMapPage(
-                        initialLocation: selectedLocation,
-                      ),
+          child: Consumer(
+            builder: (context, ref, _) {
+              final selectedLocation = ref.watch(selectedLocationProvider);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Location',
+                    style: bodySmallStyle.copyWith(
+                      color: context.colors.textPrimary,
                     ),
-                  );
-
-                  FocusManager.instance.primaryFocus?.unfocus();
-
-                  if (result != null) {
-                    ref.read(selectedLocationProvider.notifier).state = result;
-                  }
-                },
-              ),
-              if (selectedLocation != null) ...[
-                const SizedBox(height: spacing4),
-                Text(
-                  selectedLocation.displayText,
-                  style: captionStyle.copyWith(
-                    color: context.colors.textSecondary,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ],
+                  const SizedBox(height: spacing8),
+                  SecondaryButton(
+                    icon: SvgPicture.asset(
+                      'assets/svg/location-pin.svg',
+                      width: 18,
+                      height: 18,
+                      colorFilter: ColorFilter.mode(
+                          context.colors.textPrimary, BlendMode.srcIn),
+                    ),
+                    text: selectedLocation == null ? 'Drop Pin' : 'Edit Pin',
+                    onPressed: () async {
+                      final result = await Navigator.push<SelectedLocation>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DropPinMapPage(
+                            initialLocation: selectedLocation,
+                          ),
+                        ),
+                      );
+
+                      if (result != null) {
+                        ref.read(selectedLocationProvider.notifier).state =
+                            result;
+                      }
+                    },
+                  ),
+                  if (selectedLocation != null) ...[
+                    const SizedBox(height: spacing4),
+                    Text(
+                      selectedLocation.displayText,
+                      style: captionStyle.copyWith(
+                        color: context.colors.textSecondary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              );
+            },
           ),
         ),
 
         const SizedBox(width: spacing12),
 
-        // Category Section
+        // Category Section — only rebuilds when category selections change
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Categories',
-                style: bodySmallStyle.copyWith(
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: spacing8),
-              SecondaryButton(
-                text: 'Choose categories',
-                onPressed: categoriesAsync.isLoading
-                    ? null
-                    : _showCategorySelectionBottomSheet,
-              ),
-              const SizedBox(height: spacing4),
-              Text(
-                selectedCount > 0
-                    ? '$selectedCount ${selectedCount == 1 ? 'category' : 'categories'} selected'
-                    : '',
-                style: captionStyle.copyWith(
-                  color: context.colors.textSecondary,
-                ),
-              ),
-            ],
+          child: Consumer(
+            builder: (context, ref, _) {
+              final categorySelections = ref.watch(categorySelectionsProvider);
+              final selectedCount =
+                  categorySelections.values.where((v) => v != null).length;
+              final categoriesAsync = ref.watch(placeCategoriesProvider);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Categories',
+                    style: bodySmallStyle.copyWith(
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: spacing8),
+                  SecondaryButton(
+                    text: 'Choose categories',
+                    onPressed: categoriesAsync.isLoading
+                        ? null
+                        : _showCategorySelectionBottomSheet,
+                  ),
+                  const SizedBox(height: spacing4),
+                  Text(
+                    selectedCount > 0
+                        ? '$selectedCount ${selectedCount == 1 ? 'category' : 'categories'} selected'
+                        : '',
+                    style: captionStyle.copyWith(
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ],

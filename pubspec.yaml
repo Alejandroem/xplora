@@ -50,6 +50,7 @@ dependencies:
   crypto: ^3.0.7
   device_preview_plus: ^2.3.2
   flutter_screenutil: ^5.9.3
+  envied: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,7 @@ dev_dependencies:
   riverpod_generator: ^2.4.0
   custom_lint: ^0.6.4
   riverpod_lint: ^2.3.10
+  envied_generator: ^1.1.1
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.4.1
   path_provider: ^2.1.4

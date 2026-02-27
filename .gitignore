@@ -49,3 +49,7 @@ app.*.map.json
 
 # Gemini
 .gemini
+
+# Environment variables
+.env
+lib/env.g.dart

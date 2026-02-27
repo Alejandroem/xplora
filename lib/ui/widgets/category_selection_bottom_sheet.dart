@@ -1,15 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../utils/shimmer_widgets.dart';
 
+import '../../application/providers/category_providers.dart';
 import '../../domain/models/category.dart';
 import '../../theme.dart';
 
 const double _radioCheckSize = 14.0;
 
+// ── Main widget ───────────────────────────────────────────────────────────────
+
 /// Bottom sheet for selecting categories with expandable sections.
 /// Selections are stored as Map<parentId, selectedChildId>.
-class CategorySelectionBottomSheet extends StatefulWidget {
+class CategorySelectionBottomSheet extends ConsumerStatefulWidget {
   final List<Category> categories;
   final Map<String, String?> initialSelections;
   final void Function(Map<String, String?>) onSelectionChanged;
@@ -22,15 +27,12 @@ class CategorySelectionBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<CategorySelectionBottomSheet> createState() =>
+  ConsumerState<CategorySelectionBottomSheet> createState() =>
       _CategorySelectionBottomSheetState();
 }
 
 class _CategorySelectionBottomSheetState
-    extends State<CategorySelectionBottomSheet> {
-  late Map<String, String?> _selections;
-  final Set<String> _expandedCategories = {};
-
+    extends ConsumerState<CategorySelectionBottomSheet> {
   late List<Category> _visibleRoots;
   late Map<String, List<Category>> _childrenByParent;
   late Map<String, String> _idToName;
@@ -38,8 +40,9 @@ class _CategorySelectionBottomSheetState
   @override
   void initState() {
     super.initState();
-    _selections = Map.from(widget.initialSelections);
     _buildHierarchy();
+    Future.microtask(() =>
+        ref.read(categorySelectionProvider.notifier).init(widget.initialSelections));
   }
 
   void _buildHierarchy() {
@@ -59,53 +62,9 @@ class _CategorySelectionBottomSheetState
         .toList();
   }
 
-  Widget _buildParentIcon(String url) {
-    final isSvg = url.toLowerCase().contains('.svg');
-    if (isSvg) {
-      return SvgPicture.network(
-        url,
-        width: iconSizeMedium,
-        height: iconSizeMedium,
-        colorFilter:
-            ColorFilter.mode(context.colors.textSecondary, BlendMode.srcIn),
-      );
-    }
-    return CachedNetworkImage(
-      imageUrl: url,
-      width: iconSizeMedium,
-      height: iconSizeMedium,
-      fit: BoxFit.contain,
-      errorWidget: (_, __, ___) => const SizedBox.shrink(),
-    );
-  }
-
-  void _toggleCategory(String parentId) {
-    setState(() {
-      if (_expandedCategories.contains(parentId)) {
-        _expandedCategories.remove(parentId);
-      } else {
-        _expandedCategories.add(parentId);
-      }
-    });
-  }
-
-  void _selectChild(String parentId, String childId) {
-    setState(() {
-      _selections[parentId] =
-          _selections[parentId] == childId ? null : childId;
-    });
-    widget.onSelectionChanged(Map.from(_selections));
-  }
-
-  void _clearAll() {
-    setState(() {
-      _selections = {};
-    });
-    widget.onSelectionChanged({});
-  }
-
   @override
   Widget build(BuildContext context) {
+    // No ref.watch here — outer shell never rebuilds on state changes.
     return Container(
       constraints:
           BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
@@ -121,28 +80,36 @@ class _CategorySelectionBottomSheetState
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           Flexible(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: spacing16),
               children: [
                 const SizedBox(height: spacing16),
                 ..._visibleRoots.map(
-                  (root) => _buildCategorySection(
-                    root,
-                    _childrenByParent[root.id]!,
+                  (root) => _CategorySectionWidget(
+                    key: ValueKey(root.id),
+                    parent: root,
+                    children: _childrenByParent[root.id]!,
+                    idToName: _idToName,
+                    onSelectionChanged: widget.onSelectionChanged,
                   ),
                 ),
               ],
             ),
           ),
-          _buildActionButtons(),
+          _SelectionActionButtons(
+            onClearAll: () {
+              ref.read(categorySelectionProvider.notifier).clearAll();
+              widget.onSelectionChanged({});
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(spacing16),
       decoration: BoxDecoration(
@@ -177,12 +144,43 @@ class _CategorySelectionBottomSheetState
       ),
     );
   }
+}
 
-  Widget _buildCategorySection(Category parent, List<Category> children) {
-    final isExpanded = _expandedCategories.contains(parent.id);
-    final selectedChildId = _selections[parent.id];
+// ── Per-section widget ────────────────────────────────────────────────────────
+// Expand/collapse is local state — only this widget rebuilds when toggled.
+// Watches only its own selection via select — other sections never rebuild.
+
+class _CategorySectionWidget extends ConsumerStatefulWidget {
+  final Category parent;
+  final List<Category> children;
+  final Map<String, String> idToName;
+  final void Function(Map<String, String?>) onSelectionChanged;
+
+  const _CategorySectionWidget({
+    super.key,
+    required this.parent,
+    required this.children,
+    required this.idToName,
+    required this.onSelectionChanged,
+  });
+
+  @override
+  ConsumerState<_CategorySectionWidget> createState() =>
+      _CategorySectionWidgetState();
+}
+
+class _CategorySectionWidgetState
+    extends ConsumerState<_CategorySectionWidget> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // print('_CategorySectionWidget ${widget.parent.id} rebuilt');
+    final selectedChildId = ref.watch(
+      categorySelectionProvider.select((s) => s.selections[widget.parent.id]),
+    );
     final selectedChildName =
-        selectedChildId != null ? _idToName[selectedChildId] : null;
+        selectedChildId != null ? widget.idToName[selectedChildId] : null;
 
     return Container(
       margin: const EdgeInsets.only(bottom: spacing12),
@@ -195,19 +193,19 @@ class _CategorySelectionBottomSheetState
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => _toggleCategory(parent.id),
+            onTap: () => setState(() => _isExpanded = !_isExpanded),
             child: Container(
               padding: const EdgeInsets.all(spacing16),
               decoration: BoxDecoration(
-                color: isExpanded
+                color: _isExpanded
                     ? context.colors.bgTertiary
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(radiusMedium),
               ),
               child: Row(
                 children: [
-                  if (parent.icon.isNotEmpty) ...[
-                    _buildParentIcon(parent.icon),
+                  if (widget.parent.icon.isNotEmpty) ...[
+                    _buildParentIcon(context, widget.parent.icon),
                     const SizedBox(width: spacing12),
                   ],
                   Expanded(
@@ -215,13 +213,13 @@ class _CategorySelectionBottomSheetState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          parent.name,
+                          widget.parent.name,
                           style: bodyTextStyle.copyWith(
                             color: context.colors.textPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (!isExpanded) ...[
+                        if (!_isExpanded) ...[
                           const SizedBox(height: spacing4),
                           Text(
                             selectedChildName != null
@@ -238,7 +236,7 @@ class _CategorySelectionBottomSheetState
                     ),
                   ),
                   Icon(
-                    isExpanded
+                    _isExpanded
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
                     size: iconSizeMedium,
@@ -248,15 +246,15 @@ class _CategorySelectionBottomSheetState
               ),
             ),
           ),
-          if (isExpanded)
+          if (_isExpanded)
             Container(
               padding: const EdgeInsets.fromLTRB(
                   spacing16, spacing8, spacing16, spacing16),
               child: Column(
-                children: children
+                children: widget.children
                     .map((child) => _buildChildItem(
+                          context: context,
                           child: child,
-                          parentId: parent.id,
                           isSelected: selectedChildId == child.id,
                         ))
                     .toList(),
@@ -267,13 +265,46 @@ class _CategorySelectionBottomSheetState
     );
   }
 
+  Widget _buildParentIcon(BuildContext context, String url) {
+    final placeholder = ShimmerWidgets.imageShimmer(
+      context: context,
+      width: iconSizeMedium,
+      height: iconSizeMedium,
+      borderRadius: BorderRadius.circular(radiusSmall),
+    );
+    final isSvg = url.toLowerCase().contains('.svg');
+    if (isSvg) {
+      return SvgPicture.network(
+        url,
+        width: iconSizeMedium,
+        height: iconSizeMedium,
+        colorFilter:
+            ColorFilter.mode(context.colors.textSecondary, BlendMode.srcIn),
+      );
+    }
+    return CachedNetworkImage(
+      imageUrl: url,
+      width: iconSizeMedium,
+      height: iconSizeMedium,
+      fit: BoxFit.contain,
+      placeholder: (_, __) => placeholder,
+      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+    );
+  }
+
   Widget _buildChildItem({
+    required BuildContext context,
     required Category child,
-    required String parentId,
     required bool isSelected,
   }) {
     return GestureDetector(
-      onTap: () => _selectChild(parentId, child.id),
+      onTap: () {
+        ref
+            .read(categorySelectionProvider.notifier)
+            .selectChild(widget.parent.id, child.id);
+        final selections = ref.read(categorySelectionProvider).selections;
+        widget.onSelectionChanged(Map.from(selections));
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: spacing8),
         padding: const EdgeInsets.symmetric(
@@ -321,9 +352,24 @@ class _CategorySelectionBottomSheetState
       ),
     );
   }
+}
 
-  Widget _buildActionButtons() {
-    final selectionCount = _selections.values.where((v) => v != null).length;
+// ── Action buttons ────────────────────────────────────────────────────────────
+// Rebuilds only when the selection count changes.
+
+class _SelectionActionButtons extends ConsumerWidget {
+  final VoidCallback onClearAll;
+
+  const _SelectionActionButtons({required this.onClearAll});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // print('_SelectionActionButtons rebuilt');
+    final selectionCount = ref.watch(
+      categorySelectionProvider.select(
+        (s) => s.selections.values.where((v) => v != null).length,
+      ),
+    );
 
     return Container(
       padding: const EdgeInsets.all(spacing16),
@@ -348,7 +394,7 @@ class _CategorySelectionBottomSheetState
             const SizedBox(height: spacing12),
             SecondaryButton(
               text: 'Clear All',
-              onPressed: selectionCount > 0 ? _clearAll : null,
+              onPressed: selectionCount > 0 ? onClearAll : null,
             ),
           ],
         ),

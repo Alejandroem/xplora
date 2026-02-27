@@ -9,8 +9,9 @@ import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 
 import '../../application/providers/location_providers.dart';
+import '../../application/providers/submit_place_providers.dart';
+import '../../env.dart';
 import '../../theme.dart';
-import 'submit_place_page.dart';
 
 /// Providers for drop pin map state
 final _selectedPositionProvider = StateProvider.autoDispose<LatLng>(
@@ -26,7 +27,7 @@ final _hasInitializedProvider = StateProvider.autoDispose<bool>(
 );
 
 final _isInitializingProvider = StateProvider.autoDispose<bool>(
-  (ref) => false,
+  (ref) => true, // Start as loading — prevents any flash on first build
 );
 
 /// Drop Pin Map Page
@@ -49,19 +50,18 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   bool _isProgrammaticMove = false;
-  bool _isAddressLocked = false;  // Local state instead of provider
+  bool _isAddressLocked = false;
 
   // Rawalpindi default coordinates
   static const LatLng _defaultLocation = LatLng(33.5651, 73.0169);
-  static const String _googleApiKey = 'AIzaSyCPo2aN-lVlnuPj5ujZsbXmiVCQRLoorpk';
+  static final String _googleApiKey = Env.googleApiKey;
 
   @override
   void initState() {
     super.initState();
 
-
-    // Set initial position if provided
     if (widget.initialLocation != null) {
+      // Already have a location — clear loading state after first frame
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(_selectedPositionProvider.notifier).state = LatLng(
           widget.initialLocation!.latitude,
@@ -70,9 +70,10 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
         ref.read(_addressTextProvider.notifier).state =
             widget.initialLocation!.address;
         ref.read(_hasInitializedProvider.notifier).state = true;
+        ref.read(_isInitializingProvider.notifier).state = false;
       });
     } else {
-      // Try to get current location if permission granted
+      // Will fetch current location — provider already starts as true (loading)
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _initializeLocation();
       });
@@ -83,8 +84,6 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
     final hasPermission = await ref.read(locationPermissionProvider.future);
 
     if (hasPermission && !ref.read(_hasInitializedProvider)) {
-      ref.read(_isInitializingProvider.notifier).state = true;
-
       try {
         Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high,
@@ -119,6 +118,7 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
       // No permission, use default location
       if (mounted) {
         ref.read(_hasInitializedProvider.notifier).state = true;
+        ref.read(_isInitializingProvider.notifier).state = false;
       }
     }
   }
@@ -262,17 +262,6 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final locationPermission = ref.watch(locationPermissionProvider);
-    final hasLocationPermission = locationPermission.when(
-      data: (hasPermission) => hasPermission,
-      loading: () => false,
-      error: (_, __) => false,
-    );
-
-    final selectedPosition = ref.watch(_selectedPositionProvider);
-    final addressText = ref.watch(_addressTextProvider);
-    final isInitializing = ref.watch(_isInitializingProvider);
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
@@ -393,166 +382,209 @@ class _DropPinMapPageState extends ConsumerState<DropPinMapPage> {
         },
         child: Stack(
           children: [
-            // Google Map
-            GoogleMap(
-              onMapCreated: (controller) {
-                _mapController = controller;
-                // Animate to selected position if it's not default
-                if (selectedPosition != _defaultLocation) {
-                  _isProgrammaticMove = true;
-                  controller.animateCamera(
-                    CameraUpdate.newLatLngZoom(selectedPosition, 15),
-                  );
-                }
+            // Google Map — scoped Consumer so only the map rebuilds on permission change
+            Consumer(
+              builder: (context, ref, _) {
+                final hasLocationPermission = ref
+                    .watch(locationPermissionProvider)
+                    .when(
+                      data: (p) => p,
+                      loading: () => false,
+                      error: (_, __) => false,
+                    );
+                return GoogleMap(
+                  onMapCreated: (controller) {
+                    _mapController = controller;
+                    // Animate to selected position if it's not default
+                    final pos = ref.read(_selectedPositionProvider);
+                    if (pos != _defaultLocation) {
+                      _isProgrammaticMove = true;
+                      controller.animateCamera(
+                        CameraUpdate.newLatLngZoom(pos, 15),
+                      );
+                    }
+                  },
+                  initialCameraPosition: CameraPosition(
+                    target: ref.read(_selectedPositionProvider),
+                    zoom: 15,
+                  ),
+                  onCameraMove: _onCameraMove,
+                  onCameraIdle: _onCameraIdle,
+                  myLocationEnabled: hasLocationPermission,
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
+                  mapToolbarEnabled: false,
+                  compassEnabled: false,
+                  buildingsEnabled: true,
+                );
               },
-              initialCameraPosition: CameraPosition(
-                target: selectedPosition,
-                zoom: 15,
-              ),
-              onCameraMove: _onCameraMove,
-              onCameraIdle: _onCameraIdle,
-              myLocationEnabled: hasLocationPermission,
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
-              mapToolbarEnabled: false,
-              compassEnabled: false,
-              buildingsEnabled: true,
             ),
 
-          // Center pin indicator
-          if (!isInitializing)
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.location_pin,
-                    size: 48,
-                    color: brandPrimary,
-                  ),
-                  const SizedBox(height: 48), // Offset for visual centering
-                ],
-              ),
-            ),
-
-          // Current location button (only if permission granted)
-          if (hasLocationPermission)
-            Positioned(
-              bottom: 220,
-              right: spacing16,
-              child: Material(
-                color: context.colors.bgPrimary,
-                borderRadius: BorderRadius.circular(radiusMedium),
-                elevation: 4,
-                child: InkWell(
-                  onTap: isInitializing ? null : _moveToCurrentLocation,
-                  borderRadius: BorderRadius.circular(radiusMedium),
-                  child: Container(
-                    padding: const EdgeInsets.all(spacing12),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: context.colors.border,
-                        width: borderWidthDefault,
+            // Center pin indicator — only rebuilds when isInitializing changes
+            Consumer(
+              builder: (context, ref, _) {
+                final isInitializing = ref.watch(_isInitializingProvider);
+                if (isInitializing) return const SizedBox.shrink();
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.location_pin,
+                        size: 48,
+                        color: brandPrimary,
                       ),
+                      const SizedBox(height: 48), // Offset for visual centering
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            // Current location button (only if permission granted)
+            Consumer(
+              builder: (context, ref, _) {
+                final hasLocationPermission = ref
+                    .watch(locationPermissionProvider)
+                    .when(
+                      data: (p) => p,
+                      loading: () => false,
+                      error: (_, __) => false,
+                    );
+                if (!hasLocationPermission) return const SizedBox.shrink();
+                final isInitializing = ref.watch(_isInitializingProvider);
+                return Positioned(
+                  bottom: 220,
+                  right: spacing16,
+                  child: Material(
+                      color: context.colors.bgPrimary,
                       borderRadius: BorderRadius.circular(radiusMedium),
-                    ),
-                    child: isInitializing
-                        ? SizedBox(
-                            width: iconSizeMedium,
-                            height: iconSizeMedium,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                brandPrimary,
-                              ),
+                      elevation: 4,
+                      child: InkWell(
+                        onTap: isInitializing ? null : _moveToCurrentLocation,
+                        borderRadius: BorderRadius.circular(radiusMedium),
+                        child: Container(
+                          padding: const EdgeInsets.all(spacing12),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: context.colors.border,
+                              width: borderWidthDefault,
                             ),
-                          )
-                        : Icon(
-                            Icons.my_location,
-                            color: context.colors.textPrimary,
-                            size: iconSizeLarge,
+                            borderRadius: BorderRadius.circular(radiusMedium),
                           ),
-                  ),
-                ),
-              ),
-            ),
-
-          // Bottom panel with address and confirm button
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Container(
-                margin: const EdgeInsets.all(spacing16),
-                padding: const EdgeInsets.all(spacing16),
-                decoration: BoxDecoration(
-                  color: context.colors.bgPrimary,
-                  borderRadius: BorderRadius.circular(radiusLarge),
-                  border: Border.all(
-                    color: context.colors.border,
-                    width: borderWidthDefault,
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Address display
-                    Text(
-                      'Selected Location',
-                      style: bodySmallStyle.copyWith(
-                        color: context.colors.textSecondary,
+                          child: isInitializing
+                              ? SizedBox(
+                                  width: iconSizeMedium,
+                                  height: iconSizeMedium,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      brandPrimary,
+                                    ),
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.my_location,
+                                  color: context.colors.textPrimary,
+                                  size: iconSizeLarge,
+                                ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: spacing4),
-                    if (isInitializing)
-                      Row(
+                  );
+                },
+              ),
+
+            // Bottom panel — rebuilds only when loading/address/position changes
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final isInitializing = ref.watch(_isInitializingProvider);
+                  final addressText = ref.watch(_addressTextProvider);
+                  final selectedPosition = ref.watch(_selectedPositionProvider);
+                  return SafeArea(
+                    child: Container(
+                      margin: const EdgeInsets.all(spacing16),
+                      padding: const EdgeInsets.all(spacing16),
+                      decoration: BoxDecoration(
+                        color: context.colors.bgPrimary,
+                        borderRadius: BorderRadius.circular(radiusLarge),
+                        border: Border.all(
+                          color: context.colors.border,
+                          width: borderWidthDefault,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                brandPrimary,
-                              ),
+                          // Address display
+                          Text(
+                            'Selected Location',
+                            style: bodySmallStyle.copyWith(
+                              color: context.colors.textSecondary,
                             ),
                           ),
-                          const SizedBox(width: spacing8),
-                          Text(
-                            'Fetching location...',
-                            style: bodyTextStyle.copyWith(
-                              color: context.colors.textSecondary,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(height: spacing4),
+                          if (isInitializing)
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      brandPrimary,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: spacing8),
+                                Text(
+                                  'Fetching location...',
+                                  style: bodyTextStyle.copyWith(
+                                    color: context.colors.textSecondary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            )
+                          else
+                            Text(
+                              addressText ??
+                                  '${selectedPosition.latitude.toStringAsFixed(6)}, ${selectedPosition.longitude.toStringAsFixed(6)}',
+                              style: bodyTextStyle.copyWith(
+                                color: context.colors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
+                          const SizedBox(height: spacing16),
+
+                          // Confirm button — scoped so map drags don't rebuild it
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final isInitializing =
+                                  ref.watch(_isInitializingProvider);
+                              return PrimaryButton(
+                                text: 'Confirm Location',
+                                onPressed:
+                                    isInitializing ? null : _confirmLocation,
+                              );
+                            },
                           ),
                         ],
-                      )
-                    else
-                      Text(
-                        addressText ??
-                            '${selectedPosition.latitude.toStringAsFixed(6)}, ${selectedPosition.longitude.toStringAsFixed(6)}',
-                        style: bodyTextStyle.copyWith(
-                          color: context.colors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    const SizedBox(height: spacing16),
-
-                    // Confirm button
-                    PrimaryButton(
-                      text: 'Confirm Location',
-                      onPressed: isInitializing ? null : _confirmLocation,
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
-          ),
-        ],
+          ],
         ),
       ),
     );

@@ -29,6 +29,9 @@ abstract class FirebaseCrudService<T> implements CrudService<T> {
     } else if (obj is JsonSerializable) {
       // If object has a toJson method, use it
       return serialize(obj.toJson());
+    } else if (obj is Timestamp) {
+      // Firestore natively supports Timestamp — return as-is
+      return obj;
     } else if (obj is DateTime) {
       // Serialize DateTime to ISO string
       return obj.toIso8601String();

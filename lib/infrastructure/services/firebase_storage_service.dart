@@ -9,14 +9,11 @@ class FirebaseStorageService implements StorageService {
   final Duration _uploadTimeout = const Duration(seconds: 20);
 
   @override
-  Future<String> uploadImage(String filePath, String folderPath) async {
+  Future<String> uploadImage(String filePath, String storagePath) async {
     try {
       final file = File(filePath);
 
-      // Use the folderPath as the filename (which will be the user ID)
-      final fileName = folderPath;
-
-      final ref = _storage.ref().child('profile_images/$fileName');
+      final ref = _storage.ref().child(storagePath);
 
       final uploadTask = ref.putFile(file);
       // await Future.delayed(_uploadTimeout);
