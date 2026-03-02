@@ -1,79 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../application/providers/place_providers.dart';
+import '../../domain/models/place.dart';
 import '../../theme.dart';
+import '../../utils/shimmer_widgets.dart';
 
-/// Enum for submission status
-enum SubmissionStatus {
-  pending,
-  approved,
-  rejected,
-}
-
-/// Model for place submission
-class PlaceSubmission {
-  final String id;
-  final String placeName;
-  final String? imageUrl;
-  final SubmissionStatus status;
-  final DateTime submittedAt;
-  final int? xpEarned;
-  final String? rejectionReason;
-
-  PlaceSubmission({
-    required this.id,
-    required this.placeName,
-    this.imageUrl,
-    required this.status,
-    required this.submittedAt,
-    this.xpEarned,
-    this.rejectionReason,
-  });
-
-  String get timeAgo {
-    final difference = DateTime.now().difference(submittedAt);
-    if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
-    } else {
-      return 'Just now';
-    }
-  }
-
-  String get statusText {
-    switch (status) {
-      case SubmissionStatus.pending:
-        return 'Pending';
-      case SubmissionStatus.approved:
-        return 'Approved';
-      case SubmissionStatus.rejected:
-        return 'Rejected';
-    }
-  }
-
-  Color get statusColor {
-    switch (status) {
-      case SubmissionStatus.pending:
-        return warningColor;
-      case SubmissionStatus.approved:
-        return successColor;
-      case SubmissionStatus.rejected:
-        return errorColor;
-    }
-  }
-}
-
-/// Screen showing user's place submissions
+/// Screen showing user's submitted places
 class SubmissionsPage extends ConsumerWidget {
   const SubmissionsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Replace with actual data from provider/API
-    final submissions = _getMockSubmissions();
+    final submissionsAsync = ref.watch(userSubmissionsProvider);
 
     return GradientBackground(
       child: Scaffold(
@@ -82,19 +22,34 @@ class SubmissionsPage extends ConsumerWidget {
           centerTitle: true,
           height: 64,
         ),
-        body: submissions.isEmpty
-            ? _buildEmptyState(context)
-            : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(
-                    spacing16, spacing24, spacing16, spacing16),
-                itemCount: submissions.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: spacing12),
-                    child: _SubmissionTile(submission: submissions[index]),
-                  );
-                },
+        body: submissionsAsync.when(
+          loading: () => ShimmerWidgets.submissionTileListShimmer(context: context),
+          error: (_, __) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(spacing32),
+              child: Text(
+                'Failed to load submissions. Please try again.',
+                style: bodyTextStyle.copyWith(
+                  color: context.colors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
               ),
+            ),
+          ),
+          data: (submissions) => submissions.isEmpty
+              ? _buildEmptyState(context)
+              : ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(
+                      spacing16, spacing24, spacing16, spacing16),
+                  itemCount: submissions.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: spacing12),
+                      child: _SubmissionTile(place: submissions[index]),
+                    );
+                  },
+                ),
+        ),
       ),
     );
   }
@@ -131,44 +86,58 @@ class SubmissionsPage extends ConsumerWidget {
       ),
     );
   }
-
-  // TODO: Replace with actual data fetching
-  List<PlaceSubmission> _getMockSubmissions() {
-    return [
-      PlaceSubmission(
-        id: '1',
-        placeName: 'Ocean Park Beach',
-        status: SubmissionStatus.pending,
-        submittedAt: DateTime.now().subtract(const Duration(days: 2)),
-      ),
-      PlaceSubmission(
-        id: '2',
-        placeName: 'Ocean Park Beach',
-        status: SubmissionStatus.approved,
-        submittedAt: DateTime.now().subtract(const Duration(days: 2)),
-        xpEarned: 50,
-      ),
-      PlaceSubmission(
-        id: '3',
-        placeName: 'Ocean Park Beach',
-        status: SubmissionStatus.rejected,
-        submittedAt: DateTime.now().subtract(const Duration(days: 2)),
-        rejectionReason: 'Needs Improvement',
-      ),
-    ];
-  }
 }
 
 /// Individual submission tile widget
 class _SubmissionTile extends StatelessWidget {
-  final PlaceSubmission submission;
+  final Place place;
 
-  const _SubmissionTile({
-    required this.submission,
-  });
+  const _SubmissionTile({required this.place});
+
+  String get _statusText {
+    switch (place.status) {
+      case 'active':
+        return 'Approved';
+      case 'rejected':
+        return 'Rejected';
+      default:
+        return 'Pending';
+    }
+  }
+
+  Color get _statusColor {
+    switch (place.status) {
+      case 'active':
+        return successColor;
+      case 'rejected':
+        return errorColor;
+      default:
+        return warningColor;
+    }
+  }
+
+  /// Shows up to 4 digits; truncates longer numbers with ellipsis before "xp".
+  /// e.g. 50 → "50xp", 9999 → "9999xp", 10000 → "1000…xp"
+  String _formatXp(int xp) {
+    final s = xp.toString();
+    return s.length > 8 ? '${s.substring(0, 8)}...xp' : '${s}xp';
+  }
+
+  String get _timeAgo {
+    if (place.createdAt == null) return '';
+    final difference =
+        DateTime.now().difference(place.createdAt!.toDate());
+    if (difference.inDays > 0) return '${difference.inDays}d ago';
+    if (difference.inHours > 0) return '${difference.inHours}h ago';
+    if (difference.inMinutes > 0) return '${difference.inMinutes}m ago';
+    return 'Just now';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl =
+        place.imageUrls.isNotEmpty ? place.imageUrls.first : null;
+
     return Container(
       decoration: BoxDecoration(
         color: context.colors.bgSecondary,
@@ -182,30 +151,41 @@ class _SubmissionTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image placeholder
+          // Image
           ClipRRect(
             borderRadius: BorderRadius.circular(radiusMedium),
-            child: Container(
+            child: SizedBox(
               width: 75,
               height: 75,
-              color: context.colors.bgTertiary,
-              child: submission.imageUrl != null
-                  ? Image.network(
-                      submission.imageUrl!,
+              child: imageUrl != null
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Center(
+                      placeholder: (context, _) => ShimmerWidgets.imageShimmer(
+                        context: context,
+                        width: 75,
+                        height: 75,
+                        borderRadius: BorderRadius.circular(radiusMedium),
+                      ),
+                      errorWidget: (context, _, __) => Container(
+                        color: context.colors.bgTertiary,
+                        child: Center(
+                          child: Icon(
+                            Icons.image,
+                            color: context.colors.textSecondary,
+                            size: iconSizeLarge,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      color: context.colors.bgTertiary,
+                      child: Center(
                         child: Icon(
                           Icons.image,
                           color: context.colors.textSecondary,
                           size: iconSizeLarge,
                         ),
-                      ),
-                    )
-                  : Center(
-                      child: Icon(
-                        Icons.image,
-                        color: context.colors.textSecondary,
-                        size: iconSizeLarge,
                       ),
                     ),
             ),
@@ -219,13 +199,13 @@ class _SubmissionTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Top row: Title and XP badge
+                // Top row: title and XP badge
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: Text(
-                        submission.placeName,
+                        place.name,
                         style: bodyTextStyle.copyWith(
                           color: context.colors.textPrimary,
                           fontWeight: FontWeight.bold,
@@ -234,9 +214,9 @@ class _SubmissionTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    // XP Badge for approved submissions
-                    if (submission.status == SubmissionStatus.approved &&
-                        submission.xpEarned != null)
+                    const SizedBox(width: spacing8,),
+                    // XP badge — only for approved places with xp > 0
+                    if (place.status == 'active' && place.xp > 0)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: spacing12,
@@ -251,7 +231,7 @@ class _SubmissionTile extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          '${submission.xpEarned}xp',
+                          _formatXp(place.xp),
                           style: bodySmallStyle.copyWith(
                             color: brandSecondary,
                             fontWeight: FontWeight.w600,
@@ -263,7 +243,7 @@ class _SubmissionTile extends StatelessWidget {
                 ),
 
                 const SizedBox(height: spacing4),
-            
+
                 // Status row
                 Row(
                   children: [
@@ -275,10 +255,8 @@ class _SubmissionTile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      submission.statusText,
-                      style: bodySmallStyle.copyWith(
-                        color: submission.statusColor,
-                      ),
+                      _statusText,
+                      style: bodySmallStyle.copyWith(color: _statusColor),
                     ),
                   ],
                 ),
@@ -288,22 +266,24 @@ class _SubmissionTile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Rejection reason for rejected submissions
-                    if (submission.status == SubmissionStatus.rejected &&
-                        submission.rejectionReason != null)
-                      Text(
-                        submission.rejectionReason!,
-                        style: bodySmallStyle.copyWith(
-                          color: errorColor,
-                          fontSize: 12,
+                    // Rejection reason — only for rejected places
+                    if (place.status == 'rejected' &&
+                        place.rejectionReason != null)
+                      Flexible(
+                        child: Text(
+                          place.rejectionReason!,
+                          style: bodySmallStyle.copyWith(
+                            color: errorColor,
+                            fontSize: 12,
+                          ),
                         ),
                       )
                     else
                       const SizedBox(),
-            
+
                     // Timestamp
                     Text(
-                      submission.timeAgo,
+                      _timeAgo,
                       style: bodySmallStyle.copyWith(
                         color: context.colors.textSecondary
                             .withValues(alpha: 0.5),

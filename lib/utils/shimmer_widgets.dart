@@ -160,6 +160,88 @@ class ShimmerWidgets {
     );
   }
 
+  /// Shimmer list for the submissions screen (matches _SubmissionTile layout)
+  static Widget submissionTileListShimmer({
+    required BuildContext context,
+    int itemCount = 5,
+  }) {
+    return baseShimmer(
+      context: context,
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(
+            spacing16, spacing24, spacing16, spacing16),
+        itemCount: itemCount,
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemBuilder: (_, __) => Padding(
+          padding: const EdgeInsets.only(bottom: spacing12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.colors.bgSecondary,
+              borderRadius: BorderRadius.circular(radiusMedium),
+            ),
+            padding: const EdgeInsets.all(spacing16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image placeholder
+                Container(
+                  width: 75,
+                  height: 75,
+                  decoration: BoxDecoration(
+                    color: context.colors.bgTertiary,
+                    borderRadius: BorderRadius.circular(radiusMedium),
+                  ),
+                ),
+                const SizedBox(width: spacing12),
+                // Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Container(
+                        width: double.infinity,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: context.colors.bgTertiary,
+                          borderRadius: BorderRadius.circular(radiusSmall),
+                        ),
+                      ),
+                      const SizedBox(height: spacing8),
+                      // Status
+                      Container(
+                        width: 80,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: context.colors.bgTertiary,
+                          borderRadius: BorderRadius.circular(radiusSmall),
+                        ),
+                      ),
+                      const SizedBox(height: spacing8),
+                      // Timestamp aligned to right
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          width: 50,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: context.colors.bgTertiary,
+                            borderRadius: BorderRadius.circular(radiusSmall),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   /// Adventure card shimmer (matches CarouselCard design)
   static Widget adventureCardShimmer({
     required BuildContext context,

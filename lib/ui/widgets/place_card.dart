@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,7 +22,8 @@ class PlaceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final location = ref.watch(locationProvider);
-    final distance = formatDistance(location, item.geo['lat']!, item.geo['lng']!);
+    final geopoint = item.geo['geopoint'] as GeoPoint;
+    final distance = formatDistance(location, geopoint.latitude, geopoint.longitude);
     final imageUrl = item.imageUrls.isNotEmpty ? item.imageUrls.first : null;
     final heroTag = 'place-image-${item.placeId}-${isInGrid ? 'grid' : 'carousel'}';
 

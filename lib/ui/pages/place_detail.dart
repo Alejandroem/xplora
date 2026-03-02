@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -84,11 +85,15 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                           Row(
                             spacing: spacing12,
                             children: [
-                              Text(
-                                widget.item.location ?? 'Rincon, PR',
-                                style: bodyTextStyle.copyWith(
-                                  color: context.colors.textSecondary
-                                      .withValues(alpha: 0.7),
+                              Flexible(
+                                child: Text(
+                                  widget.item.location ?? 'Rincon, PR',
+                                  style: bodyTextStyle.copyWith(
+                                    color: context.colors.textSecondary
+                                        .withValues(alpha: 0.7),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               Container(
@@ -100,16 +105,20 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                                 width: 6,
                                 height: 6,
                               ),
-                              Consumer(
-                                builder: (context, ref, _) => Text(
-                                  formatDistance(
-                                    ref.watch(locationProvider),
-                                    widget.item.geo['lat']!,
-                                    widget.item.geo['lng']!,
-                                  ),
-                                  style: bodySmallStyle.copyWith(
-                                    color: context.colors.textSecondary
-                                        .withValues(alpha: 0.7),
+                              Flexible(
+                                child: Consumer(
+                                  builder: (context, ref, _) => Text(
+                                    formatDistance(
+                                      ref.watch(locationProvider),
+                                      (widget.item.geo['geopoint'] as GeoPoint).latitude,
+                                      (widget.item.geo['geopoint'] as GeoPoint).longitude,
+                                    ),
+                                    style: bodySmallStyle.copyWith(
+                                      color: context.colors.textSecondary
+                                          .withValues(alpha: 0.7),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ),
@@ -328,7 +337,8 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
       return;
     }
 
-    final coords = Coords(widget.item.geo['lat']!, widget.item.geo['lng']!);
+    final geopoint = widget.item.geo['geopoint'] as GeoPoint;
+    final coords = Coords(geopoint.latitude, geopoint.longitude);
     final title = widget.item.name;
 
     if (availableMaps.length == 1) {
@@ -602,8 +612,9 @@ class _PlaceMenuButton extends ConsumerWidget {
     final name = place.name;
     final location = place.location;
     final description = place.description;
-    final lat = place.geo['lat']!;
-    final lng = place.geo['lng']!;
+    final geopoint = place.geo['geopoint'] as GeoPoint;
+    final lat = geopoint.latitude;
+    final lng = geopoint.longitude;
     // final categoryIds =
         // place.categorySelections.map((cs) => cs.selectedId).toList();
 

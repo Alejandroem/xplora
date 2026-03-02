@@ -12,6 +12,7 @@ import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
 import '../widgets/category_selection_bottom_sheet.dart';
 import '../dialogs/base_dialog.dart';
+import '../dialogs/place_submission_dialog.dart';
 import 'drop_pin_map_page.dart';
 
 /// Screen where users can submit a new place to the platform.
@@ -460,42 +461,25 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final selectedImages = ref.read(selectedPlaceImagesProvider);
-    final selectedLocation = ref.read(selectedLocationProvider);
-    final categorySelections = ref.read(categorySelectionsProvider);
-
-    if (selectedImages.isEmpty) {
-      showXploraSnackBar(context, 'Please add at least one image',
-          isError: true);
+    final notifier = ref.read(placeSubmissionProvider.notifier);
+    if (!notifier.validate()) {
+      final error = ref.read(placeSubmissionProvider).error;
+      if (error != null) showXploraSnackBar(context, error, isError: true);
       return;
     }
 
-    if (selectedLocation == null) {
-      showXploraSnackBar(context, 'Please select a location', isError: true);
-      return;
-    }
+    showPlaceSubmissionDialog(context);
 
-    final categories = await ref.read(placeCategoriesProvider.future);
-    if (!mounted) return;
-
-    await ref.read(placeSubmissionProvider.notifier).submit(
-          name: _placeNameController.text.trim(),
-          description: _descriptionController.text.trim(),
-          location: selectedLocation,
-          imagePaths: selectedImages,
-          categorySelections: categorySelections,
-          categories: categories,
-        );
+    await notifier.submit(
+      name: _placeNameController.text.trim(),
+      description: _descriptionController.text.trim(),
+    );
 
     if (!mounted) return;
 
     final error = ref.read(placeSubmissionProvider).error;
     if (error != null) {
-      showXploraSnackBar(
-        context,
-        'Failed to submit place. Please try again.',
-        isError: true,
-      );
+      showXploraSnackBar(context, 'Failed to submit place. Please try again later: $error', isError: true);
     } else {
       _showSuccessDialog();
     }
@@ -515,6 +499,7 @@ class _SubmitPlacePageState extends ConsumerState<SubmitPlacePage> {
           }
         },
         child: BaseDialog(
+          dismissOnBarrierTap: false,
           icon: Container(
               width: 64,
               height: 64,

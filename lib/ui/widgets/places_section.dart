@@ -235,12 +235,18 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
                     }
                   },
                   loading: () => _buildLoadingShimmer(context),
-                  error: (error, stack) => Center(
-                    child: Text(
-                      'Error: $error',
-                      style: bodyTextStyle.copyWith(color: errorColor),
-                    ),
-                  ),
+                  error: (error, stack){
+                    print('Error loading places: $error');
+                    return SizedBox(
+                      height: _kCarouselSectionHeight,
+                      child: Center(
+                        child: Text(
+                          'Failed to load places. Please try again later.',
+                          style: bodyTextStyle.copyWith(color: errorColor),
+                        ),
+                      ),
+                    );
+                  }
                 );
           },
         ),

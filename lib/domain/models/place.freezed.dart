@@ -187,14 +187,15 @@ Place _$PlaceFromJson(Map<String, dynamic> json) {
 mixin _$Place {
   String get placeId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  Map<String, double> get geo => throw _privateConstructorUsedError;
-  String get geohash => throw _privateConstructorUsedError;
+  Map<String, dynamic> get geo => throw _privateConstructorUsedError;
   List<CategorySelection> get categorySelections =>
       throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   int get xp => throw _privateConstructorUsedError;
+  String? get userId => throw _privateConstructorUsedError;
+  String? get rejectionReason => throw _privateConstructorUsedError;
   String get source => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   @TimestampConverter()
@@ -215,13 +216,14 @@ abstract class $PlaceCopyWith<$Res> {
   $Res call(
       {String placeId,
       String name,
-      Map<String, double> geo,
-      String geohash,
+      Map<String, dynamic> geo,
       List<CategorySelection> categorySelections,
       List<String> imageUrls,
       String? location,
       String? description,
       int xp,
+      String? userId,
+      String? rejectionReason,
       String source,
       String status,
       @TimestampConverter() Timestamp? createdAt,
@@ -244,12 +246,13 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
     Object? placeId = null,
     Object? name = null,
     Object? geo = null,
-    Object? geohash = null,
     Object? categorySelections = null,
     Object? imageUrls = null,
     Object? location = freezed,
     Object? description = freezed,
     Object? xp = null,
+    Object? userId = freezed,
+    Object? rejectionReason = freezed,
     Object? source = null,
     Object? status = null,
     Object? createdAt = freezed,
@@ -267,11 +270,7 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
       geo: null == geo
           ? _value.geo
           : geo // ignore: cast_nullable_to_non_nullable
-              as Map<String, double>,
-      geohash: null == geohash
-          ? _value.geohash
-          : geohash // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Map<String, dynamic>,
       categorySelections: null == categorySelections
           ? _value.categorySelections
           : categorySelections // ignore: cast_nullable_to_non_nullable
@@ -292,6 +291,14 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
           ? _value.xp
           : xp // ignore: cast_nullable_to_non_nullable
               as int,
+      userId: freezed == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rejectionReason: freezed == rejectionReason
+          ? _value.rejectionReason
+          : rejectionReason // ignore: cast_nullable_to_non_nullable
+              as String?,
       source: null == source
           ? _value.source
           : source // ignore: cast_nullable_to_non_nullable
@@ -322,13 +329,14 @@ abstract class _$$PlaceImplCopyWith<$Res> implements $PlaceCopyWith<$Res> {
   $Res call(
       {String placeId,
       String name,
-      Map<String, double> geo,
-      String geohash,
+      Map<String, dynamic> geo,
       List<CategorySelection> categorySelections,
       List<String> imageUrls,
       String? location,
       String? description,
       int xp,
+      String? userId,
+      String? rejectionReason,
       String source,
       String status,
       @TimestampConverter() Timestamp? createdAt,
@@ -349,12 +357,13 @@ class __$$PlaceImplCopyWithImpl<$Res>
     Object? placeId = null,
     Object? name = null,
     Object? geo = null,
-    Object? geohash = null,
     Object? categorySelections = null,
     Object? imageUrls = null,
     Object? location = freezed,
     Object? description = freezed,
     Object? xp = null,
+    Object? userId = freezed,
+    Object? rejectionReason = freezed,
     Object? source = null,
     Object? status = null,
     Object? createdAt = freezed,
@@ -372,11 +381,7 @@ class __$$PlaceImplCopyWithImpl<$Res>
       geo: null == geo
           ? _value._geo
           : geo // ignore: cast_nullable_to_non_nullable
-              as Map<String, double>,
-      geohash: null == geohash
-          ? _value.geohash
-          : geohash // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Map<String, dynamic>,
       categorySelections: null == categorySelections
           ? _value._categorySelections
           : categorySelections // ignore: cast_nullable_to_non_nullable
@@ -397,6 +402,14 @@ class __$$PlaceImplCopyWithImpl<$Res>
           ? _value.xp
           : xp // ignore: cast_nullable_to_non_nullable
               as int,
+      userId: freezed == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rejectionReason: freezed == rejectionReason
+          ? _value.rejectionReason
+          : rejectionReason // ignore: cast_nullable_to_non_nullable
+              as String?,
       source: null == source
           ? _value.source
           : source // ignore: cast_nullable_to_non_nullable
@@ -423,13 +436,14 @@ class _$PlaceImpl implements _Place {
   const _$PlaceImpl(
       {required this.placeId,
       required this.name,
-      required final Map<String, double> geo,
-      required this.geohash,
+      required final Map<String, dynamic> geo,
       final List<CategorySelection> categorySelections = const [],
       final List<String> imageUrls = const [],
       this.location,
       this.description,
       this.xp = 0,
+      this.userId,
+      this.rejectionReason,
       this.source = 'seed',
       this.status = 'active',
       @TimestampConverter() this.createdAt,
@@ -445,16 +459,14 @@ class _$PlaceImpl implements _Place {
   final String placeId;
   @override
   final String name;
-  final Map<String, double> _geo;
+  final Map<String, dynamic> _geo;
   @override
-  Map<String, double> get geo {
+  Map<String, dynamic> get geo {
     if (_geo is EqualUnmodifiableMapView) return _geo;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_geo);
   }
 
-  @override
-  final String geohash;
   final List<CategorySelection> _categorySelections;
   @override
   @JsonKey()
@@ -482,6 +494,10 @@ class _$PlaceImpl implements _Place {
   @JsonKey()
   final int xp;
   @override
+  final String? userId;
+  @override
+  final String? rejectionReason;
+  @override
   @JsonKey()
   final String source;
   @override
@@ -496,7 +512,7 @@ class _$PlaceImpl implements _Place {
 
   @override
   String toString() {
-    return 'Place(placeId: $placeId, name: $name, geo: $geo, geohash: $geohash, categorySelections: $categorySelections, imageUrls: $imageUrls, location: $location, description: $description, xp: $xp, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Place(placeId: $placeId, name: $name, geo: $geo, categorySelections: $categorySelections, imageUrls: $imageUrls, location: $location, description: $description, xp: $xp, userId: $userId, rejectionReason: $rejectionReason, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -507,7 +523,6 @@ class _$PlaceImpl implements _Place {
             (identical(other.placeId, placeId) || other.placeId == placeId) &&
             (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality().equals(other._geo, _geo) &&
-            (identical(other.geohash, geohash) || other.geohash == geohash) &&
             const DeepCollectionEquality()
                 .equals(other._categorySelections, _categorySelections) &&
             const DeepCollectionEquality()
@@ -517,6 +532,9 @@ class _$PlaceImpl implements _Place {
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.xp, xp) || other.xp == xp) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.rejectionReason, rejectionReason) ||
+                other.rejectionReason == rejectionReason) &&
             (identical(other.source, source) || other.source == source) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.createdAt, createdAt) ||
@@ -532,12 +550,13 @@ class _$PlaceImpl implements _Place {
       placeId,
       name,
       const DeepCollectionEquality().hash(_geo),
-      geohash,
       const DeepCollectionEquality().hash(_categorySelections),
       const DeepCollectionEquality().hash(_imageUrls),
       location,
       description,
       xp,
+      userId,
+      rejectionReason,
       source,
       status,
       createdAt,
@@ -561,13 +580,14 @@ abstract class _Place implements Place {
   const factory _Place(
       {required final String placeId,
       required final String name,
-      required final Map<String, double> geo,
-      required final String geohash,
+      required final Map<String, dynamic> geo,
       final List<CategorySelection> categorySelections,
       final List<String> imageUrls,
       final String? location,
       final String? description,
       final int xp,
+      final String? userId,
+      final String? rejectionReason,
       final String source,
       final String status,
       @TimestampConverter() final Timestamp? createdAt,
@@ -580,9 +600,7 @@ abstract class _Place implements Place {
   @override
   String get name;
   @override
-  Map<String, double> get geo;
-  @override
-  String get geohash;
+  Map<String, dynamic> get geo;
   @override
   List<CategorySelection> get categorySelections;
   @override
@@ -593,6 +611,10 @@ abstract class _Place implements Place {
   String? get description;
   @override
   int get xp;
+  @override
+  String? get userId;
+  @override
+  String? get rejectionReason;
   @override
   String get source;
   @override

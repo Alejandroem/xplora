@@ -247,23 +247,16 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
 
   // Error state
   Widget _buildError(String error) {
+    print('Error loading places: $error');
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Error loading places',
+            'Failed to load places. Please try again later.',
             style: bodyTextStyle.copyWith(
               color: context.colors.textPrimary,
             ),
-          ),
-          const SizedBox(height: spacing8),
-          Text(
-            error,
-            style: bodySmallStyle.copyWith(
-              color: context.colors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),

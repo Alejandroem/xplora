@@ -25,10 +25,7 @@ Map<String, dynamic> _$$CategorySelectionImplToJson(
 _$PlaceImpl _$$PlaceImplFromJson(Map<String, dynamic> json) => _$PlaceImpl(
       placeId: json['placeId'] as String,
       name: json['name'] as String,
-      geo: (json['geo'] as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, (e as num).toDouble()),
-      ),
-      geohash: json['geohash'] as String,
+      geo: json['geo'] as Map<String, dynamic>,
       categorySelections: (json['categorySelections'] as List<dynamic>?)
               ?.map(
                   (e) => CategorySelection.fromJson(e as Map<String, dynamic>))
@@ -41,6 +38,8 @@ _$PlaceImpl _$$PlaceImplFromJson(Map<String, dynamic> json) => _$PlaceImpl(
       location: json['location'] as String?,
       description: json['description'] as String?,
       xp: (json['xp'] as num?)?.toInt() ?? 0,
+      userId: json['userId'] as String?,
+      rejectionReason: json['rejectionReason'] as String?,
       source: json['source'] as String? ?? 'seed',
       status: json['status'] as String? ?? 'active',
       createdAt: const TimestampConverter().fromJson(json['createdAt']),
@@ -52,12 +51,13 @@ Map<String, dynamic> _$$PlaceImplToJson(_$PlaceImpl instance) =>
       'placeId': instance.placeId,
       'name': instance.name,
       'geo': instance.geo,
-      'geohash': instance.geohash,
       'categorySelections': instance.categorySelections,
       'imageUrls': instance.imageUrls,
       'location': instance.location,
       'description': instance.description,
       'xp': instance.xp,
+      'userId': instance.userId,
+      'rejectionReason': instance.rejectionReason,
       'source': instance.source,
       'status': instance.status,
       'createdAt': const TimestampConverter().toJson(instance.createdAt),
