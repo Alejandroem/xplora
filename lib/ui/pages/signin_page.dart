@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/location_providers.dart';
 import '../../theme.dart';
 import '../../application/providers/auth_providers.dart';
@@ -28,7 +25,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   void initState() {
     super.initState();
-    // Reset form state when screen is opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.invalidate(loginFormNotifierProvider);
     });
@@ -39,6 +35,37 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _refreshProvidersAfterSignIn() {
+    ref.invalidate(settingsStateNotifierProvider);
+    ref.invalidate(autoEnableLocationTrackingProvider);
+  }
+
+  Future<void> _handleOAuthSignIn(Future<void> Function() signIn) async {
+    await signIn();
+
+    final finalState = ref.read(loginFormNotifierProvider);
+
+    if (finalState.errors.isNotEmpty) {
+      if (mounted) {
+        showXploraSnackBar(context, finalState.errors.first, isError: true);
+      }
+      return;
+    }
+
+    final currentUser = await ref.read(authServiceProvider).getAuthUser();
+    if (currentUser == null || !mounted) return;
+
+    if (finalState.needsProfileCompletion) {
+      ref.invalidate(settingsStateNotifierProvider);
+      showXploraSnackBar(context, 'Signed up successfully!');
+      Navigator.pushReplacementNamed(context, '/choose-username');
+    } else {
+      _refreshProvidersAfterSignIn();
+      showXploraSnackBar(context, 'Signed in successfully!');
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -219,19 +246,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                                     );
                                   }
                                 } else {
-                                  // Success - refresh settings and navigate
                                   if (context.mounted) {
-                                    // Refresh settings to ensure they're loaded
-                                    ref.invalidate(
-                                        settingsStateNotifierProvider);
-
-                                    // Refresh location to ensure it's loaded
-                                    ref.invalidate(nearbyAdventuresProvider);
-
-                                    // Refresh auto enable location provider
-                                    ref.invalidate(
-                                        autoEnableLocationTrackingProvider);
-
+                                    _refreshProvidersAfterSignIn();
                                     showXploraSnackBar(
                                       context,
                                       'Signed in successfully!',
@@ -312,69 +328,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                           onPressed: isLoading
                               ? null
-                              : () async {
-                                  final loginNotifier = ref
-                                      .read(loginFormNotifierProvider.notifier);
-
-                                  // Trigger Google Sign-In
-                                  await loginNotifier.loginWithGoogle();
-
-                                  // Check for errors and handle navigation
-                                  final finalState =
-                                      ref.read(loginFormNotifierProvider);
-
-                                  if (finalState.errors.isNotEmpty) {
-                                    // Show error message in UI (user cancellation won't have errors)
-                                    if (context.mounted) {
-                                      showXploraSnackBar(
-                                        context,
-                                        finalState.errors.first,
-                                        isError: true,
-                                      );
-                                    }
-                                  } else {
-                                    // CRITICAL: Verify user is actually authenticated
-                                    // When user cancels Google sign-in, errors remain empty
-                                    // (silent cancellation for better UX), but no user is signed in.
-                                    // This check prevents navigation/settings loading when no one is authenticated.
-                                    final authService =
-                                        ref.read(authServiceProvider);
-                                    final currentUser =
-                                        await authService.getAuthUser();
-
-                                    if (currentUser != null &&
-                                        context.mounted) {
-                                      // Success - refresh settings and navigate
-                                      // Refresh settings to ensure they're loaded
-                                      ref.invalidate(
-                                          settingsStateNotifierProvider);
-
-                                      // Show appropriate message based on whether it's a new user
-                                      showXploraSnackBar(
-                                        context,
-                                        finalState.needsProfileCompletion
-                                            ? 'Signed up successfully!'
-                                            : 'Signed in successfully!',
-                                      );
-
-                                      // Navigate to complete profile if new user, otherwise pop
-                                      if (finalState.needsProfileCompletion) {
-                                        Navigator.pushReplacementNamed(
-                                            context, '/choose-username');
-                                      } else {
-                                        // Refresh location to ensure it's loaded
-                                        ref.invalidate(
-                                            nearbyAdventuresProvider);
-
-                                        // Refresh auto enable location provider
-                                        ref.invalidate(
-                                            autoEnableLocationTrackingProvider);
-
-                                        Navigator.of(context).pop();
-                                      }
-                                    }
-                                  }
-                                },
+                              : () => _handleOAuthSignIn(
+                                    ref
+                                        .read(loginFormNotifierProvider.notifier)
+                                        .loginWithGoogle,
+                                  ),
                         ),
                         const SizedBox(height: spacing16),
 
@@ -391,69 +349,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             ),
                             onPressed: isLoading
                                 ? null
-                                : () async {
-                                    final loginNotifier = ref.read(
-                                        loginFormNotifierProvider.notifier);
-
-                                    // Trigger Apple Sign-In
-                                    await loginNotifier.loginWithApple();
-
-                                    // Check for errors and handle navigation
-                                    final finalState =
-                                        ref.read(loginFormNotifierProvider);
-
-                                    if (finalState.errors.isNotEmpty) {
-                                      // Show error message in UI (user cancellation won't have errors)
-                                      if (context.mounted) {
-                                        showXploraSnackBar(
-                                          context,
-                                          finalState.errors.first,
-                                          isError: true,
-                                        );
-                                      }
-                                    } else {
-                                      // CRITICAL: Verify user is actually authenticated
-                                      // When user cancels Apple sign-in, errors remain empty
-                                      // (silent cancellation for better UX), but no user is signed in.
-                                      // This check prevents navigation/settings loading when no one is authenticated.
-                                      final authService =
-                                          ref.read(authServiceProvider);
-                                      final currentUser =
-                                          await authService.getAuthUser();
-
-                                      if (currentUser != null &&
-                                          context.mounted) {
-                                        // Success - refresh settings and navigate
-                                        // Refresh settings to ensure they're loaded
-                                        ref.invalidate(
-                                            settingsStateNotifierProvider);
-
-                                        // Show appropriate message based on whether it's a new user
-                                        showXploraSnackBar(
-                                          context,
-                                          finalState.needsProfileCompletion
-                                              ? 'Signed up successfully!'
-                                              : 'Signed in successfully!',
-                                        );
-
-                                        // Navigate to complete profile if new user, otherwise pop
-                                        if (finalState.needsProfileCompletion) {
-                                          Navigator.pushReplacementNamed(
-                                              context, '/choose-username');
-                                        } else {
-                                          // Refresh location to ensure it's loaded
-                                          ref.invalidate(
-                                              nearbyAdventuresProvider);
-
-                                          // Refresh auto enable location provider
-                                          ref.invalidate(
-                                              autoEnableLocationTrackingProvider);
-
-                                          Navigator.of(context).pop();
-                                        }
-                                      }
-                                    }
-                                  },
+                                : () => _handleOAuthSignIn(
+                                      ref
+                                          .read(loginFormNotifierProvider.notifier)
+                                          .loginWithApple,
+                                    ),
                           ),
                           const SizedBox(height: spacing16),
                         ],

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/bookmark.dart';
@@ -32,6 +34,42 @@ class BookmarkToggleNotifier extends FamilyAsyncNotifier<void, String> {
   }
 }
 
+/// switchMap: cancels the previous inner stream before starting the next one,
+/// preventing stale emissions from old user sessions after auth changes.
+Stream<B> _switchMap<A, B>(
+  Stream<A> source,
+  Stream<B> Function(A) mapper,
+) {
+  late StreamController<B> controller;
+  StreamSubscription<A>? outerSub;
+  StreamSubscription<B>? innerSub;
+
+  controller = StreamController<B>(
+    onListen: () {
+      outerSub = source.listen(
+        (event) {
+          innerSub?.cancel();
+          innerSub = mapper(event).listen(
+            controller.add,
+            onError: controller.addError,
+          );
+        },
+        onError: controller.addError,
+        onDone: () {
+          innerSub?.cancel();
+          controller.close();
+        },
+      );
+    },
+    onCancel: () {
+      innerSub?.cancel();
+      outerSub?.cancel();
+    },
+  );
+
+  return controller.stream;
+}
+
 final bookmarkCrudServiceProvider =
     Provider.family<BookmarkCrudService, String>((ref, userId) {
   return FirebaseBookmarkCrudService(userId);
@@ -41,7 +79,8 @@ final currentUserBookmarksStreamProvider =
     StreamProvider<List<Bookmark>?>((ref) {
   final authService = ref.watch(authServiceProvider);
 
-  return authService.getAuthUserStreamUserId().asyncExpand<List<Bookmark>?>(
+  return _switchMap(
+    authService.getAuthUserStreamUserId(),
     (userId) {
       if (userId == null) return Stream.value(null);
       return ref.read(bookmarkCrudServiceProvider(userId)).streamByFilters([]);
@@ -56,7 +95,8 @@ final currentUserPlaceBookmarksStreamProvider =
     StreamProvider<List<Bookmark>?>((ref) {
   final authService = ref.watch(authServiceProvider);
 
-  return authService.getAuthUserStreamUserId().asyncExpand<List<Bookmark>?>(
+  return _switchMap(
+    authService.getAuthUserStreamUserId(),
     (userId) {
       if (userId == null) return Stream.value(null);
       return ref.read(bookmarkCrudServiceProvider(userId)).streamByFilters([
@@ -67,11 +107,16 @@ final currentUserPlaceBookmarksStreamProvider =
 });
 
 final savedPlacesProvider = FutureProvider<List<Place>>((ref) async {
-  // Using .future instead of .valueOrNull so this provider stays in loading
-  // state until the stream emits its first value — prevents the false
-  // "No saved places" flash on first app install/login.
-  final bookmarks =
-      await ref.watch(currentUserPlaceBookmarksStreamProvider.future);
+  // Watch the stream directly for reactivity (rebuilds on every emission).
+  // If still loading, await .future so the provider stays in loading state
+  // until the first value arrives — prevents the "No saved places" flash.
+  final bookmarksAsync = ref.watch(currentUserPlaceBookmarksStreamProvider);
+  final List<Bookmark>? bookmarks;
+  if (bookmarksAsync.isLoading) {
+    bookmarks = await ref.watch(currentUserPlaceBookmarksStreamProvider.future);
+  } else {
+    bookmarks = bookmarksAsync.valueOrNull;
+  }
 
   if (bookmarks == null || bookmarks.isEmpty) return [];
 
@@ -92,7 +137,8 @@ final placeBookmarkProvider =
     StreamProvider.family<Bookmark?, String>((ref, placeId) {
   final authService = ref.watch(authServiceProvider);
 
-  return authService.getAuthUserStreamUserId().asyncExpand<Bookmark?>(
+  return _switchMap(
+    authService.getAuthUserStreamUserId(),
     (userId) {
       if (userId == null) return Stream.value(null);
       return ref.read(bookmarkCrudServiceProvider(userId)).getStream(placeId);

@@ -24,18 +24,21 @@ class SubmissionsPage extends ConsumerWidget {
         ),
         body: submissionsAsync.when(
           loading: () => ShimmerWidgets.submissionTileListShimmer(context: context),
-          error: (_, __) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(spacing32),
-              child: Text(
-                'Failed to load submissions. Please try again.',
-                style: bodyTextStyle.copyWith(
-                  color: context.colors.textSecondary,
+          error: (_, __) {
+            print('Failed to load submissions: $_');
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(spacing32),
+                child: Text(
+                  'Failed to load submissions. Please try again.',
+                  style: bodyTextStyle.copyWith(
+                    color: context.colors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
-          ),
+            );
+          },
           data: (submissions) => submissions.isEmpty
               ? _buildEmptyState(context)
               : ListView.builder(
@@ -215,8 +218,8 @@ class _SubmissionTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: spacing8,),
-                    // XP badge — only for approved places with xp > 0
-                    if (place.status == 'active' && place.xp > 0)
+                    // XP badge — only for approved places with contributionXp > 0
+                    if (place.status == 'active' && place.contributionXp > 0)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: spacing12,
@@ -231,7 +234,7 @@ class _SubmissionTile extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          _formatXp(place.xp),
+                          _formatXp(place.contributionXp),
                           style: bodySmallStyle.copyWith(
                             color: brandSecondary,
                             fontWeight: FontWeight.w600,

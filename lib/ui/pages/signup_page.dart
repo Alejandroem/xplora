@@ -44,6 +44,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     super.dispose();
   }
 
+  void _refreshProvidersAfterSignUp() {
+    ref.invalidate(settingsStateNotifierProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -290,12 +294,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                                     );
                                   }
                                 } else {
-                                  // Success - navigate to profile completion screen
                                   if (context.mounted) {
-                                    // Refresh settings to ensure they're loaded
-                                    ref.invalidate(
-                                        settingsStateNotifierProvider);
-
+                                    _refreshProvidersAfterSignUp();
                                     showXploraSnackBar(
                                       context,
                                       'Account created successfully!',

@@ -53,18 +53,18 @@ class _QuestMainScreenState extends ConsumerState<QuestMainScreen> {
               ref.read(questTabProvider.notifier).state = QuestTab.values[index];
             },
           ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.more_horiz,
-                color: context.colors.iconColor,
-                size: 32,
-              ),
-              onPressed: () {
-                // TODO: Implement QR code scanner for quest verification
-              },
-            ),
-          ],
+          // actions: [
+          //   IconButton(
+          //     icon: Icon(
+          //       Icons.more_horiz,
+          //       color: context.colors.iconColor,
+          //       size: 32,
+          //     ),
+          //     onPressed: () {
+          //       // TODO: Implement QR code scanner for quest verification
+          //     },
+          //   ),
+          // ],
         ),
         body: Padding(
           padding: const EdgeInsets.fromLTRB(spacing16, spacing8, spacing16, 0),

@@ -14,6 +14,7 @@ import '../../domain/models/place.dart';
 import '../../theme.dart';
 import '../../utils/shimmer_widgets.dart';
 import '../../utils/snackbar_utils.dart';
+import '../widgets/distance_text.dart';
 import '../widgets/quest_tabs.dart';
 
 final descriptionExpandedProvider =
@@ -107,19 +108,22 @@ class _PlaceDetailState extends ConsumerState<PlaceDetail> {
                               ),
                               Flexible(
                                 child: Consumer(
-                                  builder: (context, ref, _) => Text(
-                                    formatDistance(
+                                  builder: (context, ref, _) {
+                                    final distance = formatDistance(
                                       ref.watch(locationProvider),
                                       (widget.item.geo['geopoint'] as GeoPoint).latitude,
                                       (widget.item.geo['geopoint'] as GeoPoint).longitude,
-                                    ),
-                                    style: bodySmallStyle.copyWith(
-                                      color: context.colors.textSecondary
-                                          .withValues(alpha: 0.7),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                    );
+                                    final parts = distance.split(' ');
+                                    return DistanceText(
+                                      number: parts.first,
+                                      suffix: ' ${parts.skip(1).join(' ')}',
+                                      style: bodySmallStyle.copyWith(
+                                        color: context.colors.textSecondary
+                                            .withValues(alpha: 0.7),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ],

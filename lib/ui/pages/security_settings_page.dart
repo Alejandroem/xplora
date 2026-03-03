@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../theme.dart';
@@ -92,22 +91,22 @@ class SecuritySettingsPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: spacing24),
-            PrimaryButton(
-              text: 'Reset Account Access',
-              onPressed: () async {
-                // Show confirmation dialog
-                final confirmed = await showResetAccountAccessDialog(context);
-
-                // if (confirmed == true && context.mounted) {
-                //   // TODO: Implement reset account access logic
-                //   showXploraSnackBar(
-                //     context,
-                //     'Account access reset successfully',
-                //   );
-                // }
-              },
-            ),
-            const SizedBox(height: spacing16),
+            // PrimaryButton(
+            //   text: 'Reset Account Access',
+            //   onPressed: () async {
+            //     // Show confirmation dialog
+            //     final confirmed = await showResetAccountAccessDialog(context);
+            //
+            //     // if (confirmed == true && context.mounted) {
+            //     //   // TODO: Implement reset account access logic
+            //     //   showXploraSnackBar(
+            //     //     context,
+            //     //     'Account access reset successfully',
+            //     //   );
+            //     // }
+            //   },
+            // ),
+            // const SizedBox(height: spacing16),
             SecondaryButton(
               text: 'Logout',
               onPressed: () async {
@@ -117,7 +116,6 @@ class SecuritySettingsPage extends ConsumerWidget {
                 if (confirmed == true && context.mounted) {
                   final authProvider = ref.read(authServiceProvider);
                   await authProvider.signOut();
-                  ref.invalidate(nearbyAdventuresProvider);
 
                   //pop until /
                   if (context.mounted) {

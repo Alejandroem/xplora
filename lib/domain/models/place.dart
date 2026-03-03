@@ -26,6 +26,7 @@ class Place with _$Place {
     String? location,
     String? description,
     @Default(0) int xp,
+    @Default(0) int contributionXp,
     String? userId,
     String? rejectionReason,
     @Default('seed') String source,

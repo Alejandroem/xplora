@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../application/providers/adventure_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
+import '../../application/providers/boomark_providers.dart';
 import '../../application/providers/navigation_providers.dart';
 import '../../application/providers/profile_providers.dart';
 import '../../application/providers/settings_providers.dart';
@@ -278,6 +279,7 @@ class _SettingsPageOldState extends ConsumerState<SettingsPageOld> {
                 final authProvider = ref.read(authServiceProvider);
                 await authProvider.signOut();
                 ref.invalidate(nearbyAdventuresProvider);
+                ref.invalidate(currentUserPlaceBookmarksStreamProvider);
 
                 //pop until /
                 if (context.mounted) {

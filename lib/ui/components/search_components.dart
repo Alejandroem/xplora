@@ -166,7 +166,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
     return _buildPlacesGrid(
       places: state.places,
       controller: _scrollController,
-      showLoadingShimmer: state.hasMore,
+      showLoadingShimmer: state.isLoading && state.hasMore,
     );
   }
 

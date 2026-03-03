@@ -6,7 +6,6 @@ import '../../domain/models/place.dart';
 import '../../domain/services/place_crud_service.dart';
 import '../../infrastructure/services/firebase_place_crud_service.dart';
 import '../notifiers/paginated_places_notifier.dart';
-import 'auth_providers.dart';
 import 'auth_service_providers.dart';
 import 'location_providers.dart';
 
@@ -16,84 +15,44 @@ final placeCrudServiceProvider = Provider<PlaceCrudService>((ref) {
 
 final nearbyPlacesProvider = FutureProvider<List<Place>>((ref) async {
   final placeCrudService = ref.watch(placeCrudServiceProvider);
-  final locationState = ref.watch(locationProvider);
-  final currentUserId = (await ref.read(authServiceProvider).getAuthUser())?.id;
+  final position = ref.watch(locationProvider).position;
+  if (position == null) return [];
 
-  final places = await placeCrudService.readByFilters([
-    {'field': 'status', 'operator': '==', 'value': 'active'},
-  ]);
+  const radiusInKm = 3.0 * 1.60934; // 3 miles → km
+  final center = GeoPoint(position.latitude, position.longitude);
 
-  if (places == null || places.isEmpty) {
-    return [];
-  }
+  final places = await placeCrudService.fetchNearby(
+    center: center,
+    radiusInKm: radiusInKm,
+  );
 
-  // Exclude the current user's own submissions
-  final activePlaces = currentUserId != null
-      ? places.where((p) => p.userId != currentUserId).toList()
-      : places;
+  // Sort by distance (nearest to farthest) — required since geohash queries
+  // return results from multiple range buckets with no inherent distance order.
+  places.sort((a, b) {
+    final geopointA = a.geo['geopoint'] as GeoPoint;
+    final distanceA = Geolocator.distanceBetween(
+      position.latitude, position.longitude,
+      geopointA.latitude, geopointA.longitude,
+    );
+    final geopointB = b.geo['geopoint'] as GeoPoint;
+    final distanceB = Geolocator.distanceBetween(
+      position.latitude, position.longitude,
+      geopointB.latitude, geopointB.longitude,
+    );
+    return distanceA.compareTo(distanceB);
+  });
 
-  // Filter and sort by distance if user location is available
-  if (locationState.position != null) {
-    final userPosition = locationState.position!;
-    const maxDistanceInMiles = 3.0;
-    const metersPerMile = 1609.34;
-    const maxDistanceInMeters = maxDistanceInMiles * metersPerMile;
-
-    // Filter places within 3-mile radius
-    final nearbyPlaces = activePlaces.where((place) {
-      final geopoint = place.geo['geopoint'] as GeoPoint;
-      final distance = Geolocator.distanceBetween(
-        userPosition.latitude,
-        userPosition.longitude,
-        geopoint.latitude,
-        geopoint.longitude,
-      );
-      return distance <= maxDistanceInMeters;
-    }).toList();
-
-    // Sort by distance (nearest to farthest)
-    nearbyPlaces.sort((a, b) {
-      final geopointA = a.geo['geopoint'] as GeoPoint;
-      final distanceA = Geolocator.distanceBetween(
-        userPosition.latitude,
-        userPosition.longitude,
-        geopointA.latitude,
-        geopointA.longitude,
-      );
-
-      final geopointB = b.geo['geopoint'] as GeoPoint;
-      final distanceB = Geolocator.distanceBetween(
-        userPosition.latitude,
-        userPosition.longitude,
-        geopointB.latitude,
-        geopointB.longitude,
-      );
-
-      return distanceA.compareTo(distanceB);
-    });
-
-    return nearbyPlaces;
-  }
-
-  return activePlaces;
+  return places;
 });
 
 final allPlacesProvider = FutureProvider.autoDispose<List<Place>>((ref) async {
   final placeCrudService = ref.watch(placeCrudServiceProvider);
-  final currentUserId = (await ref.read(authServiceProvider).getAuthUser())?.id;
 
   final places = await placeCrudService.readByFilters([
     {'field': 'status', 'operator': '==', 'value': 'active'},
   ]);
 
-  if (places == null) return [];
-
-  // Exclude the current user's own submissions
-  if (currentUserId != null) {
-    return places.where((p) => p.userId != currentUserId).toList();
-  }
-
-  return places;
+  return places ?? [];
 });
 
 final userSubmissionsProvider = FutureProvider.autoDispose<List<Place>>((ref) async {

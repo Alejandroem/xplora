@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../domain/models/place.dart';
 import '../../domain/services/place_crud_service.dart';
@@ -26,6 +28,23 @@ class FirebasePlaceCrudService extends FirebaseCrudService<Place>
 
   @override
   String generateId() => collection.doc().id;
+
+  @override
+  Future<List<Place>> fetchNearby({
+    required GeoPoint center,
+    required double radiusInKm,
+  }) async {
+    final snapshots = await GeoCollectionReference<Place>(collection).fetchWithin(
+      center: GeoFirePoint(center),
+      radiusInKm: radiusInKm,
+      field: 'geo',
+      geopointFrom: (place) => place.geo['geopoint'] as GeoPoint,
+      queryBuilder: (query) => query.where('status', isEqualTo: 'active'),
+      strictMode: true,
+    );
+
+    return snapshots.map((s) => s.data()).whereType<Place>().toList();
+  }
 
   @override
   Future<List<Place>?> readPaginated({

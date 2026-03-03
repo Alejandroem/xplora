@@ -8,6 +8,7 @@ import '../../theme.dart';
 import '../../utils/location_utils.dart';
 import '../pages/place_detail.dart';
 import 'carousel_card.dart';
+import 'distance_text.dart';
 
 class PlaceCard extends ConsumerWidget {
   final Place item;
@@ -24,6 +25,9 @@ class PlaceCard extends ConsumerWidget {
     final location = ref.watch(locationProvider);
     final geopoint = item.geo['geopoint'] as GeoPoint;
     final distance = formatDistance(location, geopoint.latitude, geopoint.longitude);
+    final distanceParts = distance.split(' ');
+    final distanceNumber = distanceParts.first;
+    final distanceSuffix = ' ${distanceParts.skip(1).join(' ')}';
     final imageUrl = item.imageUrls.isNotEmpty ? item.imageUrls.first : null;
     final heroTag = 'place-image-${item.placeId}-${isInGrid ? 'grid' : 'carousel'}';
 
@@ -49,8 +53,9 @@ class PlaceCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  distance,
+                DistanceText(
+                  number: distanceNumber,
+                  suffix: distanceSuffix,
                   style: bodySmallStyle.copyWith(
                     fontSize: 12,
                     color: context.colors.textSecondary.withValues(alpha: 0.6),
@@ -71,8 +76,9 @@ class PlaceCard extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  distance,
+                DistanceText(
+                  number: distanceNumber,
+                  suffix: distanceSuffix,
                   style: bodySmallStyle.copyWith(
                     fontSize: 12,
                     color: context.colors.textSecondary.withValues(alpha: 0.6),

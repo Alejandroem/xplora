@@ -194,6 +194,7 @@ mixin _$Place {
   String? get location => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   int get xp => throw _privateConstructorUsedError;
+  int get contributionXp => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
   String? get rejectionReason => throw _privateConstructorUsedError;
   String get source => throw _privateConstructorUsedError;
@@ -222,6 +223,7 @@ abstract class $PlaceCopyWith<$Res> {
       String? location,
       String? description,
       int xp,
+      int contributionXp,
       String? userId,
       String? rejectionReason,
       String source,
@@ -251,6 +253,7 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
     Object? location = freezed,
     Object? description = freezed,
     Object? xp = null,
+    Object? contributionXp = null,
     Object? userId = freezed,
     Object? rejectionReason = freezed,
     Object? source = null,
@@ -290,6 +293,10 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
       xp: null == xp
           ? _value.xp
           : xp // ignore: cast_nullable_to_non_nullable
+              as int,
+      contributionXp: null == contributionXp
+          ? _value.contributionXp
+          : contributionXp // ignore: cast_nullable_to_non_nullable
               as int,
       userId: freezed == userId
           ? _value.userId
@@ -335,6 +342,7 @@ abstract class _$$PlaceImplCopyWith<$Res> implements $PlaceCopyWith<$Res> {
       String? location,
       String? description,
       int xp,
+      int contributionXp,
       String? userId,
       String? rejectionReason,
       String source,
@@ -362,6 +370,7 @@ class __$$PlaceImplCopyWithImpl<$Res>
     Object? location = freezed,
     Object? description = freezed,
     Object? xp = null,
+    Object? contributionXp = null,
     Object? userId = freezed,
     Object? rejectionReason = freezed,
     Object? source = null,
@@ -401,6 +410,10 @@ class __$$PlaceImplCopyWithImpl<$Res>
       xp: null == xp
           ? _value.xp
           : xp // ignore: cast_nullable_to_non_nullable
+              as int,
+      contributionXp: null == contributionXp
+          ? _value.contributionXp
+          : contributionXp // ignore: cast_nullable_to_non_nullable
               as int,
       userId: freezed == userId
           ? _value.userId
@@ -442,6 +455,7 @@ class _$PlaceImpl implements _Place {
       this.location,
       this.description,
       this.xp = 0,
+      this.contributionXp = 0,
       this.userId,
       this.rejectionReason,
       this.source = 'seed',
@@ -494,6 +508,9 @@ class _$PlaceImpl implements _Place {
   @JsonKey()
   final int xp;
   @override
+  @JsonKey()
+  final int contributionXp;
+  @override
   final String? userId;
   @override
   final String? rejectionReason;
@@ -512,7 +529,7 @@ class _$PlaceImpl implements _Place {
 
   @override
   String toString() {
-    return 'Place(placeId: $placeId, name: $name, geo: $geo, categorySelections: $categorySelections, imageUrls: $imageUrls, location: $location, description: $description, xp: $xp, userId: $userId, rejectionReason: $rejectionReason, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Place(placeId: $placeId, name: $name, geo: $geo, categorySelections: $categorySelections, imageUrls: $imageUrls, location: $location, description: $description, xp: $xp, contributionXp: $contributionXp, userId: $userId, rejectionReason: $rejectionReason, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -532,6 +549,8 @@ class _$PlaceImpl implements _Place {
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.xp, xp) || other.xp == xp) &&
+            (identical(other.contributionXp, contributionXp) ||
+                other.contributionXp == contributionXp) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.rejectionReason, rejectionReason) ||
                 other.rejectionReason == rejectionReason) &&
@@ -555,6 +574,7 @@ class _$PlaceImpl implements _Place {
       location,
       description,
       xp,
+      contributionXp,
       userId,
       rejectionReason,
       source,
@@ -586,6 +606,7 @@ abstract class _Place implements Place {
       final String? location,
       final String? description,
       final int xp,
+      final int contributionXp,
       final String? userId,
       final String? rejectionReason,
       final String source,
@@ -611,6 +632,8 @@ abstract class _Place implements Place {
   String? get description;
   @override
   int get xp;
+  @override
+  int get contributionXp;
   @override
   String? get userId;
   @override
