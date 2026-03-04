@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'application/providers/auth_providers.dart';
 import 'application/providers/settings_providers.dart';
 import 'database_seeder.dart';
+import 'place_migration.dart';
 import 'domain/models/quest.dart';
 import 'firebase_options.dart';
 import 'theme.dart';
@@ -49,6 +50,7 @@ void main() async {
   );
 
   // DatabaseSeeder.seedCategories();
+  // await PlaceMigration.migrateCategoryIds();
 
   runApp(
     DevicePreview(

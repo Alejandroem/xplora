@@ -8,6 +8,7 @@ import '../../infrastructure/services/firebase_place_crud_service.dart';
 import '../notifiers/paginated_places_notifier.dart';
 import 'auth_service_providers.dart';
 import 'location_providers.dart';
+import 'profile_providers.dart';
 
 final placeCrudServiceProvider = Provider<PlaceCrudService>((ref) {
   return FirebasePlaceCrudService();
@@ -80,3 +81,43 @@ final paginatedPlacesProvider =
     return PaginatedPlacesNotifier(placeCrudService);
   },
 );
+
+final userInterestsProvider = FutureProvider<List<String>>((ref) async {
+  final authService = ref.read(authServiceProvider);
+  final userId = (await authService.getAuthUser())?.id;
+  if (userId == null) {
+    print('[ForYou] No authenticated user — returning empty interests');
+    return [];
+  }
+
+  final profileService = ref.read(profileServiceProvider);
+  final profile = await profileService.read(userId);
+  final interests = profile?.interests ?? [];
+  print('[ForYou] User $userId has ${interests.length} interests: $interests');
+  return interests;
+});
+
+int _scorePlace(Place place, List<String> interestIds) {
+  final placeIds = place.categorySelections.expand((sel) => sel.path).toSet();
+  return interestIds.where((id) => placeIds.contains(id)).length;
+}
+
+final forYouPlacesProvider = FutureProvider<List<Place>>((ref) async {
+  final interests = await ref.watch(userInterestsProvider.future);
+  if (interests.isEmpty) {
+    print('[ForYou] No interests set — skipping fetch');
+    return [];
+  }
+
+  final placeCrudService = ref.read(placeCrudServiceProvider);
+  final places = await placeCrudService.fetchForYou(interests);
+  print('[ForYou] Fetched ${places.length} matching places from Firestore');
+
+  places.sort((a, b) => _scorePlace(b, interests).compareTo(_scorePlace(a, interests)));
+
+  for (final place in places) {
+    print('[ForYou] "${place.name}" — score: ${_scorePlace(place, interests)}');
+  }
+
+  return places;
+});

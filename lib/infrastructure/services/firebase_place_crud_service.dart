@@ -22,6 +22,12 @@ class FirebasePlaceCrudService extends FirebaseCrudService<Place>
                 'categorySelections': entity.categorySelections
                     .map((e) => e.toJson())
                     .toList(),
+                // Denormalized flat list of all category IDs from all
+                // selection paths — used for server-side "For You" queries.
+                'categoryIds': entity.categorySelections
+                    .expand((sel) => sel.path)
+                    .toSet()
+                    .toList(),
               },
               ),
         );
@@ -44,6 +50,16 @@ class FirebasePlaceCrudService extends FirebaseCrudService<Place>
     );
 
     return snapshots.map((s) => s.data()).whereType<Place>().toList();
+  }
+
+  @override
+  Future<List<Place>> fetchForYou(List<String> interestIds) async {
+    final querySnapshot = await collection
+        .where('status', isEqualTo: 'active')
+        .where('categoryIds', arrayContainsAny: interestIds)
+        .limit(100)
+        .get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
 
   @override

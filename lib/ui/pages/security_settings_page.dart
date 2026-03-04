@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/navigation_providers.dart';
+import '../../application/providers/place_providers.dart';
+import '../widgets/places_section.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
 import '../dialogs/security_settings_page/logout_dialog.dart';
@@ -116,9 +118,12 @@ class SecuritySettingsPage extends ConsumerWidget {
                 if (confirmed == true && context.mounted) {
                   final authProvider = ref.read(authServiceProvider);
                   await authProvider.signOut();
+                  ref.invalidate(userInterestsProvider);
+                  ref.invalidate(forYouPlacesProvider);
 
                   //pop until /
                   if (context.mounted) {
+                    ref.read(selectedCarouselFilterProvider.notifier).state = 'Nearby';
                     showXploraSnackBar(
                       context,
                       'Logged out successfully',

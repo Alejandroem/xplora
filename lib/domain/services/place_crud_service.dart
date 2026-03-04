@@ -10,4 +10,6 @@ abstract class PlaceCrudService extends CrudService<Place> {
     required GeoPoint center,
     required double radiusInKm,
   });
+
+  Future<List<Place>> fetchForYou(List<String> interestIds);
 }

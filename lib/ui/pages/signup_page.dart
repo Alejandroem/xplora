@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme.dart';
 import '../../application/providers/auth_providers.dart';
+import '../../application/providers/place_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../utils/snackbar_utils.dart';
 
@@ -46,6 +47,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   void _refreshProvidersAfterSignUp() {
     ref.invalidate(settingsStateNotifierProvider);
+    ref.invalidate(userInterestsProvider);
+    ref.invalidate(forYouPlacesProvider);
   }
 
   @override

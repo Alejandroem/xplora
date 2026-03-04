@@ -190,15 +190,61 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
         const SizedBox(height: spacing16),
         Consumer(
           builder: (context, ref, child) {
-            // Show "Coming soon" for 'For You' and 'Following' filters
-            if (selectedFilter == 'For You' || selectedFilter == 'Following') {
+            // Show "Coming soon" for 'Following' filter
+            if (selectedFilter == 'Following') {
               return _buildComingSoon(
                 context: context,
-                icon: selectedFilter == 'For You'
-                    ? Icons.auto_awesome
-                    : Icons.people_outline,
-                title: selectedFilter,
+                icon: Icons.people_outline,
+                title: 'Following',
               );
+            }
+
+            // For You — interest-based recommendations
+            if (selectedFilter == 'For You') {
+              return ref.watch(userInterestsProvider).when(
+                    skipLoadingOnRefresh: false,
+                    loading: () => _buildLoadingShimmer(context),
+                    error: (_, __) => _buildLoadingShimmer(context),
+                    data: (interests) {
+                      if (interests.isEmpty) {
+                        return _buildSetInterests(context);
+                      }
+                      return ref.watch(forYouPlacesProvider).when(
+                            skipLoadingOnRefresh: false,
+                            loading: () => _buildLoadingShimmer(context),
+                            error: (_, __) => SizedBox(
+                              height: _kCarouselSectionHeight,
+                              child: Center(
+                                child: Text(
+                                  'Failed to load recommendations. Please try again later.',
+                                  style:
+                                      bodyTextStyle.copyWith(color: errorColor),
+                                ),
+                              ),
+                            ),
+                            data: (places) {
+                              if (places.isEmpty) {
+                                return _buildNoMatches(context);
+                              }
+                              const maxCards = 20;
+                              final displayedPlaces =
+                                  places.take(maxCards).toList();
+                              final hasMore = places.length > maxCards;
+                              return CarouselWidget<Place>(
+                                items: displayedPlaces,
+                                itemBuilder: (place, index) => PlaceCard(place),
+                                hasMore: hasMore,
+                                onSeeMoreTap: () {
+                                  ref
+                                      .read(
+                                          bottomNavigationBarProvider.notifier)
+                                      .state = NavigationItem.search;
+                                },
+                              );
+                            },
+                          );
+                    },
+                  );
             }
 
             // Resolve all location checks through the centralized provider
@@ -211,43 +257,41 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
             }
 
             return ref.watch(nearbyPlacesProvider).when(
-                  data: (places) {
-                    if (places.isNotEmpty) {
-                      const maxCards = 20;
-                      final displayedPlaces =
-                          places.take(maxCards).toList();
-                      final hasMore = places.length > maxCards;
+                data: (places) {
+                  if (places.isNotEmpty) {
+                    const maxCards = 20;
+                    final displayedPlaces = places.take(maxCards).toList();
+                    final hasMore = places.length > maxCards;
 
-                      return CarouselWidget<Place>(
-                        items: displayedPlaces,
-                        itemBuilder: (place, index) => PlaceCard(place),
-                        hasMore: hasMore,
-                        onSeeMoreTap: () {
-                          ref.read(bottomNavigationBarProvider.notifier).state =
-                              NavigationItem.search;
-                        },
-                      );
-                    } else {
-                      return const SizedBox(
-                        height: _kCarouselSectionHeight,
-                        child: NearbyEmptyState(),
-                      );
-                    }
-                  },
-                  loading: () => _buildLoadingShimmer(context),
-                  error: (error, stack){
-                    print('Error loading places: $error');
-                    return SizedBox(
+                    return CarouselWidget<Place>(
+                      items: displayedPlaces,
+                      itemBuilder: (place, index) => PlaceCard(place),
+                      hasMore: hasMore,
+                      onSeeMoreTap: () {
+                        ref.read(bottomNavigationBarProvider.notifier).state =
+                            NavigationItem.search;
+                      },
+                    );
+                  } else {
+                    return const SizedBox(
                       height: _kCarouselSectionHeight,
-                      child: Center(
-                        child: Text(
-                          'Failed to load places. Please try again later.',
-                          style: bodyTextStyle.copyWith(color: errorColor),
-                        ),
-                      ),
+                      child: NearbyEmptyState(),
                     );
                   }
-                );
+                },
+                loading: () => _buildLoadingShimmer(context),
+                error: (error, stack) {
+                  print('Error loading nearby places: $error');
+                  return SizedBox(
+                    height: _kCarouselSectionHeight,
+                    child: Center(
+                      child: Text(
+                        'Failed to load places. Please try again later.',
+                        style: bodyTextStyle.copyWith(color: errorColor),
+                      ),
+                    ),
+                  );
+                });
           },
         ),
       ],
@@ -314,6 +358,65 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
               ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSetInterests(BuildContext context) {
+    return SizedBox(
+      height: _kCarouselSectionHeight,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.interests_outlined,
+              size: iconSizeLarge * 2,
+              color: context.colors.textSecondary,
+            ),
+            const SizedBox(height: spacing16),
+            Text(
+              'No interests selected',
+              style: h3Style.copyWith(color: context.colors.textPrimary),
+            ),
+            const SizedBox(height: spacing8),
+            Text(
+              'Select your interests to see\npersonalized place recommendations',
+              style:
+                  bodyTextStyle.copyWith(color: context.colors.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoMatches(BuildContext context) {
+    return SizedBox(
+      height: _kCarouselSectionHeight,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off_outlined,
+              size: iconSizeLarge * 2,
+              color: context.colors.textSecondary,
+            ),
+            const SizedBox(height: spacing16),
+            Text(
+              'No matching places yet',
+              style: h3Style.copyWith(color: context.colors.textPrimary),
+            ),
+            const SizedBox(height: spacing8),
+            Text(
+              "We'll add more places soon",
+              style:
+                  bodyTextStyle.copyWith(color: context.colors.textSecondary),
+            ),
+          ],
         ),
       ),
     );

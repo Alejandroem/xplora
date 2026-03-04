@@ -7,6 +7,7 @@ import '../../application/providers/location_providers.dart';
 import '../../theme.dart';
 import '../../application/providers/auth_providers.dart';
 import '../../application/providers/auth_service_providers.dart';
+import '../../application/providers/place_providers.dart';
 import '../../application/providers/settings_providers.dart';
 import '../../utils/snackbar_utils.dart';
 
@@ -40,6 +41,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   void _refreshProvidersAfterSignIn() {
     ref.invalidate(settingsStateNotifierProvider);
     ref.invalidate(autoEnableLocationTrackingProvider);
+    ref.invalidate(userInterestsProvider);
+    ref.invalidate(forYouPlacesProvider);
   }
 
   Future<void> _handleOAuthSignIn(Future<void> Function() signIn) async {
