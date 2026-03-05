@@ -85,16 +85,11 @@ final paginatedPlacesProvider =
 final userInterestsProvider = FutureProvider<List<String>>((ref) async {
   final authService = ref.read(authServiceProvider);
   final userId = (await authService.getAuthUser())?.id;
-  if (userId == null) {
-    print('[ForYou] No authenticated user — returning empty interests');
-    return [];
-  }
+  if (userId == null) return [];
 
   final profileService = ref.read(profileServiceProvider);
   final profile = await profileService.read(userId);
-  final interests = profile?.interests ?? [];
-  print('[ForYou] User $userId has ${interests.length} interests: $interests');
-  return interests;
+  return profile?.interests ?? [];
 });
 
 int _scorePlace(Place place, List<String> interestIds) {
@@ -104,20 +99,12 @@ int _scorePlace(Place place, List<String> interestIds) {
 
 final forYouPlacesProvider = FutureProvider<List<Place>>((ref) async {
   final interests = await ref.watch(userInterestsProvider.future);
-  if (interests.isEmpty) {
-    print('[ForYou] No interests set — skipping fetch');
-    return [];
-  }
+  if (interests.isEmpty) return [];
 
   final placeCrudService = ref.read(placeCrudServiceProvider);
   final places = await placeCrudService.fetchForYou(interests);
-  print('[ForYou] Fetched ${places.length} matching places from Firestore');
 
   places.sort((a, b) => _scorePlace(b, interests).compareTo(_scorePlace(a, interests)));
-
-  for (final place in places) {
-    print('[ForYou] "${place.name}" — score: ${_scorePlace(place, interests)}');
-  }
 
   return places;
 });

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/auth_providers.dart';
@@ -89,16 +90,21 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
                     filters: const ['All', 'Nearby', 'Recommended', 'Saved'],
                     selectedFilter: selectedFilter,
                     onFilterTap: (filter) {
-                      final userId =
-                          ref.read(currentAuthUserIdStreamProvider).value;
-                      if (userId == null) {
-                        showXploraSnackBar(
-                          context,
-                          'Please sign in to use filters',
-                          isInfo: true,
-                          duration: const Duration(seconds: 2),
-                        );
-                        return;
+                      if (filter == selectedFilter) return;
+
+                      const authRequiredFilters = ['Recommended', 'Saved'];
+                      if (authRequiredFilters.contains(filter)) {
+                        final userId =
+                            ref.read(currentAuthUserIdStreamProvider).value;
+                        if (userId == null) {
+                          showXploraSnackBar(
+                            context,
+                            'Please sign in to use other filters',
+                            isInfo: true,
+                            duration: const Duration(seconds: 2),
+                          );
+                          return;
+                        }
                       }
                       ref.read(selectedSearchFilterProvider.notifier).state =
                           filter;
@@ -135,8 +141,7 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
       case 'Nearby':
         return _buildNearbyContent(ref, searchQuery);
       case 'Recommended':
-        return _buildComingSoon(
-            icon: Icons.recommend, title: 'Recommended Places');
+        return _buildRecommendedContent(ref, searchQuery);
       case 'Saved':
         return _buildSavedContent(ref, searchQuery);
       case 'All':
@@ -247,7 +252,9 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
 
   // Error state
   Widget _buildError(String error) {
-    print('Error loading places: $error');
+    if (kDebugMode) {
+      print('Error loading places: $error');
+    }
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -264,13 +271,25 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
   }
 
   // Empty state
-  Widget _buildEmpty() {
+  Widget _buildEmpty({
+    IconData? icon,
+    String title = 'No places found',
+    String? subtitle,
+  }) {
     return Center(
-      child: Text(
-        'No places found',
-        style: bodyTextStyle.copyWith(
-          color: context.colors.textSecondary,
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: iconSizeLarge * 2, color: context.colors.textSecondary),
+            const SizedBox(height: spacing16),
+          ],
+          Text(title, style: h3Style.copyWith(color: context.colors.textPrimary)),
+          if (subtitle != null) ...[
+            const SizedBox(height: spacing8),
+            Text(subtitle, style: bodyTextStyle.copyWith(color: context.colors.textSecondary)),
+          ],
+        ],
       ),
     );
   }
@@ -303,6 +322,28 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildRecommendedContent(WidgetRef ref, String searchQuery) {
+    return ref.watch(forYouPlacesProvider).when(
+      skipLoadingOnRefresh: false,
+      loading: () => _buildLoadingGrid(),
+      error: (_, __) => _buildError('Failed to load recommendations. Please try again later.'),
+      data: (places) {
+        if (places.isEmpty) {
+          final interests = ref.read(userInterestsProvider).valueOrNull ?? [];
+          final hasInterests = interests.isNotEmpty;
+          return _buildEmpty(
+            icon: hasInterests
+                ? Icons.search_off_outlined
+                : Icons.interests_outlined,
+            title: hasInterests ? 'No matching places yet' : 'No interests selected',
+            subtitle: hasInterests ? "We'll add more places soon" : null,
+          );
+        }
+        return _buildFilteredGrid(places, searchQuery);
+      },
     );
   }
 
@@ -369,36 +410,4 @@ class _SearchComponentsState extends ConsumerState<SearchComponents> {
         );
   }
 
-  // Common "Coming soon" placeholder
-  Widget _buildComingSoon({
-    required IconData icon,
-    required String title,
-  }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: iconSizeLarge * 2,
-            color: context.colors.textSecondary,
-          ),
-          const SizedBox(height: spacing16),
-          Text(
-            title,
-            style: h3Style.copyWith(
-              color: context.colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: spacing8),
-          Text(
-            'Coming soon',
-            style: bodyTextStyle.copyWith(
-              color: context.colors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

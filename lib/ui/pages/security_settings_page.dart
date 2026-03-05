@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/auth_service_providers.dart';
 import '../../application/providers/navigation_providers.dart';
-import '../../application/providers/place_providers.dart';
+import '../components/search_components.dart';
 import '../widgets/places_section.dart';
 import '../../theme.dart';
 import '../../utils/snackbar_utils.dart';
 import '../dialogs/security_settings_page/logout_dialog.dart';
-import '../dialogs/security_settings_page/reset_account_access_dialog.dart';
 import '../widgets/settings_tile.dart';
 
 class SecuritySettingsPage extends ConsumerWidget {
@@ -118,12 +117,15 @@ class SecuritySettingsPage extends ConsumerWidget {
                 if (confirmed == true && context.mounted) {
                   final authProvider = ref.read(authServiceProvider);
                   await authProvider.signOut();
-                  ref.invalidate(userInterestsProvider);
-                  ref.invalidate(forYouPlacesProvider);
 
                   //pop until /
                   if (context.mounted) {
                     ref.read(selectedCarouselFilterProvider.notifier).state = 'Nearby';
+                    const authRequiredFilters = ['Recommended', 'Saved'];
+                    if (authRequiredFilters.contains(
+                        ref.read(selectedSearchFilterProvider))) {
+                      ref.read(selectedSearchFilterProvider.notifier).state = 'All';
+                    }
                     showXploraSnackBar(
                       context,
                       'Logged out successfully',

@@ -15,7 +15,7 @@ import 'smooth_filter_scroll_row.dart';
 
 // Height of the carousel section — matches the place card height so
 // loading/empty/disabled states occupy the same space as real cards.
-const double _kCarouselSectionHeight = 218.0;
+const double _kCarouselSectionHeight = 220.0;
 
 /*
 // Provider for selected activity types (multiple)
@@ -33,6 +33,7 @@ class PlacesSection extends ConsumerStatefulWidget {
 }
 
 class _NearestAdventuresState extends ConsumerState<PlacesSection> {
+  static const int _maxCards = 20;
   /*
   Future<void> _showActivityTypesModal(
       BuildContext context, WidgetRef ref) async {
@@ -156,6 +157,8 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
             filters: filters,
             selectedFilter: selectedFilter,
             onFilterTap: (filter) {
+              if (filter == selectedFilter) return;
+
               // Check if user is authenticated
               final userIdAsync = ref.read(currentAuthUserIdStreamProvider);
               final userId = userIdAsync.value;
@@ -201,50 +204,21 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
 
             // For You — interest-based recommendations
             if (selectedFilter == 'For You') {
-              return ref.watch(userInterestsProvider).when(
-                    skipLoadingOnRefresh: false,
-                    loading: () => _buildLoadingShimmer(context),
-                    error: (_, __) => _buildLoadingShimmer(context),
-                    data: (interests) {
-                      if (interests.isEmpty) {
-                        return _buildSetInterests(context);
-                      }
-                      return ref.watch(forYouPlacesProvider).when(
-                            skipLoadingOnRefresh: false,
-                            loading: () => _buildLoadingShimmer(context),
-                            error: (_, __) => SizedBox(
-                              height: _kCarouselSectionHeight,
-                              child: Center(
-                                child: Text(
-                                  'Failed to load recommendations. Please try again later.',
-                                  style:
-                                      bodyTextStyle.copyWith(color: errorColor),
-                                ),
-                              ),
-                            ),
-                            data: (places) {
-                              if (places.isEmpty) {
-                                return _buildNoMatches(context);
-                              }
-                              const maxCards = 20;
-                              final displayedPlaces =
-                                  places.take(maxCards).toList();
-                              final hasMore = places.length > maxCards;
-                              return CarouselWidget<Place>(
-                                items: displayedPlaces,
-                                itemBuilder: (place, index) => PlaceCard(place),
-                                hasMore: hasMore,
-                                onSeeMoreTap: () {
-                                  ref
-                                      .read(
-                                          bottomNavigationBarProvider.notifier)
-                                      .state = NavigationItem.search;
-                                },
-                              );
-                            },
-                          );
-                    },
-                  );
+              return ref.watch(forYouPlacesProvider).when(
+                skipLoadingOnRefresh: false,
+                loading: () => _buildLoadingShimmer(context),
+                error: (_, __) => _buildError(context, 'Failed to load recommendations. Please try again later.'),
+                data: (places) {
+                  if (places.isEmpty) {
+                    final interests =
+                        ref.read(userInterestsProvider).valueOrNull ?? [];
+                    return interests.isEmpty
+                        ? _buildSetInterests(context)
+                        : _buildNoMatches(context);
+                  }
+                  return _buildPlacesCarousel(places, ref);
+                },
+              );
             }
 
             // Resolve all location checks through the centralized provider
@@ -257,41 +231,15 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
             }
 
             return ref.watch(nearbyPlacesProvider).when(
-                data: (places) {
-                  if (places.isNotEmpty) {
-                    const maxCards = 20;
-                    final displayedPlaces = places.take(maxCards).toList();
-                    final hasMore = places.length > maxCards;
-
-                    return CarouselWidget<Place>(
-                      items: displayedPlaces,
-                      itemBuilder: (place, index) => PlaceCard(place),
-                      hasMore: hasMore,
-                      onSeeMoreTap: () {
-                        ref.read(bottomNavigationBarProvider.notifier).state =
-                            NavigationItem.search;
-                      },
-                    );
-                  } else {
-                    return const SizedBox(
+              loading: () => _buildLoadingShimmer(context),
+              error: (_, __) => _buildError(context, 'Failed to load nearby places. Please try again later.'),
+              data: (places) => places.isEmpty
+                  ? const SizedBox(
                       height: _kCarouselSectionHeight,
                       child: NearbyEmptyState(),
-                    );
-                  }
-                },
-                loading: () => _buildLoadingShimmer(context),
-                error: (error, stack) {
-                  print('Error loading nearby places: $error');
-                  return SizedBox(
-                    height: _kCarouselSectionHeight,
-                    child: Center(
-                      child: Text(
-                        'Failed to load places. Please try again later.',
-                        style: bodyTextStyle.copyWith(color: errorColor),
-                      ),
-                    ),
-                  );
-                });
+                    )
+                  : _buildPlacesCarousel(places, ref),
+            );
           },
         ),
       ],
@@ -380,13 +328,6 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
               'No interests selected',
               style: h3Style.copyWith(color: context.colors.textPrimary),
             ),
-            const SizedBox(height: spacing8),
-            Text(
-              'Select your interests to see\npersonalized place recommendations',
-              style:
-                  bodyTextStyle.copyWith(color: context.colors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
           ],
         ),
       ),
@@ -417,6 +358,32 @@ class _NearestAdventuresState extends ConsumerState<PlacesSection> {
                   bodyTextStyle.copyWith(color: context.colors.textSecondary),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlacesCarousel(List<Place> places, WidgetRef ref) {
+    final displayedPlaces = places.take(_maxCards).toList();
+    final hasMore = places.length > _maxCards;
+    return CarouselWidget<Place>(
+      items: displayedPlaces,
+      itemBuilder: (place, index) => PlaceCard(place),
+      hasMore: hasMore,
+      onSeeMoreTap: () {
+        ref.read(bottomNavigationBarProvider.notifier).state =
+            NavigationItem.search;
+      },
+    );
+  }
+
+  Widget _buildError(BuildContext context, String message) {
+    return SizedBox(
+      height: _kCarouselSectionHeight,
+      child: Center(
+        child: Text(
+          message,
+          style: bodyTextStyle.copyWith(color: errorColor),
         ),
       ),
     );
