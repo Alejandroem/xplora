@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../application/providers/achievements_providers.dart';
 import '../application/providers/adventure_providers.dart';
+import '../application/providers/check_in_providers.dart';
 import '../application/providers/deep_links_providers.dart';
 import '../application/providers/location_providers.dart';
 import '../application/providers/navigation_providers.dart';
@@ -260,6 +261,9 @@ class _HomeState extends ConsumerState<Home> {
     ref.listen(currentUserProvider, (previous, next) {
       print('currentUser: $next');
     });
+
+    ref.listen(checkInDetectionProvider, (_, s) =>
+        print('checkInDetectionProvider: $s'));
 
     // Listen for permanently denied location permission
     ref.listen<LocationPermissionRequestStatus>(

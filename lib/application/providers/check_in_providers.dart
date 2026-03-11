@@ -1,0 +1,25 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../domain/services/validation_config_service.dart';
+import '../../infrastructure/services/firebase_validation_config_service.dart';
+import '../notifiers/check_in_detection_notifier.dart';
+import '../notifiers/check_in_detection_state.dart';
+import 'location_providers.dart';
+import 'place_providers.dart';
+
+final validationConfigServiceProvider =
+    Provider<ValidationConfigService>((ref) =>
+        FirebaseValidationConfigService());
+
+final checkInDetectionProvider =
+    StateNotifierProvider<CheckInDetectionNotifier, CheckInDetectionState>((ref) {
+  final notifier = CheckInDetectionNotifier(
+    ref,
+    ref.watch(validationConfigServiceProvider),
+    ref.watch(placeCrudServiceProvider),
+  );
+  ref.listen(locationTrackingEnabledProvider, (_, next) {
+    if (next) notifier.enableLocationTracking();
+  });
+  return notifier;
+});

@@ -1,0 +1,24 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../../domain/models/place.dart';
+import '../../domain/models/validation_config.dart';
+
+part 'check_in_detection_state.freezed.dart';
+
+@freezed
+sealed class CheckInDetectionState with _$CheckInDetectionState {
+  /// Engine running; no places with validationConfigId within scan range.
+  const factory CheckInDetectionState.inactive() = CheckInDetectionInactive;
+
+  /// Engine found checkable candidates; user is not inside any of them.
+  const factory CheckInDetectionState.monitoring({
+    required List<String> candidatePlaceIds,
+  }) = CheckInDetectionMonitoring;
+
+  /// User is within radiusM of this place and detection is geographically reliable.
+  const factory CheckInDetectionState.inside({
+    required Place place,
+    required ValidationConfig config,
+    required double distanceM,
+  }) = CheckInDetectionInside;
+}

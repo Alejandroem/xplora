@@ -193,6 +193,7 @@ mixin _$Place {
   List<String> get imageUrls => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  String? get validationConfigId => throw _privateConstructorUsedError;
   int get xp => throw _privateConstructorUsedError;
   int get contributionXp => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
@@ -222,6 +223,7 @@ abstract class $PlaceCopyWith<$Res> {
       List<String> imageUrls,
       String? location,
       String? description,
+      String? validationConfigId,
       int xp,
       int contributionXp,
       String? userId,
@@ -252,6 +254,7 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
     Object? imageUrls = null,
     Object? location = freezed,
     Object? description = freezed,
+    Object? validationConfigId = freezed,
     Object? xp = null,
     Object? contributionXp = null,
     Object? userId = freezed,
@@ -289,6 +292,10 @@ class _$PlaceCopyWithImpl<$Res, $Val extends Place>
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      validationConfigId: freezed == validationConfigId
+          ? _value.validationConfigId
+          : validationConfigId // ignore: cast_nullable_to_non_nullable
               as String?,
       xp: null == xp
           ? _value.xp
@@ -341,6 +348,7 @@ abstract class _$$PlaceImplCopyWith<$Res> implements $PlaceCopyWith<$Res> {
       List<String> imageUrls,
       String? location,
       String? description,
+      String? validationConfigId,
       int xp,
       int contributionXp,
       String? userId,
@@ -369,6 +377,7 @@ class __$$PlaceImplCopyWithImpl<$Res>
     Object? imageUrls = null,
     Object? location = freezed,
     Object? description = freezed,
+    Object? validationConfigId = freezed,
     Object? xp = null,
     Object? contributionXp = null,
     Object? userId = freezed,
@@ -406,6 +415,10 @@ class __$$PlaceImplCopyWithImpl<$Res>
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      validationConfigId: freezed == validationConfigId
+          ? _value.validationConfigId
+          : validationConfigId // ignore: cast_nullable_to_non_nullable
               as String?,
       xp: null == xp
           ? _value.xp
@@ -454,6 +467,7 @@ class _$PlaceImpl implements _Place {
       final List<String> imageUrls = const [],
       this.location,
       this.description,
+      this.validationConfigId,
       this.xp = 0,
       this.contributionXp = 0,
       this.userId,
@@ -505,6 +519,8 @@ class _$PlaceImpl implements _Place {
   @override
   final String? description;
   @override
+  final String? validationConfigId;
+  @override
   @JsonKey()
   final int xp;
   @override
@@ -529,7 +545,7 @@ class _$PlaceImpl implements _Place {
 
   @override
   String toString() {
-    return 'Place(placeId: $placeId, name: $name, geo: $geo, categorySelections: $categorySelections, imageUrls: $imageUrls, location: $location, description: $description, xp: $xp, contributionXp: $contributionXp, userId: $userId, rejectionReason: $rejectionReason, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Place(placeId: $placeId, name: $name, geo: $geo, categorySelections: $categorySelections, imageUrls: $imageUrls, location: $location, description: $description, validationConfigId: $validationConfigId, xp: $xp, contributionXp: $contributionXp, userId: $userId, rejectionReason: $rejectionReason, source: $source, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -548,6 +564,8 @@ class _$PlaceImpl implements _Place {
                 other.location == location) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.validationConfigId, validationConfigId) ||
+                other.validationConfigId == validationConfigId) &&
             (identical(other.xp, xp) || other.xp == xp) &&
             (identical(other.contributionXp, contributionXp) ||
                 other.contributionXp == contributionXp) &&
@@ -573,6 +591,7 @@ class _$PlaceImpl implements _Place {
       const DeepCollectionEquality().hash(_imageUrls),
       location,
       description,
+      validationConfigId,
       xp,
       contributionXp,
       userId,
@@ -605,6 +624,7 @@ abstract class _Place implements Place {
       final List<String> imageUrls,
       final String? location,
       final String? description,
+      final String? validationConfigId,
       final int xp,
       final int contributionXp,
       final String? userId,
@@ -630,6 +650,8 @@ abstract class _Place implements Place {
   String? get location;
   @override
   String? get description;
+  @override
+  String? get validationConfigId;
   @override
   int get xp;
   @override

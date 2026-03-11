@@ -25,6 +25,7 @@ class Place with _$Place {
     @Default([]) List<String> imageUrls,
     String? location,
     String? description,
+    String? validationConfigId,
     @Default(0) int xp,
     @Default(0) int contributionXp,
     String? userId,
