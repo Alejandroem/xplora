@@ -90,7 +90,7 @@ final adventureInProgressTrackerProvider = StateNotifierProvider.autoDispose<
   // Watch for location tracking enabled state
   ref.listen(locationTrackingEnabledProvider, (previous, next) {
     if (next) {
-      notifier.enableLocationTracking();
+      // notifier.enableLocationTracking();
     }
   });
   

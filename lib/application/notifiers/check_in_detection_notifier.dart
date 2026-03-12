@@ -15,7 +15,6 @@ class CheckInDetectionNotifier
     extends StateNotifier<CheckInDetectionState> {
 
   static const double _cacheRefreshThresholdM = 50;
-  static const int _maxCacheAgeSec = 300;
 
   // 10m: ignores GPS jitter when standing still, fine-grained enough to
   // detect entry into even a small geofence before walking through it.
@@ -27,7 +26,6 @@ class CheckInDetectionNotifier
   // Own place list cache (independent of nearbyPlacesProvider)
   List<Place> _cachedCheckablePlaces = [];
   Position? _lastCachePosition;
-  DateTime? _lastCacheTime;
 
   // Lazy ValidationConfig cache
   final Map<String, ValidationConfig> _configCache = {};
@@ -57,6 +55,8 @@ class CheckInDetectionNotifier
       (position) => _onPositionUpdate(position),
       onError: (e) =>
           debugPrint('CheckInDetection: position stream error – $e'),
+      onDone: () =>
+          debugPrint('CheckInDetection: position stream closed unexpectedly'),
     );
   }
 
@@ -67,23 +67,50 @@ class CheckInDetectionNotifier
   }
 
   Future<void> _onPositionUpdate(Position position) async {
-    // Check location services once per update
-    final locationServicesEnabled = await Geolocator.isLocationServiceEnabled();
+    // If already inside a place, only check if the user has left.
+    // Skips full detection loop to prevent spurious monitoring flashes
+    // and avoid disrupting a Phase 2 check-in session mid-flow.
+    final current = state;
+    if (current is CheckInDetectionInside) {
+      final geopoint = current.place.geo['geopoint'] as GeoPoint?;
+      if (geopoint != null) {
+        final distanceM = Geolocator.distanceBetween(
+          position.latitude, position.longitude,
+          geopoint.latitude, geopoint.longitude,
+        );
+        if (distanceM <= current.config.radiusM) {
+          debugPrint(
+            'CheckInDetection: still inside ${current.place.placeId} (${distanceM.toStringAsFixed(1)}m), no state change',
+          );
+          return;
+        }
+      }
+      debugPrint(
+        'CheckInDetection: left ${current.place.placeId}, falling through to detection loop',
+      );
+      // user left the geofence — fall through to full detection loop
+    }
+
+    // Lazily checked below only if a place requires it.
+    // null = not yet checked this update.
+    bool? locationServicesEnabled;
 
     // Refresh place cache if needed
     final shouldRefresh = _cachedCheckablePlaces.isEmpty ||
         _lastCachePosition == null ||
-        _lastCacheTime == null ||
         Geolocator.distanceBetween(
               _lastCachePosition!.latitude,
               _lastCachePosition!.longitude,
               position.latitude,
               position.longitude,
             ) >
-            _cacheRefreshThresholdM ||
-        DateTime.now().difference(_lastCacheTime!).inSeconds > _maxCacheAgeSec;
+            _cacheRefreshThresholdM;
 
     if (shouldRefresh) {
+      // Set immediately before the async fetch so concurrent position updates
+      // that arrive while the fetch is in-flight see a non-null reference
+      // position and skip their own fetch (distance will be ~0m).
+      _lastCachePosition = position;
       try {
         // Scan radius must be larger than the biggest radiusM in any
         // ValidationConfig. 1km is intentionally hardcoded — any legitimate
@@ -97,12 +124,11 @@ class CheckInDetectionNotifier
         );
         _cachedCheckablePlaces =
             all.where((p) => p.validationConfigId != null).toList();
-        _lastCachePosition = position;
-        _lastCacheTime = DateTime.now();
         debugPrint(
           'CheckInDetection: cache refreshed – ${_cachedCheckablePlaces.length} checkable places',
         );
       } catch (e) {
+        _lastCachePosition = null; // reset so next update retries
         debugPrint('CheckInDetection: place cache refresh failed – $e');
         return;
       }
@@ -118,6 +144,24 @@ class CheckInDetectionNotifier
     state = CheckInDetectionState.monitoring(
       candidatePlaceIds: _cachedCheckablePlaces.map((p) => p.placeId).toList(),
     );
+
+    // Sort by distance so nearest place wins when user is inside
+    // multiple overlapping geofences simultaneously.
+    _cachedCheckablePlaces.sort((a, b) {
+      final geopointA = a.geo['geopoint'] as GeoPoint?;
+      final geopointB = b.geo['geopoint'] as GeoPoint?;
+      if (geopointA == null) return 1;
+      if (geopointB == null) return -1;
+      final da = Geolocator.distanceBetween(
+        position.latitude, position.longitude,
+        geopointA.latitude, geopointA.longitude,
+      );
+      final db = Geolocator.distanceBetween(
+        position.latitude, position.longitude,
+        geopointB.latitude, geopointB.longitude,
+      );
+      return da.compareTo(db);
+    });
 
     // Check each candidate
     for (final place in _cachedCheckablePlaces) {
@@ -139,13 +183,19 @@ class CheckInDetectionNotifier
         }
       }
 
-      // Location services gate (per-place)
-      if (config.requireLocationServices && !locationServicesEnabled) {
-        debugPrint(
-          'CheckInDetection: location services required but unavailable for ${place.placeId}',
-        );
-        continue;
+      // Location services gate (per-place, checked lazily — only if needed,
+      // only once per position update regardless of how many places require it)
+      if (config.requireLocationServices) {
+        locationServicesEnabled ??= await Geolocator.isLocationServiceEnabled();
+        if (!locationServicesEnabled) {
+          debugPrint(
+            'CheckInDetection: location services required but unavailable for ${place.placeId}',
+          );
+          continue;
+        }
       }
+
+      // debugPrint('position.accuracy: ${position.accuracy}');
 
       // Accuracy gate (app-side, uses minAccuracyM from config)
       if (position.accuracy > config.minAccuracyM) {
@@ -157,7 +207,11 @@ class CheckInDetectionNotifier
       }
 
       // Compute distance
-      final geopoint = place.geo['geopoint'] as GeoPoint;
+      final geopoint = place.geo['geopoint'] as GeoPoint?;
+      if (geopoint == null) {
+        debugPrint('CheckInDetection: missing geopoint for ${place.placeId}, skipping');
+        continue;
+      }
       final distanceM = Geolocator.distanceBetween(
         position.latitude,
         position.longitude,

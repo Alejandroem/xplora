@@ -90,6 +90,7 @@ class LocationNotifier extends StateNotifier<LocationState> {
         // state = LocationState(position: state.position, isLoading: false);
       }
     } catch (e) {
+      debugPrint('Error in getCurrentLocation: $e');
       state = LocationState();
     }
   }
