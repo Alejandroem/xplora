@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../domain/models/place.dart';
 import '../../domain/models/validation_config.dart';
@@ -16,9 +17,12 @@ sealed class CheckInDetectionState with _$CheckInDetectionState {
   }) = CheckInDetectionMonitoring;
 
   /// User is within radiusM of this place and detection is geographically reliable.
+  /// [position] is the raw GPS reading at the moment of detection — passed to
+  /// the session notifier for the /start locationSample payload.
   const factory CheckInDetectionState.inside({
     required Place place,
     required ValidationConfig config,
     required double distanceM,
+    required Position position,
   }) = CheckInDetectionInside;
 }

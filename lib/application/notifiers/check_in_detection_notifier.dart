@@ -122,8 +122,7 @@ class CheckInDetectionNotifier
           center: GeoPoint(position.latitude, position.longitude),
           radiusInKm: 1.0,
         );
-        _cachedCheckablePlaces =
-            all.where((p) => p.validationConfigId != null).toList();
+        _cachedCheckablePlaces = all.toList();
         debugPrint(
           'CheckInDetection: cache refreshed – ${_cachedCheckablePlaces.length} checkable places',
         );
@@ -165,7 +164,7 @@ class CheckInDetectionNotifier
 
     // Check each candidate
     for (final place in _cachedCheckablePlaces) {
-      final configId = place.validationConfigId!;
+      final configId = place.validationConfigId ?? 'globalDefault';
 
       // Fetch config (lazy, in-memory cache)
       ValidationConfig? config = _configCache[configId];
@@ -228,6 +227,7 @@ class CheckInDetectionNotifier
           place: place,
           config: config,
           distanceM: distanceM,
+          position: position,
         );
         return;
       }

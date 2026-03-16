@@ -20,8 +20,8 @@ mixin _$CheckInDetectionState {
   TResult when<TResult extends Object?>({
     required TResult Function() inactive,
     required TResult Function(List<String> candidatePlaceIds) monitoring,
-    required TResult Function(
-            Place place, ValidationConfig config, double distanceM)
+    required TResult Function(Place place, ValidationConfig config,
+            double distanceM, Position position)
         inside,
   }) =>
       throw _privateConstructorUsedError;
@@ -29,7 +29,8 @@ mixin _$CheckInDetectionState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? inactive,
     TResult? Function(List<String> candidatePlaceIds)? monitoring,
-    TResult? Function(Place place, ValidationConfig config, double distanceM)?
+    TResult? Function(Place place, ValidationConfig config, double distanceM,
+            Position position)?
         inside,
   }) =>
       throw _privateConstructorUsedError;
@@ -37,7 +38,8 @@ mixin _$CheckInDetectionState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? inactive,
     TResult Function(List<String> candidatePlaceIds)? monitoring,
-    TResult Function(Place place, ValidationConfig config, double distanceM)?
+    TResult Function(Place place, ValidationConfig config, double distanceM,
+            Position position)?
         inside,
     required TResult orElse(),
   }) =>
@@ -129,8 +131,8 @@ class _$CheckInDetectionInactiveImpl implements CheckInDetectionInactive {
   TResult when<TResult extends Object?>({
     required TResult Function() inactive,
     required TResult Function(List<String> candidatePlaceIds) monitoring,
-    required TResult Function(
-            Place place, ValidationConfig config, double distanceM)
+    required TResult Function(Place place, ValidationConfig config,
+            double distanceM, Position position)
         inside,
   }) {
     return inactive();
@@ -141,7 +143,8 @@ class _$CheckInDetectionInactiveImpl implements CheckInDetectionInactive {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? inactive,
     TResult? Function(List<String> candidatePlaceIds)? monitoring,
-    TResult? Function(Place place, ValidationConfig config, double distanceM)?
+    TResult? Function(Place place, ValidationConfig config, double distanceM,
+            Position position)?
         inside,
   }) {
     return inactive?.call();
@@ -152,7 +155,8 @@ class _$CheckInDetectionInactiveImpl implements CheckInDetectionInactive {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? inactive,
     TResult Function(List<String> candidatePlaceIds)? monitoring,
-    TResult Function(Place place, ValidationConfig config, double distanceM)?
+    TResult Function(Place place, ValidationConfig config, double distanceM,
+            Position position)?
         inside,
     required TResult orElse(),
   }) {
@@ -281,8 +285,8 @@ class _$CheckInDetectionMonitoringImpl implements CheckInDetectionMonitoring {
   TResult when<TResult extends Object?>({
     required TResult Function() inactive,
     required TResult Function(List<String> candidatePlaceIds) monitoring,
-    required TResult Function(
-            Place place, ValidationConfig config, double distanceM)
+    required TResult Function(Place place, ValidationConfig config,
+            double distanceM, Position position)
         inside,
   }) {
     return monitoring(candidatePlaceIds);
@@ -293,7 +297,8 @@ class _$CheckInDetectionMonitoringImpl implements CheckInDetectionMonitoring {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? inactive,
     TResult? Function(List<String> candidatePlaceIds)? monitoring,
-    TResult? Function(Place place, ValidationConfig config, double distanceM)?
+    TResult? Function(Place place, ValidationConfig config, double distanceM,
+            Position position)?
         inside,
   }) {
     return monitoring?.call(candidatePlaceIds);
@@ -304,7 +309,8 @@ class _$CheckInDetectionMonitoringImpl implements CheckInDetectionMonitoring {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? inactive,
     TResult Function(List<String> candidatePlaceIds)? monitoring,
-    TResult Function(Place place, ValidationConfig config, double distanceM)?
+    TResult Function(Place place, ValidationConfig config, double distanceM,
+            Position position)?
         inside,
     required TResult orElse(),
   }) {
@@ -367,7 +373,11 @@ abstract class _$$CheckInDetectionInsideImplCopyWith<$Res> {
           $Res Function(_$CheckInDetectionInsideImpl) then) =
       __$$CheckInDetectionInsideImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({Place place, ValidationConfig config, double distanceM});
+  $Res call(
+      {Place place,
+      ValidationConfig config,
+      double distanceM,
+      Position position});
 
   $PlaceCopyWith<$Res> get place;
   $ValidationConfigCopyWith<$Res> get config;
@@ -389,6 +399,7 @@ class __$$CheckInDetectionInsideImplCopyWithImpl<$Res>
     Object? place = null,
     Object? config = null,
     Object? distanceM = null,
+    Object? position = null,
   }) {
     return _then(_$CheckInDetectionInsideImpl(
       place: null == place
@@ -403,6 +414,10 @@ class __$$CheckInDetectionInsideImplCopyWithImpl<$Res>
           ? _value.distanceM
           : distanceM // ignore: cast_nullable_to_non_nullable
               as double,
+      position: null == position
+          ? _value.position
+          : position // ignore: cast_nullable_to_non_nullable
+              as Position,
     ));
   }
 
@@ -427,7 +442,10 @@ class __$$CheckInDetectionInsideImplCopyWithImpl<$Res>
 
 class _$CheckInDetectionInsideImpl implements CheckInDetectionInside {
   const _$CheckInDetectionInsideImpl(
-      {required this.place, required this.config, required this.distanceM});
+      {required this.place,
+      required this.config,
+      required this.distanceM,
+      required this.position});
 
   @override
   final Place place;
@@ -435,10 +453,12 @@ class _$CheckInDetectionInsideImpl implements CheckInDetectionInside {
   final ValidationConfig config;
   @override
   final double distanceM;
+  @override
+  final Position position;
 
   @override
   String toString() {
-    return 'CheckInDetectionState.inside(place: $place, config: $config, distanceM: $distanceM)';
+    return 'CheckInDetectionState.inside(place: $place, config: $config, distanceM: $distanceM, position: $position)';
   }
 
   @override
@@ -449,11 +469,14 @@ class _$CheckInDetectionInsideImpl implements CheckInDetectionInside {
             (identical(other.place, place) || other.place == place) &&
             (identical(other.config, config) || other.config == config) &&
             (identical(other.distanceM, distanceM) ||
-                other.distanceM == distanceM));
+                other.distanceM == distanceM) &&
+            (identical(other.position, position) ||
+                other.position == position));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, place, config, distanceM);
+  int get hashCode =>
+      Object.hash(runtimeType, place, config, distanceM, position);
 
   @JsonKey(ignore: true)
   @override
@@ -467,11 +490,11 @@ class _$CheckInDetectionInsideImpl implements CheckInDetectionInside {
   TResult when<TResult extends Object?>({
     required TResult Function() inactive,
     required TResult Function(List<String> candidatePlaceIds) monitoring,
-    required TResult Function(
-            Place place, ValidationConfig config, double distanceM)
+    required TResult Function(Place place, ValidationConfig config,
+            double distanceM, Position position)
         inside,
   }) {
-    return inside(place, config, distanceM);
+    return inside(place, config, distanceM, position);
   }
 
   @override
@@ -479,10 +502,11 @@ class _$CheckInDetectionInsideImpl implements CheckInDetectionInside {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? inactive,
     TResult? Function(List<String> candidatePlaceIds)? monitoring,
-    TResult? Function(Place place, ValidationConfig config, double distanceM)?
+    TResult? Function(Place place, ValidationConfig config, double distanceM,
+            Position position)?
         inside,
   }) {
-    return inside?.call(place, config, distanceM);
+    return inside?.call(place, config, distanceM, position);
   }
 
   @override
@@ -490,12 +514,13 @@ class _$CheckInDetectionInsideImpl implements CheckInDetectionInside {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? inactive,
     TResult Function(List<String> candidatePlaceIds)? monitoring,
-    TResult Function(Place place, ValidationConfig config, double distanceM)?
+    TResult Function(Place place, ValidationConfig config, double distanceM,
+            Position position)?
         inside,
     required TResult orElse(),
   }) {
     if (inside != null) {
-      return inside(place, config, distanceM);
+      return inside(place, config, distanceM, position);
     }
     return orElse();
   }
@@ -539,11 +564,13 @@ abstract class CheckInDetectionInside implements CheckInDetectionState {
   const factory CheckInDetectionInside(
       {required final Place place,
       required final ValidationConfig config,
-      required final double distanceM}) = _$CheckInDetectionInsideImpl;
+      required final double distanceM,
+      required final Position position}) = _$CheckInDetectionInsideImpl;
 
   Place get place;
   ValidationConfig get config;
   double get distanceM;
+  Position get position;
   @JsonKey(ignore: true)
   _$$CheckInDetectionInsideImplCopyWith<_$CheckInDetectionInsideImpl>
       get copyWith => throw _privateConstructorUsedError;
