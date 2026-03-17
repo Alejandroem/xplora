@@ -11,6 +11,8 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
   final CheckInSessionService _service;
   final Ref _ref;
 
+  static const int _maxRetries = 3;
+
   CheckInSessionNotifier(this._ref, this._service)
       : super(const CheckInSessionState.idle());
 
@@ -27,8 +29,13 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
     if (state is CheckInSessionStarting) return;
     if (state is CheckInSessionActive) return;
 
-    final place = next.place;
-    final position = next.position;
+    await _startSession(next);
+  }
+
+  Future<void> _startSession(CheckInDetectionInside inside,
+      [int attempt = 0]) async {
+    final place = inside.place;
+    final position = inside.position;
 
     debugPrint('CheckInSession: state → starting(${place.placeId})');
     state = CheckInSessionState.starting(placeId: place.placeId);
@@ -64,19 +71,51 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
         placeId: place.placeId,
       );
     } on FirebaseFunctionsException catch (e) {
-      debugPrint(
-        'CheckInSession: /start failed [${e.code}] ${e.message}',
-      );
+      debugPrint('CheckInSession: /start failed [${e.code}] ${e.message}');
       state = CheckInSessionState.failed(
         placeId: place.placeId,
         reason: e.code,
       );
+      if (_isTransientError(e.code)) {
+        await _scheduleRetry(inside, attempt);
+      }
     } catch (e) {
       debugPrint('CheckInSession: /start unexpected error – $e');
       state = CheckInSessionState.failed(
         placeId: place.placeId,
         reason: 'unknown',
       );
+    }
+  }
+
+  /// Transient errors are worth retrying automatically while the user is
+  /// still inside the same place. Permanent errors (place not active,
+  /// cooldown, one-time consumed, mock location, resource limits) are not
+  /// retried — the UI surfaces the reason instead.
+  bool _isTransientError(String code) =>
+      code == 'internal' || code == 'unavailable';
+
+  Future<void> _scheduleRetry(CheckInDetectionInside inside, int attempt) async {
+    if (attempt >= _maxRetries) {
+      debugPrint(
+        'CheckInSession: max retries ($_maxRetries) reached for ${inside.place.placeId}, giving up',
+      );
+      return;
+    }
+
+    await Future.delayed(const Duration(seconds: 5));
+
+    // Only retry if the user is still inside the same place and the session
+    // is still in failed state (not reset by a leave/re-enter in the meantime).
+    final current = _ref.read(checkInDetectionProvider);
+    if (current is CheckInDetectionInside &&
+        current.place.placeId == inside.place.placeId &&
+        state is CheckInSessionFailed) {
+      debugPrint(
+        'CheckInSession: retrying /start for ${inside.place.placeId} '
+        '(attempt ${attempt + 1}/$_maxRetries)',
+      );
+      await _startSession(current, attempt + 1);
     }
   }
 }

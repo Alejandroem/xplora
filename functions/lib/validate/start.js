@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateStart = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const firestore_1 = require("firebase-admin/firestore");
-exports.validateStart = (0, https_1.onCall)(async (request) => {
+exports.validateStart = (0, https_1.onCall)({ invoker: "public" }, async (request) => {
     var _a, _b;
     const db = (0, firestore_1.getFirestore)();
     // ── Step 1: Auth ──────────────────────────────────────────────────────
@@ -110,39 +110,38 @@ exports.validateStart = (0, https_1.onCall)(async (request) => {
             throw new https_1.HttpsError("resource-exhausted", "Maximum active check-in sessions reached.");
         }
         // Step 8: Create session doc with status LOCKING
-        tx.set(newSessionRef, {
-            uid,
-            scope: {
+        tx.set(newSessionRef, Object.assign(Object.assign({ uid, scope: {
                 scopeType: data.scopeType,
                 placeId: data.scopeId,
-            },
-            mode: data.mode,
-            status: "LOCKING",
+            }, mode: data.mode, status: "LOCKING", 
             // Full config snapshot — server uses this for all subsequent validation.
             // Decouples session from live config changes mid-session.
-            configSnapshot: config,
-            target: {
+            configSnapshot: config, target: {
                 lat: targetGeo.lat,
                 lng: targetGeo.lng,
                 radiusM: config.radiusM,
-            },
-            timing: {
+            }, timing: {
                 createdAt: firestore_1.FieldValue.serverTimestamp(),
                 expiresAt,
                 lockedAt: null,
                 lastPingAt: null,
                 completedAt: null,
-            },
-            sampling: {
+            }, sampling: {
                 acceptedSampleCount: 0,
                 lastAccepted: null,
+            } }, (data.mode === "DWELL" && {
+            dwell: {
+                requiredSec: 0,
+                accumulatedSec: 0,
+                totalOutsideSec: 0,
+                consecutiveOutsideSec: 0,
             },
-            antiCheat: {
+        })), { antiCheat: {
                 codeAttempts: 0,
                 codeAttemptWindowStartAt: null,
                 lastRejectReason: null,
                 deviceIdHash: (_b = (_a = data.deviceInfo) === null || _a === void 0 ? void 0 : _a.deviceIdHash) !== null && _b !== void 0 ? _b : null,
-            },
+            }, 
             // Initial location sample stored for audit — clientTs is never trusted
             initialSample: {
                 lat: data.locationSample.lat,
@@ -151,12 +150,10 @@ exports.validateStart = (0, https_1.onCall)(async (request) => {
                 speedMps: data.locationSample.speedMps,
                 clientTs: firestore_1.Timestamp.fromMillis(data.locationSample.clientTs),
                 isMocked: data.locationSample.isMocked,
-            },
-            result: {
+            }, result: {
                 rewardTxnId: null,
                 completionReason: null,
-            },
-        });
+            } }));
     });
     // ── Step 9: Return ────────────────────────────────────────────────────
     return {

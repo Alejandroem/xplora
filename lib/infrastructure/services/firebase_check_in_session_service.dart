@@ -58,8 +58,8 @@ class FirebaseCheckInSessionService implements CheckInSessionService {
         'deviceInfo': {'deviceIdHash': deviceIdHash},
     });
 
-    final data = result.data;
-    final target = data['target'] as Map<String, dynamic>;
+    final data = Map<String, dynamic>.from(result.data as Map);
+    final target = Map<String, dynamic>.from(data['target'] as Map);
 
     return CheckInStartResult(
       sessionId: data['sessionId'] as String,

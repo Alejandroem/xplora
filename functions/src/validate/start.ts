@@ -7,6 +7,7 @@ import {
 import { StartRequest, StartResponse } from "./types";
 
 export const validateStart = onCall<StartRequest, Promise<StartResponse>>(
+  { invoker: "public" },
   async (request) => {
     const db = getFirestore();
 
@@ -182,6 +183,16 @@ export const validateStart = onCall<StartRequest, Promise<StartResponse>>(
           acceptedSampleCount: 0,
           lastAccepted: null,
         },
+        // TODO: populate for DWELL mode — requiredSec should read from a
+        // dedicated dwellRequiredSec field on ValidationConfig (to be added).
+        ...(data.mode === "DWELL" && {
+          dwell: {
+            requiredSec: 0,
+            accumulatedSec: 0,
+            totalOutsideSec: 0,
+            consecutiveOutsideSec: 0,
+          },
+        }),
         antiCheat: {
           codeAttempts: 0,
           codeAttemptWindowStartAt: null,
