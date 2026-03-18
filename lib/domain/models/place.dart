@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'validation_config.dart';
+
 part 'place.freezed.dart';
 part 'place.g.dart';
 
@@ -25,7 +27,7 @@ class Place with _$Place {
     @Default([]) List<String> imageUrls,
     String? location,
     String? description,
-    String? validationConfigId,
+    ValidationConfig? validationConfig,
     @Default(0) int xp,
     @Default(0) int contributionXp,
     String? userId,

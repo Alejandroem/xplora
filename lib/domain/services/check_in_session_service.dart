@@ -27,4 +27,11 @@ class CheckInStartResult {
     required this.requiresQrOrCode,
     required this.expiresAt,
   });
+
+  @override
+  String toString() =>
+      'CheckInStartResult(sessionId: $sessionId, status: $status, '
+      'targetLat: $targetLat, targetLng: $targetLng, '
+      'targetRadiusM: $targetRadiusM, requiresQrOrCode: $requiresQrOrCode, '
+      'expiresAt: $expiresAt)';
 }

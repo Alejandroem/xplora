@@ -37,7 +37,10 @@ _$PlaceImpl _$$PlaceImplFromJson(Map<String, dynamic> json) => _$PlaceImpl(
           const [],
       location: json['location'] as String?,
       description: json['description'] as String?,
-      validationConfigId: json['validationConfigId'] as String?,
+      validationConfig: json['validationConfig'] == null
+          ? null
+          : ValidationConfig.fromJson(
+              json['validationConfig'] as Map<String, dynamic>),
       xp: (json['xp'] as num?)?.toInt() ?? 0,
       contributionXp: (json['contributionXp'] as num?)?.toInt() ?? 0,
       userId: json['userId'] as String?,
@@ -57,7 +60,7 @@ Map<String, dynamic> _$$PlaceImplToJson(_$PlaceImpl instance) =>
       'imageUrls': instance.imageUrls,
       'location': instance.location,
       'description': instance.description,
-      'validationConfigId': instance.validationConfigId,
+      'validationConfig': instance.validationConfig,
       'xp': instance.xp,
       'contributionXp': instance.contributionXp,
       'userId': instance.userId,

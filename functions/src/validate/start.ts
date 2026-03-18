@@ -48,19 +48,13 @@ export const validateStart = onCall<StartRequest, Promise<StartResponse>>(
     };
 
     // ── Step 4: Load config ───────────────────────────────────────────────
-    // Priority: place.validationConfigId → globalDefault doc
-    // TODO: for QUEST/EVENT, check entity.validationConfigId first
-    const configId: string | undefined = place.validationConfigId;
-    let config: FirebaseFirestore.DocumentData | null = null;
+    // Priority: place.validationConfig (embedded) → globalDefault doc
+    // TODO: for QUEST/EVENT, check entity.validationConfig first
+    let config: FirebaseFirestore.DocumentData;
 
-    if (configId) {
-      const configSnap = await db.doc(`validationConfigs/${configId}`).get();
-      if (configSnap.exists) {
-        config = { id: configSnap.id, ...configSnap.data()! };
-      }
-    }
-
-    if (!config) {
+    if (place.validationConfig) {
+      config = place.validationConfig;
+    } else {
       // Fallback to the globalDefault doc
       const globalSnap = await db
         .doc("validationConfigs/globalDefault")
@@ -139,14 +133,18 @@ export const validateStart = onCall<StartRequest, Promise<StartResponse>>(
     const expiresAt = Timestamp.fromMillis(expiresAtMs);
 
     await db.runTransaction(async (tx) => {
-      // Step 7: Count active sessions for this user
+      // Step 7: Count active sessions for this user.
+      // Filter by expiresAt > now so logically expired sessions (not yet
+      // marked EXPIRED by the scheduler) don't block new ones.
       const activeQuery = await tx.get(
-        sessionsRef.where("status", "in", [
-          "CREATED",
-          "LOCKING",
-          "IN_PROGRESS",
-          "READY_TO_COMPLETE",
-        ])
+        sessionsRef
+          .where("status", "in", [
+            "CREATED",
+            "LOCKING",
+            "IN_PROGRESS",
+            "READY_TO_COMPLETE",
+          ])
+          .where("timing.expiresAt", ">", Timestamp.now())
       );
       if (activeQuery.size >= (config!.maxActiveSessionsPerUser as number)) {
         throw new HttpsError(

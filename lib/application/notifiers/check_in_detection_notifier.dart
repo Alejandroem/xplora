@@ -164,21 +164,24 @@ class CheckInDetectionNotifier
 
     // Check each candidate
     for (final place in _cachedCheckablePlaces) {
-      final configId = place.validationConfigId ?? 'globalDefault';
+      // Use embedded config from place doc; fall back to globalDefault if absent.
+      ValidationConfig? config = place.validationConfig;
 
-      // Fetch config (lazy, in-memory cache)
-      ValidationConfig? config = _configCache[configId];
       if (config == null) {
-        try {
-          config = await _validationConfigService.read(configId);
-          if (config == null) {
-            debugPrint('CheckInDetection: config $configId not found, skipping');
+        // Fetch globalDefault (lazy, in-memory cache)
+        config = _configCache['globalDefault'];
+        if (config == null) {
+          try {
+            config = await _validationConfigService.read('globalDefault');
+            if (config == null) {
+              debugPrint('CheckInDetection: globalDefault config not found, skipping ${place.placeId}');
+              continue;
+            }
+            _configCache['globalDefault'] = config;
+          } catch (e) {
+            debugPrint('CheckInDetection: globalDefault fetch error – $e');
             continue;
           }
-          _configCache[configId] = config;
-        } catch (e) {
-          debugPrint('CheckInDetection: config fetch error for $configId – $e');
-          continue;
         }
       }
 

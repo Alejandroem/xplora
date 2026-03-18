@@ -36,17 +36,13 @@ exports.validateStart = (0, https_1.onCall)({ invoker: "public" }, async (reques
         lng: geopoint.longitude,
     };
     // ── Step 4: Load config ───────────────────────────────────────────────
-    // Priority: place.validationConfigId → globalDefault doc
-    // TODO: for QUEST/EVENT, check entity.validationConfigId first
-    const configId = place.validationConfigId;
-    let config = null;
-    if (configId) {
-        const configSnap = await db.doc(`validationConfigs/${configId}`).get();
-        if (configSnap.exists) {
-            config = Object.assign({ id: configSnap.id }, configSnap.data());
-        }
+    // Priority: place.validationConfig (embedded) → globalDefault doc
+    // TODO: for QUEST/EVENT, check entity.validationConfig first
+    let config;
+    if (place.validationConfig) {
+        config = place.validationConfig;
     }
-    if (!config) {
+    else {
         // Fallback to the globalDefault doc
         const globalSnap = await db
             .doc("validationConfigs/globalDefault")
@@ -99,13 +95,17 @@ exports.validateStart = (0, https_1.onCall)({ invoker: "public" }, async (reques
     const expiresAt = firestore_1.Timestamp.fromMillis(expiresAtMs);
     await db.runTransaction(async (tx) => {
         var _a, _b;
-        // Step 7: Count active sessions for this user
-        const activeQuery = await tx.get(sessionsRef.where("status", "in", [
+        // Step 7: Count active sessions for this user.
+        // Filter by expiresAt > now so logically expired sessions (not yet
+        // marked EXPIRED by the scheduler) don't block new ones.
+        const activeQuery = await tx.get(sessionsRef
+            .where("status", "in", [
             "CREATED",
             "LOCKING",
             "IN_PROGRESS",
             "READY_TO_COMPLETE",
-        ]));
+        ])
+            .where("timing.expiresAt", ">", firestore_1.Timestamp.now()));
         if (activeQuery.size >= config.maxActiveSessionsPerUser) {
             throw new https_1.HttpsError("resource-exhausted", "Maximum active check-in sessions reached.");
         }
