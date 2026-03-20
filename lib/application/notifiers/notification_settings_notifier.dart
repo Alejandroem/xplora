@@ -12,11 +12,11 @@ class NotificationSettings {
 
   const NotificationSettings({
     this.allowNotifications = true,
-    this.questUpdates = true,
+    this.questUpdates = false,
     this.xpProgress = true,
-    this.streakReminders = true,
-    this.nearbyActivityAlerts = true,
-    this.socialInteractions = true,
+    this.streakReminders = false,
+    this.nearbyActivityAlerts = false,
+    this.socialInteractions = false,
     this.appUpdatesNews = true,
   });
 

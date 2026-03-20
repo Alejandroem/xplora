@@ -11,7 +11,7 @@ class PermissionSettings {
   const PermissionSettings({
     this.locationAccess = true,
     this.cameraAccess = true,
-    this.motionActivity = true,
+    this.motionActivity = false,
     this.backgroundRefresh = true,
     this.notifications = true,
   });

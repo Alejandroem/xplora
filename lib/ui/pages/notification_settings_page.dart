@@ -51,7 +51,7 @@ class NotificationSettingsPage extends ConsumerWidget {
                 title: 'Quest Updates',
                 subtitle: 'Alerts for new quest and progress.',
                 value: notificationSettings.questUpdates,
-                onChanged: notifier.toggleQuestUpdates,
+                onChanged: null,
               ),
               SettingsSwitchTile(
                 title: 'XP Progress',
@@ -63,19 +63,19 @@ class NotificationSettingsPage extends ConsumerWidget {
                 title: 'Streak Reminders',
                 subtitle: 'Keep your daily XP streak alive.',
                 value: notificationSettings.streakReminders,
-                onChanged: notifier.toggleStreakReminders,
+                onChanged: null,
               ),
               SettingsSwitchTile(
                 title: 'Nearby Activity Alerts',
                 subtitle: 'Places, quests, and events around you.',
                 value: notificationSettings.nearbyActivityAlerts,
-                onChanged: notifier.toggleNearbyActivityAlerts,
+                onChanged: null,
               ),
               SettingsSwitchTile(
                 title: 'Social Interactions',
                 subtitle: 'Friends and social activity.',
                 value: notificationSettings.socialInteractions,
-                onChanged: notifier.toggleSocialInteractions,
+                onChanged: null,
               ),
               SettingsSwitchTile(
                 title: 'App Updates & News',

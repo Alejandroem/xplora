@@ -65,23 +65,17 @@ class AccessibilitySettingsPage extends ConsumerWidget {
                     settingsNotifier.toggleDarkMode();
                   },
                 ),
-                SettingsTile(
+                const SettingsTile(
                   title: 'Text Size',
-                  onTap: () {
-                    // TODO: Navigate to text size settings
-                  },
+                  onTap: null,
                 ),
-                SettingsTile(
+                const SettingsTile(
                   title: 'High Contrast Mode',
-                  onTap: () {
-                    // TODO: Navigate to high contrast settings
-                  },
+                  onTap: null,
                 ),
-                SettingsTile(
+                const SettingsTile(
                   title: 'Reduce Motion',
-                  onTap: () {
-                    // TODO: Navigate to reduce motion settings
-                  },
+                  onTap: null,
                 ),
                 const SizedBox(height: spacing16),
 
@@ -94,18 +88,16 @@ class AccessibilitySettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: spacing12),
-                SettingsTile(
+                const SettingsTile(
                   title: 'Haptic Feedback',
-                  onTap: () {
-                    // TODO: Navigate to haptic feedback settings
-                  },
+                  onTap: null,
                 ),
-                SettingsSwitchTile(
-                  title: 'Simplified Mode',
-                  subtitle: '',
-                  value: accessibilitySettings.simplifiedMode,
-                  onChanged: notifier.toggleSimplifiedMode,
-                ),
+                // SettingsSwitchTile(
+                //   title: 'Simplified Mode',
+                //   subtitle: '',
+                //   value: accessibilitySettings.simplifiedMode,
+                //   onChanged: notifier.toggleSimplifiedMode,
+                // ),
                 const SizedBox(height: spacing16),
 
                 // Audio Access Section
@@ -121,13 +113,13 @@ class AccessibilitySettingsPage extends ConsumerWidget {
                   title: 'App Sounds',
                   subtitle: '',
                   value: accessibilitySettings.appSounds,
-                  onChanged: notifier.toggleAppSounds,
+                  onChanged: null,
                 ),
                 SettingsSwitchTile(
-                  title: 'Voice Assistance',
+                  title: 'LORA Voice',
                   subtitle: '',
                   value: accessibilitySettings.voiceAssistance,
-                  onChanged: notifier.toggleVoiceAssistance,
+                  onChanged: null,
                 ),
               ],
             ),

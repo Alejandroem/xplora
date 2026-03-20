@@ -10,7 +10,7 @@ class PrivacySettings {
 
   const PrivacySettings({
     this.publicProfile = true,
-    this.searchVisibility = true,
+    this.searchVisibility = false,
     this.showOnlineStatus = false,
     this.locationUsage = true,
     this.analyticsAndCrashReports = true,

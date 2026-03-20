@@ -265,9 +265,9 @@ class _HomeState extends ConsumerState<Home> {
     ref.listen(checkInDetectionProvider, (_, s) =>
         print(s));
 
-    ref.watch(checkInSessionProvider);
-    ref.listen(checkInSessionProvider, (_, s) =>
-        print('CheckInSession: $s'));
+    // ref.watch(checkInSessionProvider);
+    // ref.listen(checkInSessionProvider, (_, s) =>
+    //     print('CheckInSession: $s'));
 
     // Listen for permanently denied location permission
     ref.listen<LocationPermissionRequestStatus>(

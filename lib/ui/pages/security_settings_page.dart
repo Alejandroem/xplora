@@ -42,45 +42,35 @@ class SecuritySettingsPage extends ConsumerWidget {
           padding: const EdgeInsets.all(spacing16),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SettingsTile(
+            const SettingsTile(
               leadingIcon: 'assets/svg/lock.svg',
               title: 'Change Password',
               subtitle: 'Update your account password.',
-              onTap: () {
-                // TODO: Navigate to change password screen
-              },
+              onTap: null,
             ),
-            SettingsTile(
+            const SettingsTile(
               leadingIcon: 'assets/svg/shield-check.svg',
               title: 'Two-Factor Authentication',
               subtitle: 'Add an extra layer of security.',
-              onTap: () {
-                // TODO: Navigate to 2FA settings
-              },
+              onTap: null,
             ),
-            SettingsTile(
+            const SettingsTile(
               leadingIcon: 'assets/svg/monitor.svg',
               title: 'Login Sessions',
               subtitle: 'Review devices logged into your account.',
-              onTap: () {
-                // TODO: Navigate to login sessions screen
-              },
+              onTap: null,
             ),
-            SettingsTile(
+            const SettingsTile(
               leadingIcon: 'assets/svg/clock.svg',
               title: 'Recent Activity',
               subtitle: 'View recent sign-ins and actions.',
-              onTap: () {
-                // TODO: Navigate to recent activity screen
-              },
+              onTap: null,
             ),
-            SettingsTile(
+            const SettingsTile(
               leadingIcon: 'assets/svg/envelope.svg',
               title: 'Recovery Email/Phone',
               subtitle: 'Used when you get locked out.',
-              onTap: () {
-                // TODO: Navigate to recovery settings
-              },
+              onTap: null,
             ),
             const SizedBox(height: spacing24),
             // Danger Section

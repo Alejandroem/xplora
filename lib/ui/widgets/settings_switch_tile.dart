@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../theme.dart';
 
-/// Reusable settings switch tile widget
+/// Reusable settings switch tile widget.
+///
+/// Pass [onChanged] as `null` to render the tile in a disabled state.
+/// Both the [Switch] and the tap ripple disable themselves natively when
+/// [onChanged] is `null`, matching Flutter's own interactive-widget convention.
+/// Disabled styling uses semantic design system tokens instead of opacity.
 class SettingsSwitchTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool value;
-  final ValueChanged<bool> onChanged;
+  final ValueChanged<bool>? onChanged;
 
   const SettingsSwitchTile({
     super.key,
@@ -17,12 +22,16 @@ class SettingsSwitchTile extends StatelessWidget {
     required this.onChanged,
   });
 
+  bool get _disabled => onChanged == null;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: spacing8),
       decoration: BoxDecoration(
-        color: context.colors.bgSecondary,
+        color: _disabled
+            ? context.colors.bgSecondary.withValues(alpha: 0.8)
+            : context.colors.bgSecondary,
         borderRadius: BorderRadius.circular(radiusLarge),
         border: Border.all(
           color: context.colors.border,
@@ -35,7 +44,7 @@ class SettingsSwitchTile extends StatelessWidget {
           splashColor: context.colors.textPrimary.withValues(alpha: 0.06),
           highlightColor: context.colors.textPrimary.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(radiusLarge),
-          onTap: () => onChanged(!value),
+          onTap: _disabled ? null : () => onChanged!(!value),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: spacing24,
@@ -50,8 +59,12 @@ class SettingsSwitchTile extends StatelessWidget {
                       Text(
                         title,
                         style: bodyTextStyle.copyWith(
-                          color: context.colors.textPrimary,
-                          fontWeight: subtitle.isEmpty ? FontWeight.normal : FontWeight.w600,
+                          color: _disabled
+                              ? context.colors.textDisabled
+                              : context.colors.textPrimary,
+                          fontWeight: subtitle.isEmpty
+                              ? FontWeight.normal
+                              : FontWeight.w600,
                         ),
                       ),
                       if (subtitle.isNotEmpty) ...[
@@ -59,7 +72,9 @@ class SettingsSwitchTile extends StatelessWidget {
                         Text(
                           subtitle,
                           style: bodySmallStyle.copyWith(
-                            color: context.colors.textSecondary,
+                            color: _disabled
+                                ? context.colors.textDisabled
+                                : context.colors.textSecondary,
                           ),
                         ),
                       ],
@@ -69,20 +84,25 @@ class SettingsSwitchTile extends StatelessWidget {
                 const SizedBox(width: spacing12),
                 Container(
                   decoration: BoxDecoration(
-                    boxShadow: value ? [switchActiveGlow] : null,
+                    boxShadow: value && !_disabled ? [switchActiveGlow] : null,
                     borderRadius: BorderRadius.circular(radiusLarge),
                   ),
                   child: Switch.adaptive(
                     value: value,
                     onChanged: onChanged,
-                    activeTrackColor: brandPrimary,
-                    inactiveTrackColor: context.isDarkMode ? bgPrimaryLight.withValues(alpha: 0.20) : bgPrimaryDark.withValues(alpha: 0.20),
-                    thumbColor: WidgetStateProperty.all(bgPrimaryLight),
-                    trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+                    activeTrackColor: _disabled ? brandPrimary.withValues(alpha: 0.7) : brandPrimary,
+                    inactiveTrackColor: context.isDarkMode
+                        ? bgPrimaryLight.withValues(alpha: 0.20)
+                        : bgPrimaryDark.withValues(alpha: 0.20),
+                    thumbColor: WidgetStateProperty.all(_disabled ? bgTertiaryLight : bgPrimaryLight),
+                    trackOutlineColor:
+                        WidgetStateProperty.resolveWith((states) {
                       if (states.contains(WidgetState.selected)) {
                         return Colors.transparent;
                       }
-                      return context.isDarkMode ? bgPrimaryLight.withValues(alpha: 0.30) : bgPrimaryDark.withValues(alpha: 0.30);
+                      return context.isDarkMode
+                          ? _disabled ? bgTertiaryDark.withValues(alpha: 0.5) : bgPrimaryLight.withValues(alpha: 0.30)
+                          : _disabled ? bgTertiaryLight : bgPrimaryDark.withValues(alpha: 0.30);
                     }),
                   ),
                 ),

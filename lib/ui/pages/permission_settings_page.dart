@@ -56,7 +56,7 @@ class PermissionSettingsPage extends ConsumerWidget {
                 title: 'Motion & Activity',
                 subtitle: 'Help track your movement',
                 value: permissionSettings.motionActivity,
-                onChanged: notifier.toggleMotionActivity,
+                onChanged: null,
               ),
               SettingsSwitchTile(
                 title: 'Background Refresh',

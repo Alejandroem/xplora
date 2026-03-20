@@ -7,7 +7,7 @@ import '../../theme.dart';
 class SettingsTile extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final String? leadingIcon;
   final Widget? trailing;
   final bool showTrailing;
@@ -22,12 +22,16 @@ class SettingsTile extends StatelessWidget {
     this.showTrailing = true,
   });
 
+  bool get _disabled => onTap == null;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: spacing8),
       child: Material(
-        color: context.colors.bgSecondary,
+        color: _disabled
+            ? context.colors.bgSecondary.withValues(alpha: 0.7)
+            : context.colors.bgSecondary,
         borderRadius: BorderRadius.circular(radiusLarge),
         child: Ink(
           decoration: BoxDecoration(
@@ -73,8 +77,12 @@ class SettingsTile extends StatelessWidget {
                         Text(
                           title,
                           style: bodyTextStyle.copyWith(
-                            color: context.colors.textPrimary,
-                            fontWeight: subtitle == null ? FontWeight.normal : FontWeight.bold,
+                            color: _disabled
+                                ? context.colors.textDisabled
+                                : context.colors.textPrimary,
+                            fontWeight: subtitle == null
+                                ? FontWeight.normal
+                                : FontWeight.bold,
                           ),
                         ),
                         if (subtitle != null) ...[
@@ -82,7 +90,9 @@ class SettingsTile extends StatelessWidget {
                           Text(
                             subtitle!,
                             style: bodySmallStyle.copyWith(
-                              color: context.colors.textSecondary,
+                              color: _disabled
+                                  ? context.colors.textDisabled
+                                  : context.colors.textSecondary,
                             ),
                           ),
                         ],
@@ -94,7 +104,9 @@ class SettingsTile extends StatelessWidget {
                     trailing ??
                         Icon(
                           Icons.chevron_right_rounded,
-                          color: context.colors.textPrimary,
+                          color: _disabled
+                              ? context.colors.textDisabled
+                              : context.colors.textPrimary,
                           size: iconSizeLarge,
                         ),
                   ],

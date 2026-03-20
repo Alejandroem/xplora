@@ -56,19 +56,19 @@ class PrivacySettingsPage extends ConsumerWidget {
                   title: 'Public Profile',
                   subtitle: '',
                   value: privacySettings.publicProfile,
-                  onChanged: notifier.togglePublicProfile,
+                  onChanged: null,
                 ),
                 SettingsSwitchTile(
                   title: 'Search Visibility',
                   subtitle: '',
                   value: privacySettings.searchVisibility,
-                  onChanged: notifier.toggleSearchVisibility,
+                  onChanged: null,
                 ),
                 SettingsSwitchTile(
                   title: 'Show Online Status',
                   subtitle: '',
                   value: privacySettings.showOnlineStatus,
-                  onChanged: notifier.toggleShowOnlineStatus,
+                  onChanged: null,
                 ),
                 const SizedBox(height: spacing16),
 
@@ -81,17 +81,13 @@ class PrivacySettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: spacing12),
-                SettingsTile(
+                const SettingsTile(
                   title: 'Friend Requests',
-                  onTap: () {
-                    // TODO: Navigate to friend requests settings
-                  },
+                  onTap: null,
                 ),
-                SettingsTile(
+                const SettingsTile(
                   title: 'Clubs & Teams Visibility',
-                  onTap: () {
-                    // TODO: Navigate to clubs & teams visibility settings
-                  },
+                  onTap: null,
                 ),
                 const SizedBox(height: spacing16),
 
@@ -104,12 +100,12 @@ class PrivacySettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: spacing12),
-                SettingsSwitchTile(
-                  title: 'Location Usage',
-                  subtitle: '',
-                  value: privacySettings.locationUsage,
-                  onChanged: notifier.toggleLocationUsage,
-                ),
+                // SettingsSwitchTile(
+                //   title: 'Location Usage',
+                //   subtitle: '',
+                //   value: privacySettings.locationUsage,
+                //   onChanged: notifier.toggleLocationUsage,
+                // ),
                 SettingsSwitchTile(
                   title: 'Analytics & Crash Reports',
                   subtitle: '',
