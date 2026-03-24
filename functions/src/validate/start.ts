@@ -224,6 +224,7 @@ export const validateStart = onCall<StartRequest, Promise<StartResponse>>(
       },
       requiresQrOrCode: (config.requiresQrOrCode as boolean) ?? false,
       expiresAt: expiresAtMs,
+      pingRecommendedIntervalSec: config.pingRecommendedIntervalSec as number,
     };
   }
 );

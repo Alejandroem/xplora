@@ -25,4 +25,10 @@ sealed class CheckInSessionState with _$CheckInSessionState {
     required String placeId,
     required String reason,
   }) = CheckInSessionFailed;
+
+  /// Session completed successfully.
+  const factory CheckInSessionState.completed({
+    required String placeId,
+    required CheckInCompleteResult result,
+  }) = CheckInSessionCompleted;
 }

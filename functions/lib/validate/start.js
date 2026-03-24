@@ -166,6 +166,7 @@ exports.validateStart = (0, https_1.onCall)({ invoker: "public" }, async (reques
         },
         requiresQrOrCode: (_b = config.requiresQrOrCode) !== null && _b !== void 0 ? _b : false,
         expiresAt: expiresAtMs,
+        pingRecommendedIntervalSec: config.pingRecommendedIntervalSec,
     };
 });
 //# sourceMappingURL=start.js.map

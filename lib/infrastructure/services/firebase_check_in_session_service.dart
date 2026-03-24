@@ -69,6 +69,59 @@ class FirebaseCheckInSessionService implements CheckInSessionService {
       targetRadiusM: (target['radiusM'] as num).toDouble(),
       requiresQrOrCode: data['requiresQrOrCode'] as bool,
       expiresAt: DateTime.fromMillisecondsSinceEpoch(data['expiresAt'] as int),
+      pingRecommendedIntervalSec: data['pingRecommendedIntervalSec'] as int,
+    );
+  }
+
+  @override
+  Future<CheckInPingResult> ping({
+    required String sessionId,
+    required double lat,
+    required double lng,
+    required double accuracyM,
+    required double? speedMps,
+  }) async {
+    final callable = _functions.httpsCallable('validatePing');
+    final result = await callable.call<Map<String, dynamic>>({
+      'sessionId': sessionId,
+      'locationSample': {
+        'lat': lat,
+        'lng': lng,
+        'accuracyM': accuracyM,
+        'speedMps': speedMps,
+        'clientTs': DateTime.now().millisecondsSinceEpoch,
+      },
+      'appState': 'FOREGROUND',
+    });
+    final data = Map<String, dynamic>.from(result.data as Map);
+    return CheckInPingResult(
+      status: data['status'] as String,
+      inside: data['inside'] as bool,
+      distanceM: (data['distanceM'] as num).toDouble(),
+      progressPercent: (data['progressPercent'] as num).toDouble(),
+      timeRemainingSec: data['timeRemainingSec'] as int,
+      rejectReason: data['rejectReason'] as String?,
+    );
+  }
+
+  @override
+  Future<CheckInCompleteResult> complete({
+    required String sessionId,
+  }) async {
+    final callable = _functions.httpsCallable('validateComplete');
+    final result = await callable.call<Map<String, dynamic>>({
+      'sessionId': sessionId,
+    });
+    final data = Map<String, dynamic>.from(result.data as Map);
+    final cooldownUntilMs = data['cooldownUntil'] as int?;
+    return CheckInCompleteResult(
+      success: data['success'] as bool,
+      completedAt:
+          DateTime.fromMillisecondsSinceEpoch(data['completedAt'] as int),
+      timesCompleted: data['timesCompleted'] as int,
+      cooldownUntil: cooldownUntilMs != null
+          ? DateTime.fromMillisecondsSinceEpoch(cooldownUntilMs)
+          : null,
     );
   }
 }
