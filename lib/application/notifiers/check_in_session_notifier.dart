@@ -173,6 +173,8 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
       if (result.status == 'IN_PROGRESS') {
         _pingTimer?.cancel();
         _pingTimer = null;
+        // await Future.delayed(Duration(seconds: 50));
+        // await Future.delayed(Duration(seconds: 20));
         debugPrint(
             'CheckInSession: session locked → IN_PROGRESS, calling /complete');
         await _complete(sessionId, placeId);

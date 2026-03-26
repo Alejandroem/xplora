@@ -30,7 +30,7 @@ export const validateComplete = onCall<CompleteRequest, Promise<CompleteResponse
     if (!["IN_PROGRESS", "READY_TO_COMPLETE"].includes(session.status)) {
       throw new HttpsError(
         "failed-precondition",
-        `Session status is ${session.status}, expected IN_PROGRESS.`
+        `Session status is ${session.status}, expected IN_PROGRESS or READY_TO_COMPLETE.`
       );
     }
 
