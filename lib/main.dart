@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'application/providers/auth_providers.dart';
+import 'infrastructure/services/local_notification_service.dart';
 import 'application/providers/settings_providers.dart';
 import 'database_seeder.dart';
 import 'place_migration.dart';
@@ -48,6 +49,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await LocalNotificationService.initialize();
 
   // DatabaseSeeder.seedCategories();
   // await PlaceMigration.migrateCategoryIds();

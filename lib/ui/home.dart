@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../application/providers/achievements_providers.dart';
 import '../application/providers/adventure_providers.dart';
 import '../application/providers/check_in_providers.dart';
+import '../application/notifiers/check_in_session_state.dart';
+import '../infrastructure/services/local_notification_service.dart';
 import '../application/providers/deep_links_providers.dart';
 import '../application/providers/location_providers.dart';
 import '../application/providers/navigation_providers.dart';
@@ -263,11 +265,16 @@ class _HomeState extends ConsumerState<Home> {
     });
 
     ref.listen(checkInDetectionProvider, (_, s) =>
-        print(s));
+        debugPrint('$s'));
 
     ref.watch(checkInSessionProvider);
-    ref.listen(checkInSessionProvider, (_, s) =>
-        print('CheckInSession: $s'));
+    ref.listen(checkInSessionProvider, (previous, next) {
+      debugPrint('CheckInSession: $next');
+      if (next is CheckInSessionCompleted &&
+          previous is! CheckInSessionCompleted) {
+        LocalNotificationService.showCheckInComplete(next.placeName);
+      }
+    });
 
     // Listen for permanently denied location permission
     ref.listen<LocationPermissionRequestStatus>(

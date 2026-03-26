@@ -75,7 +75,7 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
         session: result,
         placeId: place.placeId,
       );
-      _startPinging(result, place.placeId);
+      _startPinging(result, place.placeId, place.name);
     } on FirebaseFunctionsException catch (e) {
       debugPrint('CheckInSession: /start failed [${e.code}] ${e.message}');
       state = CheckInSessionState.failed(
@@ -126,19 +126,19 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
     }
   }
 
-  void _startPinging(CheckInStartResult session, String placeId) {
+  void _startPinging(CheckInStartResult session, String placeId, String placeName) {
     _pingTimer?.cancel();
-    _onPingTick(session.sessionId, placeId); // immediate first ping
+    _onPingTick(session.sessionId, placeId, placeName); // immediate first ping
     _pingTimer = Timer.periodic(
       Duration(seconds: session.pingRecommendedIntervalSec),
-      (_) => _onPingTick(session.sessionId, placeId),
+      (_) => _onPingTick(session.sessionId, placeId, placeName),
     );
     debugPrint(
       'CheckInSession: pinging started — interval ${session.pingRecommendedIntervalSec}s',
     );
   }
 
-  Future<void> _onPingTick(String sessionId, String placeId) async {
+  Future<void> _onPingTick(String sessionId, String placeId, String placeName) async {
     final position = await Geolocator.getLastKnownPosition();
     if (position == null) {
       debugPrint('CheckInSession: ping skipped — no last known position');
@@ -177,7 +177,7 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
         // await Future.delayed(Duration(seconds: 20));
         debugPrint(
             'CheckInSession: session locked → IN_PROGRESS, calling /complete');
-        await _complete(sessionId, placeId);
+        await _complete(sessionId, placeId, placeName);
       }
     } on FirebaseFunctionsException catch (e) {
       debugPrint('CheckInSession: ping failed [${e.code}] ${e.message}');
@@ -193,7 +193,7 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
     }
   }
 
-  Future<void> _complete(String sessionId, String placeId) async {
+  Future<void> _complete(String sessionId, String placeId, String placeName) async {
     try {
       final result = await _service.complete(sessionId: sessionId);
       debugPrint(
@@ -202,6 +202,7 @@ class CheckInSessionNotifier extends StateNotifier<CheckInSessionState> {
       );
       state = CheckInSessionState.completed(
         placeId: placeId,
+        placeName: placeName,
         result: result,
       );
     } on FirebaseFunctionsException catch (e) {

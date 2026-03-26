@@ -23,7 +23,8 @@ mixin _$CheckInSessionState {
     required TResult Function(CheckInStartResult session, String placeId)
         active,
     required TResult Function(String placeId, String reason) failed,
-    required TResult Function(String placeId, CheckInCompleteResult result)
+    required TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)
         completed,
   }) =>
       throw _privateConstructorUsedError;
@@ -33,7 +34,9 @@ mixin _$CheckInSessionState {
     TResult? Function(String placeId)? starting,
     TResult? Function(CheckInStartResult session, String placeId)? active,
     TResult? Function(String placeId, String reason)? failed,
-    TResult? Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult? Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -42,7 +45,9 @@ mixin _$CheckInSessionState {
     TResult Function(String placeId)? starting,
     TResult Function(CheckInStartResult session, String placeId)? active,
     TResult Function(String placeId, String reason)? failed,
-    TResult Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -137,7 +142,8 @@ class _$CheckInSessionIdleImpl implements CheckInSessionIdle {
     required TResult Function(CheckInStartResult session, String placeId)
         active,
     required TResult Function(String placeId, String reason) failed,
-    required TResult Function(String placeId, CheckInCompleteResult result)
+    required TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)
         completed,
   }) {
     return idle();
@@ -150,7 +156,9 @@ class _$CheckInSessionIdleImpl implements CheckInSessionIdle {
     TResult? Function(String placeId)? starting,
     TResult? Function(CheckInStartResult session, String placeId)? active,
     TResult? Function(String placeId, String reason)? failed,
-    TResult? Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult? Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
   }) {
     return idle?.call();
   }
@@ -162,7 +170,9 @@ class _$CheckInSessionIdleImpl implements CheckInSessionIdle {
     TResult Function(String placeId)? starting,
     TResult Function(CheckInStartResult session, String placeId)? active,
     TResult Function(String placeId, String reason)? failed,
-    TResult Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
     required TResult orElse(),
   }) {
     if (idle != null) {
@@ -289,7 +299,8 @@ class _$CheckInSessionStartingImpl implements CheckInSessionStarting {
     required TResult Function(CheckInStartResult session, String placeId)
         active,
     required TResult Function(String placeId, String reason) failed,
-    required TResult Function(String placeId, CheckInCompleteResult result)
+    required TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)
         completed,
   }) {
     return starting(placeId);
@@ -302,7 +313,9 @@ class _$CheckInSessionStartingImpl implements CheckInSessionStarting {
     TResult? Function(String placeId)? starting,
     TResult? Function(CheckInStartResult session, String placeId)? active,
     TResult? Function(String placeId, String reason)? failed,
-    TResult? Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult? Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
   }) {
     return starting?.call(placeId);
   }
@@ -314,7 +327,9 @@ class _$CheckInSessionStartingImpl implements CheckInSessionStarting {
     TResult Function(String placeId)? starting,
     TResult Function(CheckInStartResult session, String placeId)? active,
     TResult Function(String placeId, String reason)? failed,
-    TResult Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
     required TResult orElse(),
   }) {
     if (starting != null) {
@@ -454,7 +469,8 @@ class _$CheckInSessionActiveImpl implements CheckInSessionActive {
     required TResult Function(CheckInStartResult session, String placeId)
         active,
     required TResult Function(String placeId, String reason) failed,
-    required TResult Function(String placeId, CheckInCompleteResult result)
+    required TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)
         completed,
   }) {
     return active(session, placeId);
@@ -467,7 +483,9 @@ class _$CheckInSessionActiveImpl implements CheckInSessionActive {
     TResult? Function(String placeId)? starting,
     TResult? Function(CheckInStartResult session, String placeId)? active,
     TResult? Function(String placeId, String reason)? failed,
-    TResult? Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult? Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
   }) {
     return active?.call(session, placeId);
   }
@@ -479,7 +497,9 @@ class _$CheckInSessionActiveImpl implements CheckInSessionActive {
     TResult Function(String placeId)? starting,
     TResult Function(CheckInStartResult session, String placeId)? active,
     TResult Function(String placeId, String reason)? failed,
-    TResult Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
     required TResult orElse(),
   }) {
     if (active != null) {
@@ -621,7 +641,8 @@ class _$CheckInSessionFailedImpl implements CheckInSessionFailed {
     required TResult Function(CheckInStartResult session, String placeId)
         active,
     required TResult Function(String placeId, String reason) failed,
-    required TResult Function(String placeId, CheckInCompleteResult result)
+    required TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)
         completed,
   }) {
     return failed(placeId, reason);
@@ -634,7 +655,9 @@ class _$CheckInSessionFailedImpl implements CheckInSessionFailed {
     TResult? Function(String placeId)? starting,
     TResult? Function(CheckInStartResult session, String placeId)? active,
     TResult? Function(String placeId, String reason)? failed,
-    TResult? Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult? Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
   }) {
     return failed?.call(placeId, reason);
   }
@@ -646,7 +669,9 @@ class _$CheckInSessionFailedImpl implements CheckInSessionFailed {
     TResult Function(String placeId)? starting,
     TResult Function(CheckInStartResult session, String placeId)? active,
     TResult Function(String placeId, String reason)? failed,
-    TResult Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
     required TResult orElse(),
   }) {
     if (failed != null) {
@@ -715,7 +740,7 @@ abstract class _$$CheckInSessionCompletedImplCopyWith<$Res> {
           $Res Function(_$CheckInSessionCompletedImpl) then) =
       __$$CheckInSessionCompletedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String placeId, CheckInCompleteResult result});
+  $Res call({String placeId, String placeName, CheckInCompleteResult result});
 }
 
 /// @nodoc
@@ -732,12 +757,17 @@ class __$$CheckInSessionCompletedImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? placeId = null,
+    Object? placeName = null,
     Object? result = null,
   }) {
     return _then(_$CheckInSessionCompletedImpl(
       placeId: null == placeId
           ? _value.placeId
           : placeId // ignore: cast_nullable_to_non_nullable
+              as String,
+      placeName: null == placeName
+          ? _value.placeName
+          : placeName // ignore: cast_nullable_to_non_nullable
               as String,
       result: null == result
           ? _value.result
@@ -751,16 +781,18 @@ class __$$CheckInSessionCompletedImplCopyWithImpl<$Res>
 
 class _$CheckInSessionCompletedImpl implements CheckInSessionCompleted {
   const _$CheckInSessionCompletedImpl(
-      {required this.placeId, required this.result});
+      {required this.placeId, required this.placeName, required this.result});
 
   @override
   final String placeId;
+  @override
+  final String placeName;
   @override
   final CheckInCompleteResult result;
 
   @override
   String toString() {
-    return 'CheckInSessionState.completed(placeId: $placeId, result: $result)';
+    return 'CheckInSessionState.completed(placeId: $placeId, placeName: $placeName, result: $result)';
   }
 
   @override
@@ -769,11 +801,13 @@ class _$CheckInSessionCompletedImpl implements CheckInSessionCompleted {
         (other.runtimeType == runtimeType &&
             other is _$CheckInSessionCompletedImpl &&
             (identical(other.placeId, placeId) || other.placeId == placeId) &&
+            (identical(other.placeName, placeName) ||
+                other.placeName == placeName) &&
             (identical(other.result, result) || other.result == result));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, placeId, result);
+  int get hashCode => Object.hash(runtimeType, placeId, placeName, result);
 
   @JsonKey(ignore: true)
   @override
@@ -790,10 +824,11 @@ class _$CheckInSessionCompletedImpl implements CheckInSessionCompleted {
     required TResult Function(CheckInStartResult session, String placeId)
         active,
     required TResult Function(String placeId, String reason) failed,
-    required TResult Function(String placeId, CheckInCompleteResult result)
+    required TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)
         completed,
   }) {
-    return completed(placeId, result);
+    return completed(placeId, placeName, result);
   }
 
   @override
@@ -803,9 +838,11 @@ class _$CheckInSessionCompletedImpl implements CheckInSessionCompleted {
     TResult? Function(String placeId)? starting,
     TResult? Function(CheckInStartResult session, String placeId)? active,
     TResult? Function(String placeId, String reason)? failed,
-    TResult? Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult? Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
   }) {
-    return completed?.call(placeId, result);
+    return completed?.call(placeId, placeName, result);
   }
 
   @override
@@ -815,11 +852,13 @@ class _$CheckInSessionCompletedImpl implements CheckInSessionCompleted {
     TResult Function(String placeId)? starting,
     TResult Function(CheckInStartResult session, String placeId)? active,
     TResult Function(String placeId, String reason)? failed,
-    TResult Function(String placeId, CheckInCompleteResult result)? completed,
+    TResult Function(
+            String placeId, String placeName, CheckInCompleteResult result)?
+        completed,
     required TResult orElse(),
   }) {
     if (completed != null) {
-      return completed(placeId, result);
+      return completed(placeId, placeName, result);
     }
     return orElse();
   }
@@ -868,10 +907,12 @@ class _$CheckInSessionCompletedImpl implements CheckInSessionCompleted {
 abstract class CheckInSessionCompleted implements CheckInSessionState {
   const factory CheckInSessionCompleted(
           {required final String placeId,
+          required final String placeName,
           required final CheckInCompleteResult result}) =
       _$CheckInSessionCompletedImpl;
 
   String get placeId;
+  String get placeName;
   CheckInCompleteResult get result;
   @JsonKey(ignore: true)
   _$$CheckInSessionCompletedImplCopyWith<_$CheckInSessionCompletedImpl>
